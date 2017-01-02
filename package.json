@@ -1,0 +1,18 @@
+{
+  "name": "flowing-potato",
+  "version": "1.0.0",
+  "description": "YADB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"No test configured\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/SpaceEEC/glowing-potato/"
+  },
+  "author": "SpaceEEC",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.0.0"
+  }
+}
