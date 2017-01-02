@@ -1,3 +1,3 @@
 # glowing-potato
-Stuff is here\n
+Stuff is here
 or not
