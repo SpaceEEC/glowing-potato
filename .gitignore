@@ -1,3 +1,6 @@
 node_modules/
 .vscode/
-auth.json
+var/auth.json
+var/db.sqlite
+var/db.sqlite-journal
+old/
