@@ -139,7 +139,39 @@ Walte über
 });
 
 
-bot.login(JSON.parse(fs.readFileSync('./var/auth.json', 'utf8')).dtoken);
+bot.on('voiceStateUpdate', (oldMember, newMember) => {
+  const conf = bot.confs.get(oldMember.guild.id);
+  if (!conf.vlogChannel) return;
+  if (!bot.channels.get(conf.vlogChannel)
+  .permissionsFor(newMember.guild.member(bot.user))
+  .hasPermission('SEND_MESSAGES')) return;
+  if (oldMember.voiceChannel !== newMember.voiceChannel) {
+    let clr;
+    let desc;
+    // leave
+    if (newMember.voiceChannel === undefined) {
+      clr = 0xFF4500;
+      desc = `[${moment().format('YYYY-MM-DD HH:mm:ss')}]: ${newMember.user.toString()} hat die Verbindung aus ${oldMember.voiceChannel.name} getrennt.`; // eslint-disable-line
+    } else if (oldMember.voiceChannel === undefined) {
+      // join
+      clr = 0x7CFC00;
+      desc = `[${moment().format('YYYY-MM-DD HH:mm:ss')}]: ${newMember.user.toString()} hat sich in ${newMember.voiceChannel.name} eingeloggt.`; // eslint-disable-line
+    } else {
+      // move
+      clr = 3447003;
+      desc = `[${moment().format('YYYY-MM-DD HH:mm:ss')}]: ${newMember.user.toString()} ging von ${oldMember.voiceChannel.name} zu ${newMember.voiceChannel.name}`; // eslint-disable-line
+    }
+    newMember.guild.channels.get(conf.vlogchannel).sendEmbed({
+      color: clr,
+      author: {
+        name: newMember.user.username,
+        url: newMember.user.avatarURL ? newMember.user.avatarURL : bot.user.avatarURL,
+        icon_url: newMember.user.avatarURL,
+      },
+      description: desc,
+    });
+  }
+});
 
 
 bot.on('disconnect', () => {
@@ -151,3 +183,5 @@ bot.on('disconnect', () => {
 process.on('unhandledRejection', (err) => {
   console.error(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`); // eslint-disable-line
 });
+
+bot.login(JSON.parse(fs.readFileSync('./var/auth.json', 'utf8')).dtoken);
