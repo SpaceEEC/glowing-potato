@@ -141,6 +141,13 @@ Walte über
 
 bot.login(JSON.parse(fs.readFileSync('./var/auth.json', 'utf8')).dtoken);
 
+
+bot.on('disconnect', () => {
+  bot.log(`Disconnected nach ${moment.duration(bot.uptime).format(' D [Tage], H [Stunden], m [Minuten], s [Sekunden]')}.`); // eslint-disable-line
+  process.exit(100);
+});
+
+
 process.on('unhandledRejection', (err) => {
   console.error(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`); // eslint-disable-line
 });
