@@ -21,6 +21,13 @@ db.open('./var/db.sqlite').then(() => {
   });
   db.each('SELECT * FROM confs').then((guild) => {
     bot.log(`Lade Gilde ${guild.id} | ${guild.name}`);
+    try {
+      if (guild.ignChannel) guild.ignChannel = JSON.parse(guild.ignChannel);
+      if (guild.ignUsers) guild.ignUsers = JSON.parse(guild.ignUsers);
+      if (guild.disabledCommands) guild.disabledCommands = JSON.parse(guild.disabledCommands);
+    } catch (e) {
+      bot.err(e);
+    }
     bot.confs.set(guild.id, guild);
   });
 });
@@ -28,26 +35,19 @@ db.open('./var/db.sqlite').then(() => {
 // commands and aliases
 bot.commands = new Discord.Collection();
 bot.aliases = new Discord.Collection();
-fs.readdirAsync('./commands/')
-  .then((files) => {
-    try {
-      files = files.filter(f => f.slice(-3) === '.js');
-      bot.log(`Lade insgesamt ${files.length} Befehle.`);
-      files.forEach(f => {
-        const props = require(`./commands/${f}`);
-        bot.log(`Lade Befehl: ${props.help.name}`);
-        bot.commands.set(props.help.name, props);
-        props.conf.aliases.forEach(alias => {
-          bot.aliases.set(alias, props.help.name);
-        });
-      });
-    } catch (e) {
-      bot.err(e);
-    }
-  })
-  .catch((e) => {
-    bot.err(e);
-  });
+
+// internal
+bot.internal = {};
+bot.internal.commands = require('./internal/commands.js');
+bot.internal.commands.init(bot).catch(bot.err);
+bot.internal.checks = require('./internal/checks.js');
+bot.internal.checks.check = new Discord.Collection();
+bot.internal.checks.init(bot).catch(bot.err);
+
+// methods
+bot.methods = {};
+bot.methods.Embed = Discord.RichEmbed;
+bot.methods.Collection = Discord.Collection;
 
 
 bot.on('message', (msg) => {
@@ -71,8 +71,7 @@ bot.on('message', (msg) => {
   }
   if (cmd) {
     msg.conf = conf;
-    cmd.run(bot, msg, params);
-    /* bot.check.run(bot, msg, cmd)
+    bot.internal.checks.run(bot, msg, cmd)
       .then(() => {
         cmd.run(bot, msg, params);
       })
@@ -81,7 +80,7 @@ bot.on('message', (msg) => {
           if (reason.stack) bot.err(reason.stack);
           msg.channel.sendMessage(reason);
         }
-      });*/
+      });
   } else if (command === 'eval') {
     if (msg.author.id === bot.config.ownerID) {
       const time = +new Date;
@@ -123,7 +122,8 @@ Ausgeführt in: \`${new Date().getTime() - time}\`ms`);
 
 bot.once('ready', () => {
   bot.config.prefixMention = new RegExp(`^<@!?${bot.user.id}>`);
-  bot.fetchApplication().then(coa => {
+  bot.log('ready');
+  /* bot.fetchApplication().then(coa => {
     bot.channels
       .get('257831397983518722')
       .sendMessage(`[${moment().format('YYYY-MM-DD HH:mm:ss')}]
@@ -134,7 +134,7 @@ Walte über
     bot.log(`${coa.name}: Walte über ${bot.users.size} Nutzer, in ${bot.channels.size} Channeln von ${bot.guilds.size} Servern.`); // eslint-disable-line
   }).catch(e => {
     bot.err(e);
-  });
+  }); */
   bot.user.setGame(bot.config.game);
 });
 
@@ -143,8 +143,8 @@ bot.on('voiceStateUpdate', (oldMember, newMember) => {
   const conf = bot.confs.get(oldMember.guild.id);
   if (!conf.vlogChannel) return;
   if (!bot.channels.get(conf.vlogChannel)
-  .permissionsFor(newMember.guild.member(bot.user))
-  .hasPermission('SEND_MESSAGES')) return;
+    .permissionsFor(newMember.guild.member(bot.user))
+    .hasPermission('SEND_MESSAGES')) return;
   if (oldMember.voiceChannel !== newMember.voiceChannel) {
     let clr;
     let desc;
@@ -161,7 +161,7 @@ bot.on('voiceStateUpdate', (oldMember, newMember) => {
       clr = 3447003;
       desc = `[${moment().format('YYYY-MM-DD HH:mm:ss')}]: ${newMember.user.toString()} ging von ${oldMember.voiceChannel.name} zu ${newMember.voiceChannel.name}`; // eslint-disable-line
     }
-    newMember.guild.channels.get(conf.vlogchannel).sendEmbed({
+    bot.channels.get(conf.vlogChannel).sendEmbed({
       color: clr,
       author: {
         name: newMember.user.username,

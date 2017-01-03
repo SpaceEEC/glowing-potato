@@ -33,12 +33,10 @@ function nichts(bot, msg) { // eslint-disable-line
     ],
     thumbnail: {
       url: bot.user.avatarURL,
-      height: 128,
-      width: 128,
     },
     timestamp: new Date(),
     footer: {
-      icon_url: bot.user.avatarURL,
+      icon_url: msg.author.avatarURL,
       text: msg.content,
     },
   };
