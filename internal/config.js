@@ -1,6 +1,5 @@
 exports.get = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-disable-line
-  const conf = bot.confs.get(msg.guild.id);
-  let value = conf[key];
+  let value = bot.confs.get(msg.guild.id)[key];
   if (value) {
     if (value instanceof Array) {
       if (bot.channels.has(value[0])) {
@@ -18,7 +17,7 @@ exports.get = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-di
       if (msg.guild.roles.get(value)) value = msg.guild.roles.get(value);
       resolve(`Der Wert von \`${key}\` beträgt: ${value}`);
     }
-  } else if (key in conf) {
+  } else if (key in bot.confs.get(msg.guild.id)) {
     resolve(`Der Wert \`${key}\` ist nicht definiert.`);
   } else {
     resolve(`Der Wert \`${key}\` existiert nicht in der Config.`);
@@ -27,8 +26,7 @@ exports.get = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-di
 
 
 exports.set = (bot, msg, key, params) => new Promise((resolve, reject) => { // eslint-disable-line
-  const conf = bot.confs.get(msg.guild.id);
-  if (key in conf) {
+  if (key in bot.confs.get(msg.guild.id)) {
     let value;
     if (msg.mentions.roles.size !== 0) value = msg.mentions.roles.first().id;
     if (msg.mentions.channels.size !== 0) value = msg.mentions.channels.first().id;
@@ -45,13 +43,56 @@ exports.set = (bot, msg, key, params) => new Promise((resolve, reject) => { // e
 
 
 exports.reset = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-disable-line
-  const conf = bot.confs.get(msg.guild.id);
-  if (key in conf) {
+  if (key in bot.confs.get(msg.guild.id)) {
     bot.confs.get(msg.guild.id)[key] = null;
     bot.db.run(`UPDATE confs SET ${key}=NULL WHERE id=${msg.guild.id}`).then(() => {
       resolve(`Der Wert \`${key}\` wurde zurückgesetzt.`);
     });
   } else {
     resolve(`Der Wert \`${key}\` existiert nicht in der Config.`);
+  }
+});
+
+exports.add = (bot, msg, key, value) => new Promise((resolve, reject) => {
+  if (key in bot.confs.get(msg.guild.id)) {
+    if (bot.confs.get(msg.guild.id)[key] && bot.confs.get(msg.guild.id)[key].includes(value)) {
+      reject(`Dieser Eintrag befindet sich bereits in dieser Liste.`);
+      return;
+    }
+    if (!bot.confs.get(msg.guild.id)[key]) bot.confs.get(msg.guild.id)[key] = [];
+    bot.confs.get(msg.guild.id)[key].push(value);
+    bot.log(`UPDATE confs SET ${key}='${JSON.stringify(bot.confs.get(msg.guild.id)[key])}' WHERE id=${msg.guild.id}`);
+    bot.db.run(`UPDATE confs SET ${key}='${JSON.stringify(bot.confs.get(msg.guild.id)[key])}' WHERE id=${msg.guild.id}`)
+      .then(() => {
+        resolve();
+      })
+      .catch((e) => {
+        reject(e);
+      });
+  } else {
+    reject(`Der Wert \`${key}\` existiert nicht in der Config.`);
+  }
+});
+
+exports.remove = (bot, msg, key, value) => new Promise((resolve, reject) => { // eslint-disable-line
+  if (key in bot.confs.get(msg.guild.id)) {
+    if (!bot.confs.get(msg.guild.id)[key]) {
+      reject(`Dieser Eintrag befindet sich nicht in dieser Liste.`);
+      return;
+    } else if (!bot.confs.get(msg.guild.id)[key].includes(value)) {
+      reject(`Dieser Eintrag befindet sich nicht in dieser Liste.`);
+      return;
+    }
+    bot.confs.get(msg.guild.id)[key].splice(bot.confs.get(msg.guild.id)[key].indexOf(value), 1);
+    bot.log(`UPDATE confs SET ${key}='${JSON.stringify(bot.confs.get(msg.guild.id)[key])}' WHERE id=${msg.guild.id}`);
+    bot.db.run(`UPDATE confs SET ${key}='${JSON.stringify(bot.confs.get(msg.guild.id)[key])}' WHERE id=${msg.guild.id}`)
+      .then(() => {
+        resolve();
+      })
+      .catch((e) => {
+        reject(e);
+      });
+  } else {
+    reject(`Der Wert \`${key}\` existiert nicht in der Config.`);
   }
 });

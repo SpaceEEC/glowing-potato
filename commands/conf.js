@@ -5,10 +5,10 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   if (!params[1]) {
     return msg.channel.sendMessage('Bitte gib einen Schlüssel an, mit welchem diese Operation ausgeführt werden soll.');
   }
-  if (['ignChannel', 'ignUsers'].includes(params[1])) {
+  if (['ignchannels', 'ignusers'].includes(params[1])) {
     return msg.channel.sendMessage('platzhalternachricht wegen ign array.');
   }
-  if (params[1] === 'disabledCommands') {
+  if (params[1] === 'disabledcommands') {
     return msg.channel.sendMessage('platzhalternachricht wegen disabledCommands');
   }
   if (params[0] === 'get') {

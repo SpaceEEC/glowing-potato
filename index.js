@@ -22,9 +22,9 @@ bot.db.open('./var/db.sqlite').then(() => {
   bot.db.each('SELECT * FROM confs').then((guild) => {
     bot.log(`Lade Gilde ${guild.id} | ${guild.name}`);
     try {
-      if (guild.ignChannel) guild.ignChannel = JSON.parse(guild.ignChannel);
-      if (guild.ignUsers) guild.ignUsers = JSON.parse(guild.ignUsers);
-      if (guild.disabledCommands) guild.disabledCommands = JSON.parse(guild.disabledCommands);
+      if (guild.ignchannels) guild.ignchannels = JSON.parse(guild.ignchannels);
+      if (guild.ignusers) guild.ignusers = JSON.parse(guild.ignUsers);
+      if (guild.disabledcommands) guild.disabledcommands = JSON.parse(guild.disabledcommands);
     } catch (e) {
       bot.err(e);
     }
