@@ -19,16 +19,19 @@ bot.db.open('./var/db.sqlite').then(() => {
       bot.config[key] = stuff[key];
     }
   });
-  bot.db.each('SELECT * FROM confs').then((guild) => {
-    bot.log(`Lade Gilde ${guild.id} | ${guild.name}`);
-    try {
-      if (guild.ignchannels) guild.ignchannels = JSON.parse(guild.ignchannels);
-      if (guild.ignusers) guild.ignusers = JSON.parse(guild.ignUsers);
-      if (guild.disabledcommands) guild.disabledcommands = JSON.parse(guild.disabledcommands);
-    } catch (e) {
-      bot.err(e);
+  bot.db.all('SELECT * FROM confs').then((guilds) => {
+    for (let i = 0; i < guilds.length; i++) {
+      const guild = guilds[i];
+      bot.log(`Lade Gilde ${guild.id} | ${guild.name}`);
+      try {
+        guild.ignchannels = JSON.parse(guild.ignchannels);
+        guild.ignusers = JSON.parse(guild.ignusers);
+        guild.disabledcommands = JSON.parse(guild.disabledcommands);
+      } catch (e) {
+        bot.err(e.stack ? e.stack : e);
+      }
+      bot.confs.set(guild.id, guild);
     }
-    bot.confs.set(guild.id, guild);
   });
 });
 
@@ -55,8 +58,8 @@ bot.on('message', (msg) => {
   if (msg.author.bot) return;
   if (msg.channel.type !== 'text') return;
   const conf = bot.confs.get(msg.guild.id);
-  if (conf.ignChannel && conf.ignChannel.includes(msg.channel.id)) return;
-  if (conf.ignUsers && conf.ignUsers.includes(msg.author.id)) return;
+  if (conf.ignchannels && conf.ignchannels.includes(msg.channel.id)) return;
+  if (conf.ignusers && conf.ignusers.includes(msg.author.id)) return;
   if (!msg.content.startsWith(conf.prefix) && !bot.config.prefixMention.test(msg.content)) return;
   let prefixLength = conf.prefix.length;
   if (bot.config.prefixMention.test(msg.content)) {
@@ -86,6 +89,7 @@ bot.on('message', (msg) => {
     if (msg.author.id === bot.config.ownerID) {
       const time = +new Date;
       try {
+        msg.conf = conf;
         const code = params.join(' ');
         let evaled = eval(code);
         const response_typeof = typeof evaled;

@@ -2,15 +2,17 @@ exports.get = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-di
   let value = bot.confs.get(msg.guild.id)[key];
   if (value) {
     if (value instanceof Array) {
+      let response;
       if (bot.channels.has(value[0])) {
-        value = `\n${value.map(v => bot.channels.get(v).join('\n'))}`;
+        response = `\n${value.map(v => bot.channels.get(v)).join('\n')}`;
       } else if (bot.users.has(value[0])) {
-        value = `\n${value.map(v => bot.users.get(v).join('\n'))}`;
+        response = `\n${value.map(v => bot.users.get(v)).join('\n')}`;
       } else if (msg.guild.roles.has(value[0])) {
-        value = `\n${value.map(v => msg.guild.roles.get(v).join('\n'))}`;
+        response = `\n${value.map(v => msg.guild.roles.get(v)).join('\n')}`;
       }
-      if (value[1]) resolve(`Die Werte von \`${key}\` betragen: ${value}`);
-      else resolve(`Der Wert von \`${key}\` beträgt: ${value}`);
+      if (value[1]) resolve(`Auf der Liste \`${key}\` stehen: ${response}`);
+      else if (value[0]) resolve(`Auf der Liste \`${key}\` steht: ${response.split('\n').join(' ')}`);
+      else resolve(`Die Liste \`${key}\` ist leer.`);
     } else {
       if (bot.channels.has(value)) value = bot.channels.get(value);
       if (bot.users.has(value)) value = bot.users.get(value);
@@ -18,7 +20,7 @@ exports.get = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-di
       resolve(`Der Wert von \`${key}\` beträgt: ${value}`);
     }
   } else if (key in bot.confs.get(msg.guild.id)) {
-    resolve(`Der Wert \`${key}\` ist nicht definiert.`);
+    resolve(`Der Wert \`${key}\` ist nicht definiert, also leer.`);
   } else {
     resolve(`Der Wert \`${key}\` existiert nicht in der Config.`);
   }
@@ -33,6 +35,7 @@ exports.set = (bot, msg, key, params) => new Promise((resolve, reject) => { // e
     if (!(params instanceof Array)) value = params;
     if (!value) value = params.slice(2).join(' ');
     bot.confs.get(msg.guild.id)[key] = value;
+    bot.log(`UPDATE confs SET ${key}='${value}' WHERE id=${msg.guild.id}`);
     bot.db.run(`UPDATE confs SET ${key}='${value}' WHERE id=${msg.guild.id}`).then(() => {
       resolve(`Der Wert \`${key}\` wurde auf \`${value}\` gesetzt.`);
     });
@@ -44,8 +47,11 @@ exports.set = (bot, msg, key, params) => new Promise((resolve, reject) => { // e
 
 exports.reset = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-disable-line
   if (key in bot.confs.get(msg.guild.id)) {
-    bot.confs.get(msg.guild.id)[key] = null;
-    bot.db.run(`UPDATE confs SET ${key}=NULL WHERE id=${msg.guild.id}`).then(() => {
+    let value = bot.confs.get('default')[key];
+    bot.confs.get(msg.guild.id)[key] = value;
+    if (value instanceof Array) value = JSON.stringify(value);
+    bot.log(`UPDATE confs SET ${key}='${value}' WHERE id=${msg.guild.id}`);
+    bot.db.run(`UPDATE confs SET ${key}='${value}' WHERE id=${msg.guild.id}`).then(() => {
       resolve(`Der Wert \`${key}\` wurde zurückgesetzt.`);
     });
   } else {
@@ -53,10 +59,11 @@ exports.reset = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-
   }
 });
 
+
 exports.add = (bot, msg, key, value) => new Promise((resolve, reject) => {
   if (key in bot.confs.get(msg.guild.id)) {
     if (bot.confs.get(msg.guild.id)[key] && bot.confs.get(msg.guild.id)[key].includes(value)) {
-      reject(`Dieser Eintrag befindet sich bereits in dieser Liste.`);
+      reject(`Der Eintrag \`${value}\` befindet sich bereits in der Liste \`${key}\`.`);
       return;
     }
     if (!bot.confs.get(msg.guild.id)[key]) bot.confs.get(msg.guild.id)[key] = [];
@@ -74,13 +81,14 @@ exports.add = (bot, msg, key, value) => new Promise((resolve, reject) => {
   }
 });
 
+
 exports.remove = (bot, msg, key, value) => new Promise((resolve, reject) => { // eslint-disable-line
   if (key in bot.confs.get(msg.guild.id)) {
     if (!bot.confs.get(msg.guild.id)[key]) {
-      reject(`Dieser Eintrag befindet sich nicht in dieser Liste.`);
+      reject(`Die Liste \`${key}\` ist bereits leer.`);
       return;
     } else if (!bot.confs.get(msg.guild.id)[key].includes(value)) {
-      reject(`Dieser Eintrag befindet sich nicht in dieser Liste.`);
+      reject(`Der Eintrag \`${value}\` befindet sich nicht in der Liste \`${key}\`.`);
       return;
     }
     bot.confs.get(msg.guild.id)[key].splice(bot.confs.get(msg.guild.id)[key].indexOf(value), 1);
