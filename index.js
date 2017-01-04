@@ -1,10 +1,10 @@
 const Discord = require('discord.js');
 const fs = require('fs-extra-promise');
-const db = require('sqlite');
 const moment = require('moment');
 moment.locale('de');
 require('moment-duration-format');
 const bot = new Discord.Client();
+bot.db = require('sqlite');
 
 // log stuff
 bot.log = (msg) => { console.log(`[${moment().format('YYYY-MM-DD HH:mm:ss')}]: ${msg}`); }; // eslint-disable-line
@@ -13,13 +13,13 @@ bot.err = (msg) => { console.error(`[${moment().format('YYYY-MM-DD HH:mm:ss')}]:
 // config and confs
 bot.confs = new Discord.Collection();
 bot.config = {};
-db.open('./var/db.sqlite').then(() => {
-  db.get('SELECT * FROM config').then((stuff) => {
+bot.db.open('./var/db.sqlite').then(() => {
+  bot.db.get('SELECT * FROM config').then((stuff) => {
     for (let key in stuff) {
       bot.config[key] = stuff[key];
     }
   });
-  db.each('SELECT * FROM confs').then((guild) => {
+  bot.db.each('SELECT * FROM confs').then((guild) => {
     bot.log(`Lade Gilde ${guild.id} | ${guild.name}`);
     try {
       if (guild.ignChannel) guild.ignChannel = JSON.parse(guild.ignChannel);
@@ -38,6 +38,7 @@ bot.aliases = new Discord.Collection();
 
 // internal
 bot.internal = {};
+bot.internal.config = require('./internal/config.js');
 bot.internal.commands = require('./internal/commands.js');
 bot.internal.commands.init(bot).catch(bot.err);
 bot.internal.checks = require('./internal/checks.js');
