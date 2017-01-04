@@ -5,12 +5,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   if (!params[1]) {
     return msg.channel.sendMessage('Bitte gib einen Schlüssel an, mit welchem diese Operation ausgeführt werden soll.');
   }
-  if (['ignchannels', 'ignusers'].includes(params[1])) {
-    return msg.channel.sendMessage('platzhalternachricht wegen ign array.');
-  }
-  if (params[1] === 'disabledcommands') {
-    return msg.channel.sendMessage('platzhalternachricht wegen disabledCommands');
-  }
   if (params[0] === 'get') {
     return bot.internal.config.get(bot, msg, params[1]).then(v => msg.channel.sendMessage(v));
   }
@@ -24,6 +18,12 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
     return bot.internal.config.reset(bot, msg, params[1]).then(r => msg.channel.sendMessage(r));
   }
   if (params[0] === 'set') {
+    if (['ignchannels', 'ignusers'].includes(params[1])) {
+      return msg.channel.sendMessage('platzhalternachricht wegen ign array.');
+    }
+    if (params[1] === 'disabledcommands') {
+      return msg.channel.sendMessage('platzhalternachricht wegen disabledCommands');
+    }
     if (params[1] === 'id') {
       return msg.channel.sendMessage('Die `id` dieses Servers wird sich wohl kaum verändert haben.');
     }
