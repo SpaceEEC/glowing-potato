@@ -44,7 +44,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
     response.setColor(3447003)
       .setTitle('Folgende Befehle stehen dir zur Verfügung:')
       .setDescription('\u200b')
-      .setAuthor(msg.guild.member(bot.user).displayName, bot.user.avatarURL, bot.user.avatarURL)
       .setThumbnail(bot.user.avatarURL)
       .setFooter(msg.content, msg.author.avatarURL)
       .setTimestamp();
