@@ -48,6 +48,7 @@ bot.internal.commands.init(bot).catch(bot.err);
 bot.internal.checks = require('./internal/checks.js');
 bot.internal.checks.check = new Discord.Collection();
 bot.internal.checks.init(bot).catch(bot.err);
+bot.internal.auth = JSON.parse(fs.readFileSync('./var/auth.json', 'utf8'));
 
 // methods
 bot.methods = {};
@@ -190,4 +191,4 @@ process.on('unhandledRejection', (err) => {
   console.error(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`); // eslint-disable-line
 });
 
-bot.login(JSON.parse(fs.readFileSync('./var/auth.json', 'utf8')).dtoken);
+bot.login(bot.internal.auth.dtoken);
