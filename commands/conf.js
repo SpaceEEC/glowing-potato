@@ -49,7 +49,7 @@ exports.help = {
   name: 'conf',
   shortdescription: 'Konfiguration',
   description: 'Mit diesem Befehl ist es möglich den Bot auf dieser Gilde zu konfigurieren.',
-  usage: '$conf.prefixconf <list|get|set|reset> [Key] (Value)\n$conf.prefixconf menu - Interaktives Menü',
+  usage: '$conf.prefixconf menu - Interaktives Menü\n$conf.prefixconf <list> - Zeigt die Konfiguration an.\n$conf.prefixconf <get|reset> [Key]\n$conf.prefixconf <set> [Key] [Value]',
 };
 
 function menu(bot, msg) {

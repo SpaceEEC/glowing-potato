@@ -34,7 +34,7 @@ exports.conf = {
 
 exports.help = {
   name: 'command',
-  shortdescription: 'Kurzbeschreibung',
-  description: 'Mit diesem Befehl ist es möglich Befehle Gildenweit zu deaktivieren oder zu reaktivieren.',
+  shortdescription: 'Befehlsverwaltung',
+  description: 'Ermöglicht dass gildenweite aktivieren oder deaktiveren von Befehlen.',
   usage: '$conf.prefixcommand <disable|enable> [Befehl]',
 };
