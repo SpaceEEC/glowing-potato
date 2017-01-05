@@ -20,6 +20,7 @@ bot.db.open('./var/db.sqlite').then(() => {
     }
   });
   bot.db.all('SELECT * FROM confs').then((guilds) => {
+    bot.log(`Lade insgesamt ${guilds.length} Gilden.`);
     for (let i = 0; i < guilds.length; i++) {
       const guild = guilds[i];
       bot.log(`Lade Gilde ${guild.id} | ${guild.name}`);
