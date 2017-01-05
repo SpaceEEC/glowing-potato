@@ -12,7 +12,7 @@ exports.conf = {
 
 exports.help = {
   name: 'test',
-  shortdescription: 'Test',
+  shortdescription: 'Oh shit',
   description: 'Ein Testbefehl, welcher das macht wozu er gerade bestimmt ist.',
   usage: '$conf.prefixtest ()/[]/""',
 };
