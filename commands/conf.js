@@ -108,6 +108,10 @@ const sendconf = (bot, msg, embed, options) => new Promise(() => {
           if (options.has(content)) {
             content = options.get(content);
           } else if (!(content in msg.conf)) {
+            embed.fields[1] = {
+              name: 'Diese Eingabe ist ungültig.',
+              value: '\u200b',
+            };
             return sendconf(bot, msg, embed, options);
           }
           return sendvalue(bot, msg, content);
