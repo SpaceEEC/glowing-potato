@@ -1,6 +1,9 @@
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
-  if (!params[0] || !['get', 'set', 'reset'].includes(params[0])) {
+  if (!params[0] || !['get', 'set', 'reset', 'menu'].includes(params[0])) {
     return msg.channel.sendCode('js', require('util').inspect(msg.conf));
+  }
+  if (params[0] === 'menu') {
+    return menu(bot, msg);
   }
   if (!params[1]) {
     return msg.channel.sendMessage('Bitte gib einen Schlüssel an, mit welchem diese Operation ausgeführt werden soll.');
@@ -46,5 +49,123 @@ exports.help = {
   name: 'conf',
   shortdescription: 'Konfiguration',
   description: 'Mit diesem Befehl ist es möglich den Bot auf dieser Gilde zu konfigurieren.',
-  usage: '$conf.prefixconf <list|get|set|reset> [Key] (Value)\n @Role, #Channel',
+  usage: '$conf.prefixconf <list|get|set|reset> [Key] (Value)\n$conf.prefixconf menu - Interaktives Menü',
 };
+
+function menu(bot, msg) {
+  let options = new bot.methods.Collection();
+  let c = 1;
+  for (let key in msg.conf) {
+    if (msg.conf.hasOwnProperty(key)) {
+      if (!['id', 'name', 'ignchannels', 'ignusers', 'disabledcommands'].includes(key)) {
+        options.set(c.toString(), key);
+        c++;
+      }
+    }
+  }
+  let embed = {
+    color: 0x0000FF,
+    title: 'Konfigurationsmenü',
+    description: `Welchen Wert wünscht du zu ändern?\n\n${options
+      .keyArray()
+      .map(k => `${k}. ${options.get(k)} - \`${msg.conf[options.get(k)] ?
+        msg.conf[options.get(k)].length === 0 ?
+          '[]' :
+          msg.conf[options.get(k)] :
+        msg.conf[options.get(k)]}\``)
+      .join('\n')}`,
+    fields: [
+      {
+        name: 'Einfach den Namen oder die Zahl des zu ändernden Objektes angeben.',
+        value: 'Zum Abbrechen `cancel` abgeben.',
+      },
+    ],
+  };
+  sendconf(bot, msg, embed, options);
+}
+
+const sendconf = (bot, msg, embed, options) => new Promise(() => {
+  msg.channel.sendEmbed(embed)
+    .then((mes) => {
+      mes.channel.awaitMessages(function filter(message, collector) { // eslint-disable-line
+        if (message.author.id === this.options.mes.author.id) { // eslint-disable-line
+          return true;
+        } else {
+          return false;
+        }
+      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] })
+        .then(collected => {
+          let content = collected.first().content;
+          mes.delete();
+          collected.first().delete();
+          if (content === 'cancel') {
+            return msg.channel.sendMessage('Vorgang wird abgebrochen...')
+              .then(mesg => {
+                mesg.delete(2000);
+                msg.delete(2000);
+              });
+          }
+          if (options.has(content)) {
+            content = options.get(content);
+          } else if (!(content in msg.conf)) {
+            return sendconf(bot, msg, embed, options);
+          }
+          return sendvalue(bot, msg, content);
+        }).catch(() => {
+          msg.delete();
+          mes.delete();
+        });
+    });
+});
+
+const sendvalue = (bot, msg, key) => new Promise(() => {
+  bot.internal.config.get(bot, msg, key)
+    .then(v => msg.channel.sendMessage(v, {
+      embed: {
+        color: 0x0000ff,
+        fields: [{
+          name: 'Bitte einen neuen Wert für diesen Schlüssel eingeben.',
+          value: 'Je nach Schlüssel sind ein Text oder die ID (@Mentions oder #Channel sind auch möglich) gültige Werte.' + // eslint-disable-line
+          '\nZum Löschen `reset` eingeben.' +
+          '\nZum Abbrechen `cancel` eingeben.',
+        }],
+      },
+    }).then(mes => {
+      mes.channel.awaitMessages(function filter(message, collector) { // eslint-disable-line
+        if (message.author.id === this.options.mes.author.id) { // eslint-disable-line
+          return true;
+        } else {
+          return false;
+        }
+      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] })
+        .then(collected => {
+          let content = collected.first().content;
+          mes.delete();
+          if (content === 'cancel') {
+            return msg.channel.sendMessage('Vorgang wird abgebrochen...')
+              .then(mesg => {
+                collected.first().delete(2000);
+                mesg.delete(2000);
+                msg.delete(2000);
+              });
+          } else if (content === 'reset') {
+            return bot.internal.config.reset(bot, collected.first(), key).then(r => {
+              msg.channel.sendMessage(r)
+                .then(mesg => mesg.delete(2000)); // eslint-disable-line
+              msg.delete();
+              collected.first().delete();
+            });
+          }
+          return bot.internal.config.set(bot, collected.first(), key, collected.first().content.split(' ')).then(r => {
+            msg.channel.sendMessage(r)
+              .then(mesg => mesg.delete(2000)); // eslint-disable-line
+            msg.delete();
+            collected.first().delete();
+          });
+        }).catch(() => {
+          msg.delete();
+          mes.delete();
+        });
+    })
+    );
+});
