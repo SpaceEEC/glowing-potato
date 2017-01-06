@@ -77,6 +77,7 @@ bot.on('message', (msg) => {
   }
   if (cmd) {
     msg.conf = conf;
+    msg.cmd = command;
     bot.internal.checks.run(bot, msg, cmd)
       .then(() => {
         cmd.run(bot, msg, params);
