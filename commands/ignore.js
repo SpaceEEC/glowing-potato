@@ -1,12 +1,52 @@
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
   if (!params[0]) {
-    return msg.channel.sendMessage('Bitte gib einen Channel oder Nutzer an!');
+    return msg.channel.sendEmbed({
+      description: 'Gib den zu Ignorierenden Nutzer/Channel per @Mention, #Channel oder per ID an.',
+      color: msg.member.highestRole.color,
+      fields: [{
+        name: '\u200b',
+        value: 'Um diese Anfrage abzubrechen gib `cancel` ein oder lass einfach 30 Sekunden verstreichen.',
+      }],
+    }).then(message => {
+      msg.channel.awaitMessages(function filter(message, collector) { // eslint-disable-line
+        if (message.author.id === this.options.mes.author.id) { // eslint-disable-line
+          return true;
+        } else {
+          return false;
+        }
+      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] })
+        .then(collected => {
+          let content = collected.first().content;
+          message.delete();
+          if (content === 'cancel') {
+            bot.log('cancel');
+            msg.delete();
+            return collected.first().delete();
+          } else {
+            bot.log('else');
+            collected.first().conf = msg.conf;
+            return ignore(bot, collected.first(), collected.first().content.split(' '));
+          }
+        }).catch((error) => {
+          if (!error.size) {
+            bot.log('catch');
+            msg.delete();
+            message.delete();
+            bot.err(error.stack);
+          }
+        });
+    });
   }
   if (params[0] === 'channels') {
     return bot.internal.config.get(bot, msg, 'ignchannels').then(v => msg.channel.sendMessage(v));
   } else if (params[0] === 'users') {
     return bot.internal.config.get(bot, msg, 'ignusers').then(v => msg.channel.sendMessage(v));
   }
+  ignore(bot, msg, params);
+});
+
+
+function ignore(bot, msg, params) {
   let type;
   let value;
   if (msg.mentions.users.size !== 0) {
@@ -27,7 +67,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   if (type === 'user') {
     if (value.bot) {
       return msg.channel
-      .sendMessage('Bots können nicht auf die Ignorelist gesetzt werden, da sie ohnehin ignoriert werden.');
+        .sendMessage('Bots können nicht auf die Ignorelist gesetzt werden, da sie ohnehin ignoriert werden.');
     } else if (value.id === msg.guild.owner.id) {
       return msg.channel.sendMessage('Den Owner der Gilde ist nicht auf die Ignorelist zu setzen.');
     } else if (value.id === msg.author.id) {
@@ -40,7 +80,8 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       return bot.internal.config.remove(bot, msg, 'ignusers', value.id)
         .then(() => {
           msg.channel
-          .sendMessage(`Der Nutzer ${bot.users.get(value.id)} wurde für diese Gilde von der Ignorlist gestrichen`);
+            .sendMessage(
+            `Der Nutzer ${bot.users.get(value.id)} wird jetzt nicht mehr in dieser Gilde von diesem Bot ignoriert.`);
         })
         .catch((e) => {
           msg.channel.sendMessage(e);
@@ -50,7 +91,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       return bot.internal.config.add(bot, msg, 'ignusers', value.id)
         .then(() => {
           msg.channel
-          .sendMessage(`Der Nutzer ${bot.users.get(value.id)} wurde für diese Gilde auf die Ignorlist gesetzt`);
+            .sendMessage(`Der Nutzer ${bot.users.get(value.id)} wird jetzt in dieser Gilde von diesem Bot ignoriert.`);
         })
         .catch((e) => {
           msg.channel.sendMessage(e);
@@ -76,8 +117,11 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
           msg.channel.sendMessage(e);
         });
     }
+  } else {
+    return bot.users.random();
   }
-});
+}
+
 
 exports.conf = {
   group: 'Admincommands',
@@ -86,6 +130,7 @@ exports.conf = {
   aliases: ['ign'],
   permLevel: 10,
 };
+
 
 exports.help = {
   name: 'ignore',
