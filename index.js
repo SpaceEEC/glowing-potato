@@ -49,6 +49,7 @@ bot.internal.checks = require('./internal/checks.js');
 bot.internal.checks.check = new Discord.Collection();
 bot.internal.checks.init(bot).catch(bot.err);
 bot.internal.auth = JSON.parse(fs.readFileSync('./var/auth.json', 'utf8'));
+bot.internal.quotes = new Discord.Collection();
 
 // methods
 bot.methods = {};
@@ -109,7 +110,12 @@ bot.on('message', (msg) => {
 \`\`\`js\n${response_typeof}
 \`\`\`
 
-Ausgeführt in: \`${new Date().getTime() - time}\`ms`);
+Ausgeführt in: \`${new Date().getTime() - time}\`ms`).catch((e) => {
+  msg.channel.sendMessage(`Fehler beim Senden der Antwort:
+\`\`\`js
+${e.stack ? e.stack : e}
+\`\`\``);
+});
         return;
       } catch (e) {
         msg.channel.sendMessage(`\`E-ROHR\`
@@ -130,6 +136,7 @@ Ausgeführt in: \`${new Date().getTime() - time}\`ms`);
 
 bot.once('ready', () => {
   bot.config.prefixMention = new RegExp(`^<@!?${bot.user.id}>`);
+  bot.commands.get('quote').init(bot);
   bot.log('ready');
   /* bot.fetchApplication().then(coa => {
     bot.channels
