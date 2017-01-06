@@ -14,7 +14,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
             stuff[cmd.conf.group] = temp;
           }
         });
-        delete stuff.restricted;
       }
     } else {
       bot.commands.forEach((item, key, mapObj) => { // eslint-disable-line
@@ -28,18 +27,18 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
               temp.push(`${cmd.help.name}\` - ${cmd.help.shortdescription}`);
               stuff[cmd.conf.group] = temp;
             }
-          } else if (cmd.conf.group !== 'restricted') {
+          } else if (cmd.conf.group !== 'abgespaced') {
             if (!notall) {
               notall = true;
             }
           }
         }
       });
-      if (msg.permlvl !== 12) {
-        delete stuff.restricted;
-      }
     }
-    // Löschen der 'restricted' Befehle, cause Reasons.
+    if (msg.permlvl !== 12) {
+      delete stuff.abgespaced;
+    }
+    // Löschen der 'abgespaced' Befehle, cause Reasons.
     const response = new bot.methods.Embed();
     response.setColor(3447003)
       .setTitle('Folgende Befehle stehen dir zur Verfügung:')
