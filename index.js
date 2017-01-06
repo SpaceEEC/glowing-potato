@@ -147,6 +147,59 @@ Walte über
 });
 
 
+bot.on('guildMemberAdd', (member) => {
+  if (member.user.id === bot.user.id) return;
+  const conf = bot.confs.get(member.guild.id).conf;
+  if (!conf.joinmsg) return;
+  const response = conf.joinmsg
+    .split(':user:').join(member)
+    .split(':server:').join(member.guild.name); // eslint-disable-line
+  if (conf.logchannel) {
+    if (!bot.channels.get(conf.logChannel)
+      .permissionsFor(member.guild.member(bot.user))
+      .hasPermission('SEND_MESSAGES')) return;
+    member.guild.channels.get(conf.logchannel).sendMessage(response).catch(e => {
+      bot.err(`Fehler beim Schreiben in logchannel(${conf.logchannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`); // eslint-disable-line
+    });
+  }
+  if (conf.joinleavechannel) {
+    if (!bot.channels.get(conf.joinleavechannel)
+      .permissionsFor(member.guild.member(bot.user))
+      .hasPermission('SEND_MESSAGES')) return;
+    member.guild.channels.get(conf.joinleavechannel).sendMessage(response).catch(e => {
+      bot.err(`Fehler beim Schreiben in joinleavechannel(${conf.joinleavechannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`); // eslint-disable-line
+    });
+  }
+});
+
+
+bot.on('guildMemberRemove', (member) => {
+  if (member.user.id === bot.user.id) return;
+  const conf = bot.confs.get(member.guild.id).conf;
+  if (!conf.leavemsg) return;
+  const response = conf.leavemsg
+    .split(':user:').join(member)
+    .split(':server:').join(member.guild.name); // eslint-disable-line
+  if (conf.logchannel) {
+    if (!bot.channels.get(conf.logChannel)
+      .permissionsFor(member.guild.member(bot.user))
+      .hasPermission('SEND_MESSAGES')) return;
+    member.guild.channels.get(conf.logchannel).sendMessage(response).catch(e => {
+      bot.err(`Fehler beim Schreiben in logchannel(${conf.logchannel}) auf (${member.guild.id}): ${member.guild.name}
+${e.stack ? e.stack : e}`);
+    });
+  }
+  if (conf.joinleavechannel) {
+    if (!bot.channels.get(conf.joinleavechannel)
+      .permissionsFor(member.guild.member(bot.user))
+      .hasPermission('SEND_MESSAGES')) return;
+    member.guild.channels.get(conf.joinleavechannel).sendMessage(response).catch(e => {
+      bot.err(`Fehler beim Schreiben in joinleavechannel(${conf.joinleavechannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`); // eslint-disable-line
+    });
+  }
+});
+
+
 bot.on('voiceStateUpdate', (oldMember, newMember) => {
   const conf = bot.confs.get(oldMember.guild.id);
   if (!conf.vlogChannel) return;
@@ -159,15 +212,15 @@ bot.on('voiceStateUpdate', (oldMember, newMember) => {
     // leave
     if (newMember.voiceChannel === undefined) {
       clr = 0xFF4500;
-      desc = `[${moment().format('YYYY-MM-DD HH:mm:ss')}]: ${newMember.user.toString()} hat die Verbindung aus ${oldMember.voiceChannel.name} getrennt.`; // eslint-disable-line
+      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.user.toString()} hat die Verbindung aus ${oldMember.voiceChannel.name} getrennt.`; // eslint-disable-line
     } else if (oldMember.voiceChannel === undefined) {
       // join
       clr = 0x7CFC00;
-      desc = `[${moment().format('YYYY-MM-DD HH:mm:ss')}]: ${newMember.user.toString()} hat sich in ${newMember.voiceChannel.name} eingeloggt.`; // eslint-disable-line
+      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.user.toString()} hat sich in ${newMember.voiceChannel.name} eingeloggt.`; // eslint-disable-line
     } else {
       // move
       clr = 3447003;
-      desc = `[${moment().format('YYYY-MM-DD HH:mm:ss')}]: ${newMember.user.toString()} ging von ${oldMember.voiceChannel.name} zu ${newMember.voiceChannel.name}`; // eslint-disable-line
+      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.user.toString()} ging von ${oldMember.voiceChannel.name} zu ${newMember.voiceChannel.name}`; // eslint-disable-line
     }
     bot.channels.get(conf.vlogChannel).sendEmbed({
       color: clr,
@@ -179,6 +232,24 @@ bot.on('voiceStateUpdate', (oldMember, newMember) => {
       description: desc,
     });
   }
+});
+
+
+bot.on('guildCreate', (guild) => {
+  const newguild = bot.confs.get('default');
+  newguild.id = guild.id;
+  newguild.name = guild.name;
+  bot.confs.set(newguild.id, newguild);
+  bot.db.run('INSERT INTO confs(id,name,prefix,modrole,adminrole,logchannel,anchannel,vlogchannel,joinmsg,leavemsg)' +
+    `VALUES (\`${newguild.id}\`,\`${newguild.name}\`,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);`);
+  bot.log(`Gilde (${guild.id}): ${guild.name} beigetreten!`);
+});
+
+
+bot.on('guildDelete', (guild) => {
+  bot.confs.get(guild.id).delete();
+  bot.db.run(`DELETE FROM confs WHERE id=${guild.id}`);
+  bot.log(`Gilde (${guild.id}): ${guild.name} verlassen!`);
 });
 
 
