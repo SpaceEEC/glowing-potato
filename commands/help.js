@@ -7,10 +7,11 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
         bot.commands.forEach((item, key, mapObj) => { // eslint-disable-line
           const cmd = bot.commands.get(key);
           if (!stuff[cmd.conf.group]) {
-            stuff[cmd.conf.group] = [`${cmd.help.name}\` - ${cmd.help.shortdescription}`];
+            stuff[cmd.conf.group] = [`${cmd.help.name}\` - ${cmd.help.shortdescription
+              .split('$conf.prefix').join(msg.conf.prefix)}`];
           } else {
             let temp = stuff[cmd.conf.group];
-            temp.push(`${cmd.help.name}\` - ${cmd.help.shortdescription}`);
+            temp.push(`${cmd.help.name}\` - ${cmd.help.shortdescription.split('$conf.prefix').join(msg.conf.prefix)}`);
             stuff[cmd.conf.group] = temp;
           }
         });
@@ -21,10 +22,12 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
         if (!msg.conf.disabledcommands.includes(cmd.help.name)) {
           if (msg.permlvl > parseInt(cmd.conf.permLevel) - 1) {
             if (!stuff[cmd.conf.group]) {
-              stuff[cmd.conf.group] = [`${cmd.help.name}\` - ${cmd.help.shortdescription}`];
+              stuff[cmd.conf.group] = [`${cmd.help.name}\` - ${cmd.help.shortdescription
+                .split('$conf.prefix').join(msg.conf.prefix)}`];
             } else {
               let temp = stuff[cmd.conf.group];
-              temp.push(`${cmd.help.name}\` - ${cmd.help.shortdescription}`);
+              temp.push(`${cmd.help.name}\` - ${cmd.help.shortdescription
+                .split('$conf.prefix').join(msg.conf.prefix)}`);
               stuff[cmd.conf.group] = temp;
             }
           } else if (cmd.conf.group !== 'abgespaced') {

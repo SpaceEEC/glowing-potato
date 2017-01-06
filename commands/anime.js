@@ -6,7 +6,7 @@ exports.run = (bot, msg, params = []) => new Promise(() => {
       title: 'Ein kleines Missgeschick',
       description: `\u200b
 Du hast vergessen mir deine Suchanfrage mitzugeben.
-Soll ich jetzt den ganzen Weg zum Server, ohne mindestens einen Suchbegriff, gehen?
+Soll ich jetzt den ganzen Weg zum Server, ohne mindestens einen Suchbegriff zu haben, gehen?
 Ich denke nicht. 👀`,
       fields: [
         {
@@ -263,7 +263,7 @@ exports.conf = {
 exports.help = {
   name: 'anime',
   description: 'Gibt infos über den gesuchten Anime oder Manga.',
-  shortdescription: 'oder auch `manga`',
+  shortdescription: 'oder auch `$conf.prefixmanga`',
   usage: '$conf.prefixanime [Suchbegriff(e)]' +
   '\n$conf.prefixmanga [Suchbegriff(e)]',
 };
