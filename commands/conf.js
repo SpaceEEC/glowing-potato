@@ -1,9 +1,9 @@
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
-  if (!params[0] || !['get', 'set', 'reset', 'menu'].includes(params[0])) {
-    return msg.channel.sendCode('js', require('util').inspect(msg.conf));
-  }
-  if (params[0] === 'menu') {
+  if (!params[0] || !['get', 'set', 'reset', 'list'].includes(params[0])) {
     return menu(bot, msg);
+  }
+  if (params[0] === 'list') {
+    return msg.channel.sendCode('js', require('util').inspect(msg.conf));
   }
   if (!params[1]) {
     return msg.channel.sendMessage('Bitte gib einen Schlüssel an, mit welchem diese Operation ausgeführt werden soll.');
