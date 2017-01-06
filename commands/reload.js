@@ -3,7 +3,7 @@ const fs = require('fs-extra-promise');
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
   if (!params[0]) {
     return msg.channel.sendEmbed(new bot.methods.Embed()
-      .setColor(0xff0000)
+      .setColor(msg.member.highestRole.color)
       .setDescription('Gib die Befehle die du neu Laden möchtest ein, oder `all` für alle.')
       .addField('\u200b',
       'Diese Anfrage wird in 30 Sekunden oder bei Eingabe von `cancel` abgebrochen.')
