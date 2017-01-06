@@ -53,7 +53,7 @@ Ich denke nicht. 👀`,
 
 
 function authcheck(bot, msg, params) {
-  if (bot.internal.auth.anilist.expires <= Math.floor(Date.now() / 1000) + 300) {
+  if (bot.config.ani_expires <= Math.floor(Date.now() / 1000) + 300) {
     return msg.channel.sendEmbed(
       new bot.methods.Embed()
         .setColor(0xffff00)
@@ -75,8 +75,10 @@ function authcheck(bot, msg, params) {
               });
               bot.err(require('util').inspect(err));
             }
-            bot.internal.auth.anilist.token = res.body.access_token;
-            bot.internal.auth.anilist.expires = res.body.expires;
+            bot.config.ani_token = res.body.access_token;
+            bot.config.ani_expires = res.body.expires;
+            bot.db.run("UPDATE `config` SET `ani_expires`=? WHERE `_rowid_`='1';", bot.config.ani_expires);
+            bot.db.run("UPDATE `config` SET `ani_token`=? WHERE `_rowid_`='1'", bot.config.ani_token);
             fs.writeFile('./var/auth.json', JSON.stringify(bot.internal.auth, null, 2), 'utf-8');
             message.edit('', {
               embed: new bot.methods.Embed()
@@ -95,7 +97,7 @@ function authcheck(bot, msg, params) {
 
 
 function query(search, msg, bot) {
-  request.get(`https://anilist.co/api/${msg.cmd}/search/${search}?access_token=${bot.internal.auth.anilist.token}`)
+  request.get(`https://anilist.co/api/${msg.cmd}/search/${search}?access_token=${bot.config.ani_token}`)
     .send(null)
     .set('Content-Type', 'application/json')
     .end((err, res) => { // eslint-disable-line
