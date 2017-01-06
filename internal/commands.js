@@ -25,8 +25,8 @@ exports.init = (bot) => new Promise((resolve, reject) => { // eslint-disable-lin
 
 exports.reload = (bot, command) => new Promise((resolve, reject) => { // eslint-disable-line
   try {
-    delete require.cache[require.resolve(`./commands/${command}`)];
-    const cmd = require(`./commands/${command}`);
+    delete require.cache[require.resolve(`../commands/${command}`)];
+    const cmd = require(`../commands/${command}`);
     bot.commands.delete(command);
     bot.aliases.forEach((cmd2, alias) => {
       if (cmd2 === command) bot.aliases.delete(alias);
