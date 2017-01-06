@@ -1,0 +1,167 @@
+const request = require('superagent');
+
+exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+  // Validating
+  if (!params[0]) {
+    return msg.channel.sendEmbed(new bot.methods.Embed()
+      .setColor(msg.member.highestRole.color)
+      .setDescription('Du hast vergessen die Tags anzugeben.\n\nDas war absicht, oder? 👀' +
+      '\n\nSchreibe sie in den Chat und du bekommst dein Bild.')
+      .addField('\u200b', 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um abzubrechen.')
+    ).then((mes) => {
+      msg.channel.awaitMessages(function filter(input, collector) { // eslint-disable-line
+        if (input.author.id === this.options.mes.author.id) { // eslint-disable-line
+          return true;
+        } else {
+          return false;
+        }
+      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] }
+      ).then(collected => {
+        const input = collected.first().content;
+        mes.delete();
+        if (input === 'cancel') {
+          collected.first().delete();
+          msg.delete();
+        } else {
+          prepare(bot, msg, input.split(' '));
+        }
+      }).catch(err => {
+        if (!err.size) {
+          msg.delete();
+          mes.delete();
+        } else {
+          bot.err(err.stack ? err.stack : err);
+        }
+      });
+    });
+  } else {
+    prepare(bot, msg, params);
+  }
+});
+
+function prepare(bot, msg, params) {
+  if (msg.cmd === 'donmai' && typeof params[2] !== 'undefined') {
+    return msg.channel.sendEmbed(new bot.methods.Embed()
+      .setColor(0xff0000)
+      .setDescription('Donmai erlaubt nur `2` Tags.\nKonachan hingegen erlaubt `5`.')
+    );
+  }
+  if (msg.cmd === 'konachan' && typeof params[4] !== 'undefined') {
+    return msg.channel.sendEmbed(new bot.methods.Embed()
+      .setColor(0xff0000)
+      .setDescription('Konachan erlaubt nur `5` Tags.')
+    );
+  }
+
+  // Regex-magic
+  if (!params.join('+').match(/^[a-z0-9_=()!-:.]+$/i)) {
+    return msg.channel.sendEmbed(new bot.methods.Embed()
+      .setColor(0xff0000)
+      .setDescription('Nicht erlaubtes Zeichen in der Suche!')
+      .addField('Erlaubte Zeichen:', 'A-z 0-9 _ = () ! - : .', true)
+      .addField('Fehlendes Zeichen?', `${bot.users.get('218348062828003328').toString()} anschreiben`, true)
+    );
+  }
+  //
+  if (msg.cmd === 'donmai') {
+    return donmai(bot, msg, params);
+  } else if (msg.cmd === 'konachan') {
+    return konachan(bot, msg, params);
+  } else {
+    return msg.channel.sendMessage('Das hier sollte eigentlich nie passieren, aber: `${params[0]}` ');
+  }
+}
+
+function konachan(bot, msg, params = []) {
+  request.get(`http://konachan.com/post.json?tags=${`${params.join('+')}+rating:s&limit=100`}`)
+    .send(null)
+    .set('Accept', 'application/json')
+    .end((err, res) => { // eslint-disable-line
+      if (Array.from(res.body).length === 0) {
+        return msg.channel.sendEmbed({
+          color: 0xFFFF00,
+          author: {
+            name: 'konachan.net',
+            url: 'http://konachan.net/',
+            icon_url: 'http://konachan.net/favicon.ico',
+          },
+          fields: [
+            {
+              name: 'Keine Ergebnisse',
+              value: 'Vielleicht einen Tippfehler gemacht?',
+            },
+            {
+              name: 'Suche:',
+              value: `[Link](http://konachan.net/post?tags=${params.join('+')})`,
+            },
+          ],
+        });
+      }
+      const image = res.body[~~(Math.random() * (res.body.length - 0)) + 0];
+      return msg.channel.sendEmbed({
+        description: `[Source](http://konachan.net/post/show/${image.id})`,
+        color: msg.guild.member(msg.author).highestRole.color,
+        type: 'image',
+        image: {
+          url: `http:${image.sample_url}`,
+        },
+      }).catch((e) => {
+        msg.channel.sendCode(require('util').inspect(image));
+        return msg.channel.sendCode('js', e.stack);
+      });
+    });
+}
+
+function donmai(bot, msg, params = []) {
+  request.get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${params.join('+')}`)
+    .send(null)
+    .set('Accept', 'application/json')
+    .end((err, res) => { // eslint-disable-line
+      if (res.body.success === false) return msg.channel.sendMessage(`Der Server meldet:\n\`${res.body.message}\``);
+      if (res.body.length === 0) {
+        return msg.channel.sendEmbed({
+          color: 0xFFFF00,
+          author: {
+            name: 'safebooru.donmai.us',
+            url: 'http://safebooru.donmai.us/',
+            icon_url: 'http://safebooru.donmai.us/favicon.ico',
+          },
+          fields: [
+            {
+              name: 'Keine Ergebnisse',
+              value: 'Vielleicht einen Tippfehler gemacht?',
+            },
+            {
+              name: 'Suche:',
+              value: `[Link](http://safebooru.donmai.us/posts/?tags=${params.join('+')})`,
+            },
+          ],
+        });
+      }
+      return msg.channel.sendEmbed({
+        description: `[Source](http://safebooru.donmai.us/posts/${res.body[0].id}/)`,
+        color: msg.guild.member(msg.author).highestRole.color,
+        type: 'image',
+        image: {
+          url: `http://safebooru.donmai.us/${res.body[0].file_url}`,
+        },
+      });
+    });
+}
+exports.conf = {
+  group: 'Weebstuff',
+  spamProtection: false,
+  enabled: true,
+  aliases: ['donmai'],
+  permLevel: 1,
+};
+exports.help = {
+  name: 'konachan',
+  description: 'Über diesen Befehl kann von safebooru.donmai.us/konachan.net ein zufälliges (durch Tags spezifiziertes) Bild abgerufen werden.', // eslint-disable-line
+  shortdescription: 'oder auch `$conf.prefixdonmai`',
+  usage: '`$conf.prefixkonachan [tags mit Leerzeichen trennen.]' +
+  '\n$conf.prefixdonmai [tags mit Leerzeichen trennen]`' +
+  '\nAnwendungsbeispiel:' +
+  '\n`$conf.prefixkonachan polychromatic white`' +
+  '\n`$conf.prefixbild donmai touhou long_hair`',
+};
