@@ -28,7 +28,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
             name: '❯ Clientseitig',
             value: `• Avatar: ${member.avatarURL ? `[Link](${member.avatarURL})` : 'Kein Avatar'}
 • Account erstellt am:
-${moment(member.createdAt).format('DD-MM-YYYY')}
+${moment(member.createdAt).format('DD.MM.YYYY')}
 • Status: \`${member.presence.status}\`
 • Spiel: \n\`${member.presence.game ? member.presence.game.name : 'Kein Spiel'}\``,
             inline: true,
@@ -36,7 +36,7 @@ ${moment(member.createdAt).format('DD-MM-YYYY')}
           {
             name: '❯ Serverseitig:',
             value: `${gmember.nickname ? `• Nickname: \`${gmember.nickname}\`` : ''}
-• Beigetreten:\n${moment(gmember.joinedAt).format('DD-MM-YYYY')}
+• Beigetreten:\n${moment(gmember.joinedAt).format('DD.MM.YYYY')}
 ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
             inline: true,
           },
