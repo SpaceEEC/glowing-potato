@@ -1,5 +1,5 @@
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
-  if (!params[0] || !['get', 'set', 'reset', 'list'].includes(params[0])) {
+  if (!params[0] || !['get', 'set', 'reset', 'list', 'show'].includes(params[0])) {
     return menu(bot, msg);
   }
   if (params[0] === 'list') {
@@ -50,7 +50,7 @@ exports.help = {
   shortdescription: 'Konfiguration',
   description: 'Mit diesem Befehl ist es möglich den Bot auf dieser Gilde zu konfigurieren.',
   usage: '$conf.prefixconf menu - Interaktives Menü' +
-  '\n$conf.prefixconf <list> - Zeigt die Konfiguration an.' +
+  '\n$conf.prefixconf <list|show> - Zeigt die Konfiguration an.' +
   '\n$conf.prefixconf <get|reset> [Key]' +
   '\n$conf.prefixconf <set> [Key] [Value]',
 };
@@ -80,7 +80,7 @@ function menu(bot, msg) {
     fields: [
       {
         name: 'Einfach den Namen oder die Zahl des zu ändernden Objektes angeben.',
-        value: 'Zum Abbrechen `cancel` abgeben.',
+        value: 'Zum Abbrechen `cancel` abgeben, oder einfach `30` Sekunden warten.',
       },
     ],
   };
