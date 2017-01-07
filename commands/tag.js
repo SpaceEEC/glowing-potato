@@ -259,15 +259,6 @@ function blacklist(msg, rsp) {
 }
 
 
-exports.init = (bot) => new Promise(() => { // eslint-disable-line
-  bot.db.all(`SELECT * FROM tags`).then(rows => {
-    for (let i = 0; i < rows.length; i++) {
-      bot.internal.tags.set(`${rows[i].guild}|${rows[i].name}`, rows[i]);
-    }
-  });
-});
-
-
 exports.conf = {
   group: 'Allgemeines',
   spamProtection: false,
