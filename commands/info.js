@@ -76,7 +76,7 @@ ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
         },
         {
           name: '❯ spacebot-Version:',
-          value: `• v${package.version} (glowing-potato)`,
+          value: `• v${package.version} ([glowing-potato](http://puu.sh/teDYW/d6f9555fbd.png))`,
           inline: true,
         },
         {
