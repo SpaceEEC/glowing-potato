@@ -50,6 +50,7 @@ bot.internal.checks.check = new Discord.Collection();
 bot.internal.checks.init(bot).catch(bot.err);
 bot.internal.auth = JSON.parse(fs.readFileSync('./var/auth.json', 'utf8'));
 bot.internal.quotes = new Discord.Collection();
+bot.internal.tags = new Discord.Collection();
 
 // methods
 bot.methods = {};
@@ -137,6 +138,7 @@ Ausgeführt in: \`${new Date().getTime() - time}\`ms`);
 bot.once('ready', () => {
   bot.config.prefixMention = new RegExp(`^<@!?${bot.user.id}>`);
   bot.commands.get('quote').init(bot);
+  bot.commands.get('tag').init(bot);
   bot.log('ready');
   /* bot.fetchApplication().then(coa => {
     bot.channels
