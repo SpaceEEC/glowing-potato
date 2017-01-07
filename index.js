@@ -14,6 +14,7 @@ bot.err = (msg) => { console.error(`[${moment().format('YYYY-MM-DD HH:mm:ss')}]:
 bot.confs = new Discord.Collection();
 bot.config = {};
 bot.db.open('./var/db.sqlite').then(() => {
+  bot.internal.tag.init(bot).catch(bot.err);
   bot.db.get('SELECT * FROM config').then((stuff) => {
     for (let key in stuff) {
       bot.config[key] = stuff[key];
@@ -36,6 +37,11 @@ bot.db.open('./var/db.sqlite').then(() => {
   });
 });
 
+// methods
+bot.methods = {};
+bot.methods.Embed = Discord.RichEmbed;
+bot.methods.Collection = Discord.Collection;
+
 // commands and aliases
 bot.commands = new Discord.Collection();
 bot.aliases = new Discord.Collection();
@@ -50,14 +56,11 @@ bot.internal.checks.check = new Discord.Collection();
 bot.internal.checks.init(bot).catch(bot.err);
 bot.internal.auth = JSON.parse(fs.readFileSync('./var/auth.json', 'utf8'));
 bot.internal.quotes = new Discord.Collection();
-bot.internal.tags = new Discord.Collection();
-
-// methods
-bot.methods = {};
-bot.methods.Embed = Discord.RichEmbed;
-bot.methods.Collection = Discord.Collection;
-
-
+// bot.internal.quote = require('./insternal/quotes.js');
+// init for quotes in bot.db.open().then()
+bot.internal.tags;
+bot.internal.tag = require('./internal/tags.js');
+// init for tags in bot.db.open().then()
 bot.on('message', (msg) => {
   if (msg.author.bot) return;
   if (msg.channel.type !== 'text') return;
@@ -138,7 +141,6 @@ Ausgeführt in: \`${new Date().getTime() - time}\`ms`);
 bot.once('ready', () => {
   bot.config.prefixMention = new RegExp(`^<@!?${bot.user.id}>`);
   bot.commands.get('quote').init(bot);
-  bot.commands.get('tag').init(bot);
   bot.log('ready');
   /* bot.fetchApplication().then(coa => {
     bot.channels
