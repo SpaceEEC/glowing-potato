@@ -7,7 +7,7 @@ exports.init = (bot) => new Promise((resolve, reject) => { // eslint-disable-lin
         bot.log(`Lade insgesamt ${files.length} Befehle.`);
         files.forEach(f => {
           const props = require(`../commands/${f}`);
-          bot.log(`Lade Befehl: ${props.help.name}`);
+          // bot.log(`Lade Befehl: ${props.help.name}`); // spam
           bot.commands.set(props.help.name, props);
           props.conf.aliases.forEach(alias => {
             bot.aliases.set(alias, props.help.name);
