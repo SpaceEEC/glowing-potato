@@ -1,11 +1,12 @@
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+  // This whole file is a mess. >.<
   // Validating
   if (params[0] && bot.internal.tags.has(`${msg.guild.id}|${params[0]}`)) {
     return msg.channel.sendMessage(bot.internal.tags.get(`${msg.guild.id}|${params[0]}`).response);
   }
-  if (!params[0]) {
+  if (!params[0] || params[0] === 'list') {
     params[0] = 'list';
-  } else if (params[0] !== 'list' && params[0] !== 'add' && params[0] !== 'remove' && params[0] !== 'edit') {
+  } else if (params[0] !== 'add' && params[0] !== 'remove' && params[0] !== 'edit') {
     let response = ['http://puu.sh/t1PqI/026da4b79f.jpg',
       'https://memegen.link/kermit/i-don\'t-know-that-tag/but-that\'s-none-of-my-business.jpg',
       'https://memegen.link/afraid/i-don\'t-know-this-tag/and-at-this-point-i\'m-too-afraid-to-ask.jpg',
@@ -22,7 +23,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       },
     });
   } else if (!params[1]) {
-    // add or remove
+    // add, edit or remove
     return msg.channel.sendEmbed(new bot.methods.Embed()
       .setColor(0xff0000)
       .addField('Fehlender Parameter',
@@ -31,6 +32,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       bot.user.avatarURL)
     );
   } else if (params[0] !== 'remove' && !params[2]) {
+    // everything except removes, have to have a response
     return msg.channel.sendEmbed(new bot.methods.Embed()
       .setColor(0xff0000)
       .addField('Fehlender Parameter',
@@ -40,6 +42,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   }
 
   if (params[0] === 'add') {
+    // checking permissions
     if (exports.conf.createLevel > msg.permlvl) {
       return msg.channel.sendEmbed(new bot.methods.Embed()
         .setColor(0xff0000)
@@ -52,10 +55,8 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
         msg.author.avatarURL)
       );
     }
-    if (params[1] === 'add' ||
-      params[1] === 'edit' ||
-      params[1] === 'remove' ||
-      params[1] === 'list') {
+    if (['add', 'edit', 'remove', 'list'].includes(params[1])) {
+      // reserved words used for a tag?
       return msg.channel.sendEmbed(new bot.methods.Embed()
         .setColor(0xff0000)
         .addField('Ungültiger Tagname',
@@ -65,7 +66,8 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
         msg.author.avatarURL)
       );
     }
-    if (bot.internal.tags.has(`${msg.guild.id}|${params[0]}`)) {
+    if (bot.internal.tags.has(`${msg.guild.id}|${params[1]}`)) {
+      // tag already created?
       return msg.channel.sendEmbed(new bot.methods.Embed()
         .setColor(0xff0000)
         .addField('Bereits existent',
@@ -76,6 +78,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       );
     }
     if (!blacklist(msg, params.slice(2).join(' '))) {
+      // bad hoster for files?
       return msg.channel.sendEmbed(new bot.methods.Embed()
         .setColor(0xff0000)
         .addField('Nicht hotlinkbar',
@@ -85,26 +88,34 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
         msg.author.avatarURL)
       );
     }
-    bot.db.run('INSERT INTO "tags" (guild, name, response, author) VALUES (?, ?, ?, ?)',
-      [msg.guild.id, params[1].toLowerCase(), params.slice(2).join(' '), msg.author.id]);
-    bot.internal.tags
-      .set(`${msg.guild.id}|${params[1].toLowerCase()}`,
-      {
-        guild: msg.guild.id,
-        name: params[1].toLowerCase(),
-        response: params.slice(2).join(' '),
-        author: msg.author.id,
+    // creating tag
+    return bot.internal.tag.add(bot, msg.guild.id, params[1], params.slice(2).join(' '), msg.author.id)
+      // success
+      .then(() => {
+        msg.channel.sendEmbed(new bot.methods.Embed()
+          .setColor(0x00ff00)
+          .addField('Erfolgreich erstellt',
+          `Tag: ${params[1]}\nResponse: ${params.slice(2).join(' ')}`)
+          .setThumbnail(bot.user.avatarURL)
+          .setFooter(`${msg.author.username}: ${msg.content}`,
+          msg.author.avatarURL)
+        );
+      })
+      // error
+      .catch((e) => {
+        bot.err(e);
+        msg.channel.sendEmbed(new bot.methods.Embed()
+          .setColor(0xff0000)
+          .addField('Interner Fehler beim Erstellen!',
+          `Mehr Informationen:\n${e.stack ? e.stack : e}`)
+          .setThumbnail(bot.user.avatarURL)
+          .setFooter(`${msg.author.username}: ${msg.content}`,
+          msg.author.avatarURL)
+        );
       });
-    return msg.channel.sendEmbed(new bot.methods.Embed()
-      .setColor(0x00ff00)
-      .addField('Erfolgreich erstellt',
-      `Tag: ${params[1]}\nResponse: ${params.slice(2).join(' ')}`)
-      .setThumbnail(bot.user.avatarURL)
-      .setFooter(`${msg.author.username}: ${msg.content}`,
-      msg.author.avatarURL)
-    );
   } else if (params[0] === 'edit') {
-    if (bot.internal.tags.has(`${msg.guild.id}|${params[0]}`)) {
+    // does this tag exists?
+    if (!bot.internal.tags.has(`${msg.guild.id}|${params[1]}`)) {
       return msg.channel.sendEmbed(new bot.methods.Embed()
         .setColor(0xff0000)
         .addField('Nicht existent',
@@ -114,6 +125,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
         msg.author.avatarURL)
       );
     }
+    // permission to edit this tag?
     if (!(
       bot.internal.tags.get(`${msg.guild.id}|${params[1]}`).author === msg.author.id &&
       msg.permlvl >= exports.conf.editLevel)) {
@@ -125,39 +137,91 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
         .setFooter(`${msg.author.username}: ${msg.content}`,
         bot.user.avatarURL));
     }
+    // bad hoster?
     if (!blacklist(msg, params.slice(2).join(' '))) {
       return msg.channel.sendEmbed(new bot.methods.Embed()
         .setColor(0xff0000)
         .addField('Nicht hotlinkbar',
-        'Dieses Bild scheint nicht hotlinkbar, bitte gib einen hotlinkbaren Link an!`')
+        'Dieses Bild scheint nicht hotlinkbar, bitte gib einen hotlinkbaren Link an!')
         .setThumbnail(bot.user.avatarURL)
         .setFooter(`${msg.author.username}: ${msg.content}`,
         bot.user.avatarURL)
       );
     }
-    bot.db.run('UPDATE tags SET response=? WHERE guild=? AND name=?',
-      [params.slice(2).join(' '), msg.guild.id, params[1].toLowerCase()]);
-    bot.internal.tags.get(`${msg.guild.id}|${params[1].toLowerCase()}`).response = params.slice(2).join(' ');
-    return msg.channel.sendEmbed(new bot.methods.Embed()
-      .setColor(0x00ff00)
-      .addField('Erfolgreich geändert',
-      `Tag: ${params[1]}\nResponse: ${params.slice(2).join(' ')}`)
-      .setThumbnail(bot.user.avatarURL)
-      .setFooter(`${msg.author.username}: ${msg.content}`,
-      bot.user.avatarURL)
-    );
+    return bot.internal.tag.edit(bot, msg.guild.id, params[1].toLowerCase(), params.slice(2).join(' '))
+      // success
+      .then(() => {
+        msg.channel.sendEmbed(new bot.methods.Embed()
+          .setColor(0x00ff00)
+          .addField('Erfolgreich geändert',
+          `Tag: ${params[1]}\nResponse: ${params.slice(2).join(' ')}`)
+          .setThumbnail(bot.user.avatarURL)
+          .setFooter(`${msg.author.username}: ${msg.content}`,
+          bot.user.avatarURL)
+        );
+      })
+      // error
+      .catch((e) => {
+        bot.err(e);
+        msg.channel.sendEmbed(new bot.methods.Embed()
+          .setColor(0xff0000)
+          .addField('Interner Fehler beim Ändern!',
+          `Mehr Informationen:\n${e.stack ? e.stack : e}`)
+          .setThumbnail(bot.user.avatarURL)
+          .setFooter(`${msg.author.username}: ${msg.content}`,
+          msg.author.avatarURL)
+        );
+      });
   } else if (params[0] === 'remove') {
-    if (bot.internal.tags.has(`${msg.guild.id}|${params[0]}`)) {
+    // checking if the tag exists
+    if (!bot.internal.tags.has(`${msg.guild.id}|${params[1]}`)) {
       return msg.channel.sendEmbed(new bot.methods.Embed()
         .setColor(0xff0000)
         .addField('Nicht existent',
         `Vielleicht vertippt?`)
         .setThumbnail(bot.user.avatarURL)
         .setFooter(`${msg.author.username}: ${msg.content}`,
-        bot.user.avatarURL)
+        msg.author.avatarURL)
+      );
+    }
+    // permission to delete this tag?
+    if (!(
+      bot.internal.tags.get(`${msg.guild.id}|${params[1]}`).author === msg.author.id &&
+      msg.permlvl >= exports.conf.editLevel)) {
+      return msg.channel.sendEmbed(new bot.methods.Embed()
+        .setColor(0xff0000)
+        .addField('Zugriff verweigert',
+        `Nur Mods und höher können fremde Tags löschen.`)
+        .setThumbnail(bot.user.avatarURL)
+        .setFooter(`${msg.author.username}: ${msg.content}`,
+        msg.author.avatarURL)
       );
     }
     // löschen
+    return bot.internal.tag.remove(bot, msg.guild.id, params[1])
+      // success
+      .then(() => {
+        msg.channel.sendEmbed(new bot.methods.Embed()
+          .setColor(0x00ff00)
+          .addField('Erfolgreich gelöscht',
+          `Tag: ${params[1]}`)
+          .setThumbnail(bot.user.avatarURL)
+          .setFooter(`${msg.author.username}: ${msg.content}`,
+          msg.author.avatarURL)
+        );
+      })
+      // error
+      .catch((e) => {
+        bot.err(e);
+        msg.channel.sendEmbed(new bot.methods.Embed()
+          .setColor(0xff0000)
+          .addField('Interner Fehler beim Ändern!',
+          `Mehr Informationen:\n${e.stack ? e.stack : e}`)
+          .setThumbnail(bot.user.avatarURL)
+          .setFooter(`${msg.author.username}: ${msg.content}`,
+          msg.author.avatarURL)
+        );
+      });
   } else if (params[0] === 'list') {
     let alle = '';
     let users = '';
