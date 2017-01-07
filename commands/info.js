@@ -1,7 +1,7 @@
 const moment = require('moment');
 moment.locale('de');
 require('moment-duration-format');
-
+const package = require('../package.json');
 
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
   let member;
@@ -56,7 +56,8 @@ ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
   } else {
     embed = {
       color: 0xffa500,
-      description: 'Infos über den Bot.',
+      title: 'Infos über den Bot.',
+      description: '\u200b',
       fields: [
         {
           name: '❯ Online seit:',
@@ -75,7 +76,12 @@ ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
         },
         {
           name: '❯ spacebot-Version:',
-          value: `• 5. RE: Write (6.x.x)`,
+          value: `• v${package.version} (glowing-potato)`,
+          inline: true,
+        },
+        {
+          name: '❯ Shitcode repositorie:',
+          value: '• [GitHub](https://github.com/SpaceEEC/glowing-potato)',
           inline: true,
         },
         {
