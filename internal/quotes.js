@@ -1,13 +1,14 @@
 exports.add = (bot, guild, type, id, color, name, icon_url, description, img) => new Promise((resolve, reject) => {
   if (type === 'text') {
-    bot.db.run(`INSERT INTO "quotes" (guild, type, id, color, name, icon_url, description) VALUES (?, ?, ?, ?, ?, ?)`, [ // eslint-disable-line
+    bot.db.run(`INSERT INTO "quotes" (guild, type, id, color, name, icon_url, description, img) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [ // eslint-disable-line
       guild,
       type,
       id,
       color,
       name,
       icon_url,
-      description])
+      description,
+      null])
       .then(() => {
         try {
           bot.internal.quotes.set(`${guild}|${id}`, {

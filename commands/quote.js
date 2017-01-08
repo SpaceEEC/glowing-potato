@@ -15,7 +15,7 @@ Zitate auf diesem Server: \`${bot.internal.quotes.filter((w, q) => q.startsWith(
     if (msg.permlvl < 12) {
       return msg.delete();
     } else {
-      exports.init(bot).then(() => {
+      bot.internal.quote.init(bot).then(() => {
         msg.channel.sendMessage(`Neu geladene Zitate: ${bot.internal.quotes.size}`);
       }).catch((error) => msg.channel.sendCode('js', error));
     }
@@ -26,7 +26,7 @@ Zitate auf diesem Server: \`${bot.internal.quotes.filter((w, q) => q.startsWith(
     }
     // quote in die datenbank aufnehmen
 
-    if (bot.quotes.has(`${msg.guild.id}|${params[2]}`)) {
+    if (bot.internal.quotes.has(`${msg.guild.id}|${params[2]}`)) {
       return msg.channel.sendMessage('Dieses Zitat existiert bereits!');
     }
     msg.channel.fetchMessage(params[2]).then(mes => {
