@@ -106,3 +106,23 @@ exports.remove = (bot, msg, key, value) => new Promise((resolve, reject) => { //
     reject(`Der Wert \`${key}\` existiert nicht in der Config.`);
   }
 });
+
+
+exports.init = (bot) => new Promise((resolve, reject) => {
+  bot.db.all('SELECT * FROM confs').then((guilds) => {
+    bot.log(`Lade insgesamt ${guilds.length} Gilden.`);
+    for (let i = 0; i < guilds.length; i++) {
+      const guild = guilds[i];
+      bot.log(`Lade Gilde ${guild.id} | ${guild.name}`);
+      try {
+        guild.ignchannels = JSON.parse(guild.ignchannels);
+        guild.ignusers = JSON.parse(guild.ignusers);
+        guild.disabledcommands = JSON.parse(guild.disabledcommands);
+      } catch (e) {
+        bot.err(e.stack ? e.stack : e);
+      }
+      bot.confs.set(guild.id, guild);
+    }
+    resolve();
+  }).catch((e) => reject(e));
+});

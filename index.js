@@ -14,26 +14,12 @@ bot.err = (msg) => { console.error(`[${moment().format('YYYY-MM-DD HH:mm:ss')}]:
 bot.confs = new Discord.Collection();
 bot.config = {};
 bot.db.open('./var/db.sqlite').then(() => {
+  bot.internal.config.init(bot).catch(bot.err);
   bot.internal.tag.init(bot).catch(bot.err);
   bot.internal.quote.init(bot).catch(bot.err);
   bot.db.get('SELECT * FROM config').then((stuff) => {
     for (let key in stuff) {
       bot.config[key] = stuff[key];
-    }
-  });
-  bot.db.all('SELECT * FROM confs').then((guilds) => {
-    bot.log(`Lade insgesamt ${guilds.length} Gilden.`);
-    for (let i = 0; i < guilds.length; i++) {
-      const guild = guilds[i];
-      bot.log(`Lade Gilde ${guild.id} | ${guild.name}`);
-      try {
-        guild.ignchannels = JSON.parse(guild.ignchannels);
-        guild.ignusers = JSON.parse(guild.ignusers);
-        guild.disabledcommands = JSON.parse(guild.disabledcommands);
-      } catch (e) {
-        bot.err(e.stack ? e.stack : e);
-      }
-      bot.confs.set(guild.id, guild);
     }
   });
 });
@@ -48,6 +34,7 @@ bot.commands = new Discord.Collection();
 bot.aliases = new Discord.Collection();
 
 // internal
+//   init for everything in bot.db.open()
 bot.internal = {};
 bot.internal.config = require('./internal/config.js');
 bot.internal.commands = require('./internal/commands.js');
@@ -58,10 +45,8 @@ bot.internal.checks.init(bot).catch(bot.err);
 bot.internal.auth = JSON.parse(fs.readFileSync('./var/auth.json', 'utf8'));
 bot.internal.quotes = new Discord.Collection();
 bot.internal.quote = require('./internal/quotes.js');
-// init for quotes in bot.db.open().then()
 bot.internal.tags = new Discord.Collection();
 bot.internal.tag = require('./internal/tags.js');
-// init for tags in bot.db.open().then()
 
 
 bot.on('message', (msg) => {
@@ -118,11 +103,11 @@ bot.on('message', (msg) => {
 \`\`\`
 
 Ausgeführt in: \`${new Date().getTime() - time}\`ms`).catch((e) => {
-            msg.channel.sendMessage(`Fehler beim Senden der Antwort:
+  msg.channel.sendMessage(`Fehler beim Senden der Antwort:
 \`\`\`js
 ${e.stack ? e.stack : e}
 \`\`\``);
-          });
+});
         return;
       } catch (e) {
         msg.channel.sendMessage(`\`E-ROHR\`
@@ -152,7 +137,8 @@ Walte über
 \`${bot.users.size}\` Nutzer und
 \`${bot.channels.size}\` Channeln aus
 \`${bot.guilds.size}\` Servern.`);
-    bot.log(`${coa.name}: Walte über ${bot.users.size} Nutzer, in ${bot.channels.size} Channeln von ${bot.guilds.size} Servern.`); // eslint-disable-line
+    bot.log(`${coa.name}: Walte über ${bot.users.size} Nutzer,
+     in ${bot.channels.size} Channeln von ${bot.guilds.size} Servern.`);
   }).catch(e => {
     bot.err(e);
   }); */
