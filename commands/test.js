@@ -2,20 +2,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   return msg.channel.sendEmbed(nichts(bot, msg));
 });
 
-exports.conf = {
-  group: 'abgespaced',
-  spamProtection: false,
-  enabled: true,
-  aliases: ['bakaero'],
-  permLevel: 0,
-};
-
-exports.help = {
-  name: 'test',
-  shortdescription: 'Oh shit',
-  description: 'Ein Testbefehl, welcher das macht wozu er gerade bestimmt ist.',
-  usage: '$conf.prefixtest ()/[]/""',
-};
 
 function nichts(bot, msg) { // eslint-disable-line
   return {
@@ -41,3 +27,20 @@ function nichts(bot, msg) { // eslint-disable-line
     },
   };
 }
+
+
+exports.conf = {
+  group: 'abgespaced',
+  spamProtection: false,
+  enabled: true,
+  aliases: ['bakaero'],
+  permLevel: 0,
+};
+
+
+exports.help = {
+  name: 'test',
+  shortdescription: 'Oh shit',
+  description: 'Ein Testbefehl, welcher das macht wozu er gerade bestimmt ist.',
+  usage: '$conf.prefixtest ()/[]/""',
+};

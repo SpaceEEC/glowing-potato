@@ -23,6 +23,7 @@ exports.init = (bot) => new Promise((resolve, reject) => { // eslint-disable-lin
     });
 });
 
+
 exports.reload = (bot, command) => new Promise((resolve, reject) => { // eslint-disable-line
   try {
     delete require.cache[require.resolve(`../commands/${command}`)];

@@ -58,23 +58,6 @@ ${e.stack ? e.stack : e}
   }
 });
 
-exports.conf = {
-  group: 'Admincommands',
-  spamProtection: false,
-  enabled: true,
-  aliases: ['config'],
-  permLevel: 10,
-};
-
-exports.help = {
-  name: 'conf',
-  shortdescription: 'Konfiguration',
-  description: 'Mit diesem Befehl ist es möglich den Bot auf dieser Gilde zu konfigurieren.',
-  usage: '$conf.prefixconf menu - Interaktives Menü' +
-  '\n$conf.prefixconf <list|show> - Zeigt die Konfiguration an.' +
-  '\n$conf.prefixconf <get|reset> [Key]' +
-  '\n$conf.prefixconf <set> [Key] [Value]',
-};
 
 function menu(bot, msg) {
   let options = new bot.methods.Collection();
@@ -107,6 +90,7 @@ function menu(bot, msg) {
   };
   sendconf(bot, msg, embed, options);
 }
+
 
 const sendconf = (bot, msg, embed, options) => new Promise(() => {
   msg.channel.sendEmbed(embed)
@@ -146,6 +130,7 @@ const sendconf = (bot, msg, embed, options) => new Promise(() => {
         });
     });
 });
+
 
 const sendvalue = (bot, msg, key) => new Promise(() => {
   bot.internal.config.get(bot, msg, key)
@@ -202,3 +187,23 @@ ${e.stack ? e.stack : e}
     })
     );
 });
+
+
+exports.conf = {
+  group: 'Admincommands',
+  spamProtection: false,
+  enabled: true,
+  aliases: ['config'],
+  permLevel: 10,
+};
+
+
+exports.help = {
+  name: 'conf',
+  shortdescription: 'Konfiguration',
+  description: 'Mit diesem Befehl ist es möglich den Bot auf dieser Gilde zu konfigurieren.',
+  usage: '$conf.prefixconf menu - Interaktives Menü' +
+  '\n$conf.prefixconf <list|show> - Zeigt die Konfiguration an.' +
+  '\n$conf.prefixconf <get|reset> [Key]' +
+  '\n$conf.prefixconf <set> [Key] [Value]',
+};

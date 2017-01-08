@@ -138,9 +138,10 @@ exports.conf = {
   group: 'Allgemeines',
   spamProtection: false,
   enabled: true,
-  aliases: [],
+  aliases: ['halp'],
   permLevel: 0,
 };
+
 
 exports.help = {
   name: 'help',

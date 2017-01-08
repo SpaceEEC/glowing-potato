@@ -175,6 +175,7 @@ const getanswer = (bot, msg, response) => new Promise(() => {
   });
 });
 
+
 function answer(response, msg, bot, mes) {
   const map = { amp: '&', lt: '<', gt: '>', quot: '"', '#039': "'" };
   response.description = response.description.replace(/&([^;]+);/g, (m, c) => map[c])
@@ -264,7 +265,7 @@ exports.conf = {
 
 exports.help = {
   name: 'anime',
-  description: 'Gibt infos über den gesuchten Anime oder Manga.',
+  description: 'Gibt Infos über den gesuchten Anime oder Manga.',
   shortdescription: 'oder auch `$conf.prefixmanga`',
   usage: '$conf.prefixanime [Suchbegriff(e)]' +
   '\n$conf.prefixmanga [Suchbegriff(e)]',

@@ -15,6 +15,8 @@ msg.conf.disabledcmds.includes(cmd.help.name): ${msg.conf.disabledcmds.includes(
     reject('Konnte den Deaktivierungsgrund nicht ermitteln.\nNotiz:Diese Fehlermeldung solltest du nicht bekommen.');
   }
 });
+
+
 exports.conf = {
   spamProtection: false,
   enabled: true,
