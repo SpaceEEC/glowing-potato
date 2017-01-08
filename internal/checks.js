@@ -17,31 +17,32 @@ exports.run = (bot, msg, cmd) => new Promise((resolve, reject) => {
     i++;
   });
   Promise.all(mps)
-        .then((value) => {
-          resolve(value[usage]);
-        }, (reason) => {
-          reject(reason);
-        });
+    .then((value) => {
+      resolve(value[usage]);
+    }, (reason) => {
+      reject(reason);
+    });
 });
 
 
 exports.init = (bot) => new Promise((resolve, reject) => {
+  bot.internal.checks.check = new bot.methods.Collection();
   fs.readdirAsync('./checks/')
-        .then((files) => {
-          try {
-            files = files.filter(f => f.slice(-3) === '.js');
-            files.forEach((f) => {
-              const file = f.split('.');
-              delete require.cache[require.resolve(`../checks/${f}`)];
-              const props = require(`../checks/${f}`);
-              bot.internal.checks.check.set(file[0], props);
-            });
-            resolve();
-          } catch (e) {
-            reject(e);
-          }
-        })
-        .catch((e) => {
-          reject(e);
+    .then((files) => {
+      try {
+        files = files.filter(f => f.slice(-3) === '.js');
+        files.forEach((f) => {
+          const file = f.split('.');
+          delete require.cache[require.resolve(`../checks/${f}`)];
+          const props = require(`../checks/${f}`);
+          bot.internal.checks.check.set(file[0], props);
         });
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    })
+    .catch((e) => {
+      reject(e);
+    });
 });
