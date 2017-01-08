@@ -5,3 +5,4 @@ var/db.sqlite
 var/db.sqlite-journal
 old/
 .eslintrc.json
+ffmpeg.exe
