@@ -40,6 +40,7 @@ exports.conf = {
   enabled: true,
 };
 
+
 const check = (bot, permlvl, cmd) => new Promise((resolve, reject) => {
   if (permlvl >= cmd.conf.permLevel) {
     resolve();

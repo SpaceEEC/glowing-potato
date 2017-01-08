@@ -1,5 +1,6 @@
 const request = require('superagent');
 
+
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
   // Validating
   if (!params[0]) {
@@ -39,6 +40,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   }
 });
 
+
 function prepare(bot, msg, params) {
   if (msg.cmd === 'donmai' && typeof params[2] !== 'undefined') {
     return msg.channel.sendEmbed(new bot.methods.Embed()
@@ -71,6 +73,7 @@ function prepare(bot, msg, params) {
     return msg.channel.sendMessage('Das hier sollte eigentlich nie passieren, aber: `${params[0]}` ');
   }
 }
+
 
 function konachan(bot, msg, params = []) {
   request.get(`http://konachan.com/post.json?tags=${`${params.join('+')}+rating:s&limit=100`}`)
@@ -112,6 +115,7 @@ function konachan(bot, msg, params = []) {
     });
 }
 
+
 function donmai(bot, msg, params = []) {
   request.get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${params.join('+')}`)
     .send(null)
@@ -148,6 +152,8 @@ function donmai(bot, msg, params = []) {
       });
     });
 }
+
+
 exports.conf = {
   group: 'Weebstuff',
   spamProtection: false,
@@ -155,6 +161,8 @@ exports.conf = {
   aliases: ['donmai'],
   permLevel: 1,
 };
+
+
 exports.help = {
   name: 'konachan',
   description: 'Über diesen Befehl kann von safebooru.donmai.us/konachan.net ein zufälliges (durch Tags spezifiziertes) Bild abgerufen werden.', // eslint-disable-line

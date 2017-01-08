@@ -24,6 +24,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   }
 });
 
+
 exports.conf = {
   group: 'Admincommands',
   spamProtection: false,
@@ -31,6 +32,7 @@ exports.conf = {
   aliases: ['cmd'],
   permLevel: 10,
 };
+
 
 exports.help = {
   name: 'command',

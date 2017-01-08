@@ -1,5 +1,6 @@
 const fs = require('fs-extra-promise');
 
+
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
   if (!params[0]) {
     return msg.channel.sendEmbed(new bot.methods.Embed()
@@ -36,6 +37,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   return reload(bot, msg, params);
 });
 
+
 const reload = (bot, msg, params) => new Promise(() => {
   if (params[0] === 'all') {
     msg.channel.sendMessage('Lade alle Befehle neu, dies kann ein wenig dauern.').then(mes => {
@@ -70,6 +72,7 @@ const reload = (bot, msg, params) => new Promise(() => {
   }
 });
 
+
 exports.conf = {
   group: 'abgespaced',
   spamProtection: false,
@@ -77,6 +80,8 @@ exports.conf = {
   aliases: ['relaod'],
   permLevel: 12,
 };
+
+
 exports.help = {
   name: 'reload',
   shortdescription: 'Neu laden',

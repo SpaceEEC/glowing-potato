@@ -1,4 +1,6 @@
+// shamelessly stolen from: github.com/eslachance/komada/blob/master/functions/runCommandInhibitors.js
 const fs = require('fs-extra-promise');
+
 
 exports.run = (bot, msg, cmd) => new Promise((resolve, reject) => {
   const mps = [true];
@@ -21,6 +23,7 @@ exports.run = (bot, msg, cmd) => new Promise((resolve, reject) => {
           reject(reason);
         });
 });
+
 
 exports.init = (bot) => new Promise((resolve, reject) => {
   fs.readdirAsync('./checks/')

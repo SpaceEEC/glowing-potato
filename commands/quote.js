@@ -1,5 +1,6 @@
 const moment = require('moment');
 
+
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
   if (!params[0] || !['info', 'reload', 'add'].includes(params[0])) {
     // quote holen und als Embed schicken
@@ -69,6 +70,8 @@ exports.conf = {
   permLevel: 0,
   createLevel: 5,
 };
+
+
 exports.help = {
   name: 'quote',
   description: 'Ruft ein zufälliges Zitat ab oder fügt eines hinzu.',

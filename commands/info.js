@@ -3,6 +3,7 @@ moment.locale('de');
 require('moment-duration-format');
 const package = require('../package.json');
 
+
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
   let member;
   if (msg.content.slice(msg.conf.prefix.length).split(' ')[0].toLowerCase() === 'info') {

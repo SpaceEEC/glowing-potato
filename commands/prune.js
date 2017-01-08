@@ -32,6 +32,8 @@ exports.conf = {
   aliases: [],
   permLevel: 5,
 };
+
+
 exports.help = {
   name: 'prune',
   description: 'Löscht die letzten [Anzahl] Nachrichten aus diesem Channel.',
