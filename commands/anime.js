@@ -11,7 +11,7 @@ Ich denke nicht. 👀`,
       fields: [
         {
           name: `Ich bin gnädig und gebe dir noch eine Chance mir etwas mitzugeben.`,
-          value: 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um abzubrechen.',
+          value: 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um diese Anfrage abzubrechen.',
         }],
       color: msg.member.highestRole.color,
     }).then((mes) => {
