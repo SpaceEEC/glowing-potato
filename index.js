@@ -14,9 +14,6 @@ bot.err = (msg) => { console.error(`[${moment().format('YYYY-MM-DD HH:mm:ss')}]:
 bot.confs = new Discord.Collection();
 bot.config = {};
 bot.db.open('./var/db.sqlite').then(() => {
-  bot.internal.config.init(bot).catch(bot.err);
-  bot.internal.tag.init(bot).catch(bot.err);
-  bot.internal.quote.init(bot).catch(bot.err);
   bot.db.get('SELECT * FROM config').then((stuff) => {
     for (let key in stuff) {
       bot.config[key] = stuff[key];
@@ -34,20 +31,9 @@ bot.commands = new Discord.Collection();
 bot.aliases = new Discord.Collection();
 
 // internal
-//   init for everything in bot.db.open()
-bot.internal = {};
-bot.internal.config = require('./internal/config.js');
-bot.internal.commands = require('./internal/commands.js');
-bot.internal.commands.init(bot).catch(bot.err);
-bot.internal.checks = require('./internal/checks.js');
-bot.internal.checks.check = new Discord.Collection();
-bot.internal.checks.init(bot).catch(bot.err);
+bot.internal = require('./internal/internal.js');
 bot.internal.auth = JSON.parse(fs.readFileSync('./var/auth.json', 'utf8'));
-bot.internal.quotes = new Discord.Collection();
-bot.internal.quote = require('./internal/quotes.js');
-bot.internal.tags = new Discord.Collection();
-bot.internal.tag = require('./internal/tags.js');
-
+bot.internal.init(bot);
 
 bot.on('message', (msg) => {
   if (msg.author.bot) return;
