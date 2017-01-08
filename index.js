@@ -103,11 +103,11 @@ bot.on('message', (msg) => {
 \`\`\`
 
 Ausgeführt in: \`${new Date().getTime() - time}\`ms`).catch((e) => {
-  msg.channel.sendMessage(`Fehler beim Senden der Antwort:
-\`\`\`js
+            msg.channel.sendMessage(`Fehler beim Senden der Antwort:\n` + // eslint-disable-line
+              `\`\`\`js
 ${e.stack ? e.stack : e}
 \`\`\``);
-});
+          }); // eslint-disable-line
         return;
       } catch (e) {
         msg.channel.sendMessage(`\`E-ROHR\`
@@ -239,8 +239,13 @@ bot.on('guildCreate', (guild) => {
   newguild.id = guild.id;
   newguild.name = guild.name;
   bot.confs.set(newguild.id, newguild);
-  bot.db.run('INSERT INTO confs(id,name,prefix,modrole,adminrole,logchannel,anchannel,vlogchannel,joinmsg,leavemsg)' +
-    `VALUES (\`${newguild.id}\`,\`${newguild.name}\`,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);`);
+  bot.db.run('INSERT INTO confs(id,name,prefix,modrole,adminrole,logchannel,anchannel' +
+    ',ignchannels,vlogchannel,ignusers,joinmsg,leavemsg,disabledcommands)' +
+    'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);',
+    [
+      newguild.id, newguild.name, newguild.prefix, null, null, null, null,
+      newguild.ignchannels, null, newguild.ignusers, null, null, newguild.disabledcommands,
+    ]);
   bot.log(`Gilde (${guild.id}): ${guild.name} beigetreten!`);
 });
 

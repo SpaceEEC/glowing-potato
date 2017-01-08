@@ -22,13 +22,14 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   }
   if (params[0] === 'set') {
     if (['ignchannels', 'ignusers'].includes(params[1])) {
-      return msg.channel.sendMessage('platzhalternachricht wegen ign array.');
+      return msg.channel.sendMessage(
+        `Zum Ignorieren von Nutzern oder Channeln bitte \`${msg.conf.prefix}ignore\` verwenden.`);
     }
     if (params[1] === 'disabledcommands') {
-      return msg.channel.sendMessage('platzhalternachricht wegen disabledCommands');
+      return msg.channel.sendMessage(`Zum Deaktivieren von Befehlen bitte \`${msg.conf.prefix}command\` verwenden.`);
     }
     if (params[1] === 'id') {
-      return msg.channel.sendMessage('Die `id` dieses Servers wird sich wohl kaum verändert haben.');
+      return msg.channel.sendMessage('Die `id` ist auf dem neusten Stand.');
     }
     if (params[1] === 'name') {
       return bot.internal.config.set(bot, msg, params[1], msg.guild.name).then(r => msg.channel.sendMessage(r));
