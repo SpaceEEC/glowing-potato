@@ -36,7 +36,7 @@ exports.set = (bot, msg, key, params) => new Promise((resolve, reject) => { // e
     if (!value) value = params.slice(2).join(' ');
     bot.confs.get(msg.guild.id)[key] = value;
     bot.log(`UPDATE confs SET ${key}='${value}' WHERE id=${msg.guild.id}`);
-    bot.db.run(`UPDATE confs SET ?='?' WHERE id=?`, [key, value, msg.guild.id]).then(() => {
+    bot.db.run(`UPDATE confs SET '${key}'=? WHERE id=?`, [value, msg.guild.id]).then(() => {
       resolve(`Der Wert \`${key}\` wurde auf \`${value}\` gesetzt.`);
     });
   } else {
@@ -51,7 +51,7 @@ exports.reset = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-
     bot.confs.get(msg.guild.id)[key] = value;
     if (value instanceof Array) value = JSON.stringify(value);
     bot.log(`UPDATE confs SET ${key}='${value}' WHERE id=${msg.guild.id}`);
-    bot.db.run(`UPDATE confs SET ?='?' WHERE id=?`, [key, value, msg.guild.id]).then(() => {
+    bot.db.run(`UPDATE confs SET '${key}'=? WHERE id=?`, [value, msg.guild.id]).then(() => {
       resolve(`Der Wert \`${key}\` wurde zurückgesetzt.`);
     });
   } else {
@@ -69,8 +69,8 @@ exports.add = (bot, msg, key, value) => new Promise((resolve, reject) => {
     if (!bot.confs.get(msg.guild.id)[key]) bot.confs.get(msg.guild.id)[key] = [];
     bot.confs.get(msg.guild.id)[key].push(value);
     bot.log(`UPDATE confs SET ${key}='${JSON.stringify(bot.confs.get(msg.guild.id)[key])}' WHERE id=${msg.guild.id}`);
-    bot.db.run(`UPDATE confs SET ?='?' WHERE id=?`,
-    [key, JSON.stringify(bot.confs.get(msg.guild.id)[key]), msg.guild.id])
+    bot.db.run(`UPDATE confs SET '${key}'=? WHERE id=?`,
+    [JSON.stringify(bot.confs.get(msg.guild.id)[key]), msg.guild.id])
       .then(() => {
         resolve();
       })
@@ -94,8 +94,8 @@ exports.remove = (bot, msg, key, value) => new Promise((resolve, reject) => { //
     }
     bot.confs.get(msg.guild.id)[key].splice(bot.confs.get(msg.guild.id)[key].indexOf(value), 1);
     bot.log(`UPDATE confs SET ${key}='${JSON.stringify(bot.confs.get(msg.guild.id)[key])}' WHERE id=${msg.guild.id}`);
-    bot.db.run(`UPDATE confs SET ?='?' WHERE id=?`,
-    [key, JSON.stringify(bot.confs.get(msg.guild.id)[key]), msg.guild.id])
+    bot.db.run(`UPDATE confs SET '${key}'=? WHERE id=?`,
+    [JSON.stringify(bot.confs.get(msg.guild.id)[key]), msg.guild.id])
       .then(() => {
         resolve();
       })
