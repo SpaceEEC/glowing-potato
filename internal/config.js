@@ -1,4 +1,4 @@
-exports.get = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.get = (bot, msg, key) => new Promise((resolve) => {
   let value = bot.confs.get(msg.guild.id)[key];
   if (value) {
     if (value instanceof Array) {
@@ -27,17 +27,23 @@ exports.get = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-di
 });
 
 
-exports.set = (bot, msg, key, params) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.set = (bot, msg, key, params) => new Promise((resolve, reject) => {
   if (key in bot.confs.get(msg.guild.id)) {
     let value;
     if (msg.mentions.roles.size !== 0) value = msg.mentions.roles.first().id;
     if (msg.mentions.channels.size !== 0) value = msg.mentions.channels.first().id;
     if (!(params instanceof Array)) value = params;
-    if (!value) value = params.slice(2).join(' ');
+    if (!value) value = params.join(' ');
+    if (value.length === 0) {
+      reject('Um Schlüssel zu löschen bitte die `delete` Option verwenden.');
+      return;
+    }
     bot.confs.get(msg.guild.id)[key] = value;
     bot.log(`UPDATE confs SET ${key}='${value}' WHERE id=${msg.guild.id}`);
     bot.db.run(`UPDATE confs SET '${key}'=? WHERE id=?`, [value, msg.guild.id]).then(() => {
       resolve(`Der Wert \`${key}\` wurde auf \`${value}\` gesetzt.`);
+    }).catch((e) => {
+      reject(e);
     });
   } else {
     resolve(`Der Wert \`${key}\` existiert nicht in der Config.`);
@@ -45,7 +51,7 @@ exports.set = (bot, msg, key, params) => new Promise((resolve, reject) => { // e
 });
 
 
-exports.reset = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.reset = (bot, msg, key) => new Promise((resolve, reject) => {
   if (key in bot.confs.get(msg.guild.id)) {
     let value = bot.confs.get('default')[key];
     bot.confs.get(msg.guild.id)[key] = value;
@@ -53,6 +59,8 @@ exports.reset = (bot, msg, key) => new Promise((resolve, reject) => { // eslint-
     bot.log(`UPDATE confs SET ${key}='${value}' WHERE id=${msg.guild.id}`);
     bot.db.run(`UPDATE confs SET '${key}'=? WHERE id=?`, [value, msg.guild.id]).then(() => {
       resolve(`Der Wert \`${key}\` wurde zurückgesetzt.`);
+    }).catch((e) => {
+      reject(e);
     });
   } else {
     resolve(`Der Wert \`${key}\` existiert nicht in der Config.`);
@@ -70,7 +78,7 @@ exports.add = (bot, msg, key, value) => new Promise((resolve, reject) => {
     bot.confs.get(msg.guild.id)[key].push(value);
     bot.log(`UPDATE confs SET ${key}='${JSON.stringify(bot.confs.get(msg.guild.id)[key])}' WHERE id=${msg.guild.id}`);
     bot.db.run(`UPDATE confs SET '${key}'=? WHERE id=?`,
-    [JSON.stringify(bot.confs.get(msg.guild.id)[key]), msg.guild.id])
+      [JSON.stringify(bot.confs.get(msg.guild.id)[key]), msg.guild.id])
       .then(() => {
         resolve();
       })
@@ -83,7 +91,7 @@ exports.add = (bot, msg, key, value) => new Promise((resolve, reject) => {
 });
 
 
-exports.remove = (bot, msg, key, value) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.remove = (bot, msg, key, value) => new Promise((resolve, reject) => {
   if (key in bot.confs.get(msg.guild.id)) {
     if (!bot.confs.get(msg.guild.id)[key]) {
       reject(`Die Liste \`${key}\` ist bereits leer.`);
@@ -95,7 +103,7 @@ exports.remove = (bot, msg, key, value) => new Promise((resolve, reject) => { //
     bot.confs.get(msg.guild.id)[key].splice(bot.confs.get(msg.guild.id)[key].indexOf(value), 1);
     bot.log(`UPDATE confs SET ${key}='${JSON.stringify(bot.confs.get(msg.guild.id)[key])}' WHERE id=${msg.guild.id}`);
     bot.db.run(`UPDATE confs SET '${key}'=? WHERE id=?`,
-    [JSON.stringify(bot.confs.get(msg.guild.id)[key]), msg.guild.id])
+      [JSON.stringify(bot.confs.get(msg.guild.id)[key]), msg.guild.id])
       .then(() => {
         resolve();
       })

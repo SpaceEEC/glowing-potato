@@ -16,9 +16,19 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       return msg.channel.sendMessage('Dieser Schlüssel kann nicht zurückgesetzt werden.');
     }
     if (params[1] === 'name') {
-      return bot.internal.config.set(bot, msg, params[1], msg.guild.name).then(r => msg.channel.sendMessage(r));
+      return bot.internal.config.set(bot, msg, params[1], msg.guild.name).then(r => msg.channel.sendMessage(r))
+        .catch((e) => msg.channel.sendMessage(
+          `Es ist ein Fehler beim Zurücksetzen des Schlüssels \`${params[1]}\` aufgetreten:
+\`\`\`js
+${e.stack ? e.stack : e}
+\`\`\``));
     }
-    return bot.internal.config.reset(bot, msg, params[1]).then(r => msg.channel.sendMessage(r));
+    return bot.internal.config.reset(bot, msg, params[1]).then(r => msg.channel.sendMessage(r))
+      .catch((e) => msg.channel.sendMessage(
+        `Es ist ein Fehler beim Zurücksetzen des Schlüssels \`${params[1]}\` aufgetreten:
+\`\`\`js
+${e.stack ? e.stack : e}
+\`\`\``));
   }
   if (params[0] === 'set') {
     if (['ignchannels', 'ignusers'].includes(params[1])) {
@@ -32,9 +42,19 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       return msg.channel.sendMessage('Die `id` ist auf dem neusten Stand.');
     }
     if (params[1] === 'name') {
-      return bot.internal.config.set(bot, msg, params[1], msg.guild.name).then(r => msg.channel.sendMessage(r));
+      return bot.internal.config.set(bot, msg, params[1], msg.guild.name).then(r => msg.channel.sendMessage(r))
+        .catch((e) => msg.channel.sendMessage(
+          `Es ist ein Fehler beim Zurücksetzen des Schlüssels \`${params[1]}\` aufgetreten:
+\`\`\`js
+${e.stack ? e.stack : e}
+\`\`\``));
     }
-    return bot.internal.config.set(bot, msg, params[1], params).then(r => msg.channel.sendMessage(r));
+    return bot.internal.config.set(bot, msg, params[1], params.slice(2)).then(r => msg.channel.sendMessage(r))
+      .catch((e) => msg.channel.sendMessage(
+        `Es ist ein Fehler beim Setzen des Schlüssels \`${params[1]}\` aufgetreten:
+\`\`\`js
+${e.stack ? e.stack : e}
+\`\`\``));
   }
 });
 
@@ -101,14 +121,15 @@ const sendconf = (bot, msg, embed, options) => new Promise(() => {
         .then(collected => {
           let content = collected.first().content;
           mes.delete();
-          collected.first().delete();
           if (content === 'cancel') {
             return msg.channel.sendMessage('Vorgang wird abgebrochen...')
               .then(mesg => {
                 mesg.delete(2000);
                 msg.delete(2000);
+                collected.first().delete(2000);
               });
           }
+          collected.first().delete();
           if (options.has(content)) {
             content = options.get(content);
           } else if (!(content in msg.conf)) {
@@ -134,6 +155,7 @@ const sendvalue = (bot, msg, key) => new Promise(() => {
         fields: [{
           name: 'Bitte einen neuen Wert für diesen Schlüssel eingeben.',
           value: 'Je nach Schlüssel sind ein Text oder die ID (@Mentions oder #Channel sind auch möglich) gültige Werte.' + // eslint-disable-line
+          '\n\u200b' +
           '\nZum Löschen `reset` eingeben.' +
           '\nZum Abbrechen `cancel` eingeben.',
         }],
@@ -158,18 +180,21 @@ const sendvalue = (bot, msg, key) => new Promise(() => {
               });
           } else if (content === 'reset') {
             return bot.internal.config.reset(bot, collected.first(), key).then(r => {
-              msg.channel.sendMessage(r)
-                .then(mesg => mesg.delete(2000)); // eslint-disable-line
-              msg.delete();
-              collected.first().delete();
-            });
+              msg.channel.sendMessage(r);
+            })
+              .catch((e) => msg.channel.sendMessage(
+                `Es ist ein Fehler beim Zurücksetzen des Schlüssels \`${key}\` aufgetreten:
+\`\`\`js
+${e.stack ? e.stack : e}
+\`\`\``));
           }
-          return bot.internal.config.set(bot, collected.first(), key, collected.first().content.split(' ')).then(r => {
-            msg.channel.sendMessage(r)
-              .then(mesg => mesg.delete(2000)); // eslint-disable-line
-            msg.delete();
-            collected.first().delete();
-          });
+          return bot.internal.config.set(bot, collected.first(), key, content.split(' '))
+            .then(r => msg.channel.sendMessage(r))
+            .catch((e) => msg.channel.sendMessage(
+              `Es ist ein Fehler beim Setzen des Schlüssels \`${key}\` aufgetreten:
+\`\`\`js
+${e.stack ? e.stack : e}
+\`\`\``));
         }).catch(() => {
           msg.delete();
           mes.delete();
