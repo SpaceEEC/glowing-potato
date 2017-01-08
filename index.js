@@ -15,6 +15,7 @@ bot.confs = new Discord.Collection();
 bot.config = {};
 bot.db.open('./var/db.sqlite').then(() => {
   bot.internal.tag.init(bot).catch(bot.err);
+  bot.internal.quote.init(bot).catch(bot.err);
   bot.db.get('SELECT * FROM config').then((stuff) => {
     for (let key in stuff) {
       bot.config[key] = stuff[key];
@@ -56,11 +57,13 @@ bot.internal.checks.check = new Discord.Collection();
 bot.internal.checks.init(bot).catch(bot.err);
 bot.internal.auth = JSON.parse(fs.readFileSync('./var/auth.json', 'utf8'));
 bot.internal.quotes = new Discord.Collection();
-// bot.internal.quote = require('./insternal/quotes.js');
+bot.internal.quote = require('./internal/quotes.js');
 // init for quotes in bot.db.open().then()
-bot.internal.tags;
+bot.internal.tags = new Discord.Collection();
 bot.internal.tag = require('./internal/tags.js');
 // init for tags in bot.db.open().then()
+
+
 bot.on('message', (msg) => {
   if (msg.author.bot) return;
   if (msg.channel.type !== 'text') return;
@@ -115,11 +118,11 @@ bot.on('message', (msg) => {
 \`\`\`
 
 Ausgeführt in: \`${new Date().getTime() - time}\`ms`).catch((e) => {
-  msg.channel.sendMessage(`Fehler beim Senden der Antwort:
+            msg.channel.sendMessage(`Fehler beim Senden der Antwort:
 \`\`\`js
 ${e.stack ? e.stack : e}
 \`\`\``);
-});
+          });
         return;
       } catch (e) {
         msg.channel.sendMessage(`\`E-ROHR\`
@@ -140,7 +143,6 @@ Ausgeführt in: \`${new Date().getTime() - time}\`ms`);
 
 bot.once('ready', () => {
   bot.config.prefixMention = new RegExp(`^<@!?${bot.user.id}>`);
-  bot.commands.get('quote').init(bot);
   bot.log('ready');
   /* bot.fetchApplication().then(coa => {
     bot.channels
