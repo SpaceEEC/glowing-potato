@@ -38,6 +38,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       msg.author.avatarURL))
       );
   });
+  msg.delete();
 });
 
 
