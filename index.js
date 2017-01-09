@@ -199,15 +199,15 @@ bot.on('voiceStateUpdate', (oldMember, newMember) => {
     // leave
     if (newMember.voiceChannel === undefined) {
       clr = 0xFF4500;
-      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.displayName} hat die Verbindung aus ${oldMember.voiceChannel.name} getrennt.`; // eslint-disable-line
+      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} hat die Verbindung aus ${oldMember.voiceChannel.name} getrennt.`; // eslint-disable-line
     } else if (oldMember.voiceChannel === undefined) {
       // join
       clr = 0x7CFC00;
-      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.displayName} hat sich in ${newMember.voiceChannel.name} eingeloggt.`; // eslint-disable-line
+      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} hat sich in ${newMember.voiceChannel.name} eingeloggt.`; // eslint-disable-line
     } else {
       // move
       clr = 3447003;
-      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.displayName} ging von ${oldMember.voiceChannel.name} zu ${newMember.voiceChannel.name}`; // eslint-disable-line
+      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} ging von ${oldMember.voiceChannel.name} zu ${newMember.voiceChannel.name}`; // eslint-disable-line
     }
     bot.channels.get(conf.vlogchannel).sendEmbed({
       color: clr,
