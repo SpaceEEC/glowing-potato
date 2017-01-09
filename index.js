@@ -35,7 +35,7 @@ bot.internal = require('./internal/internal.js');
 bot.internal.auth = JSON.parse(fs.readFileSync('./var/auth.json', 'utf8'));
 bot.internal.init(bot);
 
-bot.on('message', (msg) => {
+bot.on('message', async (msg) => {
   if (msg.author.bot) return;
   if (msg.channel.type !== 'text') return;
   const conf = bot.confs.get(msg.guild.id);
@@ -112,9 +112,11 @@ Ausgeführt in: \`${new Date().getTime() - time}\`ms`);
 });
 
 
-bot.once('ready', () => {
+bot.once('ready', async () => {
   bot.config.prefixMention = new RegExp(`^<@!?${bot.user.id}>`);
   bot.log('ready');
+  const app = await bot.fetchApplication();
+  bot.log(app.name);
   /* bot.fetchApplication().then(coa => {
     bot.channels
       .get('257831397983518722')

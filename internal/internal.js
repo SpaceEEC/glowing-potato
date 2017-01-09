@@ -16,13 +16,23 @@ exports.init = (bot) => new Promise((resolve) => {
             }
           }
         } catch (e) {
-          throw e.stack ? e.stack : e;
+          throw new Error(e.stack ? e.stack : e);
         }
       });
       resolve(modules);
-    }).catch((e) => { throw e.stack ? e.stack : e; });
+    }).catch((e) => { throw new Error(e.stack ? e.stack : e); });
 });
 
+exports.setGame = async (bot, game) => {
+  try {
+    await bot.db.run(`UPDATE config SET game=?`, [game]);
+    await bot.user.setGame(game);
+    return test.presence.game;
+  }
+  catch (e) {
+    return e;
+  }
+};
 
 exports.reload = (bot, name, file) => new Promise((resolve, reject) => {
   try {
