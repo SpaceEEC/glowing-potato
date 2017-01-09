@@ -142,7 +142,7 @@ bot.on('guildMemberAdd', (member) => {
     .split(':user:').join(member)
     .split(':server:').join(member.guild.name); // eslint-disable-line
   if (conf.logchannel) {
-    if (!bot.channels.get(conf.logChannel)
+    if (!bot.channels.get(conf.logchannel)
       .permissionsFor(member.guild.member(bot.user))
       .hasPermission('SEND_MESSAGES')) return;
     member.guild.channels.get(conf.logchannel).sendMessage(response).catch(e => {
@@ -168,7 +168,7 @@ bot.on('guildMemberRemove', (member) => {
     .split(':user:').join(member)
     .split(':server:').join(member.guild.name); // eslint-disable-line
   if (conf.logchannel) {
-    if (!bot.channels.get(conf.logChannel)
+    if (!bot.channels.get(conf.logchannel)
       .permissionsFor(member.guild.member(bot.user))
       .hasPermission('SEND_MESSAGES')) return;
     member.guild.channels.get(conf.logchannel).sendMessage(response).catch(e => {
@@ -188,9 +188,9 @@ ${e.stack ? e.stack : e}`);
 
 
 bot.on('voiceStateUpdate', (oldMember, newMember) => {
-  const conf = bot.confs.get(oldMember.guild.id);
-  if (!conf.vlogChannel) return;
-  if (!bot.channels.get(conf.vlogChannel)
+  const conf = bot.confs.get(newMember.guild.id);
+  if (!conf.vlogchannel) return;
+  if (!bot.channels.get(conf.vlogchannel)
     .permissionsFor(newMember.guild.member(bot.user))
     .hasPermission('SEND_MESSAGES')) return;
   if (oldMember.voiceChannel !== newMember.voiceChannel) {
@@ -199,17 +199,17 @@ bot.on('voiceStateUpdate', (oldMember, newMember) => {
     // leave
     if (newMember.voiceChannel === undefined) {
       clr = 0xFF4500;
-      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.user.toString()} hat die Verbindung aus ${oldMember.voiceChannel.name} getrennt.`; // eslint-disable-line
+      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} hat die Verbindung aus ${oldMember.voiceChannel.name} getrennt.`; // eslint-disable-line
     } else if (oldMember.voiceChannel === undefined) {
       // join
       clr = 0x7CFC00;
-      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.user.toString()} hat sich in ${newMember.voiceChannel.name} eingeloggt.`; // eslint-disable-line
+      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} hat sich in ${newMember.voiceChannel.name} eingeloggt.`; // eslint-disable-line
     } else {
       // move
       clr = 3447003;
-      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.user.toString()} ging von ${oldMember.voiceChannel.name} zu ${newMember.voiceChannel.name}`; // eslint-disable-line
+      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} ging von ${oldMember.voiceChannel.name} zu ${newMember.voiceChannel.name}`; // eslint-disable-line
     }
-    bot.channels.get(conf.vlogChannel).sendEmbed({
+    bot.channels.get(conf.vlogchannel).sendEmbed({
       color: clr,
       author: {
         name: newMember.user.username,
