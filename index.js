@@ -252,7 +252,7 @@ bot.on('disconnect', () => {
 
 
 process.on('unhandledRejection', (err) => {
-  console.error(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`); // eslint-disable-line
+  bot.err(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`); // eslint-disable-line
 });
 
 bot.login(bot.internal.auth.dtoken);
