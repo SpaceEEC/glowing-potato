@@ -7,8 +7,8 @@ const bot = new Discord.Client();
 bot.db = require('sqlite');
 
 // log stuff
-bot.log = (msg) => { console.log(`[${moment().format('YYYY-MM-DD HH:mm:ss')}]: ${msg}`); }; // eslint-disable-line
-bot.err = (msg) => { console.error(`[${moment().format('YYYY-MM-DD HH:mm:ss')}]: ${msg}`); }; // eslint-disable-line
+bot.log = (msg) => { console.log(`[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${msg}`); }; // eslint-disable-line
+bot.err = (msg) => { console.error(`[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${msg}`); }; // eslint-disable-line
 
 // config and confs
 bot.confs = new Discord.Collection();
