@@ -12,7 +12,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
     member = msg.mentions.users.size !== 0 ? msg.mentions.users.first() :
       bot.users.has(params[0]) ? bot.users.get(params[0]) : msg.author;
   }
-  const gmember = msg.guild.member(bot.users.get(member));
+  const gmember = msg.guild.member(member);
   if (!member) { return msg.channel.sendMessage('Fehler im Code, bitte `@space#0302` anschreiben.'); }
   if (!gmember) {
     return msg.channel.sendMessage(
