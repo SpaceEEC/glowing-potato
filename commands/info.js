@@ -41,8 +41,10 @@ ${moment(member.createdAt).format('DD.MM.YYYY')}
           },
           {
             name: '❯ Serverseitig:',
-            value: `${gmember.nickname ? `• Nickname: \`${gmember.nickname}\`` : ''}
-• Beigetreten:\n${moment(gmember.joinedAt).format('DD.MM.YYYY')}
+            value: `${
+gmember.nickname ? `• Nickname: \`${gmember.nickname}\`` : ''}
+• Beigetreten am:
+${moment(gmember.joinedAt).format('DD.MM.YYYY')}
 ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
             inline: true,
           },
