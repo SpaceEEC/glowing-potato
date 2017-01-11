@@ -25,8 +25,8 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
         color: 0xffa500,
         author: {
           name: `Stats`,
-          icon_url: member.avatarURL,
-          url: member.avatarURL,
+          icon_url: member.displayAvatarURL,
+          url: member.displayAvatarURL,
         },
         description: `${gmember.toString()}`,
         fields: [
@@ -48,11 +48,11 @@ ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
           },
         ],
         thumbnail: {
-          url: member.avatarURL,
+          url: member.displayAvatarURL,
         },
         timestamp: new Date(),
         footer: {
-          icon_url: bot.user.avatarURL,
+          icon_url: msg.author.avatarURL,
           text: msg.content,
         },
       };
