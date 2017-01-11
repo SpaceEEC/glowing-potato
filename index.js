@@ -149,12 +149,12 @@ bot.on('guildMemberAdd', (member) => {
       bot.err(`Fehler beim Schreiben in logchannel(${conf.logchannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`); // eslint-disable-line
     });
   }
-  if (conf.joinleavechannel) {
-    if (!bot.channels.get(conf.joinleavechannel)
+  if (conf.anchannel) {
+    if (!bot.channels.get(conf.anchannel)
       .permissionsFor(member.guild.member(bot.user))
       .hasPermission('SEND_MESSAGES')) return;
-    member.guild.channels.get(conf.joinleavechannel).sendMessage(response).catch(e => {
-      bot.err(`Fehler beim Schreiben in joinleavechannel(${conf.joinleavechannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`); // eslint-disable-line
+    member.guild.channels.get(conf.anchannel).sendMessage(response).catch(e => {
+      bot.err(`Fehler beim Schreiben in anchannel(${conf.anchannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`); // eslint-disable-line
     });
   }
 });
@@ -176,12 +176,12 @@ bot.on('guildMemberRemove', (member) => {
 ${e.stack ? e.stack : e}`);
     });
   }
-  if (conf.joinleavechannel) {
-    if (!bot.channels.get(conf.joinleavechannel)
+  if (conf.anchannel) {
+    if (!bot.channels.get(conf.anchannel)
       .permissionsFor(member.guild.member(bot.user))
       .hasPermission('SEND_MESSAGES')) return;
-    member.guild.channels.get(conf.joinleavechannel).sendMessage(response).catch(e => {
-      bot.err(`Fehler beim Schreiben in joinleavechannel(${conf.joinleavechannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`); // eslint-disable-line
+    member.guild.channels.get(conf.anchannel).sendMessage(response).catch(e => {
+      bot.err(`Fehler beim Schreiben in anchannel(${conf.anchannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`); // eslint-disable-line
     });
   }
 });
