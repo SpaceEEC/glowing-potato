@@ -1,3 +1,6 @@
+const request = require('superagent');
+
+
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
   if (!params[0]) {
     return msg.channel.sendEmbed({
@@ -42,7 +45,12 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 function query(bot, msg, params) {
+  request.get(`URL`)
+    .send(null)
+    .set('Content-Type', 'application/json')
+    .end((err, res) => {
 
+    });
 }
 
 
