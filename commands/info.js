@@ -6,13 +6,18 @@ const package = require('../package.json');
 
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
   let member;
-  if (msg.content.slice(msg.conf.prefix.length).split(' ')[0].toLowerCase() === 'info') {
+  if (msg.cmd === 'info') {
     member = bot.user;
   } else {
-    member = msg.mentions.users.first() ? msg.mentions.users.first() : msg.author;
+    member = msg.mentions.users.size !== 0 ? msg.mentions.users.first() :
+      bot.users.has(params[0]) ? bot.users.get(params[0]) : msg.author;
   }
-  const gmember = msg.guild.member(bot.users.get(member.id));
+  const gmember = msg.guild.member(bot.users.get(member));
   if (!member) { return msg.channel.sendMessage('Fehler im Code, bitte `@space#0302` anschreiben.'); }
+  if (!gmember) {
+    return msg.channel.sendMessage(
+      'Dieser Nutzer befindet sich in der Datenbank, ist aber nicht in dieser Gilde zu finden.');
+  }
   let embed;
   if (member !== bot.user) {
     try {
