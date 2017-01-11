@@ -65,8 +65,12 @@ const reload = (bot, msg, params) => new Promise(() => {
         msg.channel.sendMessage(`Neu laden von \`${params[i]}\` erfolgreich abgeschlossen.`);
       })
         .catch((err) => {
-          bot.err(`Es ist ein Fehler beim neu Laden von ${params[i]} aufgetreten:\n${err.stack ? err.stack : err}`);
-          msg.channel.sendMessage(`Es ist ein Fehler beim neu Laden von \`${params[i]}\` aufgetrten.`);
+          if (err.message.startsWith('Cannot find module ')) {
+            msg.channel.sendMessage(`Konnte die Datei \`${params[i]}.js\` nicht finden.\nVerwendest du einen Alias? 👀`);
+          } else {
+            bot.err(`Es ist ein Fehler beim neu Laden von ${params[i]} aufgetreten:\n${err.stack ? err.stack : err}`);
+            msg.channel.sendMessage(`Es ist ein Fehler beim neu Laden von \`${params[i]}\` aufgetrten.`);
+          }
         });
     }
   }
