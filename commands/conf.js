@@ -108,9 +108,9 @@ const sendconf = (bot, msg, embed, options) => new Promise(() => {
           if (content === 'cancel') {
             return msg.channel.sendMessage('Vorgang wird abgebrochen...')
               .then(mesg => {
-                mesg.delete(2000);
-                msg.delete(2000);
-                collected.first().delete(2000);
+                mesg.delete();
+                msg.delete();
+                collected.first().delete();
               });
           }
           collected.first().delete();
@@ -159,9 +159,9 @@ const sendvalue = (bot, msg, key) => new Promise(() => {
           if (content === 'cancel') {
             return msg.channel.sendMessage('Vorgang wird abgebrochen...')
               .then(mesg => {
-                collected.first().delete(2000);
-                mesg.delete(2000);
-                msg.delete(2000);
+                collected.first().delete();
+                mesg.delete();
+                msg.delete();
               });
           } else if (content === 'reset') {
             return bot.internal.config.reset(bot, collected.first(), key).then(r => {
