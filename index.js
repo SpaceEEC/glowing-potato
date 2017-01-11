@@ -72,6 +72,7 @@ bot.on('message', async (msg) => {
       const time = +new Date;
       try {
         msg.conf = conf;
+        msg.cmd = command;
         const code = params.join(' ');
         let evaled = eval(code);
         const response_typeof = typeof evaled;
