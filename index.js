@@ -136,7 +136,7 @@ Walte über
 
 bot.on('guildMemberAdd', (member) => {
   if (member.user.id === bot.user.id) return;
-  const conf = bot.confs.get(member.guild.id).conf;
+  const conf = bot.confs.get(member.guild.id);
   if (!conf.joinmsg) return;
   const response = conf.joinmsg
     .split(':user:').join(member)
@@ -162,7 +162,7 @@ bot.on('guildMemberAdd', (member) => {
 
 bot.on('guildMemberRemove', (member) => {
   if (member.user.id === bot.user.id) return;
-  const conf = bot.confs.get(member.guild.id).conf;
+  const conf = bot.confs.get(member.guild.id);
   if (!conf.leavemsg) return;
   const response = conf.leavemsg
     .split(':user:').join(member)
