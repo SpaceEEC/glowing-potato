@@ -100,10 +100,11 @@ function query(search, msg, bot) {
   request.get(`https://anilist.co/api/${msg.cmd}/search/${search}?access_token=${bot.config.ani_token}`)
     .send(null)
     .set('Content-Type', 'application/json')
-    .end((err, res) => { // eslint-disable-line
+    .end((err, res) => {
       if (err) return msg.channel.sendMessage(`Es ist ein Fehler aufgetreten:\n\`${err.message}\``);
       let response;
-      try {
+      response = JSON.parse(res.text);
+      /* try {
         response = JSON.parse(res.text);
       } catch (e) {
         bot.err('Fehler beim Parsen der Antwort von anilist');
@@ -115,7 +116,7 @@ function query(search, msg, bot) {
         if (res) bot.err(Object.getOwnPropertyNames(res));
         bot.err(e);
         return msg.chanel.sendMessage('Es ist ein Fehler beim Parsen der Antwort von Anilist aufgetreten.');
-      }
+      }*/
       if (response.error) {
         if (response.error.messages[0] === 'No Results.') {
           return msg.channel.sendEmbed(
@@ -123,11 +124,19 @@ function query(search, msg, bot) {
               .setColor(0xffff00)
               .setDescription(`Keinen ${msg.cmd} auf diese Anfrage gefunden.`)
               .setFooter(`${msg.author.username}: ${msg.content}`, msg.author.avatarURL));
+        } else {
+          return msg.channel.sendEmbed(
+            new bot.methods.Embed()
+              .setColor(0xffff00)
+              .setTitle('Unerwarteter Fehler:')
+              .setDescription(`Sowas sollte nicht passieren.
+Bitte kontaktiere \`spaceeec#0302\`\n\n${response.error.messages[0]}`)
+              .setFooter(`${msg.author.username}: ${msg.content}`, msg.author.avatarURL));
         }
       } else if (!response[1]) {
-        answer(response[0], msg, bot);
+        return answer(response[0], msg, bot);
       } else {
-        getanswer(bot, msg, response);
+        return getanswer(bot, msg, response);
       }
     });
 }
