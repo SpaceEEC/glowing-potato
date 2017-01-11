@@ -260,7 +260,7 @@ function blacklist(msg, rsp) {
 
 
 exports.conf = {
-  group: 'Allgemeines',
+  group: 'Sonstiges',
   spamProtection: false,
   enabled: true,
   aliases: ['tags'],
