@@ -1,49 +1,41 @@
-exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => {
   if (!params[0]) {
-    return msg.channel.sendEmbed({
+    const message = await msg.channel.sendEmbed({
       description: 'Gib den zu Ignorierenden Nutzer/Channel per @Mention, #Channel oder per ID an.',
       color: msg.member.highestRole.color,
       fields: [{
         name: '\u200b',
         value: 'Um diese Anfrage abzubrechen gib `cancel` ein oder lass einfach 30 Sekunden verstreichen.',
       }],
-    }).then(message => {
-      msg.channel.awaitMessages(function filter(message, collector) { // eslint-disable-line
-        if (message.author.id === this.options.mes.author.id) { // eslint-disable-line
-          return true;
-        } else {
-          return false;
-        }
-      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] })
-        .then(collected => {
-          let content = collected.first().content;
-          message.delete();
-          if (content === 'cancel') {
-            bot.log('cancel');
-            msg.delete();
-            return collected.first().delete();
-          } else {
-            bot.log('else');
-            collected.first().conf = msg.conf;
-            return ignore(bot, collected.first(), collected.first().content.split(' '));
-          }
-        }).catch((error) => {
-          if (!error.size) {
-            bot.log('catch');
-            msg.delete();
-            message.delete();
-            bot.err(error.stack);
-          }
-        });
     });
+    try {
+      const collected = await msg.channel.awaitMessages(function filter(message, collector) { // eslint-disable-line
+        return message.author.id === this.options.mes.author.id; // eslint-disable-line
+      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
+      let content = collected.first().content;
+      message.delete();
+      if (content === 'cancel') {
+        msg.delete();
+        return collected.first().delete();
+      } else {
+        collected.first().conf = msg.conf;
+        return ignore(bot, collected.first(), collected.first().content.split(' '));
+      }
+    } catch (error) {
+      msg.delete();
+      message.delete();
+      bot.err(error.stack);
+    }
   }
   if (params[0] === 'channels') {
-    return bot.internal.config.get(bot, msg, 'ignchannels').then(v => msg.channel.sendMessage(v));
+    const response = await bot.internal.config.get(bot, msg, 'ignchannels');
+    return msg.channel.sendMessage(response);
   } else if (params[0] === 'users') {
-    return bot.internal.config.get(bot, msg, 'ignusers').then(v => msg.channel.sendMessage(v));
+    const response = await bot.internal.config.get(bot, msg, 'ignusers');
+    return msg.channel.sendMessage(response);
   }
-  ignore(bot, msg, params);
-});
+  return ignore(bot, msg, params);
+};
 
 
 function ignore(bot, msg, params) {
