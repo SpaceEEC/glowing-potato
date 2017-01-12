@@ -13,13 +13,7 @@ bot.err = (msg) => { console.error(`[${moment().format('DD.MM.YYYY HH:mm:ss')}]:
 // config and confs
 bot.confs = new Discord.Collection();
 bot.config = {};
-bot.db.open('./var/db.sqlite').then(() => {
-  bot.db.get('SELECT * FROM config').then((stuff) => {
-    for (let key in stuff) {
-      bot.config[key] = stuff[key];
-    }
-  });
-});
+// bot.db is defined in ./internal/internal.js
 
 // methods
 bot.methods = {};
@@ -228,9 +222,9 @@ bot.on('guildCreate', (guild) => {
   newguild.id = guild.id;
   newguild.name = guild.name;
   bot.confs.set(newguild.id, newguild);
-  bot.db.run('INSERT INTO confs(id,name,prefix,modrole,adminrole,logchannel,anchannel' +
-    ',ignchannels,vlogchannel,ignusers,joinmsg,leavemsg,disabledcommands)' +
-    'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);',
+  bot.db.run('INSERT INTO confs(id,name,prefix,modrole,adminrole,logchannel,anchannel'
+    + ',ignchannels,vlogchannel,ignusers,joinmsg,leavemsg,disabledcommands)'
+    + 'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);',
     [
       newguild.id, newguild.name, newguild.prefix, null, null, null, null,
       newguild.ignchannels, null, newguild.ignusers, null, null, newguild.disabledcommands,
