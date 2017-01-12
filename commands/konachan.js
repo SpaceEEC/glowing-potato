@@ -1,44 +1,42 @@
 const request = require('superagent');
 
 
-exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => {
   // Validating
   if (!params[0]) {
-    return msg.channel.sendEmbed(new bot.methods.Embed()
+    const mes = await msg.channel.sendEmbed(new bot.methods.Embed()
       .setColor(msg.member.highestRole.color)
       .setDescription('Du hast vergessen die Tags anzugeben.\n\nDas war absicht, oder? 👀'
       + '\n\nSchreibe sie in den Chat und du bekommst dein Bild.')
-      .addField('\u200b', 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um abzubrechen.')
-    ).then((mes) => {
-      msg.channel.awaitMessages(function filter(input, collector) { // eslint-disable-line
+      .addField('\u200b', 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um abzubrechen.'));
+    try {
+      const collected = await msg.channel.awaitMessages(function filter(input, collector) { // eslint-disable-line
         if (input.author.id === this.options.mes.author.id) { // eslint-disable-line
           return true;
         } else {
           return false;
         }
-      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] }
-      ).then(collected => {
-        const input = collected.first().content;
+      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
+      const input = collected.first().content;
+      mes.delete();
+      if (input === 'cancel') {
+        collected.first().delete();
+        msg.delete();
+      } else {
+        prepare(bot, msg, input.split(' '));
+      }
+    } catch (err) {
+      if (!err.size) {
+        msg.delete();
         mes.delete();
-        if (input === 'cancel') {
-          collected.first().delete();
-          msg.delete();
-        } else {
-          prepare(bot, msg, input.split(' '));
-        }
-      }).catch(err => {
-        if (!err.size) {
-          msg.delete();
-          mes.delete();
-        } else {
-          bot.err(err.stack ? err.stack : err);
-        }
-      });
-    });
+      } else {
+        bot.err(err.stack ? err.stack : err);
+      }
+    }
   } else {
     prepare(bot, msg, params);
   }
-});
+};
 
 
 function prepare(bot, msg, params) {
@@ -75,78 +73,74 @@ function prepare(bot, msg, params) {
 }
 
 
-function konachan(bot, msg, params = []) {
-  request.get(`http://konachan.com/post.json?tags=${`${params.join('+')}+rating:s&limit=100`}`)
+async function konachan(bot, msg, params = []) {
+  const res = await request.get(`http://konachan.com/post.json?tags=${`${params.join('+')}+rating:s&limit=100`}`)
     .send(null)
-    .set('Accept', 'application/json')
-    .end((err, res) => { // eslint-disable-line
-      if (Array.from(res.body).length === 0) {
-        return msg.channel.sendEmbed({
-          color: 0xFFFF00,
-          author: {
-            name: 'konachan.net',
-            url: 'http://konachan.net/',
-            icon_url: 'http://konachan.net/favicon.ico',
-          },
-          fields: [
-            {
-              name: 'Keine Ergebnisse',
-              value: 'Vielleicht einen Tippfehler gemacht?',
-            },
-            {
-              name: 'Suche:',
-              value: `[Link](http://konachan.net/post?tags=${params.join('+')})`,
-            },
-          ],
-        });
-      }
-      const image = res.body[Math.floor(Math.random() * (res.body.length - 0)) + 0];
-      return msg.channel.sendEmbed({
-        description: `[Source](http://konachan.net/post/show/${image.id})`,
-        color: msg.guild.member(msg.author).highestRole.color,
-        type: 'image',
-        image: { url: `http:${image.sample_url}` },
-      }).catch((e) => {
-        msg.channel.sendCode(require('util').inspect(image));
-        return msg.channel.sendCode('js', e.stack);
-      });
+    .set('Accept', 'application/json');
+  if (Array.from(res.body).length === 0) {
+    return msg.channel.sendEmbed({
+      color: 0xFFFF00,
+      author: {
+        name: 'konachan.net',
+        url: 'http://konachan.net/',
+        icon_url: 'http://konachan.net/favicon.ico',
+      },
+      fields: [
+        {
+          name: 'Keine Ergebnisse',
+          value: 'Vielleicht einen Tippfehler gemacht?',
+        },
+        {
+          name: 'Suche:',
+          value: `[Link](http://konachan.net/post?tags=${params.join('+')})`,
+        },
+      ],
     });
+  }
+  const image = res.body[Math.floor(Math.random() * (res.body.length - 0)) + 0];
+  return msg.channel.sendEmbed({
+    description: `[Source](http://konachan.net/post/show/${image.id})`,
+    color: msg.guild.member(msg.author).highestRole.color,
+    type: 'image',
+    image: { url: `http:${image.sample_url}` },
+  }).catch((e) => {
+    msg.channel.sendCode(require('util').inspect(image));
+    return msg.channel.sendCode('js', e.stack);
+  });
 }
 
 
-function donmai(bot, msg, params = []) {
-  request.get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${params.join('+')}`)
+async function donmai(bot, msg, params = []) {
+  const res = await request.get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${params.join('+')}`)
     .send(null)
-    .set('Accept', 'application/json')
-    .end((err, res) => { // eslint-disable-line
-      if (res.body.success === false) return msg.channel.sendMessage(`Der Server meldet:\n\`${res.body.message}\``);
-      if (res.body.length === 0) {
-        return msg.channel.sendEmbed({
-          color: 0xFFFF00,
-          author: {
-            name: 'safebooru.donmai.us',
-            url: 'http://safebooru.donmai.us/',
-            icon_url: 'http://safebooru.donmai.us/favicon.ico',
-          },
-          fields: [
-            {
-              name: 'Keine Ergebnisse',
-              value: 'Vielleicht einen Tippfehler gemacht?',
-            },
-            {
-              name: 'Suche:',
-              value: `[Link](http://safebooru.donmai.us/posts/?tags=${params.join('+')})`,
-            },
-          ],
-        });
-      }
-      return msg.channel.sendEmbed({
-        description: `[Source](http://safebooru.donmai.us/posts/${res.body[0].id}/)`,
-        color: msg.guild.member(msg.author).highestRole.color,
-        type: 'image',
-        image: { url: `http://safebooru.donmai.us/${res.body[0].file_url}` },
-      });
+    .set('Accept', 'application/json');
+  if (res.body.success === false) return msg.channel.sendMessage(`Der Server meldet:\n\`${res.body.message}\``);
+  if (res.body.length === 0) {
+    return msg.channel.sendEmbed({
+      color: 0xFFFF00,
+      author: {
+        name: 'safebooru.donmai.us',
+        url: 'http://safebooru.donmai.us/',
+        icon_url: 'http://safebooru.donmai.us/favicon.ico',
+      },
+      fields: [
+        {
+          name: 'Keine Ergebnisse',
+          value: 'Vielleicht einen Tippfehler gemacht?',
+        },
+        {
+          name: 'Suche:',
+          value: `[Link](http://safebooru.donmai.us/posts/?tags=${params.join('+')})`,
+        },
+      ],
     });
+  }
+  return msg.channel.sendEmbed({
+    description: `[Source](http://safebooru.donmai.us/posts/${res.body[0].id}/)`,
+    color: msg.guild.member(msg.author).highestRole.color,
+    type: 'image',
+    image: { url: `http://safebooru.donmai.us/${res.body[0].file_url}` },
+  });
 }
 
 

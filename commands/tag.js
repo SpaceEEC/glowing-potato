@@ -1,4 +1,4 @@
-exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.run = async(bot, msg, params = []) => { // eslint-disable-line
   // This whole file is a mess. >.<
   // Validating
   if (params[0] && bot.internal.tags.has(`${msg.guild.id}|${params[0]}`)) {
