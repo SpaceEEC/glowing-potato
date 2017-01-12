@@ -67,7 +67,7 @@ ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
       fields: [
         {
           name: '❯ Online seit:',
-          value: `• ${moment.duration(bot.uptime).format(' D [Tage], H [Stunden], m [Minuten], s [Sekunden]')}`,
+          value: `• ${moment.duration(bot.uptime).format(' D [Tage], H [Stunden], m [Min.], s [Sek.]')}`,
           inline: true,
         },
         {

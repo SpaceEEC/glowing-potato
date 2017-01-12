@@ -162,7 +162,7 @@ exports.conf = {
 exports.help = {
   name: 'konachan',
   description: 'Über diesen Befehl kann von safebooru.donmai.us/konachan.net ein zufälliges (durch Tags spezifiziertes) Bild abgerufen werden.', // eslint-disable-line
-  shortdescription: 'oder auch `$conf.prefixdonmai`',
+  shortdescription: 'bzw. `$conf.prefixdonmai`',
   usage: '`$conf.prefixkonachan [tags mit Leerzeichen trennen.]'
   + '\n$conf.prefixdonmai [tags mit Leerzeichen trennen]`'
   + '\nAnwendungsbeispiel:'

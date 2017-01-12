@@ -109,9 +109,8 @@ Ausgeführt in: \`${new Date().getTime() - time}\`ms`);
 
 bot.once('ready', async () => {
   bot.config.prefixMention = new RegExp(`^<@!?${bot.user.id}>`);
-  bot.log('ready');
   const app = await bot.fetchApplication();
-  bot.log(app.name);
+  bot.log(`${app.name} bereit!`);
   /* bot.fetchApplication().then(coa => {
     bot.channels
       .get('257831397983518722')
@@ -141,7 +140,7 @@ bot.on('guildMemberAdd', (member) => {
       .permissionsFor(member.guild.member(bot.user))
       .hasPermission('SEND_MESSAGES')) return;
     member.guild.channels.get(conf.logchannel).sendMessage(response).catch(e => {
-      bot.err(`Fehler beim Schreiben in logchannel(${conf.logchannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`); // eslint-disable-line
+      bot.err(`Fehler beim Schreiben in logchannel(${conf.logchannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`);
     });
   }
   if (conf.anchannel) {
@@ -149,7 +148,7 @@ bot.on('guildMemberAdd', (member) => {
       .permissionsFor(member.guild.member(bot.user))
       .hasPermission('SEND_MESSAGES')) return;
     member.guild.channels.get(conf.anchannel).sendMessage(response).catch(e => {
-      bot.err(`Fehler beim Schreiben in anchannel(${conf.anchannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`); // eslint-disable-line
+      bot.err(`Fehler beim Schreiben in anchannel(${conf.anchannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`);
     });
   }
 });
@@ -176,7 +175,7 @@ ${e.stack ? e.stack : e}`);
       .permissionsFor(member.guild.member(bot.user))
       .hasPermission('SEND_MESSAGES')) return;
     member.guild.channels.get(conf.anchannel).sendMessage(response).catch(e => {
-      bot.err(`Fehler beim Schreiben in anchannel(${conf.anchannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`); // eslint-disable-line
+      bot.err(`Fehler beim Schreiben in anchannel(${conf.anchannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`);
     });
   }
 });
@@ -194,15 +193,15 @@ bot.on('voiceStateUpdate', (oldMember, newMember) => {
     // leave
     if (newMember.voiceChannel === undefined) {
       clr = 0xFF4500;
-      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} hat die Verbindung aus ${oldMember.voiceChannel.name} getrennt.`; // eslint-disable-line
+      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} hat die Verbindung aus ${oldMember.voiceChannel.name} getrennt.`;
     } else if (oldMember.voiceChannel === undefined) {
       // join
       clr = 0x7CFC00;
-      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} hat sich in ${newMember.voiceChannel.name} eingeloggt.`; // eslint-disable-line
+      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} hat sich in ${newMember.voiceChannel.name} eingeloggt.`;
     } else {
       // move
       clr = 3447003;
-      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} ging von ${oldMember.voiceChannel.name} zu ${newMember.voiceChannel.name}`; // eslint-disable-line
+      desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} ging von ${oldMember.voiceChannel.name} zu ${newMember.voiceChannel.name}`;
     }
     bot.channels.get(conf.vlogchannel).sendEmbed({
       color: clr,
