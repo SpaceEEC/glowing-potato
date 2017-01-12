@@ -8,19 +8,22 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   } else if (bot.aliases.has(params[1])) {
     cmd = bot.commands.get(bot.aliases.get(params[1])).help.name;
   }
+  if (['abgespaced', 'Adminstuff', 'Allgemeines'].includes(bot.commands.get(params[1]).conf.group)) {
+    return msg.channel.sendMessage(`Dieser Befehl kann nicht deaktiviert werden.`);
+  }
   if (params[0] === 'disable') {
     return bot.internal.config.add(bot, msg, 'disabledcommands', cmd)
-    .then(() => {
-      msg.channel.sendMessage(`Der Befehl \`${cmd}\` wurde Erfolgreich deaktiviert.`);
-    })
-    .catch(e => msg.channel.sendMessage(e));
+      .then(() => {
+        msg.channel.sendMessage(`Der Befehl \`${cmd}\` wurde Erfolgreich deaktiviert.`);
+      })
+      .catch(e => msg.channel.sendMessage(e));
   }
   if (params[0] === 'enable') {
     return bot.internal.config.remove(bot, msg, 'disabledcommands', cmd)
-    .then(() => {
-      msg.channel.sendMessage(`Der Befehl \`${cmd}\` wurde Erfolgreich aktiviert.`);
-    })
-    .catch(e => msg.channel.sendMessage(e));
+      .then(() => {
+        msg.channel.sendMessage(`Der Befehl \`${cmd}\` wurde Erfolgreich aktiviert.`);
+      })
+      .catch(e => msg.channel.sendMessage(e));
   }
 });
 
