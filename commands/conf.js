@@ -75,11 +75,11 @@ function menu(bot, msg) {
     title: 'Konfigurationsmenü',
     description: `Welchen Wert wünscht du zu ändern?\n\n${options
       .keyArray()
-      .map(k => `${k}. ${options.get(k)} - \`${msg.conf[options.get(k)] ?
-        msg.conf[options.get(k)].length === 0 ?
-          '[]' :
-          msg.conf[options.get(k)] :
-        msg.conf[options.get(k)]}\``)
+      .map(k => `${k}. ${options.get(k)} - \`${msg.conf[options.get(k)]
+        ? msg.conf[options.get(k)].length === 0
+        ? '[]'
+        : msg.conf[options.get(k)]
+        : msg.conf[options.get(k)]}\``)
       .join('\n')}`,
     fields: [
       {
@@ -139,10 +139,10 @@ const sendvalue = (bot, msg, key) => new Promise(() => {
         color: 0x0000ff,
         fields: [{
           name: 'Bitte einen neuen Wert für diesen Schlüssel eingeben.',
-          value: 'Je nach Schlüssel sind ein Text oder die ID (@Mentions oder #Channel sind auch möglich) gültige Werte.' + // eslint-disable-line
-          '\n\u200b' +
-          '\nZum Löschen `reset` eingeben.' +
-          '\nZum Abbrechen `cancel` eingeben.',
+          value: 'Je nach Schlüssel sind ein Text oder die ID (@Mentions oder #Channel sind auch möglich) gültige Werte.'
+          + '\n\u200b'
+          + '\nZum Löschen `reset` eingeben.'
+          + '\nZum Abbrechen `cancel` eingeben.',
         }],
       },
     }).then(mes => {
@@ -202,8 +202,8 @@ exports.help = {
   name: 'conf',
   shortdescription: 'Konfiguration',
   description: 'Mit diesem Befehl ist es möglich den Bot auf dieser Gilde zu konfigurieren.',
-  usage: '$conf.prefixconf menu - Interaktives Menü' +
-  '\n$conf.prefixconf <list|show> - Zeigt die Konfiguration an.' +
-  '\n$conf.prefixconf <get|reset> [Key]' +
-  '\n$conf.prefixconf <set> [Key] [Value]',
+  usage: '$conf.prefixconf menu - Interaktives Menü'
+  + '\n$conf.prefixconf <list|show> - Zeigt die Konfiguration an.'
+  + '\n$conf.prefixconf <get|reset> [Key]'
+  + '\n$conf.prefixconf <set> [Key] [Value]',
 };

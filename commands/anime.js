@@ -192,9 +192,9 @@ function answer(response, msg, bot, mes) {
   const embed = new bot.methods.Embed()
     .setColor(0x0800ff)
     .setTitle(response.title_japanese)
-    .setDescription(response.title_romaji === response.title_english ?
-      response.title_english :
-      `${response.title_romaji}\n${response.title_english}`)
+    .setDescription(response.title_romaji === response.title_english
+      ? response.title_english
+      : `${response.title_romaji}\n${response.title_english}`)
     .setThumbnail(response.image_url_lge)
     .addField('Genres', response.genres.join(', '), true)
     .addField('Bewertung | Typ', `${response.average_score} | ${response.type}`, true);
@@ -209,10 +209,10 @@ function answer(response, msg, bot, mes) {
     let title = 'Start';
     let value = formatFuzzy(response.start_date_fuzzy);
     if (
-      (response.airing_status &&
-        response.airing_status === 'finished airing') ||
-      (response.publishing_status &&
-        response.publishing_status === 'finished publishing')) {
+      (response.airing_status
+      && response.airing_status === 'finished airing')
+      || (response.publishing_status
+      && response.publishing_status === 'finished publishing')) {
       title = 'Zeitraum';
       value += ` - ${response.end_date_fuzzy ? formatFuzzy(response.end_date_fuzzy) : `Nicht angegeben`}`;
     }
@@ -276,6 +276,6 @@ exports.help = {
   name: 'anime',
   description: 'Gibt Infos über den gesuchten Anime oder Manga.',
   shortdescription: 'oder auch `$conf.prefixmanga`',
-  usage: '$conf.prefixanime [Suchbegriff(e)]' +
-  '\n$conf.prefixmanga [Suchbegriff(e)]',
+  usage: '$conf.prefixanime [Suchbegriff(e)]'
+  + '\n$conf.prefixmanga [Suchbegriff(e)]',
 };

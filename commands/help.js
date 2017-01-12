@@ -98,9 +98,9 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   });
   msg.channel.sendEmbed({
     color: 3447003,
-    description: alias ?
-      `Der Befehl \`${msg.conf.prefix + params[0]}\` ist ein Alias von \`${msg.conf.prefix + cmd.help.name}\`.` :
-      undefined,
+    description: alias
+      ? `Der Befehl \`${msg.conf.prefix + params[0]}\` ist ein Alias von \`${msg.conf.prefix + cmd.help.name}\`.`
+      : undefined,
     fields: [
       {
         name: `Der Befehl \`${msg.conf.prefix + cmd.help.name}\` hat folgende Funktion:`,

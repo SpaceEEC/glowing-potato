@@ -6,8 +6,8 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   if (!params[0]) {
     return msg.channel.sendEmbed(new bot.methods.Embed()
       .setColor(msg.member.highestRole.color)
-      .setDescription('Du hast vergessen die Tags anzugeben.\n\nDas war absicht, oder? 👀' +
-      '\n\nSchreibe sie in den Chat und du bekommst dein Bild.')
+      .setDescription('Du hast vergessen die Tags anzugeben.\n\nDas war absicht, oder? 👀'
+      + '\n\nSchreibe sie in den Chat und du bekommst dein Bild.')
       .addField('\u200b', 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um abzubrechen.')
     ).then((mes) => {
       msg.channel.awaitMessages(function filter(input, collector) { // eslint-disable-line
@@ -100,14 +100,12 @@ function konachan(bot, msg, params = []) {
           ],
         });
       }
-      const image = res.body[~~(Math.random() * (res.body.length - 0)) + 0];
+      const image = res.body[Math.floor(Math.random() * (res.body.length - 0)) + 0];
       return msg.channel.sendEmbed({
         description: `[Source](http://konachan.net/post/show/${image.id})`,
         color: msg.guild.member(msg.author).highestRole.color,
         type: 'image',
-        image: {
-          url: `http:${image.sample_url}`,
-        },
+        image: { url: `http:${image.sample_url}` },
       }).catch((e) => {
         msg.channel.sendCode(require('util').inspect(image));
         return msg.channel.sendCode('js', e.stack);
@@ -146,9 +144,7 @@ function donmai(bot, msg, params = []) {
         description: `[Source](http://safebooru.donmai.us/posts/${res.body[0].id}/)`,
         color: msg.guild.member(msg.author).highestRole.color,
         type: 'image',
-        image: {
-          url: `http://safebooru.donmai.us/${res.body[0].file_url}`,
-        },
+        image: { url: `http://safebooru.donmai.us/${res.body[0].file_url}` },
       });
     });
 }
@@ -167,9 +163,9 @@ exports.help = {
   name: 'konachan',
   description: 'Über diesen Befehl kann von safebooru.donmai.us/konachan.net ein zufälliges (durch Tags spezifiziertes) Bild abgerufen werden.', // eslint-disable-line
   shortdescription: 'oder auch `$conf.prefixdonmai`',
-  usage: '`$conf.prefixkonachan [tags mit Leerzeichen trennen.]' +
-  '\n$conf.prefixdonmai [tags mit Leerzeichen trennen]`' +
-  '\nAnwendungsbeispiel:' +
-  '\n`$conf.prefixkonachan polychromatic white`' +
-  '\n`$conf.prefixbild donmai touhou long_hair`',
+  usage: '`$conf.prefixkonachan [tags mit Leerzeichen trennen.]'
+  + '\n$conf.prefixdonmai [tags mit Leerzeichen trennen]`'
+  + '\nAnwendungsbeispiel:'
+  + '\n`$conf.prefixkonachan polychromatic white`'
+  + '\n`$conf.prefixbild donmai touhou long_hair`',
 };

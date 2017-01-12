@@ -76,8 +76,8 @@ exports.help = {
   name: 'quote',
   description: 'Ruft ein zufälliges Zitat ab oder fügt eines hinzu.',
   shortdescription: 'Zitate',
-  usage: '$conf.prefixquote - Ruft ein zufälliges Zitat ab.' +
-  '\n$conf.prefixquote <reload|info> - Neu laden oder Infos anzeigen.' +
-  '\n$conf.prefixquote <add> <text|img> [msg_id] - Fügt ein Zitat mithilfe die Message ID hinzu.' +
-  '\n\tBei <img> wird die erste URL im Text als Bild angezeigt.',
+  usage: '$conf.prefixquote - Ruft ein zufälliges Zitat ab.'
+  + '\n$conf.prefixquote <reload|info> - Neu laden oder Infos anzeigen.'
+  + '\n$conf.prefixquote <add> <text|img> [msg_id] - Fügt ein Zitat mithilfe die Message ID hinzu.'
+  + '\n\tBei <img> wird die erste URL im Text als Bild angezeigt.',
 };

@@ -19,12 +19,8 @@ exports.add = (bot, guild, type, id, color, name, icon_url, description, img) =>
                 value: description,
               },
             ],
-            footer: {
-              text: name,
-            },
-            thumbnail: {
-              url: icon_url,
-            },
+            footer: { text: name },
+            thumbnail: { url: icon_url },
           });
           resolve();
         } catch (e) {
@@ -51,9 +47,7 @@ exports.add = (bot, guild, type, id, color, name, icon_url, description, img) =>
               icon_url: icon_url,
             },
             type: 'image',
-            image: {
-              url: img,
-            },
+            image: { url: img },
           });
           resolve();
         } catch (e) {
@@ -79,12 +73,8 @@ exports.init = (bot) => new Promise((resolve, reject) => {
               value: rows[i].description,
             },
           ],
-          footer: {
-            text: rows[i].name,
-          },
-          thumbnail: {
-            url: rows[i].icon_url,
-          },
+          footer: { text: rows[i].name },
+          thumbnail: { url: rows[i].icon_url },
         });
       } else if (rows[i].type === 'img') {
         bot.internal.quotes.set(`${rows[i].guild}|${rows[i].id}`, {
@@ -95,9 +85,7 @@ exports.init = (bot) => new Promise((resolve, reject) => {
             icon_url: rows[i].icon_url,
           },
           type: 'image',
-          image: {
-            url: rows[i].img,
-          },
+          image: { url: rows[i].img },
         });
       }
     }

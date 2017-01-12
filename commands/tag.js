@@ -18,9 +18,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       color: msg.guild.member(msg.author).highestRole.color,
       description: 'Fehler: Tag nicht gefunden.',
       type: 'image',
-      image: {
-        url: response[~~(Math.random() * (response.length - 0)) + 0],
-      },
+      image: { url: response[Math.floor(Math.random() * (response.length - 0)) + 0] },
     });
   } else if (!params[1]) {
     // add, edit or remove
@@ -127,8 +125,8 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
     }
     // permission to edit this tag?
     if (!(
-      bot.internal.tags.get(`${msg.guild.id}|${params[1]}`).author === msg.author.id &&
-      msg.permlvl >= exports.conf.editLevel)) {
+      bot.internal.tags.get(`${msg.guild.id}|${params[1]}`).author === msg.author.id
+      && msg.permlvl >= exports.conf.editLevel)) {
       return msg.channel.sendEmbed(new bot.methods.Embed()
         .setColor(0xff0000)
         .addField('Zugriff verweigert',
@@ -186,8 +184,8 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
     }
     // permission to delete this tag?
     if (!(
-      bot.internal.tags.get(`${msg.guild.id}|${params[1]}`).author === msg.author.id &&
-      msg.permlvl >= exports.conf.editLevel)) {
+      bot.internal.tags.get(`${msg.guild.id}|${params[1]}`).author === msg.author.id
+      && msg.permlvl >= exports.conf.editLevel)) {
       return msg.channel.sendEmbed(new bot.methods.Embed()
         .setColor(0xff0000)
         .addField('Zugriff verweigert',
@@ -252,9 +250,9 @@ function blacklist(msg, rsp) {
   const response = rsp.toLowerCase();
   if (response.includes('prntscr.com')) return false;
   else if (response.includes('gyazo.com')) return false;
-  else if (response.includes('imgur.com') &&
-    !response.includes('i.imgur.com') &&
-    !response.includes('i.stack.imgur.com')) return false;
+  else if (response.includes('imgur.com')
+    && !response.includes('i.imgur.com')
+    && !response.includes('i.stack.imgur.com')) return false;
   return true;
 }
 
