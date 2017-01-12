@@ -275,7 +275,7 @@ exports.conf = {
 exports.help = {
   name: 'anime',
   description: 'Gibt Infos über den gesuchten Anime oder Manga.',
-  shortdescription: 'oder auch `$conf.prefixmanga`',
+  shortdescription: 'bzw. `$conf.prefixmanga`',
   usage: '$conf.prefixanime [Suchbegriff(e)]'
   + '\n$conf.prefixmanga [Suchbegriff(e)]',
 };
