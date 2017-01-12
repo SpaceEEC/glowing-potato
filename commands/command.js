@@ -26,7 +26,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'Admincommands',
+  group: 'Adminstuff',
   spamProtection: false,
   enabled: true,
   aliases: ['cmd'],
