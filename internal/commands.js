@@ -6,16 +6,20 @@ exports.init = (bot) => new Promise((resolve, reject) => { // eslint-disable-lin
         files = files.filter(f => f.slice(-3) === '.js');
         bot.log(`Lade insgesamt ${files.length} Befehle.`);
         files.forEach(f => {
-          const props = require(`../commands/${f}`);
-          // bot.log(`Lade Befehl: ${props.help.name}`); // spam
-          bot.commands.set(props.help.name, props);
-          props.conf.aliases.forEach(alias => {
-            bot.aliases.set(alias, props.help.name);
-          });
+          try {
+            const props = require(`../commands/${f}`);
+            // bot.log(`Lade Befehl: ${props.help.name}`); // spam
+            bot.commands.set(props.help.name, props);
+            props.conf.aliases.forEach(alias => {
+              bot.aliases.set(alias, props.help.name);
+            });
+          } catch (e) {
+            bot.err(`Fehler beim Laden von ${f}.js\n${e.stack ? e.stack : e}`);
+          }
         });
         resolve();
       } catch (e) {
-        reject(e);
+        reject(e.stack ? e.stack : e);
       }
     })
     .catch((e) => {
