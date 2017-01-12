@@ -1,4 +1,4 @@
-exports.run = async(bot, msg, params = []) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => { // eslint-disable-line
   // This whole file is a mess. >.<
   // Validating
   if (params[0] && bot.internal.tags.has(`${msg.guild.id}|${params[0]}`)) {
@@ -242,7 +242,7 @@ exports.run = async(bot, msg, params = []) => { // eslint-disable-line
       .addField(`Tags von ${msg.author.username}:`, users)
     );
   }
-});
+};
 
 
 function blacklist(msg, rsp) {
