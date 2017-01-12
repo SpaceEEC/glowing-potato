@@ -2,12 +2,12 @@ const fs = require('fs-extra-promise');
 
 exports.init = async (bot) => {
   const modules = [];
-  await bot.db.open('./var/db.sqlite')
-  const stuff = await bot.db.get('SELECT * FROM config')
+  await bot.db.open('./var/db.sqlite');
+  const stuff = await bot.db.get('SELECT * FROM config');
   for (let key in stuff) {
     bot.config[key] = stuff[key];
   }
-  const files = fs.readdirSync('./internal/')
+  const files = fs.readdirSync('./internal/');
   files.forEach((f) => {
     try {
       if (f !== 'internal.js') {

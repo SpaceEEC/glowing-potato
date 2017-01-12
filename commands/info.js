@@ -9,8 +9,8 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   if (msg.cmd === 'info') {
     member = bot.user;
   } else {
-    member = msg.mentions.users.size !== 0 ? msg.mentions.users.first() :
-      bot.users.has(params[0]) ? bot.users.get(params[0]) : msg.author;
+    member = msg.mentions.users.size !== 0 ? msg.mentions.users.first()
+      : bot.users.has(params[0]) ? bot.users.get(params[0]) : msg.author;
   }
   const gmember = msg.guild.member(member);
   if (!member) { return msg.channel.sendMessage('Fehler im Code, bitte `@space#0302` anschreiben.'); }
@@ -42,16 +42,14 @@ ${moment(member.createdAt).format('DD.MM.YYYY')}
           {
             name: '❯ Serverseitig:',
             value: `${
-gmember.nickname ? `• Nickname: \`${gmember.nickname}\`` : ''}
+            gmember.nickname ? `• Nickname: \`${gmember.nickname}\`` : ''}
 • Beigetreten am:
 ${moment(gmember.joinedAt).format('DD.MM.YYYY')}
 ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
             inline: true,
           },
         ],
-        thumbnail: {
-          url: member.displayAvatarURL,
-        },
+        thumbnail: { url: member.displayAvatarURL },
         timestamp: new Date(),
         footer: {
           icon_url: msg.author.avatarURL,
@@ -98,9 +96,7 @@ ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
         },
       ],
       timestamp: new Date(),
-      thumbnail: {
-        url: bot.user.avatarURL,
-      },
+      thumbnail: { url: bot.user.avatarURL },
       footer: {
         icon_url: msg.author.avatarURL,
         text: msg.content,

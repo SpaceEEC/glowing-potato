@@ -17,9 +17,7 @@ function nichts(bot, msg) { // eslint-disable-line
         value: 'Dieser Befehl macht gerade nichts.\nVersuche es doch später erneut.',
       },
     ],
-    thumbnail: {
-      url: bot.user.avatarURL,
-    },
+    thumbnail: { url: bot.user.avatarURL },
     timestamp: new Date(),
     footer: {
       icon_url: msg.author.avatarURL,

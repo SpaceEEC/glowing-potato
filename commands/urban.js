@@ -5,8 +5,8 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   if (!params[0]) {
     return msg.channel.sendEmbed({
       title: 'Was soll ich Nachschlagen?',
-      description: 'Bedenke, dass du mit `-Nummer` (Nummer mit einer Zahl ersetzen)' +
-      '\nweitere Definitionen nachschlagen kannst.',
+      description: 'Bedenke, dass du mit `-Nummer` (Nummer mit einer Zahl ersetzen)'
+      + '\nweitere Definitionen nachschlagen kannst.',
       fields: [
         {
           name: `\u200b`,
@@ -106,9 +106,9 @@ exports.help = {
   name: 'urban',
   shortdescription: '[Urbandic](urbandictionary.com)(Eng)',
   description: 'Schlägt Begriffe oder Phrasen bei urbandictionary.com nach.',
-  usage: '$conf.prefixurban (-Nummer) [Begriff oder Phrase]' +
-  '\n Wenn (-Nummer) nicht angegeben wird es das erste nehmen.' +
-  '\nBeispiele:' +
-  '\n`$conf.prefixurban lol` - Schlägt die erste Definition von `lol` nach.' +
-  '\n`$conf.prefixurban -2 lol` - Schlägt die zweite Definition von `lol` nach.',
+  usage: '$conf.prefixurban (-Nummer) [Begriff oder Phrase]'
+  + '\n Wenn (-Nummer) nicht angegeben wird es das erste nehmen.'
+  + '\nBeispiele:'
+  + '\n`$conf.prefixurban lol` - Schlägt die erste Definition von `lol` nach.'
+  + '\n`$conf.prefixurban -2 lol` - Schlägt die zweite Definition von `lol` nach.',
 };

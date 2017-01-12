@@ -37,6 +37,6 @@ exports.conf = {
 exports.help = {
   name: 'prune',
   description: 'Löscht die letzten [Anzahl] Nachrichten aus diesem Channel.',
-  shortdescription: 'Nachrichten löschen',
+  shortdescription: 'Tilgt Nachrichten',
   usage: '$conf.prefixprune [Anzahl]',
 };
