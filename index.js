@@ -182,6 +182,7 @@ ${e.stack ? e.stack : e}`);
 
 
 bot.on('voiceStateUpdate', (oldMember, newMember) => {
+  if (newMember.user.bot) return;
   const conf = bot.confs.get(newMember.guild.id);
   if (!conf.vlogchannel) return;
   if (!bot.channels.get(conf.vlogchannel)
