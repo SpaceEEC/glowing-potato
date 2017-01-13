@@ -1,8 +1,16 @@
+#devstuff
 node_modules/
 .vscode/
+
+#authstuff
 var/auth.json
 var/db.sqlite
 var/db.sqlite-journal
-old/
+
+#nobodycaresstuff
 .eslintrc.json
+
+#musicdevstuff
+internal/music.js
+music/*
 ffmpeg.exe
