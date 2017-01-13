@@ -9,6 +9,8 @@ exports.get = (bot, msg, key) => new Promise((resolve) => {
         response = `\n${value.map(v => bot.users.get(v)).join('\n')}`;
       } else if (msg.guild.roles.has(value[0])) {
         response = `\n${value.map(v => msg.guild.roles.get(v)).join('\n')}`;
+      } else {
+        response = `\n${value.map(v => v).join('\n')}`;
       }
       if (value[1]) resolve(`Auf der Liste \`${key}\` stehen: ${response}`);
       else if (value[0]) resolve(`Auf der Liste \`${key}\` steht: ${response.split('\n').join(' ')}`);
