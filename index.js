@@ -222,13 +222,9 @@ bot.on('guildCreate', (guild) => {
   newguild.id = guild.id;
   newguild.name = guild.name;
   bot.confs.set(newguild.id, newguild);
-  bot.db.run('INSERT INTO confs(id,name,prefix,modrole,adminrole,logchannel,anchannel'
-    + ',ignchannels,vlogchannel,ignusers,joinmsg,leavemsg,disabledcommands)'
-    + 'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);',
-    [
-      newguild.id, newguild.name, newguild.prefix, null, null, null, null,
-      newguild.ignchannels, null, newguild.ignusers, null, null, newguild.disabledcommands,
-    ]);
+  bot.db.run('INSERT INTO confs(id,name,prefix,ignchannels,ignusers,disabledcommands)'
+    + 'VALUES (?,?,?,?,?,?);',
+    [newguild.id, newguild.name, newguild.prefix, newguild.ignchannels, newguild.ignusers, newguild.disabledcommands]);
   bot.log(`Gilde (${guild.id}): ${guild.name} beigetreten!`);
 });
 
