@@ -70,19 +70,34 @@ async function query(bot, msg, params, definition) {
     if (!res.body.list[definition]) {
       definition = res.body.list.length - 1;
     }
-    return msg.channel.sendEmbed(
-      new bot.methods.Embed()
-        .setColor(0x1d2439)
-        .setAuthor('Urbandictionary',
-        'http://www.urbandictionary.com/favicon.ico',
-        'http://www.urbandictionary.com/')
-        .setThumbnail('http://puu.sh/tiNHS/3ae29d9b91.png')
-        .setTitle(`${params.join(' ')} [${definition + 1}/${res.body.list.length}]`)
-        .setDescription('\u200b')
-        .addField('Definition:', res.body.list[definition].definition)
-        .addField('Beispiel:', res.body.list[definition].example)
-        .setFooter(msg.content, msg.author.avatarURL)
-    );
+    const e = new bot.methods.Embed()
+      .setColor(0x1d2439)
+      .setAuthor('Urbandictionary',
+      'http://www.urbandictionary.com/favicon.ico',
+      'http://www.urbandictionary.com/')
+      .setThumbnail('http://puu.sh/tiNHS/3ae29d9b91.png')
+      .setTitle(`${params.join(' ')} [${definition + 1}/${res.body.list.length}]`)
+      .setDescription('\u200b');
+    if (res.body.list[definition].definition.length < 1025) {
+      const define = res.body.list[definition].definition.match(/(.|[\r\n]){1,1024}/g);
+      for (let i = 0; i < define.length; i++) {
+        e.addField(i === 0 ? 'Definition' : '\u200b',
+          define[i]);
+      }
+    } else {
+      e.addField('Definition:', res.body.list[definition].definition);
+    }
+    if (res.body.list[definition].example.length < 1025) {
+      const example = res.body.list[definition].example.match(/(.|[\r\n]){1,1024}/g);
+      for (let i = 0; i < example.length; i++) {
+        e.addField(i === 0 ? 'Beispiel' : '\u200b',
+          example[i]);
+      }
+    } else {
+      e.addField('Beispiel:', res.body.list[definition].example);
+    }
+    e.setFooter(msg.content, msg.author.avatarURL);
+    return msg.channel.sendEmbed(e);
   }
 }
 
