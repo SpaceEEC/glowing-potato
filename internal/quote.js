@@ -54,7 +54,7 @@ exports.add = (bot, guild, type, id, color, name, icon_url, description, img) =>
           reject(e);
         }
       })
-      .catche((e) => reject(e));
+      .catch((e) => reject(e));
   }
 });
 
