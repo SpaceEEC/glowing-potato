@@ -78,7 +78,7 @@ async function query(bot, msg, params, definition) {
       .setThumbnail('http://puu.sh/tiNHS/3ae29d9b91.png')
       .setTitle(`${params.join(' ')} [${definition + 1}/${res.body.list.length}]`)
       .setDescription('\u200b');
-    if (res.body.list[definition].definition.length < 1025) {
+    if (res.body.list[definition].definition.length < 1024) {
       const define = res.body.list[definition].definition.match(/(.|[\r\n]){1,1024}/g);
       for (let i = 0; i < define.length; i++) {
         e.addField(i === 0 ? 'Definition' : '\u200b',
@@ -87,7 +87,7 @@ async function query(bot, msg, params, definition) {
     } else {
       e.addField('Definition:', res.body.list[definition].definition);
     }
-    if (res.body.list[definition].example.length < 1025) {
+    if (res.body.list[definition].example.length < 1024) {
       const example = res.body.list[definition].example.match(/(.|[\r\n]){1,1024}/g);
       for (let i = 0; i < example.length; i++) {
         e.addField(i === 0 ? 'Beispiel' : '\u200b',
