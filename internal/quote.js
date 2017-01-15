@@ -28,7 +28,7 @@ exports.add = (bot, guild, type, id, color, name, icon_url, description, img) =>
         }
       }).catch((e) => reject(e));
   } else if (type === 'img') {
-    bot.db.run(`INSERT INTO "quotes" (guild, type, id, color, name, icon_url, description, img) VALUES (?, ?, ?, ?, ?, ?, ?)`, [ // eslint-disable-line
+    bot.db.run(`INSERT INTO "quotes" (guild, type, id, color, name, icon_url, description, img) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [ // eslint-disable-line
       guild,
       type,
       id,
