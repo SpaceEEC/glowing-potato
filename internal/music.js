@@ -108,7 +108,7 @@ class Music {
               temp.delete();
               return msg.channel.send(`Es ist ein Fehler bei der Suchanfrage aufgetreten:\n`
                 + `Responsecode: ${e.status}\n`
-                + `${JSON.parse(e.text).error.message}`);
+                + `${e.text}`);
             } else if (JSON.parse(res.text).items.length === 0) {
               temp.delete();
               return msg.channel.send(`Auf diese Suchanfrage wurde nichts gefunden.`);
@@ -384,5 +384,6 @@ class Music {
 
 exports.init = async (bot) => {
   bot.log('Lade Musikklasse.');
+  bot.internal.musik = Music;
   bot.musik = new Music(bot);
 };
