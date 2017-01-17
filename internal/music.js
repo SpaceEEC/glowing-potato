@@ -238,7 +238,7 @@ class Music {
     if (this._queue.length < 3) {
       return 'Also, bei einer Queue von unter 3 Liedern, macht das durchmischen wohl nicht wirklich Sinn. 👀';
     }
-    const queue = this._queue.sclice(1);
+    const queue = this._queue.slice(1);
     let counter = queue.length;
     let temp, index;
     while (counter > 0) {
