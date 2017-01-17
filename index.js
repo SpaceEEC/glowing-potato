@@ -61,48 +61,6 @@ bot.on('message', async (msg) => {
           msg.channel.sendMessage(reason);
         }
       });
-  } else if (command === 'eval') {
-    if (msg.author.id === bot.config.ownerID) {
-      const time = +new Date;
-      try {
-        msg.conf = conf;
-        msg.cmd = command;
-        const code = params.join(' ');
-        let evaled = eval(code);
-        const response_typeof = typeof evaled;
-        if (typeof evaled !== 'string') { evaled = require('util').inspect(evaled); }
-        if (evaled.includes(bot.token)) {
-          msg.channel.sendMessage('Was willst du damit anstellen? 👀.');
-          return;
-        }
-        msg.channel.sendMessage(`\`code:\`
-\`\`\`js\n${code ? code.split(`\``).join(`´`) : 'falsy'}\`\`\`
-\`evaled\\returned:\`
-\`\`\`js\n${evaled ? evaled.split(`\``).join(`´`) : 'falsy'}\`\`\`
-\`typeof:\`
-\`\`\`js\n${response_typeof}
-\`\`\`
-
-Ausgeführt in: \`${new Date().getTime() - time}\`ms`).catch((e) => {
-            msg.channel.sendMessage(`Fehler beim Senden der Antwort:\n` + // eslint-disable-line
-              `\`\`\`js
-${e.stack ? e.stack : e}
-\`\`\``);
-          }); // eslint-disable-line
-        return;
-      } catch (e) {
-        msg.channel.sendMessage(`\`E-ROHR\`
-\`\`\`js
-${e}
-\`\`\`
-
-Ausgeführt in: \`${new Date().getTime() - time}\`ms`);
-        return;
-      }
-    } else {
-      msg.channel.sendMessage('Du kannst den `eval` Befehl leider nicht verwenden.');
-      return;
-    }
   }
 });
 
