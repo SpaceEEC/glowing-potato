@@ -10,7 +10,7 @@ var/db.sqlite-journal
 #nobodycaresstuff
 .eslintrc.json
 
-#musicdevstuff
+#musicstuff
 #commands/music.js
 #internal/music.js
 ffmpeg.exe
