@@ -17,7 +17,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
         } else {
           return false;
         }
-      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] })
+      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
       let mesg = collected.first();
       message.delete();
       if (mesg.content === 'cancel') {
@@ -38,7 +38,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
 
 async function reload(bot, msg, params) {
   if (params[0] === 'all') {
-    const mes = await msg.channel.sendMessage('Lade alle Befehle neu, dies kann ein wenig dauern.')
+    const mes = await msg.channel.sendMessage('Lade alle Befehle neu, dies kann ein wenig dauern.');
     const files = fs.readdirSync(`./commands/`);
     let error = false;
     for (let i = 0; i < files.length; i++) {
