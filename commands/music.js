@@ -26,10 +26,10 @@ exports.run = async (bot, msg, params = []) => {
         bot.musik.add(msg, params[0]);
       } else if (params[0].includes('playlist?list=')) {
         bot.musik.bulkadd(msg, params[0].split('playlist?list=')[1])
-          .then((mes) => mes.delete(5000));
+          .then((mes) => mes.delete(30000));
       } else if (params[0].length > 11) {
         bot.musik.bulkadd(msg, params[0])
-          .then((mes) => mes.delete(5000));
+          .then((mes) => mes.delete(30000));
       }
     } else if (msg.cmd === 'search') {
       if (!msg.member.voiceChannel) {
@@ -90,6 +90,9 @@ exports.run = async (bot, msg, params = []) => {
       } else {
         msg.channel.send(bot.musik.volume('get'));
       }
+    } else if (msg.cmd === 'shuffle') {
+      msg.channel.send(bot.musik.shuffle())
+        .then((mes) => mes.delete(5000));
     }
   } else {
     // nicht im channel / nicht im besitzt der gruppe, etc.
@@ -101,7 +104,7 @@ exports.conf = {
   group: 'Music',
   spamProtection: false,
   enabled: true,
-  aliases: ['play', 'search', 'np', 'queue', 'skip', 'pause', 'resume', 'stop', 'volume'],
+  aliases: ['play', 'search', 'np', 'queue', 'skip', 'pause', 'resume', 'stop', 'volume', 'shuffle'],
   permLevel: 0,
 };
 
