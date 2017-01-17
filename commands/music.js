@@ -1,13 +1,17 @@
 // This whole file is just shitcode
 
 exports.run = async (bot, msg, params = []) => {
+  if (!bot.internal.musik.get(msg.guild.id)) {
+    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot));
+  }
+  const musik = bot.internal.musik.get(msg.guild.id);
   if (msg.cmd === 'music') {
     bot.commands.get('help').run(bot, msg, ['music']);
   } else if (msg.cmd === 'np') {
-    msg.channel.send(bot.musik.np())
+    msg.channel.send(musik.np())
       .then(mes => mes.delete(30000));
   } else if (msg.cmd === 'queue') {
-    msg.channel.send(bot.musik.queue())
+    msg.channel.send(musik.queue())
       .then((mes) => mes.delete(30000))
       .catch((e) => require('util').inspect(e));
   } else if (msg.permlvl >= 11
@@ -23,14 +27,14 @@ exports.run = async (bot, msg, params = []) => {
         msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten VoiceChannel bist?')
           .then((mes) => mes.delete(5000));
       } else if (params[0].includes('watch?v=') || params[0].length === 11) {
-        bot.musik.add(msg, params[0]);
+        musik.add(msg, params[0]);
       } else if (params[0].includes('playlist?list=')) {
-        bot.musik.bulkadd(msg, params[0].split('playlist?list=')[1])
+        musik.bulkadd(msg, params[0].split('playlist?list=')[1])
           .then((mes) => {
             if (mes) mes.delete(30000);
           });
       } else if (params[0].length > 11) {
-        bot.musik.bulkadd(msg, params[0])
+        musik.bulkadd(msg, params[0])
           .then((mes) => {
             if (mes) mes.delete(30000);
           });
@@ -45,7 +49,7 @@ exports.run = async (bot, msg, params = []) => {
         msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten Voicechannel bist?')
           .then((mes) => mes.delete(5000));
       } else if (params[0]) {
-        bot.musik.search(msg, params);
+        musik.search(msg, params);
       } else {
         msg.channel.sendMessage('Sag mir doch bitte was du hören möchtest, ja?')
           .then((mes) => mes.delete(5000));
@@ -60,21 +64,21 @@ exports.run = async (bot, msg, params = []) => {
         msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten Voicechannel bist?')
           .then((mes) => mes.delete(5000));
       } else {
-        msg.channel.sendMessage(bot.musik.skip())
+        msg.channel.sendMessage(musik.skip())
           .then((mes) => mes.delete(30000));
       }
     } else if (msg.cmd === 'pause') {
       let response = 'A rendom error has appeared!';
-      response = bot.musik.pauseresume(false);
+      response = musik.pauseresume(false);
       msg.channel.send(response)
         .then((mes) => mes.delete(5000));
     } else if (msg.cmd === 'resume') {
       let response = 'A rendom error has appeared!';
-      response = bot.musik.pauseresume(true);
+      response = musik.pauseresume(true);
       msg.channel.send(response)
         .then((mes) => mes.delete(5000));
     } else if (msg.cmd === 'stop') {
-      msg.channel.send(bot.musik.stop())
+      msg.channel.send(musik.stop())
         .then((mes) => mes.delete(5000));
     } else if (msg.cmd === 'volume') {
       if (!msg.guild.member(bot.user).voiceChannel) {
@@ -89,13 +93,13 @@ exports.run = async (bot, msg, params = []) => {
         if (parseInt(params[0]) > 200 || parseInt(params[0]) < 0) {
           msg.channel.sendMessage('Bitte nur Zahlen von `0` bis `200` eingeben.');
         } else {
-          msg.channel.send(bot.musik.volume(Math.round(params[0] / 10) / 10));
+          msg.channel.send(musik.volume(Math.round(params[0] / 10) / 10));
         }
       } else {
-        msg.channel.send(bot.musik.volume('get'));
+        msg.channel.send(musik.volume('get'));
       }
     } else if (msg.cmd === 'shuffle') {
-      msg.channel.send(bot.musik.shuffle())
+      msg.channel.send(musik.shuffle())
         .then((mes) => mes.delete(5000));
     }
   } else {
