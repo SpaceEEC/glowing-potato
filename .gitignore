@@ -11,6 +11,6 @@ var/db.sqlite-journal
 .eslintrc.json
 
 #musicdevstuff
-commands/music.js
-internal/music.js
+#commands/music.js
+#internal/music.js
 ffmpeg.exe
