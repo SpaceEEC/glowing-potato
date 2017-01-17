@@ -26,10 +26,14 @@ exports.run = async (bot, msg, params = []) => {
         bot.musik.add(msg, params[0]);
       } else if (params[0].includes('playlist?list=')) {
         bot.musik.bulkadd(msg, params[0].split('playlist?list=')[1])
-          .then((mes) => mes.delete(30000));
+          .then((mes) => {
+            if (mes) mes.delete(30000);
+          });
       } else if (params[0].length > 11) {
         bot.musik.bulkadd(msg, params[0])
-          .then((mes) => mes.delete(30000));
+          .then((mes) => {
+            if (mes) mes.delete(30000);
+          });
       }
     } else if (msg.cmd === 'search') {
       if (!msg.member.voiceChannel) {
