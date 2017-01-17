@@ -410,9 +410,9 @@ class Music {
       .format(secs > 3599 ? 'hh:mm:ss' : 'mm:ss');
   }
 }
+exports.Player = Music;
 
 exports.init = async (bot) => {
   bot.log('Lade Musikklasse.');
-  bot.internal.musik = Music;
-  bot.musik = new Music(bot);
+  bot.internal.musik = new bot.methods.Collection();
 };
