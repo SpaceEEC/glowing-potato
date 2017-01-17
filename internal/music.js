@@ -236,20 +236,22 @@ class Music {
       return 'Ich spiele zur Zeit nichts, also werde ich auch nichts mischen.';
     }
     if (this._queue.length < 3) {
-      return 'Also, bei einer Queue von unter 3 Liedern, macht das durchmischen wohl nicht wirklich Sinn. 👀';
+      return 'Also, bei einer Queue von unter 3 Liedern, macht das durchmischen wohl nicht wirklich Sinn, oder? 👀';
     }
-    const queue = this._queue.slice(1);
-    let counter = queue.length;
-    let temp, index;
-    while (counter > 0) {
-      index = Math.floor(Math.random() * counter);
-      counter--;
-      temp = queue[counter];
-      queue[counter] = queue[index];
-      queue[index] = temp;
+    const array = this._queue.slice(1);
+    let currentIndex = array.length;
+    let temporaryValue;
+    let randomIndex;
+    while (currentIndex !== 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
     }
-    this._queue = queue.splice(0, 0, this._queue[0]);
-    return 'Die Warteschlange wurde gemischt';
+    array.splice(0, 0, this._queue[0]);
+    this._queue = array;
+    return 'Die Warteschlange wurde gemischt.';
   }
 
   _play(msg) {
