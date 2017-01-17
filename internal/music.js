@@ -54,7 +54,7 @@ class Music {
   }
 
   bulkadd(msg, id) {
-    msg.channel.sendMessage('Rufe die Playlist ab...').then(mes => {
+    return msg.channel.sendMessage('Rufe die Playlist ab...').then(mes => {
       request.get(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=20&playlistId=${id}&fields=items/snippet/resourceId/videoId&key=${this._bot.internal.auth.googletoken}`)
         .send(null)
         .set('Accept', 'application/json')
@@ -231,6 +231,25 @@ class Music {
     }
   }
 
+  shuffle() {
+    if (this._queue.length < 3) {
+      return 'Also, bei einer Queue von 3 Liedern, macht das shufflen wohl nicht wirklich Sinn. 👀';
+    } else {
+      const queue = this._queue;
+      let counter = queue.length;
+      let temp, index;
+      while (counter > 0) {
+        index = Math.floor(Math.random() * counter);
+        counter--;
+        temp = queue[counter];
+        queue[counter] = queue[index];
+        queue[index] = temp;
+      }
+      this._queue = queue;
+      return 'Die Warteschlange wurde gemischt';
+    }
+  }
+
   _play(msg) {
     this._bot.log('playfunction erreicht');
     this._voiceChannel.join().then(con => {
@@ -296,7 +315,13 @@ class Music {
             }
           });
       }
-    });
+    })
+      .catch((e) => {
+        if (e.message.startsWith('You do not have permission to join this voice channel.')) {
+          msg.channel.sendMessage('Ich darf deinem Channel nicht beitreten.');
+          this.stop();
+        }
+      });
   }
 
   _bulkaddvalidate(toAdd, fullindex, pushobj, msg, mes) {
