@@ -42,7 +42,7 @@ exports.run = async (bot, msg, params = []) => {
       } else if (msg.guild.member(bot.user).voiceChannel
         && (msg.guild.member(bot.user).voiceChannel.id
           !== msg.member.voiceChannel.id)) {
-        msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten VoiceChannel bist?')
+        msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten Voicechannel bist?')
           .then((mes) => mes.delete(5000));
       } else if (params[0]) {
         bot.musik.search(msg, params);
@@ -57,7 +57,7 @@ exports.run = async (bot, msg, params = []) => {
       } else if (!(msg.member.voiceChannel
         && msg.member.voiceChannel.id
         === msg.guild.member(bot.user).voiceChannel.id)) {
-        msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten VoiceChannel bist?')
+        msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten Voicechannel bist?')
           .then((mes) => mes.delete(5000));
       } else {
         msg.channel.sendMessage(bot.musik.skip())
@@ -83,7 +83,7 @@ exports.run = async (bot, msg, params = []) => {
       } else if (!(msg.member.voiceChannel
         && msg.member.voiceChannel.id
         === msg.guild.member(bot.user).voiceChannel.id)) {
-        msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten VoiceChannel bist?')
+        msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten Voicechannel bist?')
           .then((mes) => mes.delete(5000));
       } else if (params[0] % 1 === 0) {
         if (parseInt(params[0]) > 200 || parseInt(params[0]) < 0) {
@@ -127,5 +127,6 @@ exports.help = {
   + `\`$conf.prefixpause\` - Pausiert den aktuellen Song.\n`
   + `\`$conf.prefixresume\` - Setzt den aktuell pausierten Song fort.\n`
   + `\`$conf.prefixstop\` - Beendet die Wiedergabe und löscht die Queue.\n`
-  + `\`$conf.prefixvolume\` - Setzt die Lautstärke von \`0\` bis \`200\`. (Standardwert beträgt 20.)\n`,
+  + `\`$conf.prefixvolume\` - Setzt die Lautstärke von \`0\` bis \`200\`. (Standardwert beträgt 20.)\n`
+  + `\`$conf.prefixshuffle\` - Mischt einmal kräftig durch die Warteschlange durch.\n`,
 };
