@@ -232,22 +232,24 @@ class Music {
   }
 
   shuffle() {
-    if (this._queue.length < 3) {
-      return 'Also, bei einer Queue von 3 Liedern, macht das shufflen wohl nicht wirklich Sinn. 👀';
-    } else {
-      const queue = this._queue;
-      let counter = queue.length;
-      let temp, index;
-      while (counter > 0) {
-        index = Math.floor(Math.random() * counter);
-        counter--;
-        temp = queue[counter];
-        queue[counter] = queue[index];
-        queue[index] = temp;
-      }
-      this._queue = queue;
-      return 'Die Warteschlange wurde gemischt';
+    if (!this._queue[0] || !this._disp) {
+      return 'Ich spiele zur Zeit nichts, also werde ich auch nichts mischen.';
     }
+    if (this._queue.length < 3) {
+      return 'Also, bei einer Queue von unter 3 Liedern, macht das durchmischen wohl nicht wirklich Sinn. 👀';
+    }
+    const queue = this._queue;
+    let counter = queue.length;
+    let temp, index;
+    while (counter > 0) {
+      index = Math.floor(Math.random() * counter);
+      counter--;
+      temp = queue[counter];
+      queue[counter] = queue[index];
+      queue[index] = temp;
+    }
+    this._queue = queue;
+    return 'Die Warteschlange wurde gemischt';
   }
 
   _play(msg) {
