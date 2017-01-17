@@ -81,7 +81,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       alias = true;
       com = bot.aliases.get(params[0]);
     } else {
-      return msg.channel.sendembed(new bot.methods.Embed()
+      return msg.channel.sendEmbed(new bot.methods.Embed()
         .setColor(0xff0000)
         .addField('Fehlerhafter Parameter',
         `Der Befehl \`${params[0]}\` existiert nicht. Vielleicht vertippt?`)
