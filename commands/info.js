@@ -87,7 +87,7 @@ ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
         },
         {
           name: '❯ Shitcode repositorie:',
-          value: '• [GitHub](https://github.com/SpaceEEC/glowing-potato)',
+          value: '• (Outdated) - [GitHub](https://github.com/SpaceEEC/glowing-potato)',
           inline: true,
         },
         {
