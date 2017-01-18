@@ -92,7 +92,7 @@ async function query(bot, msg, params, definition) {
     } else {
       e.addField('\u200b', '\u200b');
     }
-    e.setFooter(msg.content, msg.author.avatarURL);
+    e.setFooter(`${msg.content} | Definition ${definition + 1} von insgesamt ${res.body.list.length} Definitionen.`, msg.author.avatarURL);
     return msg.channel.sendEmbed(e);
   }
 }
