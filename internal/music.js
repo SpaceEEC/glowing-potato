@@ -23,7 +23,7 @@ class Music {
     try {
       yt.getInfo(erl, (err, info) => {
         if (err) console.log(err); // eslint-disable-line
-        const newest = this._queue.push({ url: erl, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds }, requester: msg.member }) - 1;
+        const newest = this._queue.push({ url: erl, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }) - 1;
         if (!(this._disp && (this._con && this._con.speaking))) {
           this._voiceChannel = msg.member.voiceChannel;
           this._play(msg);
@@ -84,7 +84,7 @@ class Music {
                       fin--;
                     } else {
                       this._bot.log(`bulkadd() ${info.title}`);
-                      this._bulkaddvalidate(toAdd, fin, { order: erl, url: urls[erl], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds }, requester: msg.member }, msg, tmp);
+                      this._bulkaddvalidate(toAdd, fin, { order: erl, url: urls[erl], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, msg, tmp);
                     }
                   });
                 });
@@ -307,10 +307,10 @@ class Music {
               this._playing = true;
               this._disp.on('error', (err) => {
                 if (this._startup === 1) this._startup = 2;
-                this._bot.err('this._disp.on(\'error\')');
-                console.error(err); // eslint-disable-line
-                this._queue.shift();
-                this._play(this._msg);
+                this._bot.err(`[error]: [${this._guild}] ${err.message ? err.message : err}`);
+              });
+              this._disp.on('debug', (message) => {
+                this._bot.log(`[debug] [${this._guild}] ${message}`);
               });
               this._disp.on('end', (reason) => {
                 if (this._startup === 1) this._startup = 2;
