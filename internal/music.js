@@ -5,8 +5,9 @@ require('moment-duration-format');
 const request = require('superagent');
 
 class Music {
-  constructor(bot) {
+  constructor(bot, id) {
     this._bot = bot;
+    this._guild = id;
     this._voiceChannel = null;
     this._queue = [];
     this._con = null;
@@ -22,7 +23,7 @@ class Music {
     try {
       yt.getInfo(erl, (err, info) => {
         if (err) console.log(err); // eslint-disable-line
-        const newest = this._queue.push({ url: erl, info: info, requester: msg.member }) - 1;
+        const newest = this._queue.push({ url: erl, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds }, requester: msg.member }) - 1;
         if (!(this._disp && (this._con && this._con.speaking))) {
           this._voiceChannel = msg.member.voiceChannel;
           this._play(msg);
@@ -54,36 +55,40 @@ class Music {
   }
 
   bulkadd(msg, id) {
-    return msg.channel.sendMessage('Rufe die Playlist ab...').then(mes => {
+    msg.channel.sendMessage('Rufe die Playlist ab...').then(mes => {
       request.get(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=20&playlistId=${id}&fields=items/snippet/resourceId/videoId&key=${this._bot.internal.auth.googletoken}`)
         .send(null)
         .set('Accept', 'application/json')
         .end((e, res) => {
           if (e && e.status === 404) {
-            return mes.edit(`Diese Playlist wurde nicht gefunden:\n`
+            mes.edit(`Diese Playlist wurde nicht gefunden:\n`
               + `https://www.youtube.com/playlist?list=${id}\n`
-              + `Sicher, dass dieser Link korrekt ist?`);
+              + `Sicher, dass dieser Link korrekt ist?`)
+              .then(tmp => tmp.delete(5000));
           } else if (e) {
-            return mes.edit(`Es ist ein Fehler beim ab Abrufen der Playlist aufgetreten:\n`
+            mes.edit(`Es ist ein Fehler beim ab Abrufen der Playlist aufgetreten:\n`
               + `Responsecode: ${e.status}\n`
-              + `${JSON.parse(e.text).error.message}`);
+              + `${JSON.parse(e.text).error.message}`)
+              .then(tmp => tmp.delete(5000));
           } else {
             const urls = JSON.parse(res.text).items.map(s => s.snippet.resourceId.videoId);
             this._bot.log(`bulkadd(msg_obj, ${urls.length})`);
             let fin = urls.length;
             const toAdd = [];
             for (const erl in urls) {
-              yt.getInfo(urls[erl], (err, info) => {
-                if (err) {
-                  console.error(err); // eslint-disable-line
-                  fin--;
-                } else {
-                  this._bot.log(`bulkadd() ${info.title}`);
-                  this._bulkaddvalidate(toAdd, fin, { order: erl, url: urls[erl], info: info, requester: msg.member }, msg, mes);
-                }
-              });
+              mes.edit(`Verarbeite \`${urls.length}\` in der Playlist gefundene Songs, dies kann einen Moment dauern...`)
+                .then((tmp) => {
+                  yt.getInfo(urls[erl], (err, info) => {
+                    if (err) {
+                      console.error(err); // eslint-disable-line
+                      fin--;
+                    } else {
+                      this._bot.log(`bulkadd() ${info.title}`);
+                      this._bulkaddvalidate(toAdd, fin, { order: erl, url: urls[erl], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds }, requester: msg.member }, msg, tmp);
+                    }
+                  });
+                });
             }
-            return mes.edit(`Verarbeite \`${urls.length}\` in der Playlist gefundene Songs, dies kann einen Moment dauern...`);
           }
         });
     });
@@ -338,7 +343,7 @@ class Music {
       }
       if (!(this._disp && (this._con && this._con.speaking))) {
         mes.edit(`Erfolgreich \`${ordered.length}\` Songs hinzugefügt.`)
-          .then((del) => del.delete(5000));
+          .then((del) => del.delete(10000));
         this._voiceChannel = msg.member.voiceChannel;
         this._play(msg);
       }
@@ -401,6 +406,7 @@ class Music {
     this._con.channel.leave();
     this._disp = null;
     this._bot.user.setGame(this._bot.config.game);
+    this._bot.internal.musik.delete(this._guild);
   }
 
   _formatsecs(secs) {

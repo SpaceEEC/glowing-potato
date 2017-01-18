@@ -2,7 +2,7 @@
 
 exports.run = async (bot, msg, params = []) => {
   if (!bot.internal.musik.get(msg.guild.id)) {
-    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot));
+    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg.guild.id));
   }
   const musik = bot.internal.musik.get(msg.guild.id);
   if (msg.cmd === 'music') {
@@ -29,15 +29,9 @@ exports.run = async (bot, msg, params = []) => {
       } else if (params[0].includes('watch?v=') || params[0].length === 11) {
         musik.add(msg, params[0]);
       } else if (params[0].includes('playlist?list=')) {
-        musik.bulkadd(msg, params[0].split('playlist?list=')[1])
-          .then((mes) => {
-            if (mes) mes.delete(30000);
-          });
+        musik.bulkadd(msg, params[0].split('playlist?list=')[1]);
       } else if (params[0].length > 11) {
-        musik.bulkadd(msg, params[0])
-          .then((mes) => {
-            if (mes) mes.delete(30000);
-          });
+        musik.bulkadd(msg, params[0]);
       }
     } else if (msg.cmd === 'search') {
       if (!msg.member.voiceChannel) {
