@@ -72,7 +72,7 @@ class Music {
               .then(tmp => tmp.delete(5000));
           } else {
             const urls = JSON.parse(res.text).items.map(s => s.snippet.resourceId.videoId);
-            this._bot.log(`bulkadd(msg_obj, ${urls.length})`);
+            this._bot.log(`[${this._guild}] bulkadd(msg_obj, ${urls.length})`);
             let fin = urls.length;
             const toAdd = [];
             for (const erl in urls) {
@@ -83,7 +83,7 @@ class Music {
                       console.error(err); // eslint-disable-line
                       fin--;
                     } else {
-                      this._bot.log(`bulkadd() ${info.title}`);
+                      this._bot.log(`[${this._guild}] bulkadd() ${info.title}`);
                       this._bulkaddvalidate(toAdd, fin, { order: erl, url: urls[erl], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, msg, tmp);
                     }
                   });
@@ -144,7 +144,6 @@ class Music {
       const fields = [];
       for (const song in this._queue) {
         if (song === '0') continue;
-        // this._bot.log(`${song} | ${this._queue[song].info.title}`);
         let songtext = `\`${song}.\` [${this._queue[song].info.title}](${this._queue[song].info.loaderUrl}) Länge: ${this._formatsecs(this._queue[song].info.length_seconds)} | Von: ${this._queue[song].requester.toString()}\n`;
         if ((songtext.length + fieldtext.length) > 1024) {
           fields.push(fieldtext);
@@ -155,7 +154,6 @@ class Music {
       }
       if (fieldtext.length > 0) fields.push(fieldtext);
       for (const field in fields) {
-        // this._bot.log(`${field} | ${fields[field].substring(0, 15)}`);
         if (field > 25) break;
         e.addField(field === '0' ? 'Warteschlange:' : '\u200b', fields[field]);
       }
@@ -260,16 +258,16 @@ class Music {
   }
 
   _play(msg) {
-    this._bot.log('playfunction erreicht');
+    this._bot.log(`[${this._guild}] playfunction erreicht`);
     this._voiceChannel.join().then(con => {
       this._con = con;
-      this._bot.log(`Länge der Queue: ${this._queue.length}`);
+      this._bot.log(`[${this._guild}] Länge der Queue: ${this._queue.length}`);
       if (this._msg) {
         this._msg.delete().catch();
         this._msg = null;
       }
       if (this._queue.length === 0) {
-        this._bot.log('Queue ist leer.');
+        this._bot.log(`[${this._guild}] Queue ist leer.`);
         msg.channel.sendMessage('Da die Queue leer ist, werde ich in 30 Sekunden diesen Channel verlassen falls bis dahin nichts hinzugefügt wurde.').then(mes => {
           this._msg = mes;
           this._timeout = this._bot.setTimeout(this._leaveChannel.bind(this), 30000);
@@ -279,7 +277,7 @@ class Music {
           this._bot.clearTimeout(this._timeout);
           this._timeout = null;
         }
-        this._bot.log('Spiele nächsten Song');
+        this._bot.log(`[${this._guild}] Spiele nächsten Song`);
         msg.channel.sendEmbed(
           {
             color: 0x00ff08,
@@ -302,7 +300,7 @@ class Music {
             if ([0, 2].includes(this._startup)) {
               if (this._startup === 0) this._startup = 1;
               this._disp = this._con.playStream(yt(this._queue[0].url, { audioonly: true }), { volume: this._volume, passes: 2 });
-              this._bot.log(`Spiele jetzt: ${this._queue[0].info.title}`);
+              this._bot.log(`[${this._guild}] Spiele jetzt: ${this._queue[0].info.title}`);
               this._bot.user.setGame(this._queue[0].info.title);
               this._playing = true;
               this._disp.on('error', (err) => {
@@ -315,12 +313,12 @@ class Music {
               this._disp.on('end', (reason) => {
                 if (this._startup === 1) this._startup = 2;
                 this._playing = false;
-                this._bot.log(`Song beendet nach: ${this._formatsecs(Math.floor(this._disp.time / 1000))}`);
+                this._bot.log(`[${this._guild}] Song beendet nach: ${this._formatsecs(Math.floor(this._disp.time / 1000))}`);
                 this._queue.shift();
                 if (reason !== 'stop') this._play(this._msg);
               });
             } else {
-              this._bot.log('Nachricht, während des startes abgefangen.');
+              this._bot.log(`[${this._guild}] Nachricht, während des startes abgefangen.`);
             }
           });
       }
@@ -334,12 +332,12 @@ class Music {
   }
 
   _bulkaddvalidate(toAdd, fullindex, pushobj, msg, mes) {
-    this._bot.log(`_confirm(${fullindex})`);
+    this._bot.log(`[${this._guild}] _confirm(${fullindex})`);
     if (pushobj) pushobj = toAdd.push(pushobj);
     if (fullindex === true || pushobj === fullindex) {
       const ordered = toAdd.sort((a, b) => a.order - b.order);
       for (const song in ordered) {
-        this._bot.log(`Queue length: ${this._queue.push({ url: ordered[song].url, info: ordered[song].info, requester: ordered[song].requester })}`);
+        this._bot.log(`[${this._guild}] Queue length: ${this._queue.push({ url: ordered[song].url, info: ordered[song].info, requester: ordered[song].requester })}`);
       }
       if (!(this._disp && (this._con && this._con.speaking))) {
         mes.edit(`Erfolgreich \`${ordered.length}\` Songs hinzugefügt.`)
@@ -402,11 +400,10 @@ class Music {
   _leaveChannel() {
     this._msg.delete();
     this._timeout = null;
-    this._bot.log(`Verlasse Channel: ${this._con.channel.name}`);
+    this._bot.log(`[${this._guild}] Verlasse Channel: ${this._con.channel.name}`);
     this._con.channel.leave();
     this._disp = null;
     this._bot.user.setGame(this._bot.config.game);
-    this._bot.internal.musik.delete(this._guild);
   }
 
   _formatsecs(secs) {

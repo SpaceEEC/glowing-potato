@@ -2,7 +2,7 @@
 
 exports.run = async (bot, msg, params = []) => {
   if (!bot.internal.musik.get(msg.guild.id)) {
-    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg.guild.id));
+    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg.guild.name));
   }
   const musik = bot.internal.musik.get(msg.guild.id);
   if (msg.cmd === 'music') {
