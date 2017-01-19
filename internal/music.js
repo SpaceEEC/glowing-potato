@@ -40,8 +40,7 @@ class Music {
             + `Hinzugefügt von: ${this._queue[newest].requester}`,
             type: 'image',
             image: { url: info.iurl },
-            footer: { text: 'wurde hinzugefügt.', icon_url: this._bot.user.avatarURL },
-            timestamp: new Date()
+            footer: { text: `wurde hinzugefügt. (Ungefähre Zeit bis dahin: ${this._formatsecs(this._queue.reduce((a, b) => a + parseInt(b.info.length_seconds), parseInt(`-${this._formatsecs(Math.floor(this._disp.time / 1000))}`)))})`, icon_url: this._bot.user.avatarURL },
           })
             .then((mes) => {
               mes.delete(30000);
