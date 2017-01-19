@@ -213,7 +213,7 @@ class Music {
     this._queue = this._queue.slice(this._queue.length - 1);
     if (this._disp) this._disp.end('stop');
     if (this._msg) {
-      this._msg.delete().catch();
+      this._msg.delete();
       this._msg = null;
     }
     this._bot.user.setGame(this._bot.config.game);
@@ -262,8 +262,9 @@ class Music {
     this._voiceChannel.join().then(con => {
       this._con = con;
       this._bot.log(`[${this._guild}] Länge der Queue: ${this._queue.length}`);
-      if (this._msg) {
-        this._msg.delete().catch();
+      if (this._msg !== null) {
+        this._msg.delete()
+      .catch((err) => { if (!err) this._bot.log('i think i made a mistake with the if'); });
         this._msg = null;
       }
       if (this._queue.length === 0) {
@@ -303,14 +304,14 @@ class Music {
               this._bot.log(`[${this._guild}] Spiele jetzt: ${this._queue[0].info.title}`);
               this._bot.user.setGame(this._queue[0].info.title);
               this._playing = true;
-              this._disp.on('error', (err) => {
+              this._disp.once('error', (err) => {
                 if (this._startup === 1) this._startup = 2;
                 this._bot.err(`[error]: [${this._guild}] ${err.message ? err.message : err}`);
               });
               this._disp.on('debug', (message) => {
                 this._bot.log(`[debug] [${this._guild}] ${message}`);
               });
-              this._disp.on('end', (reason) => {
+              this._disp.once('end', (reason) => {
                 if (this._startup === 1) this._startup = 2;
                 this._playing = false;
                 this._bot.log(`[${this._guild}] Song beendet nach: ${this._formatsecs(Math.floor(this._disp.time / 1000))}`);
@@ -325,7 +326,7 @@ class Music {
     })
       .catch((e) => {
         if (e.message.startsWith('You do not have permission to join this voice channel.')) {
-          msg.channel.sendMessage('Ich darf deinem Channel nicht beitreten.');
+          msg.channel.sendMessage('Ich darf deinem Channel nicht betreten.');
           this.stop();
         }
       });
@@ -351,8 +352,8 @@ class Music {
   _selectsearchitem(msg, search, index, original) {
     if (!search[index]) {
       if (original) {
-        original.delete().catch();
-        msg.delete().catch();
+        original.delete();
+        msg.delete();
       }
       return;
     }
@@ -378,27 +379,28 @@ class Music {
         .then(collected => {
           let input = collected.first().content;
           if (input !== 'y' && input !== 'n') {
-            msg.delete().catch();
+            msg.delete();
             mes.delete();
-            collected.first().delete().catch();
+            collected.first().delete();
           } else if (input === 'n') {
-            collected.first().delete().catch();
+            collected.first().delete();
             this._selectsearchitem(msg, search, index + 1, mes);
           } else {
-            collected.first().delete().catch();
+            collected.first().delete();
             mes.delete();
             this.add(msg, search[index].id.videoId);
           }
         })
         .catch(() => {
-          msg.delete().catch();
+          msg.delete();
           mes.delete();
         });
     });
   }
 
   _leaveChannel() {
-    this._msg.delete();
+    this._msg.delete()
+      .catch((err) => { if (!err) this._bot.log('this won\'get logged'); });
     this._timeout = null;
     this._bot.log(`[${this._guild}] Verlasse Channel: ${this._con.channel.name}`);
     this._con.channel.leave();
