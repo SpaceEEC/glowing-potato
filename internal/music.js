@@ -54,9 +54,16 @@ class Music {
     }
   }
 
-  bulkadd(msg, id) {
+  bulkadd(msg, id, count) {
+    if (parseInt(count)) {
+      count = 20;
+    } else if (parseInt(count) < 0) {
+      count = 1;
+    } else if (parseInt(count) > 200) {
+      count = 200;
+    }
     msg.channel.sendMessage('Rufe die Playlist ab...').then(mes => {
-      request.get(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=20&playlistId=${id}&fields=items/snippet/resourceId/videoId&key=${this._bot.internal.auth.googletoken}`)
+      request.get(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${count}&playlistId=${id}&fields=items/snippet/resourceId/videoId&key=${this._bot.internal.auth.googletoken}`)
         .send(null)
         .set('Accept', 'application/json')
         .end((e, res) => {
@@ -264,7 +271,7 @@ class Music {
       this._bot.log(`[${this._guild}] Länge der Queue: ${this._queue.length}`);
       if (this._msg !== null) {
         this._msg.delete()
-      .catch((err) => { if (!err) this._bot.log('i think i made a mistake with the if'); });
+          .catch((err) => { if (!err) this._bot.log('i think i made a mistake with the if'); });
         this._msg = null;
       }
       if (this._queue.length === 0) {
