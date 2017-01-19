@@ -29,9 +29,9 @@ exports.run = async (bot, msg, params = []) => {
       } else if (params[0].includes('watch?v=') || params[0].length === 11) {
         musik.add(msg, params[0]);
       } else if (params[0].includes('playlist?list=')) {
-        musik.bulkadd(msg, params[0].split('playlist?list=')[1]);
+        musik.bulkadd(msg, params[0].split('playlist?list=')[1], params[1]);
       } else if (params[0].length > 11) {
-        musik.bulkadd(msg, params[0]);
+        musik.bulkadd(msg, params[0], params[1]);
       }
     } else if (msg.cmd === 'search') {
       if (!msg.member.voiceChannel) {
