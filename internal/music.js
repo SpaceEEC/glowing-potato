@@ -22,7 +22,7 @@ class Music {
   add(msg, erl) {
     try {
       yt.getInfo(erl, (err, info) => {
-        if (err) console.log(err); // eslint-disable-line
+        if (err) this._bot.log(err.message);
         const newest = this._queue.push({ url: erl, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }) - 1;
         if (!(this._disp && (this._con && this._con.speaking))) {
           this._voiceChannel = msg.member.voiceChannel;
@@ -55,7 +55,7 @@ class Music {
   }
 
   bulkadd(msg, id, count) {
-    if (parseInt(count)) {
+    if (!parseInt(count)) {
       count = 20;
     } else if (parseInt(count) < 0) {
       count = 1;
@@ -87,8 +87,11 @@ class Music {
                 .then((tmp) => {
                   yt.getInfo(urls[erl], (err, info) => {
                     if (err) {
-                      console.error(err); // eslint-disable-line
+                      this._bot.err(err.message);
                       fin--;
+                      if (toAdd.length === fin) {
+                        this._bulkaddvalidate(toAdd, true);
+                      }
                     } else {
                       this._bot.log(`[${this._guild}] bulkadd() ${info.title}`);
                       this._bulkaddvalidate(toAdd, fin, { order: erl, url: urls[erl], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, msg, tmp);
