@@ -429,4 +429,5 @@ exports.Player = Music;
 exports.init = async (bot) => {
   bot.log('Lade Musikklasse.');
   bot.internal.musik = new bot.methods.Collection();
+  bot.internal.commands.init(bot, './commands/music/');
 };

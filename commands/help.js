@@ -38,6 +38,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
         }
       });
     }
+    delete stuff.hidden;
     if (msg.permlvl !== 12) {
       delete stuff.abgespaced;
     }
@@ -123,7 +124,9 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       },
       {
         name: 'Generell für Argumente:',
-        value: '<> heißt, dass eins davon genommen werden muss.\n[] heißt, dass das Argument zwingend erforderlich ist.\n() heißt, dass das Argument weggelassen werden kann.', // eslint-disable-line
+        value: '`<>` heißt, dass eins davon so wie es ist genommen werden muss.\n'
+        + '`[]` heißt, dass das Argument zwingend erforderlich ist und mit dem entsprechendem Einsatz ersetzt werden muss.\n'
+        + '`()` heißt, dass das Argument weggelassen werden kann und mit dem entsprechendem Einsatz ersetzt werden muss.',
       },
     ],
     footer: {
