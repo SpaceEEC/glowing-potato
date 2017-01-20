@@ -98,7 +98,6 @@ async function query(bot, msg, params, definition) {
 }
 
 exports.conf = {
-  group: 'Sonstiges',
   spamProtection: false,
   enabled: true,
   aliases: ['urb'],

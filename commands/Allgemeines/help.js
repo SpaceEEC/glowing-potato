@@ -50,6 +50,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       .setThumbnail(bot.user.avatarURL)
       .setFooter(msg.content, msg.author.avatarURL)
       .setTimestamp();
+    stuff = stuff.sort();
     for (let kat in stuff) {
       if (stuff.hasOwnProperty(kat)) {
         response.addField(`${kat}:`, `\`${msg.conf.prefix}${stuff[kat].join(`\n\`${msg.conf.prefix}`)}`, true);
@@ -138,7 +139,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'Allgemeines',
   spamProtection: false,
   enabled: true,
   aliases: ['halp'],

@@ -9,7 +9,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'hidden',
   spamProtection: false,
   enabled: true,
   aliases: ['queue'],
@@ -19,7 +18,7 @@ exports.conf = {
 
 exports.help = {
   name: 'queue',
-  shortdescription: '-',
+  shortdescription: '',
   description: 'Zeigt die aktuelle Warteschlange an.',
   usage: '$conf.prefixqueue',
 };

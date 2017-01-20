@@ -42,7 +42,6 @@ Versuchungszeitraum: \`${new Date().getTime() - time}\`ms`);
 
 
 exports.conf = {
-  group: 'abgespaced',
   spamProtection: false,
   enabled: true,
   aliases: [],

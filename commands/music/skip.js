@@ -23,7 +23,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'hidden',
   spamProtection: false,
   enabled: true,
   aliases: ['skip'],
@@ -33,7 +32,7 @@ exports.conf = {
 
 exports.help = {
   name: 'skip',
-  shortdescription: '-',
+  shortdescription: '',
   description: 'Skippt den aktuellen Song.',
   usage: '$conf.prefixskip\n',
 };

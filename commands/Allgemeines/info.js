@@ -1,7 +1,7 @@
 const moment = require('moment');
 moment.locale('de');
 require('moment-duration-format');
-const package = require('../package.json');
+const package = require('../../package.json');
 
 
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
@@ -108,7 +108,6 @@ ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
 
 
 exports.conf = {
-  group: 'Allgemeines',
   spamProtection: false,
   enabled: true,
   aliases: ['stats'],
