@@ -107,7 +107,7 @@ exports.conf = {
 
 exports.help = {
   name: 'urban',
-  shortdescription: '[Urbandic](urbandictionary.com)(Eng)',
+  shortdescription: 'Urbandic(Englisch)',
   description: 'Schlägt Begriffe oder Phrasen bei urbandictionary.com nach.',
   usage: '$conf.prefixurban (-Nummer) [Begriff oder Phrase]'
   + '\n Wenn (-Nummer) nicht angegeben wird es das erste nehmen.'
