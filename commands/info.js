@@ -28,7 +28,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
           icon_url: member.displayAvatarURL,
           url: member.displayAvatarURL,
         },
-        description: `${gmember.toString()}`,
+        description: gmember.toString(),
         fields: [
           {
             name: '❯ Clientseitig',
