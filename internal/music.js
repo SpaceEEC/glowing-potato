@@ -323,7 +323,7 @@ class Music {
               this._disp.once('end', (reason) => {
                 if (this._startup === 1) this._startup = 2;
                 this._playing = false;
-                this._bot.log(`[${this._guild}] Song beendet nach: ${this._formatsecs(Math.floor(this._disp.time / 1000))}`);
+                this._bot.log(`[${this._guild}] Song beendet nach: ${this._formatsecs(Math.floor(this._disp.time / 1000))} von ${this._formatsecs(this._queue[0].info.length_seconds)}`);
                 this._queue.shift();
                 if (reason !== 'stop') this._play(this._msg);
               });
