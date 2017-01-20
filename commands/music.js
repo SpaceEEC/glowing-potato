@@ -1,104 +1,5 @@
-// This whole file is just shitcode
-
-exports.run = async (bot, msg, params = []) => {
-  if (!bot.internal.musik.get(msg.guild.id)) {
-    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg.guild.name));
-  }
-  const musik = bot.internal.musik.get(msg.guild.id);
-  if (msg.cmd === 'music') {
-    bot.commands.get('help').run(bot, msg, ['music']);
-  } else if (msg.cmd === 'np') {
-    msg.channel.send(musik.np())
-      .then(mes => mes.delete(30000));
-  } else if (msg.cmd === 'queue') {
-    msg.channel.send(musik.queue())
-      .then((mes) => mes.delete(30000))
-      .catch((e) => require('util').inspect(e));
-  } else if (msg.permlvl >= 11
-    || ((!msg.conf.musicgroup || (msg.conf.musicgroup && msg.member.roles.has(msg.conf.musicgroup)))
-      && (!msg.conf.musicchannel || (msg.conf.musicchannel && msg.channel.id === msg.conf.musicchannel)))) {
-    if (msg.cmd === 'play') {
-      if (!msg.member.voiceChannel) {
-        msg.channel.sendMessage('Du bist in keinem Voicechannel.')
-          .then((mes) => mes.delete(5000));
-      } else if (msg.guild.member(bot.user).voiceChannel
-        && (msg.guild.member(bot.user).voiceChannel.id
-          !== msg.member.voiceChannel.id)) {
-        msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten VoiceChannel bist?')
-          .then((mes) => mes.delete(5000));
-      } else if (params[0].includes('watch?v=') || params[0].length === 11) {
-        musik.add(msg, params[0]);
-      } else if (params[0].includes('playlist?list=')) {
-        musik.bulkadd(msg, params[0].split('playlist?list=')[1], params[1]);
-      } else if (params[0].length > 11) {
-        musik.bulkadd(msg, params[0], params[1]);
-      }
-    } else if (msg.cmd === 'search') {
-      if (!msg.member.voiceChannel) {
-        msg.channel.sendMessage('Du bist in keinem Voicechannel.')
-          .then((mes) => mes.delete(5000));
-      } else if (msg.guild.member(bot.user).voiceChannel
-        && (msg.guild.member(bot.user).voiceChannel.id
-          !== msg.member.voiceChannel.id)) {
-        msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten Voicechannel bist?')
-          .then((mes) => mes.delete(5000));
-      } else if (params[0]) {
-        musik.search(msg, params);
-      } else {
-        msg.channel.sendMessage('Sag mir doch bitte was du hören möchtest, ja?')
-          .then((mes) => mes.delete(5000));
-      }
-    } else if (msg.cmd === 'skip') {
-      if (!msg.guild.member(bot.user).voiceChannel) {
-        msg.channel.sendMessage('Was willst du denn bitte skippen?')
-          .then((mes) => mes.delete(5000));
-      } else if (!(msg.member.voiceChannel
-        && msg.member.voiceChannel.id
-        === msg.guild.member(bot.user).voiceChannel.id)) {
-        msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten Voicechannel bist?')
-          .then((mes) => mes.delete(5000));
-      } else {
-        msg.channel.sendMessage(musik.skip())
-          .then((mes) => mes.delete(30000));
-      }
-    } else if (msg.cmd === 'pause') {
-      let response = 'A rendom error has appeared!';
-      response = musik.pauseresume(false);
-      msg.channel.send(response)
-        .then((mes) => mes.delete(5000));
-    } else if (msg.cmd === 'resume') {
-      let response = 'A rendom error has appeared!';
-      response = musik.pauseresume(true);
-      msg.channel.send(response)
-        .then((mes) => mes.delete(5000));
-    } else if (msg.cmd === 'stop') {
-      msg.channel.send(musik.stop())
-        .then((mes) => mes.delete(5000));
-    } else if (msg.cmd === 'volume') {
-      if (!msg.guild.member(bot.user).voiceChannel) {
-        msg.channel.sendMessage('Sehe ich so aus, als würde ich gerade etwas spielen?')
-          .then((mes) => mes.delete(5000));
-      } else if (!(msg.member.voiceChannel
-        && msg.member.voiceChannel.id
-        === msg.guild.member(bot.user).voiceChannel.id)) {
-        msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten Voicechannel bist?')
-          .then((mes) => mes.delete(5000));
-      } else if (params[0] % 1 === 0) {
-        if (parseInt(params[0]) > 200 || parseInt(params[0]) < 0) {
-          msg.channel.sendMessage('Bitte nur Zahlen von `0` bis `200` eingeben.');
-        } else {
-          msg.channel.send(musik.volume(Math.round(params[0] / 10) / 10));
-        }
-      } else {
-        msg.channel.send(musik.volume('get'));
-      }
-    } else if (msg.cmd === 'shuffle') {
-      msg.channel.send(musik.shuffle())
-        .then((mes) => mes.delete(5000));
-    }
-  } else {
-    // nicht im channel / nicht im besitzt der gruppe, etc.
-  }
+exports.run = async (bot, msg, params = []) => { // eslint-disable-line
+  bot.commands.get('help').run(bot, msg, ['music']);
 };
 
 
@@ -106,7 +7,7 @@ exports.conf = {
   group: 'Music',
   spamProtection: false,
   enabled: true,
-  aliases: ['play', 'search', 'np', 'queue', 'skip', 'pause', 'resume', 'stop', 'volume', 'shuffle'],
+  aliases: [],
   permLevel: 0,
 };
 
