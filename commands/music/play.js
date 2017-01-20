@@ -26,7 +26,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'hidden',
   spamProtection: false,
   enabled: true,
   aliases: ['play'],
@@ -36,7 +35,7 @@ exports.conf = {
 
 exports.help = {
   name: 'play',
-  shortdescription: '-',
+  shortdescription: '',
   description: 'Spielt Songs.\nDer Befehl Akzeptiert Videos und Playlists als Youtube IDs und Links.',
   usage: '$conf.prefixplay [ID/Url]',
 };

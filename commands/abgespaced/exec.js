@@ -39,7 +39,6 @@ ${stderr ? `\`STERR\`\n\`\`\`xl\n${stderr}\`\`\`` : ''}
 
 
 exports.conf = {
-  group: 'abgespaced',
   spamProtection: false,
   enabled: true,
   aliases: [],

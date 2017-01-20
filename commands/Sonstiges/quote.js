@@ -63,7 +63,6 @@ Zitate auf diesem Server: \`${bot.internal.quotes.filter((w, q) => q.startsWith(
 
 
 exports.conf = {
-  group: 'Sonstiges',
   spamProtection: false,
   enabled: true,
   aliases: ['zitat', 'quotes', 'zitate'],

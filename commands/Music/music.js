@@ -4,7 +4,6 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
 
 
 exports.conf = {
-  group: 'Music',
   spamProtection: false,
   enabled: true,
   aliases: [],

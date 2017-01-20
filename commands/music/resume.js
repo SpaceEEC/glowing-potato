@@ -23,7 +23,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'hidden',
   spamProtection: false,
   enabled: true,
   aliases: ['resume'],
@@ -33,7 +32,7 @@ exports.conf = {
 
 exports.help = {
   name: 'resume',
-  shortdescription: '-',
+  shortdescription: '',
   description: 'Setzt den Song wieder fort.',
   usage: '$conf.prefixresume',
 };

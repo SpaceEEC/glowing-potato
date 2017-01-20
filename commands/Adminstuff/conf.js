@@ -187,7 +187,6 @@ ${e.stack ? e.stack : e}
 
 
 exports.conf = {
-  group: 'Adminstuff',
   spamProtection: false,
   enabled: true,
   aliases: ['config'],

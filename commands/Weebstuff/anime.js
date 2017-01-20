@@ -226,7 +226,6 @@ function formatFuzzy(input) {
 
 
 exports.conf = {
-  group: 'Weebstuff',
   spamProtection: false,
   enabled: true,
   aliases: ['manga'],

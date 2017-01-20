@@ -28,7 +28,6 @@ function nichts(bot, msg) { // eslint-disable-line
 
 
 exports.conf = {
-  group: 'abgespaced',
   spamProtection: false,
   enabled: true,
   aliases: ['bakaero'],

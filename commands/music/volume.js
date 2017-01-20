@@ -24,7 +24,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'hidden',
   spamProtection: false,
   enabled: true,
   aliases: ['volume'],
@@ -34,7 +33,7 @@ exports.conf = {
 
 exports.help = {
   name: 'volume',
-  shortdescription: '-',
+  shortdescription: '',
   description: 'Legt die Lautstärke fest, oder zeigt dies an. (Standardwert ist `20`)',
   usage: '$conf.prefixvolume (0-200)',
 };

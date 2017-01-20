@@ -23,7 +23,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'hidden',
   spamProtection: false,
   enabled: true,
   aliases: ['shuffle'],
@@ -33,7 +32,7 @@ exports.conf = {
 
 exports.help = {
   name: 'shuffle',
-  shortdescription: '-',
+  shortdescription: '',
   description: 'Mischt die Warteschlange einmal kräftig durch.',
   usage: '$conf.prefixshuffle\n',
 };

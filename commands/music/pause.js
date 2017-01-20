@@ -23,7 +23,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'hidden',
   spamProtection: false,
   enabled: true,
   aliases: ['pause'],
@@ -33,7 +32,7 @@ exports.conf = {
 
 exports.help = {
   name: 'pause',
-  shortdescription: '-',
+  shortdescription: '',
   description: 'Pausiert den aktuellen Song.',
   usage: '$conf.prefixpause',
 };

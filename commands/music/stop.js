@@ -23,7 +23,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'hidden',
   spamProtection: false,
   enabled: true,
   aliases: ['stop'],
@@ -33,7 +32,7 @@ exports.conf = {
 
 exports.help = {
   name: 'stop',
-  shortdescription: '-',
+  shortdescription: '',
   description: 'Stopt die Wiedergabe, löscht die Queue und verlässt den Channel.',
   usage: '$conf.prefixstop\n',
 };

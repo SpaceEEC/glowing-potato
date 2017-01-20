@@ -75,7 +75,6 @@ async function reload(bot, msg, params) {
 
 
 exports.conf = {
-  group: 'abgespaced',
   spamProtection: false,
   enabled: true,
   aliases: ['relaod'],

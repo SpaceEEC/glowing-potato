@@ -43,7 +43,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'Modstuff',
   spamProtection: false,
   enabled: true,
   aliases: [],

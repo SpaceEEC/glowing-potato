@@ -145,7 +145,6 @@ async function donmai(bot, msg, params = []) {
 
 
 exports.conf = {
-  group: 'Weebstuff',
   spamProtection: false,
   enabled: true,
   aliases: ['donmai'],

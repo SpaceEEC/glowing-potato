@@ -116,7 +116,6 @@ function ignore(bot, msg, params) {
 
 
 exports.conf = {
-  group: 'Adminstuff',
   spamProtection: false,
   enabled: true,
   aliases: ['ign'],

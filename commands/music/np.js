@@ -9,7 +9,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'hidden',
   spamProtection: false,
   enabled: true,
   aliases: ['np'],
@@ -19,7 +18,7 @@ exports.conf = {
 
 exports.help = {
   name: 'np',
-  shortdescription: '-',
+  shortdescription: '',
   description: 'Zeigt den aktuell gespielten Song an.',
   usage: '$conf.prefixnp',
 };

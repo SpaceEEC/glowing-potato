@@ -25,7 +25,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 
 
 exports.conf = {
-  group: 'hidden',
   spamProtection: false,
   enabled: true,
   aliases: ['search'],
@@ -35,7 +34,7 @@ exports.conf = {
 
 exports.help = {
   name: 'search',
-  shortdescription: '-',
+  shortdescription: '',
   description: 'Ermöglicht die Suche über Youtube.',
   usage: '$conf.prefixsearch (-N) [Suche]\n'
   + 'Beispiele:\n'
