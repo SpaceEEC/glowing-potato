@@ -74,7 +74,7 @@ class Music {
           } else if (e) {
             mes.edit(`Es ist ein Fehler beim ab Abrufen der Playlist aufgetreten:\n`
               + `Responsecode: ${e.status}\n`
-              + `${JSON.parse(e.text).error.message}`)
+              + `${e.text}`)
               .then(tmp => tmp.delete(5000));
           } else {
             const urls = JSON.parse(res.text).items.map(s => s.snippet.resourceId.videoId);
