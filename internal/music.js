@@ -267,17 +267,17 @@ class Music {
   }
 
   _play(msg) {
-    this._bot.log(`[${this._guild}] playfunction erreicht`);
+    this._bot.log(`[${this._guild}] playfunction reached.`);
     this._voiceChannel.join().then(con => {
       this._con = con;
-      this._bot.log(`[${this._guild}] Länge der Queue: ${this._queue.length}`);
+      this._bot.log(`[${this._guild}] Length of the queue: ${this._queue.length}`);
       if (this._msg !== null) {
         this._msg.delete()
-          .catch((err) => { if (!err) this._bot.log('i think i made a mistake with the if'); });
+          .catch((err) => { if (!err) this._bot.log('I think I made a mistake with the if.'); });
         this._msg = null;
       }
       if (this._queue.length === 0) {
-        this._bot.log(`[${this._guild}] Queue ist leer.`);
+        this._bot.log(`[${this._guild}] Queue is empty.`);
         msg.channel.sendMessage('Da die Queue leer ist, werde ich in 30 Sekunden diesen Channel verlassen falls bis dahin nichts hinzugefügt wurde.').then(mes => {
           this._msg = mes;
           this._timeout = this._bot.setTimeout(this._leaveChannel.bind(this), 30000);
@@ -287,7 +287,7 @@ class Music {
           this._bot.clearTimeout(this._timeout);
           this._timeout = null;
         }
-        this._bot.log(`[${this._guild}] Spiele nächsten Song`);
+        this._bot.log(`[${this._guild}] Playing next song...`);
         msg.channel.sendEmbed(
           {
             color: 0x00ff08,
@@ -310,7 +310,7 @@ class Music {
             if ([0, 2].includes(this._startup)) {
               if (this._startup === 0) this._startup = 1;
               this._disp = this._con.playStream(yt(this._queue[0].url, { audioonly: true }), { volume: this._volume, passes: 2 });
-              this._bot.log(`[${this._guild}] Spiele jetzt: ${this._queue[0].info.title}`);
+              this._bot.log(`[${this._guild}] Now playing: ${this._queue[0].info.title}`);
               this._bot.user.setGame(this._queue[0].info.title);
               this._playing = true;
               this._disp.once('error', (err) => {
@@ -323,12 +323,12 @@ class Music {
               this._disp.once('end', (reason) => {
                 if (this._startup === 1) this._startup = 2;
                 this._playing = false;
-                this._bot.log(`[${this._guild}] Song beendet nach: ${this._formatsecs(Math.floor(this._disp.time / 1000))} von ${this._formatsecs(this._queue[0].info.length_seconds)}`);
+                this._bot.log(`[${this._guild}] Song finished after: ${this._formatsecs(Math.floor(this._disp.time / 1000))} / ${this._formatsecs(this._queue[0].info.length_seconds)}`);
                 this._queue.shift();
                 if (reason !== 'stop') this._play(this._msg);
               });
             } else {
-              this._bot.log(`[${this._guild}] Nachricht, während des startes abgefangen.`);
+              this._bot.log(`[${this._guild}] Second message catched.`);
             }
           });
       }
@@ -411,7 +411,7 @@ class Music {
     this._msg.delete()
       .catch((err) => { if (!err) this._bot.log('this won\'get logged'); });
     this._timeout = null;
-    this._bot.log(`[${this._guild}] Verlasse Channel: ${this._con.channel.name}`);
+    this._bot.log(`[${this._guild}] Leaving channel: ${this._con.channel.name}`);
     this._con.channel.leave();
     this._disp = null;
     this._bot.user.setGame(this._bot.config.game);
