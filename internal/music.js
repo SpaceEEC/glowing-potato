@@ -74,8 +74,8 @@ class Music {
           } else if (e) {
             mes.edit(`Es ist ein Fehler beim ab Abrufen der Playlist aufgetreten:\n`
               + `Responsecode: ${e.status}\n`
-              + `${e.text}`)
-              .then(tmp => tmp.delete(5000));
+              + `Nachricht: ${e.message}`)
+              .then(tmp => tmp.delete(10000));
           } else {
             const urls = JSON.parse(res.text).items.map(s => s.snippet.resourceId.videoId);
             this._bot.log(`[${this._guild}] bulkadd(msg_obj, ${urls.length})`);
