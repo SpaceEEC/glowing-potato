@@ -18,6 +18,7 @@
     "moment": "^2.17.1",
     "moment-duration-format": "^1.3.0",
     "node-opus": "^0.2.4",
+    "prism-media": "github:hydrabolt/prism-media",
     "sqlite": "^2.2.4",
     "uws": "^0.12.0",
     "ytdl-core": "^0.7.21"
