@@ -314,14 +314,14 @@ class Music {
               this._bot.user.setGame(this._queue[0].info.title);
               this._playing = true;
               this._disp.once('error', (err) => {
-                if (this._startup === 1) this._startup = 2;
+                if (this._startup === 1) this._startup = 0;
                 this._bot.err(`[error]: [${this._guild}] ${err.message ? err.message : err}`);
               });
               this._disp.on('debug', (message) => {
                 this._bot.log(`[debug] [${this._guild}] ${message}`);
               });
               this._disp.once('end', (reason) => {
-                if (this._startup === 1) this._startup = 2;
+                if (this._startup === 1) this._startup = 0;
                 this._playing = false;
                 this._bot.log(`[${this._guild}] Song finished after: ${this._formatsecs(Math.floor(this._disp.time / 1000))} / ${this._formatsecs(this._queue[0].info.length_seconds)}`);
                 this._queue.shift();
