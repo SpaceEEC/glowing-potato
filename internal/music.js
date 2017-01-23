@@ -192,8 +192,8 @@ class Music {
       return 'Nichts zu skippen.';
     } else {
       const msg = `-- **${this._queue[0].info.title}**`;
-      this._disp.end();
       this._bot.log(`[${this._guild}] Song skipped.`);
+      this._disp.end();
       return msg;
     }
   }
