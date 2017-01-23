@@ -3,6 +3,7 @@ const moment = require('moment');
 moment.locale('de');
 require('moment-duration-format');
 const request = require('superagent');
+const fs = require('fs-extra-promise');
 
 class Music {
   constructor(bot, id) {
@@ -311,31 +312,33 @@ class Music {
             this._msg = mes;
             if ([0, 2].includes(this._startup)) {
               if (this._startup === 0) this._startup = 1;
-              const stream = yt(this._queue[0].url, { audioonly: true })
+              const stream = yt(this._queue[0].url, { filter: 'audioonly' })
                 .on('error', err => {
                   this._bot.log(`[${this._guild}] [stream] [ytdl-core-error]: ${require('util').inspect(err)}`);
                 });
-              stream.on('end', end => {
-                this._bot.log(`[${this._guild}] [stream] [ytdl-core-end]: ${require('util').inspect(end)}`);
+              stream.on('end', () => {
+                this._bot.log(`[${this._guild}] [stream] [ytdl-core] end`);
+                // this._disp = this._con.playStream(stream, { volume: this._volume, passes: 2 });
+                this._disp = this._con.playFile('./var/tempmusicfile', { volume: this._volume, passes: 2 });
+                this._bot.log(`[${this._guild}] Now playing: ${this._queue[0].info.title}`);
+                this._bot.user.setGame(this._queue[0].info.title);
+                this._playing = true;
+                this._disp.once('error', (err) => {
+                  if (this._startup === 1) this._startup = 0;
+                  this._bot.err(`[${this._guild}] [disp] [error] ${err.message ? err.message : err}`);
+                });
+                this._disp.on('debug', (message) => {
+                  this._bot.log(`[${this._guild}] [debug] [disp] ${message}`);
+                });
+                this._disp.once('end', (reason) => {
+                  if (this._startup === 1) this._startup = 0;
+                  this._playing = false;
+                  this._bot.log(`[${this._guild}] [disp] Song finished after: ${this._formatsecs(Math.floor(this._disp.time / 1000))} / ${this._formatsecs(this._queue[0].info.length_seconds)}`);
+                  this._queue.shift();
+                  if (reason !== 'stop') this._play(this._msg);
+                });
               });
-              this._disp = this._con.playStream(stream, { volume: this._volume, passes: 2 });
-              this._bot.log(`[${this._guild}] Now playing: ${this._queue[0].info.title}`);
-              this._bot.user.setGame(this._queue[0].info.title);
-              this._playing = true;
-              this._disp.once('error', (err) => {
-                if (this._startup === 1) this._startup = 0;
-                this._bot.err(`[${this._guild}] [disp] [error] ${err.message ? err.message : err}`);
-              });
-              this._disp.on('debug', (message) => {
-                this._bot.log(`[${this._guild}] [debug] [disp] ${message}`);
-              });
-              this._disp.once('end', (reason) => {
-                if (this._startup === 1) this._startup = 0;
-                this._playing = false;
-                this._bot.log(`[${this._guild}] [disp] Song finished after: ${this._formatsecs(Math.floor(this._disp.time / 1000))} / ${this._formatsecs(this._queue[0].info.length_seconds)}`);
-                this._queue.shift();
-                if (reason !== 'stop') this._play(this._msg);
-              });
+              stream.pipe(fs.createWriteStream('./var/tempmusicfile'));
             } else {
               this._bot.log(`[${this._guild}] Second message catched.`);
             }
