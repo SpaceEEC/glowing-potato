@@ -193,6 +193,7 @@ class Music {
     } else {
       const msg = `-- **${this._queue[0].info.title}**`;
       this._disp.end();
+      this._bot.log(`[${this._guild}] Song skipped.`);
       return msg;
     }
   }
@@ -219,6 +220,7 @@ class Music {
   stop() {
     if (this._queue.length === 0) return 'Hier gibt es nichts zu stoppen oder löschen.';
     const response = `Leere die Queue (**${this._queue.length}** Songs) und beende die Wiedergabe.`;
+    this._bot.log(`[${this._guild}] Stopped playing through command.`);
     this._queue = this._queue.slice(this._queue.length - 1);
     if (this._disp) this._disp.end('stop');
     if (this._msg) {
