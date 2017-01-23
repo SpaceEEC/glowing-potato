@@ -311,7 +311,11 @@ class Music {
             this._msg = mes;
             if ([0, 2].includes(this._startup)) {
               if (this._startup === 0) this._startup = 1;
-              this._disp = this._con.playStream(yt(this._queue[0].url, { audioonly: true }), { volume: this._volume, passes: 2 });
+              const stream = yt(this._queue[0].url, { audioonly: true })
+              .on('error', err => {
+                this._bot.log(`[ytdl-core-error] [${this._guild}]: ${require('util').inspect(err)}`);
+              });
+              this._disp = this._con.playStream(stream, { volume: this._volume, passes: 2 });
               this._bot.log(`[${this._guild}] Now playing: ${this._queue[0].info.title}`);
               this._bot.user.setGame(this._queue[0].info.title);
               this._playing = true;
