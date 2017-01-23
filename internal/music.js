@@ -58,8 +58,8 @@ class Music {
       count = 20;
     } else if (parseInt(count) < 0) {
       count = 1;
-    } else if (parseInt(count) > 200) {
-      count = 200;
+    } else if (parseInt(count) > 50) {
+      count = 50;
     }
     msg.channel.sendMessage('Rufe die Playlist ab...').then(mes => {
       request.get(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${count}&playlistId=${id}&fields=items/snippet/resourceId/videoId&key=${this._bot.internal.auth.googletoken}`)
