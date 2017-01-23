@@ -313,10 +313,10 @@ class Music {
               if (this._startup === 0) this._startup = 1;
               const stream = yt(this._queue[0].url, { audioonly: true })
                 .on('error', err => {
-                  this._bot.log(`[ytdl-core-error] [${this._guild}]: ${require('util').inspect(err)}`);
+                  this._bot.log(`[${this._guild}] [stream] [ytdl-core-error]: ${require('util').inspect(err)}`);
                 });
               stream.on('end', end => {
-                this._bot.log(`[ytdl-core-end] [${this._guild}]: ${require('util').inspect(end)}`);
+                this._bot.log(`[${this._guild}] [stream] [ytdl-core-end]: ${require('util').inspect(end)}`);
               });
               this._disp = this._con.playStream(stream, { volume: this._volume, passes: 2 });
               this._bot.log(`[${this._guild}] Now playing: ${this._queue[0].info.title}`);
@@ -324,15 +324,15 @@ class Music {
               this._playing = true;
               this._disp.once('error', (err) => {
                 if (this._startup === 1) this._startup = 0;
-                this._bot.err(`[error]: [${this._guild}] ${err.message ? err.message : err}`);
+                this._bot.err(`[${this._guild}] [disp] [error] ${err.message ? err.message : err}`);
               });
               this._disp.on('debug', (message) => {
-                this._bot.log(`[debug] [${this._guild}] ${message}`);
+                this._bot.log(`[${this._guild}] [debug] [disp] ${message}`);
               });
               this._disp.once('end', (reason) => {
                 if (this._startup === 1) this._startup = 0;
                 this._playing = false;
-                this._bot.log(`[${this._guild}] Song finished after: ${this._formatsecs(Math.floor(this._disp.time / 1000))} / ${this._formatsecs(this._queue[0].info.length_seconds)}`);
+                this._bot.log(`[${this._guild}] [disp] Song finished after: ${this._formatsecs(Math.floor(this._disp.time / 1000))} / ${this._formatsecs(this._queue[0].info.length_seconds)}`);
                 this._queue.shift();
                 if (reason !== 'stop') this._play(this._msg);
               });
