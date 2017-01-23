@@ -359,8 +359,13 @@ class Music {
         this._bot.log(`[${this._guild}] Queue length: ${this._queue.push({ url: ordered[song].url, info: ordered[song].info, requester: ordered[song].requester })}`);
       }
       if (!(this._disp && (this._con && this._con.speaking))) {
-        mes.edit(`Erfolgreich \`${ordered.length}\` Songs hinzugefügt.`)
-          .then((del) => del.delete(10000));
+        if (mes) {
+          mes.edit(`Erfolgreich \`${ordered.length}\` Songs hinzugefügt.`)
+            .then((del) => del.delete(10000));
+        } else {
+          msg.channel.send(`Erfolgreich \`${ordered.length}\` Songs hinzugefügt.`)
+            .then((del) => del.delete(10000));
+        }
         this._voiceChannel = msg.member.voiceChannel;
         this._play(msg);
       }
