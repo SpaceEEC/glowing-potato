@@ -89,7 +89,7 @@ class Music {
                       this._bot.err(err.message);
                       fin--;
                       if (toAdd.length === fin) {
-                        this._bulkaddvalidate(toAdd, true, undefined, undefined, tmp);
+                        this._bulkaddvalidate(toAdd, true, undefined, msg, tmp);
                       }
                     } else {
                       this._bot.log(`[${this._guild}] bulkadd() ${info.title}`);
