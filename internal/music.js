@@ -316,7 +316,7 @@ class Music {
                   this._bot.log(`[ytdl-core-error] [${this._guild}]: ${require('util').inspect(err)}`);
                 });
               stream.on('end', end => {
-                this._bot.log(`[ytdl-core-error] [${this._guild}]: ${require('util').inspect(end)}`);
+                this._bot.log(`[ytdl-core-end] [${this._guild}]: ${require('util').inspect(end)}`);
               });
               this._disp = this._con.playStream(stream, { volume: this._volume, passes: 2 });
               this._bot.log(`[${this._guild}] Now playing: ${this._queue[0].info.title}`);
