@@ -319,7 +319,7 @@ class Music {
               stream.on('end', () => {
                 this._bot.log(`[${this._guild}] [stream] [ytdl-core] end`);
                 // this._disp = this._con.playStream(stream, { volume: this._volume, passes: 2 });
-                this._disp = this._con.playFile('./var/tempmusicfile', { volume: this._volume, passes: 2 });
+                this._disp = this._con.playFile(`./var/tempmusicfile_${this._msg.guild.id}`, { volume: this._volume, passes: 2 });
                 this._bot.log(`[${this._guild}] Now playing: ${this._queue[0].info.title}`);
                 this._bot.user.setGame(this._queue[0].info.title);
                 this._playing = true;
@@ -338,7 +338,7 @@ class Music {
                   if (reason !== 'stop') this._play(this._msg);
                 });
               });
-              stream.pipe(fs.createWriteStream('./var/tempmusicfile'));
+              stream.pipe(fs.createWriteStream(`./var/tempmusicfile_${this._msg.guild.id}`));
             } else {
               this._bot.log(`[${this._guild}] Second message catched.`);
             }
