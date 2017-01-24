@@ -269,6 +269,17 @@ class Music {
     return 'Die Warteschlange wurde gemischt.';
   }
 
+  summon(msg) {
+    if (msg.joinable && msg.speakable) {
+      msg.voiceChannel.join().then((con) => {
+        this._con = con;
+      });
+      return 'Versuche deinem Channel beizutreten.';
+    } else {
+      return 'Ich darf deinem Channel nicht beitreten und/oder dort nicht reden. So wird das nichts!';
+    }
+  }
+
   _play(msg) {
     this._bot.log(`[${this._guild}] playfunction reached.`);
     this._voiceChannel.join().then(con => {
@@ -332,7 +343,7 @@ class Music {
                 });
                 this._disp.once('end', (reason) => {
                   fs.unlinkAsync(`./var/tempmusicfile_${this._con.channel.guild.id}`)
-                  .catch(this._bot.err);
+                    .catch(this._bot.err);
                   if (this._startup === 1) this._startup = 0;
                   this._playing = false;
                   this._bot.log(`[${this._guild}] [disp] Song finished after: ${this._formatsecs(Math.floor(this._disp.time / 1000))} / ${this._formatsecs(this._queue[0].info.length_seconds)}`);
