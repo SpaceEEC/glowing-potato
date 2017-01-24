@@ -85,7 +85,7 @@ function menu(bot, msg) {
     fields: [
       {
         name: 'Einfach den Namen oder die Zahl des zu ändernden Objektes angeben.',
-        value: 'Zum Abbrechen `cancel` abgeben, oder einfach `30` Sekunden warten.',
+        value: 'Zum Abbrechen `cancel` eingeben, oder einfach `30` Sekunden warten.',
       },
     ],
   };
