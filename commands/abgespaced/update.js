@@ -11,7 +11,7 @@ Update mit Fehlern ausgeführt, starte nicht automatisch neu...`);
     } else {
       await status_msg.edit(`
 ${stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`` : ''}
-${params[0] !== '--norestart' ? 'Starte automatisch neu damit das Update wirksam wird...' : ''}
+${params[0] !== '--norestart' ? 'Starte automatisch neu damit das Update wirksam wird...' : 'Starte nicht neu...'}
     `);
       if (params[0] !== '--norestart') process.exit(1335);
     }
