@@ -271,7 +271,7 @@ class Music {
 
   summon(msg) {
     if (msg.member.voiceChannel.joinable && msg.member.voiceChannel.speakable) {
-      msg.voiceChannel.join().then((con) => {
+      msg.member.voiceChannel.join().then((con) => {
         this._con = con;
       });
       return 'Versuche deinem Channel beizutreten.';
