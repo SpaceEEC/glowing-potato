@@ -26,7 +26,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
 exports.conf = {
   spamProtection: false,
   enabled: true,
-  aliases: ['volume'],
+  aliases: [],
   permLevel: 0,
 };
 
