@@ -9,7 +9,8 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
     if (!msg.member.voiceChannel) {
       msg.channel.sendMessage('Du bist in keinem Voicechannel.')
         .then((mes) => mes.delete(5000));
-    } else if (!msg.guild.member(bot.user).voiceChannel.members.has(msg.author.id)) {
+    } else if (!(msg.guild.member(bot.user).voiceChannel
+    && msg.guild.member(bot.user).voiceChannel.members.has(msg.author.id))) {
       msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten VoiceChannel bist?')
         .then((mes) => mes.delete(5000));
     } else if (params[0].includes('watch?v=') || params[0].length === 11) {
