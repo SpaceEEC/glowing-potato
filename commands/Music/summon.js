@@ -9,9 +9,6 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
     if (!msg.guild.member(bot.user).voiceChannel) {
       msg.channel.sendMessage('Ich spiel doch gerade nichts, füge doch einfach etwas hinzu!')
         .then((mes) => mes.delete(5000));
-    } else if (!msg.guild.member(bot.user).voiceChannel.members.has(msg.author.id)) {
-      msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten Voicechannel bist?')
-        .then((mes) => mes.delete(5000));
     } else {
       msg.channel.send(musik.summon(msg))
         .then((mes) => mes.delete(5000));
