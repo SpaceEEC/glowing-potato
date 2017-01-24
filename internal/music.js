@@ -270,7 +270,7 @@ class Music {
   }
 
   summon(msg) {
-    if (msg.channel.joinable && msg.channel.speakable) {
+    if (msg.member.voiceChannel.joinable && msg.member.voiceChannel.speakable) {
       msg.voiceChannel.join().then((con) => {
         this._con = con;
       });
