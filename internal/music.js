@@ -273,6 +273,7 @@ class Music {
     if (msg.member.voiceChannel.joinable && msg.member.voiceChannel.speakable) {
       msg.member.voiceChannel.join().then((con) => {
         this._con = con;
+        this._voiceChannel = msg.member.voiceChannel;
       });
       return 'Versuche deinem Channel beizutreten...';
     } else {
