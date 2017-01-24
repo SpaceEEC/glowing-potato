@@ -7,12 +7,10 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
 \`INFO\`\n\`\`\`xl\n${stdout}\n\n${stderr}\`\`\`
 ${error.code ? `Exit Code: ${error.code}` : ''}
 ${error.signal ? `Signal erhalten: ${error.signal}` : ''}
-
 Update mit Fehlern ausgeführt, starte nicht automatisch neu...`);
     } else {
       await status_msg.edit(`
 ${stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`` : ''}
-Kein Fehler, dies bedeutet vermutlich kein Update.
 Starte automatisch neu damit das Update wirksam wird....
     `);
       process.exit(1335);
