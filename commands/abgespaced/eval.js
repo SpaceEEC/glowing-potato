@@ -4,8 +4,9 @@ exports.run = async (bot, msg, params = []) => {
     try {
       const code = params.join(' ');
       let evaled = eval(code);
+      if (evaled instanceof Promise) evaled = await evaled;
       const response_typeof = typeof evaled;
-      if (typeof evaled !== 'string') { evaled = require('util').inspect(evaled); }
+      if (typeof evaled !== 'string') { evaled = require('util').inspect(evaled, false, 0); }
       if (evaled.includes(bot.token)) {
         msg.channel.sendMessage('Was willst du damit anstellen? 👀.');
         return;
@@ -24,7 +25,6 @@ Ausführungszeitraum: \`${new Date().getTime() - time}\`ms`).catch((e) => {
 ${e.stack ? e.stack : e}
 \`\`\``);
         }); // eslint-disable-line
-      return;
     } catch (e) {
       msg.channel.sendMessage(`\`E-ROHR\`
 \`\`\`js
@@ -32,11 +32,9 @@ ${e}
 \`\`\`
 
 Versuchungszeitraum: \`${new Date().getTime() - time}\`ms`);
-      return;
     }
   } else {
     msg.channel.sendMessage('Du kannst den `eval` Befehl leider nicht verwenden.');
-    return;
   }
 };
 
