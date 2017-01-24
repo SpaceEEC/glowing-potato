@@ -274,7 +274,7 @@ class Music {
       msg.member.voiceChannel.join().then((con) => {
         this._con = con;
       });
-      return 'Versuche deinem Channel beizutreten.';
+      return 'Versuche deinem Channel beizutreten...';
     } else {
       return 'Ich darf deinem Channel nicht beitreten und/oder dort nicht reden. So wird das nichts!';
     }
