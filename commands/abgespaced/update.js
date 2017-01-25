@@ -7,11 +7,12 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
 \`INFO\`\n\`\`\`xl\n${stdout}\n\n${stderr}\`\`\`
 ${error.code ? `Exit Code: ${error.code}` : ''}
 ${error.signal ? `Signal erhalten: ${error.signal}` : ''}
-Update mit Fehlern ausgeführt, starte nicht automatisch neu...`);
+Update mit Fehlern ausgeführt, starte nicht automatisch neu.
+Änderungen werden erst nach einem Neustart wirksam.`);
     } else {
       await status_msg.edit(`
 ${stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`` : ''}
-${params[0] !== '--norestart' ? 'Starte automatisch neu damit das Update wirksam wird...' : 'Starte nicht neu...'}
+${params[0] !== '--norestart' ? 'Starte automatisch neu damit das Update wirksam wird...' : 'Starte nicht neu.\nÄnderungen werden erst nach einem Neustart wirksam.'}
     `);
       if (params[0] !== '--norestart') process.exit(1335);
     }
