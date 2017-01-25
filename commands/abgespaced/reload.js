@@ -38,22 +38,25 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
 
 async function reload(bot, msg, params) {
   if (params[0] === 'all') {
-    const mes = await msg.channel.sendMessage('Lade alle Befehle neu, dies kann ein wenig dauern.');
-    const files = fs.readdirSync(`./commands/`);
-    let error = false;
-    for (let i = 0; i < files.length; i++) {
-      bot.internal.commands.reload(bot, files[i].replace('.js', '')).catch((err) => {
-        error = true;
-        bot.err(`Fehler beim neu Laden von ${files[i]}:\n${err.stack ? err.stack : err}`);
+    const folders = await fs.readdirAsync('./commands/');
+    bot.log(`Lade insgesamt ${folders.length} Befehlskategorien.`);
+    await folders.forEach(async folder => {
+      const files = await fs.readdirAsync(`./commands/${folder}`);
+      bot.log(`Lade insgesamt ${files.length} Befehle aus ${folder}.`);
+      await files.forEach(f => {
+        try {
+          const props = require(`../commands/${folder}/${f}`);
+          if (props.help.shortdescription.length === 0) props.conf.group = 'hidden';
+          else props.conf.group = folder;
+          bot.commands.set(props.help.name, props);
+          props.conf.aliases.forEach(alias => {
+            bot.aliases.set(alias, props.help.name);
+          });
+        } catch (e) {
+          bot.err(`Fehler beim Laden von ./commands/${folder}/${f}.js\n${e.stack ? e.stack : e}`);
+        }
       });
-    }
-    if (error) {
-      bot.log('Das neu Laden aller Befehle ist mit Fehlern abgeschlossen.');
-      return mes.edit('Es ist beim Laden mindstens einem Befehl ein Fehler aufgetreten.');
-    } else {
-      bot.log('Alle Befehle neu geladen.');
-      return mes.edit('Alle Befehle ohne Fehler neu geladen.');
-    }
+    });
   } else {
     for (let i = 0; i < params.length; i++) {
       bot.internal.commands.reload(bot, params[i]).then(mi => { // eslint-disable-line
