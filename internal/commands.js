@@ -32,8 +32,8 @@ exports.reload = (bot, command) => new Promise((resolve, reject) => {
     delete require.cache[require.resolve(`../commands/${command}`)];
     const cmd = require(`../commands/${command}`);
     command = cmd.help.name;
+    dir = cmd.conf.group;
     if (cmd.help.shortdescription.length === 0) cmd.conf.group = 'hidden';
-    else cmd.conf.group = cmd.conf.group = dir;
     bot.commands.delete(command);
     bot.aliases.forEach((cmd2, alias) => {
       if (cmd2 === command) bot.aliases.delete(alias);
