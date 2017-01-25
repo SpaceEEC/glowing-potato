@@ -173,7 +173,7 @@ function answer(response, msg, bot, mes) {
 exports.conf = {
   spamProtection: false,
   enabled: true,
-  aliases: [],
+  aliases: ['character', 'charakter'],
   permLevel: 0,
 
 };
@@ -181,7 +181,7 @@ exports.conf = {
 
 exports.help = {
   name: 'char',
-  description: 'Ruft einen Char aus der AnilistDB ab.',
-  shortdescription: 'Charactersuche',
+  description: 'Ruft einen Charakter aus der AnilistDB(Animes/Mangas) ab.',
+  shortdescription: 'Charaktersuche',
   usage: '$conf.prefixchar [Suchbegriff(e)]',
 };
