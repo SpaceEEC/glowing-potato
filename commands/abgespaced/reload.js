@@ -60,7 +60,7 @@ async function reload(bot, msg, params) {
   } else {
     for (let i = 0; i < params.length; i++) {
       bot.internal.commands.reload(bot, params[i]).then(mi => { // eslint-disable-line
-        bot.log(`".commands/${bot.commands.get(params[i]).conf.group}/${params[i]}.js" erfolgreich neu geladen.`);
+        bot.log(`"./commands/${bot.commands.get(params[i]).conf.group}/${params[i]}.js" erfolgreich neu geladen.`);
         msg.channel.sendMessage(`Neu laden von \`${params[i]}\` erfolgreich abgeschlossen.`);
       })
         .catch((err) => {
