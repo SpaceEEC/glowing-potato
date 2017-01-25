@@ -31,6 +31,10 @@ bot.internal.init(bot);
 
 bot.on('message', async (msg) => {
   if (msg.author.bot) return;
+  if (msg.channel.type === 'dm') {
+    msg.channel.sendMessage("(ง'̀-'́)ง");
+    return;
+  }
   if (msg.channel.type !== 'text') return;
   const conf = bot.confs.get(msg.guild.id);
   if (conf.ignchannels && conf.ignchannels.includes(msg.channel.id)) return;
