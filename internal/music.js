@@ -17,6 +17,11 @@ class Music {
     this._playing = false;
     this._startup = 0;
     this._timeout = null;
+    this._loop = false;
+    this._empty = {
+      timeout: null,
+      msg: null,
+    };
     this._volume = 0.2;
   }
 
@@ -194,7 +199,7 @@ class Music {
     } else {
       const msg = `-- **${this._queue[0].info.title}**`;
       this._bot.log(`[${this._guild}] Song skipped.`);
-      this._disp.end();
+      this._disp.end('skip');
       return msg;
     }
   }
@@ -224,12 +229,7 @@ class Music {
     this._bot.log(`[${this._guild}] Stopped playing through command.`);
     this._queue = this._queue.slice(this._queue.length - 1);
     if (this._disp) this._disp.end('stop');
-    if (this._msg) {
-      this._msg.delete();
-      this._msg = null;
-    }
-    this._bot.user.setGame(this._bot.config.game);
-    this._con.channel.leave();
+    this._bot.setTimeout(this._leaveChannel.bind(this), 2000);
     return response;
   }
 
@@ -281,6 +281,20 @@ class Music {
     }
   }
 
+  loop(input) {
+    if (input === true) {
+      if (this._loop) return 'Das Wiederholen, des letzten Liedes in der Wiedergabeliste ist bereits aktiviert.';
+      this._loop = true;
+      return 'Wiederholung des letzten Liedes der Wiedergabeliste aktiviert!';
+    } else if (input === false) {
+      if (!this._loop) return 'Das Wiederholen, des letzten Liedes in der Wiedergabeliste ist bereits deaktiviert.';
+      this._loop = false;
+      return 'Wiederholung des letzten Liedes der Wiedergabeliste deaktiviert!';
+    } else {
+      return `Der letzte Song in der Wiedergabeliste wird ${this._loop ? '' : 'nicht '}automatisch wiederholt.`;
+    }
+  }
+
   _play(msg) {
     this._bot.log(`[${this._guild}] playfunction reached.`);
     this._voiceChannel.join().then(con => {
@@ -313,7 +327,8 @@ class Music {
             },
             description: `**>>** [${this._queue[0].info.title}](${this._queue[0].info.loaderUrl})\n`
             + `Dauer: ${this._formatsecs(this._queue[0].info.length_seconds)}\n`
-            + `Hinzugefügt von: ${this._queue[0].requester}`,
+            + `Hinzugefügt von: ${this._queue[0].requester}`
+            + `${this._loop && this._queue.length === 1 ? '\n**Loop aktiv!**' : ''}`,
             type: 'image',
             image: { url: this._queue[0].info.iurl },
             footer: { text: 'wird gerade gespielt.', icon_url: this._bot.user.avatarURL },
@@ -328,7 +343,7 @@ class Music {
                 .on('error', err => {
                   this._bot.log(`[${this._guild}] [stream] [ytdl-core-error]: ${require('util').inspect(err)}`);
                 });
-              stream.on('end', () => {
+              stream.once('end', () => {
                 this._bot.log(`[${this._guild}] [stream] [ytdl-core] end`);
                 // this._disp = this._con.playStream(stream, { volume: this._volume, passes: 2 });
                 this._disp = this._con.playFile(`./var/tempmusicfile_${this._msg.guild.id}`, { volume: this._volume, passes: 2 });
@@ -348,7 +363,7 @@ class Music {
                   if (this._startup === 1) this._startup = 0;
                   this._playing = false;
                   this._bot.log(`[${this._guild}] [disp] Song finished after: ${this._formatsecs(Math.floor(this._disp.time / 1000))} / ${this._formatsecs(this._queue[0].info.length_seconds)}`);
-                  this._queue.shift();
+                  if (!this._loop || !this._queue.length === 1 || reason === 'skip') this._queue.shift();
                   if (reason !== 'stop') this._play(this._msg);
                 });
               });
@@ -433,6 +448,43 @@ class Music {
     });
   }
 
+  _emptyChannel(empty) {
+    if (empty) {
+      // channel IS empty (except bot)
+      if (this._empty.timeout) {
+        this._bot.clearTimeout(this._empty.timeout);
+      }
+      if (this._empty.msg) {
+        this._empty.msg.delete()
+          .catch((err) => { if (!err) this._bot.log('noop'); });
+      }
+      if (this._msg) {
+        this._msg.channel.sendMessage('Da der Channel leer ist, werde ich ihn in 30 Sekunden verlassen, falls bis dahin nicht irgendjemand zu mir stößt.')
+          .then(msg => this._empty.msg = msg); // eslint-disable-line
+      }
+      this._empty.timeout = this._bot.setTimeout(this._emptyLeave.bind(this), 30000);
+    } else {
+      // channel IS NOT empty (fires every time someone joins)
+      if (this._empty.timeout) {
+        this._bot.clearTimeout(this._empty.timeout);
+        this._empty.timeout = null;
+      }
+      if (this._empty.msg) {
+        this._empty.msg.delete()
+          .catch((err) => { if (!err) this._bot.log('noop'); });
+      }
+    }
+  }
+
+  _emptyLeave() {
+    this._bot.log('Verlasse Channel, da leer.');
+    this._empty.msg.delete()
+      .catch((err) => { if (!err) this._bot.log('noop'); });
+    this._queue = this._queue.slice(this._queue.length - 1);
+    if (this._disp) this._disp.end('stop');
+    this._leaveChannel();
+  }
+
   _leaveChannel() {
     this._msg.delete()
       .catch((err) => { if (!err) this._bot.log('this won\'get logged'); });
@@ -441,6 +493,7 @@ class Music {
     this._con.channel.leave();
     this._disp = null;
     this._bot.user.setGame(this._bot.config.game);
+    this._bot.internal.musik.delete(this._guild);
   }
 
   _formatsecs(secs) {
