@@ -3,7 +3,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
     || ((!msg.conf.musicgroup || (msg.conf.musicgroup && msg.member.roles.has(msg.conf.musicgroup)))
       && (!msg.conf.musicchannel || (msg.conf.musicchannel && msg.channel.id === msg.conf.musicchannel)))) {
     if (!bot.internal.musik.get(msg.guild.id)) {
-      bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg.guild.name));
+      bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg.guild.id));
     }
     const musik = bot.internal.musik.get(msg.guild.id);
     if (!msg.member.voiceChannel) {

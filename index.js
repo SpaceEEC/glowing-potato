@@ -144,6 +144,13 @@ ${e.stack ? e.stack : e}`);
 
 
 bot.on('voiceStateUpdate', (oldMember, newMember) => {
+  if (bot.internal.musik.has(newMember.guild.id) && newMember.guild.member(bot.user).voiceChannel) {
+    if (newMember.guild.member(bot.user).voiceChannel.members.size === 1 && oldMember.voiceChannel.id === newMember.guild.member(bot.user).voiceChannel.id) {
+      bot.internal.musik.get(newMember.guild.id)._emptyChannel(true);
+    } else {
+      bot.internal.musik.get(newMember.guild.id)._emptyChannel(false);
+    }
+  }
   if (newMember.user.bot) return;
   const conf = bot.confs.get(newMember.guild.id);
   if (!conf.vlogchannel) return;
@@ -207,5 +214,6 @@ bot.on('disconnect', () => {
 process.on('unhandledRejection', (err) => {
   bot.err(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`);
 });
+
 
 bot.login(bot.internal.auth.dtoken);
