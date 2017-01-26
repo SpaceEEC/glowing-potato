@@ -36,6 +36,7 @@ exports.reload = (bot, command) => new Promise((resolve, reject) => {
     command = cmd.help.name;
     if (cmd.help.shortdescription.length === 0) cmd.conf.group = 'hidden';
     else cmd.conf.group = dir;
+    if (dir === 'FEHLER') throw new Error('Konnte Ordner nicht ermitteln!');
     bot.commands.delete(command);
     bot.aliases.forEach((cmd2, alias) => {
       if (cmd2 === command) bot.aliases.delete(alias);
