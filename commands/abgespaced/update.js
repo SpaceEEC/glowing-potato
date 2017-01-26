@@ -8,7 +8,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
 ${error.code ? `Exit Code: ${error.code}` : ''}
 ${error.signal ? `Signal erhalten: ${error.signal}` : ''}
 Update mit Fehlern ausgeführt, starte nicht automatisch neu.
-Änderungen werden erst nach einem Neustart wirksam.`);
+Änderungen werden in der Regel erst nach einem Neustart wirksam.`);
     } else {
       await status_msg.edit(`
 ${stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`` : ''}
