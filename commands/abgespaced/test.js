@@ -1,6 +1,6 @@
-exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => { // eslint-disable-line
   return msg.channel.sendEmbed(nichts(bot, msg));
-});
+};
 
 
 function nichts(bot, msg) { // eslint-disable-line
