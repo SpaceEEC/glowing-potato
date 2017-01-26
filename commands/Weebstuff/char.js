@@ -113,7 +113,7 @@ async function getanswer(bot, msg, response) {
     new bot.methods.Embed()
       .setColor(msg.guild.member(msg.author).highestRole.color)
       .setTitle(`Es gibt mehrere Charaktere auf diese Suchanfrage:`)
-      .setDescription(response.map(r => `${count++}\t\t${r.name_first} ${r.name_last}`).join('\n'))
+      .setDescription(response.map(r => `${count++}\t\t${r.name_first} ${r.name_last ? r.name_last : ''}`).join('\n'))
       .addField(`Gib die Nummer des Charaktere, für den weiter Informationen haben möchtest an.`,
       'Diese Anfrage wird bei `cancel` oder automatisch nach `30` Sekunden abgebrochen.'));
   try {
@@ -147,7 +147,7 @@ async function getanswer(bot, msg, response) {
   }
 }
 
-function answer(response, msg, bot, mes) {
+async function answer(response, msg, bot, mes) {
   const map = { amp: '&', lt: '<', gt: '>', quot: '"', '#039': "'" };
   response.info = response.info.replace(/&([^;]+);/g, (m, c) => map[c])
     .split('`').join('\'').split('<br>').join('\n'); // eslint-disable-line 
@@ -157,7 +157,7 @@ function answer(response, msg, bot, mes) {
     .setDescription(`${response.name_japanese}\n\n${response.name_alt ? `Aliases:\n${response.name_alt}` : ''}`)
     .setThumbnail(response.image_url_med);
   if (response.info.length < 1025) {
-    embed.addField('Beschreibung', response.info);
+    embed.addField('Beschreibung', response.info.length ? response.info : 'Keine Beschreibung angegeben.');
   } else {
     const info = response.info.match(/(.|[\r\n]){1,1024}/g);
     for (let i = 0; i < info.length; i++) {
@@ -165,8 +165,12 @@ function answer(response, msg, bot, mes) {
         info[i]);
     }
   }
-  if (mes) mes.edit('', { embed });
-  else msg.channel.sendEmbed(embed);
+  try {
+    if (mes) await mes.edit('', { embed });
+    else await msg.channel.sendEmbed(embed);
+  } catch (e) {
+    msg.channel.sendCode('js', `${e}${e && e.response && e.response.res && e.response.res.text ? `\n${require('util').inspect(JSON.parse(e.response.res.text), false, 1)}` : ''}`);
+  }
 }
 
 
