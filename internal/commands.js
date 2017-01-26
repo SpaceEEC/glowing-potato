@@ -28,12 +28,14 @@ exports.reload = (bot, command) => new Promise((resolve, reject) => {
     if (bot.commands.has(command)) {
       dir = bot.commands.get(command).conf.group;
       command = `${dir}/${command}`;
+    } else {
+      dir = command.split('/')[0];
     }
     delete require.cache[require.resolve(`../commands/${command}`)];
     const cmd = require(`../commands/${command}`);
     command = cmd.help.name;
-    dir = cmd.conf.group;
     if (cmd.help.shortdescription.length === 0) cmd.conf.group = 'hidden';
+    else cmd.conf.group = dir;
     bot.commands.delete(command);
     bot.aliases.forEach((cmd2, alias) => {
       if (cmd2 === command) bot.aliases.delete(alias);
