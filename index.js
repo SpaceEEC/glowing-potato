@@ -17,6 +17,7 @@ bot.config = {};
 
 // methods
 bot.methods = {};
+bot.methods.inspect = (obj, hidden = false, depth = 0) => require('util').inspect(obj, hidden, depth);
 bot.methods.Embed = Discord.RichEmbed;
 bot.methods.Collection = Discord.Collection;
 
@@ -45,7 +46,7 @@ bot.on('message', async (msg) => {
     prefixLength = bot.config.prefixMention.exec(msg.content)[0].length + 1;
   }
   const command = msg.content.slice(prefixLength).split(' ')[0].toLowerCase();
-  const params = msg.content.slice(prefixLength).split(' ').slice(1);
+  const params = msg.content.slice(prefixLength).split(' ').slice(1).filter(a => a); // eslint-disable-line
   let cmd;
   if (bot.commands.has(command)) {
     cmd = bot.commands.get(command);
@@ -207,7 +208,7 @@ bot.on('guildDelete', (guild) => {
 
 bot.on('disconnect', () => {
   bot.log(`Disconnected nach ${moment.duration(bot.uptime).format(' D [Tage], H [Stunden], m [Minuten], s [Sekunden]')}.`); // eslint-disable-line
-  process.exit(100);
+  // process.exit(100);
 });
 
 
