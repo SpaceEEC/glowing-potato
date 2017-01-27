@@ -15,10 +15,10 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
           !== msg.member.voiceChannel.id)) {
         msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten Voicechannel bist?')
           .then((mes) => mes.delete(5000));
-      } else if (['an', 'true', 'y'].includes(params[0])) {
+      } else if (['an', 'true', 'y', 'on'].includes(params[0].toLowerCase())) {
         msg.channel.send(musik.loop(true))
           .then((mes) => mes.delete(5000));
-      } else if (['aus', 'false', 'n'].includes(params[0])) {
+      } else if (['aus', 'false', 'n', 'off'].includes(params[0].toLowerCase())) {
         msg.channel.send(musik.loop(false))
           .then((mes) => mes.delete(5000));
       } else {
