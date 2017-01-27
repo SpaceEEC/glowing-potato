@@ -143,18 +143,26 @@ class Music {
       });
   }
 
-  queue() {
+  queue(page) {
     if (this._queue.length < 2) {
       return this.np();
     } else {
+      if (page % 1 === 0) {
+        page = parseInt(page) - 1;
+        if (page <= 0) page = 0;
+      } else {
+        page = 0;
+      }
       const e = new this._bot.methods.Embed();
       e.setColor(0x0800ff)
-        .setThumbnail(this._queue[0].info.iurl)
-        .setTitle(`Songs in der Queue: ${this._queue.length} | Insgesamte Länge: ${this._formatsecs(this._queue.reduce((a, b) => a + parseInt(b.info.length_seconds), 0))}`)
-        .setDescription(`${this._playing ? '**Spiele gerade:**' : '**Momentan pausiert:**'} `
-        + `\`(${this._formatsecs(Math.floor(this._disp.time / 1000))}/${this._formatsecs(this._queue[0].info.length_seconds)})\` `
-        + `Von: ${this._queue[0].requester}\n`
-        + `[${this._queue[0].info.title}](${this._queue[0].info.loaderUrl})`);
+        .setTitle(`Songs in der Queue: ${this._queue.length} | Insgesamte Länge: ${this._formatsecs(this._queue.reduce((a, b) => a + parseInt(b.info.length_seconds), 0))}`);
+      if (page <= 0) {
+        e.setThumbnail(this._queue[0].info.iurl)
+          .setDescription(`${this._playing ? '**Spiele gerade:**' : '**Momentan pausiert:**'} `
+          + `\`(${this._formatsecs(Math.floor(this._disp.time / 1000))}/${this._formatsecs(this._queue[0].info.length_seconds)})\` `
+          + `Von: ${this._queue[0].requester}\n`
+          + `[${this._queue[0].info.title}](${this._queue[0].info.loaderUrl})`);
+      }
       let fieldtext = '';
       const fields = [];
       for (const song in this._queue) {
@@ -168,10 +176,9 @@ class Music {
         }
       }
       if (fieldtext.length > 0) fields.push(fieldtext);
-      for (const field in fields) {
-        if (field > 25) break;
-        e.addField(field === '0' ? 'Warteschlange:' : '\u200b', fields[field]);
-      }
+      if (!fields[page]) page = fields.length - 1;
+      e.addField(page === 0 ? 'Warteschlange:' : 'Weitere Einträge', fields[page]);
+      e.setFooter(`Seite ${page + 1} von ${fields.length}`);
       return { embed: e };
     }
   }
@@ -503,7 +510,10 @@ class Music {
       .format(secs > 3599 ? 'hh:mm:ss' : 'mm:ss');
   }
 }
+
+
 exports.Player = Music;
+
 
 exports.init = async (bot) => {
   bot.log('Lade Musikklasse.');
