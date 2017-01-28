@@ -41,7 +41,7 @@ exports.conf = {
 exports.help = {
   name: 'loop',
   shortdescription: '',
-  description: 'Aktiviert/Deaktiviert das wiederholen, des letzten Songs in der Wiedergabeliste.',
+  description: 'Aktiviert/Deaktiviert das Wiederholen, des letzten Songs in der Wiedergabeliste.',
   usage: '$conf.prefixloop (an/aus)',
 };
 
