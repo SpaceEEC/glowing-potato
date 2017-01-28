@@ -208,7 +208,7 @@ bot.on('guildDelete', (guild) => {
 
 bot.on('disconnect', () => {
   bot.log(`Disconnected nach ${moment.duration(bot.uptime).format(' D [Tage], H [Stunden], m [Minuten], s [Sekunden]')}.`); // eslint-disable-line
-  // process.exit(100);
+  process.exit(100);
 });
 
 
