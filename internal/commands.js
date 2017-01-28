@@ -45,7 +45,7 @@ exports.reload = (bot, command) => new Promise((resolve, reject) => {
     cmd.conf.aliases.forEach(alias => {
       bot.aliases.set(alias, cmd.help.name);
     });
-    resolve();
+    resolve(cmd);
   } catch (e) {
     reject(e);
   }
