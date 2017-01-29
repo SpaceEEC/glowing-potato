@@ -144,6 +144,7 @@ class Music {
   }
 
   queue(page) {
+    if (!this._disp) return 'Die Intialisierung ist noch nicht abgeschlossen.';
     if (this._queue.length < 2) {
       return this.np();
     } else {
@@ -184,6 +185,7 @@ class Music {
   }
 
   np() {
+    if (!this._disp) return 'Die Intialisierung ist noch nicht abgeschlossen.';
     if (this._queue.length === 0) {
       return `Die Queue ist leer, füge doch ein paar Songs hinzu!`;
     } else {
@@ -346,6 +348,7 @@ class Music {
             this._msg = mes;
             if ([0, 2].includes(this._startup)) {
               if (this._startup === 0) this._startup = 1;
+              this._bot.log(`[${this._guild}] [stream] [ytdl-core]: starte download`);
               const stream = yt(this._queue[0].url, { filter: 'audioonly' })
                 .on('error', err => {
                   this._bot.log(`[${this._guild}] [stream] [ytdl-core-error]: ${require('util').inspect(err)}`);
