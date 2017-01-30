@@ -207,7 +207,7 @@ class Music {
       return 'Nichts zu skippen.';
     } else {
       const msg = `-- **${this._queue[0].info.title}**`;
-      this._bot.log(`[${this._guild}] Song skipped.`);
+      this._bot.info(`[${this._guild}] Song skipped.`);
       this._disp.end('skip');
       return msg;
     }
@@ -235,7 +235,7 @@ class Music {
   stop() {
     if (this._queue.length === 0) return 'Hier gibt es nichts zu stoppen oder löschen.';
     const response = `Leere die Queue (**${this._queue.length}** Songs) und beende die Wiedergabe.`;
-    this._bot.log(`[${this._guild}] Stopped playing through command.`);
+    this._bot.info(`[${this._guild}] Stopped playing through command.`);
     this._queue = this._queue.slice(this._queue.length - 1);
     if (this._disp) this._disp.end('stop');
     this._bot.setTimeout(this._leaveChannel.bind(this), 2000);
@@ -493,7 +493,7 @@ class Music {
   }
 
   _emptyLeave() {
-    this._bot.log('Verlasse Channel, da leer.');
+    this._bot.info('Verlasse Channel, da leer.');
     this._empty.msg.delete()
       .catch((err) => { if (!err) this._bot.warn('_emptyLeave delete message'); });
     this._queue = this._queue.slice(this._queue.length - 1);
@@ -505,7 +505,7 @@ class Music {
     this._msg.delete()
       .catch((err) => { if (!err) this._bot.warn('_emptyLeave delete message'); });
     this._timeout = null;
-    this._bot.log(`[${this._guild}] Leaving channel: ${this._con.channel.name}`);
+    this._bot.info(`[${this._guild}] Leaving channel: ${this._con.channel.name}`);
     this._con.channel.leave();
     this._disp = null;
     this._bot.user.setGame(this._bot.config.game);
