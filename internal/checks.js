@@ -1,4 +1,4 @@
-// shamelessly stolen from: github.com/eslachance/komada/blob/master/functions/runCommandInhibitors.js
+// shamelessly stolen from: github.com/dirigeants/komada/blob/master/functions/runCommandInhibitors.js
 const fs = require('fs-extra-promise');
 
 
