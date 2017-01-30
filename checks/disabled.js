@@ -6,13 +6,13 @@ exports.run = (bot, msg, cmd) => new Promise((resolve, reject) => {
   } else if (msg.conf.disabledcommands.includes(cmd.help.name)) {
     reject('Dieser Befehl ist gildenweit deaktiviert.');
   } else {
-    bot.log(`
+    bot.warn(`
 Unerwarteter Ausgang bei disabled.js:
 cmd.help.name: ${cmd.help.name ? cmd.help.name : msg.content}
 cmd.conf.enabled: ${cmd.conf.enabled ? cmd.conf.enabled : 'falsy'}
 msg.conf.disabledcommands.includes(cmd.help.name): ${msg.conf.disabledcommands.includes(cmd.help.name)
         ? msg.conf.disabledcommands.includes(cmd.help.name) : 'falsy'}`);
-    reject('Konnte den Deaktivierungsgrund nicht ermitteln.\nNotiz:Diese Fehlermeldung solltest du nicht bekommen.');
+    reject('Konnte den Deaktivierungsgrund nicht ermitteln.\nHinweis:Diese Fehlermeldung solltest du nicht bekommen.');
   }
 });
 
