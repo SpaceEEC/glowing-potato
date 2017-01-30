@@ -8,7 +8,7 @@ exports.run = (bot, msg, cmd) => new Promise((resolve, reject) => {
   let usage;
   bot.internal.checks.check.forEach((mProc, key) => {
     if (key === 'usage') {
-      bot.log(`${usage}\n${mProc}`);
+      bot.log(`[Log das überhaupt?] ${usage}\n${mProc}`);
       usage = i;
     }
     if (!mProc.conf.spamProtection) {

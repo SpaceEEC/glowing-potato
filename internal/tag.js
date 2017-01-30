@@ -1,4 +1,5 @@
 exports.add = (bot, guild, name, response, author) => new Promise((resolve, reject) => {
+  bot.info(`[tag] INSERT INTO "tags" (guild, name, response, author) VALUES (${guild}, ${name}, ${response}, ${author})`);
   bot.db.run('INSERT INTO "tags" (guild, name, response, author) VALUES (?, ?, ?, ?)',
     [guild, name, response, author])
     .then(() => {
@@ -21,6 +22,7 @@ exports.add = (bot, guild, name, response, author) => new Promise((resolve, reje
 
 
 exports.edit = (bot, guild, name, response) => new Promise((resolve, reject) => {
+  bot.info(`[tag] UPDATE tags SET response='${response}' WHERE guild='${guild}' AND name='${name}'`);
   bot.db.run('UPDATE tags SET response=? WHERE guild=? AND name=?',
     [response, guild, name])
     .then(() => {
@@ -36,6 +38,7 @@ exports.edit = (bot, guild, name, response) => new Promise((resolve, reject) => 
 
 
 exports.remove = (bot, guild, name) => new Promise((resolve, reject) => {
+  bot.info(`[tag] DELETE FROM tags WHERE guild='${guild}' AND name='${name}'`);
   bot.db.run('DELETE FROM tags WHERE guild=? AND name=?',
     [guild, name])
     .then(() => {

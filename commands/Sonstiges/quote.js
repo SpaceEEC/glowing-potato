@@ -56,7 +56,7 @@ Zitate auf diesem Server: \`${bot.internal.quotes.filter((w, q) => q.startsWith(
       }
     }).catch((error) => {
       msg.channel.sendMessage('Diese ID wurde nicht gefunden.\nBefindet sich diese Nachricht auch in diesem Channel?\n'); // eslint-disable-line
-      bot.err(error);
+      bot.err(`[quote fetchMessage] ${error}`);
     });
   }
 });
