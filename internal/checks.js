@@ -29,7 +29,7 @@ exports.init = (bot) => new Promise((resolve, reject) => {
   bot.internal.checks.check = new bot.methods.Collection();
   fs.readdirAsync('./checks/')
     .then((files) => {
-      bot.log(`Lade insgesamt ${files.length} Checks.`);
+      bot.info(`Lade insgesamt ${files.length} Checks.`);
       try {
         files = files.filter(f => f.slice(-3) === '.js');
         files.forEach((f) => {

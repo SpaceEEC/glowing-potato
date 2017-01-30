@@ -120,10 +120,10 @@ exports.remove = (bot, msg, key, value) => new Promise((resolve, reject) => {
 
 exports.init = (bot) => new Promise((resolve, reject) => {
   bot.db.all('SELECT * FROM confs').then((guilds) => {
-    bot.log(`Lade insgesamt ${guilds.length} Gilden.`);
+    bot.info(`Lade insgesamt ${guilds.length} Gilden.`);
     for (let i = 0; i < guilds.length; i++) {
       const guild = guilds[i];
-      bot.log(`Lade Gilde ${guild.id} | ${guild.name}`);
+      bot.info(`Lade Gilde ${guild.id} | ${guild.name}`);
       try {
         guild.ignchannels = JSON.parse(guild.ignchannels);
         guild.ignusers = JSON.parse(guild.ignusers);

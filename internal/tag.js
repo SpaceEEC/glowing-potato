@@ -58,7 +58,7 @@ exports.init = (bot) => new Promise((resolve, reject) => {
   bot.db.all(`SELECT * FROM tags`)
     .then(rows => {
       try {
-        bot.log(`Lade insgesamt ${rows.length} Tags.`);
+        bot.info(`Lade insgesamt ${rows.length} Tags.`);
         for (let i = 0; i < rows.length; i++) {
           bot.internal.tags.set(`${rows[i].guild}|${rows[i].name}`, rows[i]);
         }

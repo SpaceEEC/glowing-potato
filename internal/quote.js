@@ -64,7 +64,7 @@ exports.add = (bot, guild, type, id, color, name, icon_url, description, img) =>
 exports.init = (bot) => new Promise((resolve, reject) => {
   bot.internal.quotes = new bot.methods.Collection();
   bot.db.all(`SELECT * FROM quotes`).then(rows => {
-    bot.log(`Lade insgesamt ${rows.length} Zitate.`);
+    bot.info(`Lade insgesamt ${rows.length} Zitate.`);
     for (let i = 0; i < rows.length; i++) {
       if (rows[i].type === 'text') {
         bot.internal.quotes.set(`${rows[i].guild}|${rows[i].id}`, {
