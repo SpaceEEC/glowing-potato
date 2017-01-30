@@ -2,6 +2,8 @@ const fs = require('fs-extra-promise');
 
 exports.init = async (bot) => {
   const modules = [];
+  bot.config = {};
+  bot.db = require('sqlite');
   await bot.db.open('./var/db.sqlite');
   const stuff = await bot.db.get('SELECT * FROM config');
   for (let key in stuff) {
