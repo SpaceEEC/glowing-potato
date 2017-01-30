@@ -316,6 +316,7 @@ class Music {
       }
       if (this._queue.length === 0) {
         this._bot.log(`[${this._guild}] Queue is empty.`);
+        this._loop = false;
         msg.channel.sendMessage('Da die Queue leer ist, werde ich in 30 Sekunden diesen Channel verlassen falls bis dahin nichts hinzugefügt wurde.').then(mes => {
           this._msg = mes;
           this._timeout = this._bot.setTimeout(this._leaveChannel.bind(this), 30000);
@@ -348,10 +349,10 @@ class Music {
             this._msg = mes;
             if ([0, 2].includes(this._startup)) {
               if (this._startup === 0) this._startup = 1;
-              this._bot.log(`[${this._guild}] [stream] [ytdl-core]: starte download`);
+              this._bot.log(`[${this._guild}] [stream] [ytdl-core] start`);
               const stream = yt(this._queue[0].url, { filter: 'audioonly' })
                 .on('error', err => {
-                  this._bot.log(`[${this._guild}] [stream] [ytdl-core-error]: ${this._bot.inspect(err)}`);
+                  this._bot.err(`[${this._guild}] [stream] [ytdl-core-error]: ${this._bot.inspect(err)}`);
                 });
               stream.once('end', () => {
                 this._bot.log(`[${this._guild}] [stream] [ytdl-core] end`);
@@ -363,6 +364,7 @@ class Music {
                 this._disp.once('error', (err) => {
                   if (this._startup === 1) this._startup = 0;
                   this._bot.err(`[${this._guild}] [disp] [error] ${err.message ? err.message : err}`);
+                  this._msg.channel.sendMessage(`Es ist ein Fehler beim Abspielen aufgetreten.`);
                 });
                 this._disp.on('debug', (message) => {
                   this._bot.log(`[${this._guild}] [debug] [disp] ${message}`);
