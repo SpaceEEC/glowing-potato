@@ -29,11 +29,9 @@ Ich denke nicht. 👀`,
         return authcheck(bot, msg, input.split(' '));
       }
     } catch (err) {
-      if (!err.size) {
+      if (err.size) {
         msg.delete();
         return mes.delete();
-      } else {
-        return bot.err(err.stack ? err.stack : err);
       }
     }
   }
@@ -142,8 +140,6 @@ const getanswer = async (bot, msg, response) => {
     if (!error.size) {
       msg.delete();
       message.delete();
-    } else {
-      bot.err(error.stack ? error.stack : error);
     }
   }
 };
