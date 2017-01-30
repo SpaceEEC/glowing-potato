@@ -351,7 +351,7 @@ class Music {
               this._bot.log(`[${this._guild}] [stream] [ytdl-core]: starte download`);
               const stream = yt(this._queue[0].url, { filter: 'audioonly' })
                 .on('error', err => {
-                  this._bot.log(`[${this._guild}] [stream] [ytdl-core-error]: ${require('util').inspect(err)}`);
+                  this._bot.log(`[${this._guild}] [stream] [ytdl-core-error]: ${this._bot.inspect(err)}`);
                 });
               stream.once('end', () => {
                 this._bot.log(`[${this._guild}] [stream] [ytdl-core] end`);
