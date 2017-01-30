@@ -1,5 +1,6 @@
 exports.add = (bot, guild, type, id, color, name, icon_url, description, img) => new Promise((resolve, reject) => {
   if (type === 'text') {
+    bot.info(`[quote] INSERT INTO "quotes" (guild, type, id, color, name, icon_url, description, img) VALUES (${guild}, ${type}, ${id}, ${color}, ${name}, ${icon_url}, ${description}, ${null})`);
     bot.db.run(`INSERT INTO "quotes" (guild, type, id, color, name, icon_url, description, img) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [ // eslint-disable-line
       guild,
       type,
@@ -28,6 +29,7 @@ exports.add = (bot, guild, type, id, color, name, icon_url, description, img) =>
         }
       }).catch((e) => reject(e));
   } else if (type === 'img') {
+    bot.info(`[quote] INSERT INTO "quotes" (guild, type, id, color, name, icon_url, description, img) VALUES (${guild}, ${type}, ${id}, ${color}, ${name}, ${icon_url}, ${description}, ${img})`);
     bot.db.run(`INSERT INTO "quotes" (guild, type, id, color, name, icon_url, description, img) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [ // eslint-disable-line
       guild,
       type,

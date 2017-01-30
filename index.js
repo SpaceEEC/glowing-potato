@@ -5,10 +5,15 @@ moment.locale('de');
 require('moment-duration-format');
 const bot = new Discord.Client();
 bot.db = require('sqlite');
+const chalk = require('chalk');
+bot.clk = new chalk.constructor({ enabled: true });
 
 // log stuff
-bot.log = (msg) => { console.log(`[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${msg}`); }; // eslint-disable-line
-bot.err = (msg) => { console.error(`[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${msg}`); }; // eslint-disable-line
+bot.debug = (msg) => console.log(`${bot.clk.cyan(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`);  // eslint-disable-line
+bot.info = (msg) => console.log(`${bot.clk.blue(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`);  // eslint-disable-line
+bot.log = (msg) => console.log(`[${bot.clk.green(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`);  // eslint-disable-line
+bot.warn = (msg) => console.warn(`${bot.clk.yellow(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`); // eslint-disable-line
+bot.err = (msg) => console.error(`${bot.clk.red(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`); // eslint-disable-line
 
 // config and confs
 bot.confs = new Discord.Collection();

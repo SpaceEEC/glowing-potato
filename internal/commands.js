@@ -1,10 +1,10 @@
 const fs = require('fs-extra-promise');
 exports.init = async (bot) => {
   const folders = await fs.readdirAsync('./commands/');
-  bot.log(`Lade insgesamt ${folders.length} Befehlskategorien.`);
+  bot.info(`Lade insgesamt ${folders.length} Befehlskategorien.`);
   await folders.forEach(async folder => {
     const files = await fs.readdirAsync(`./commands/${folder}`);
-    bot.log(`Lade insgesamt ${files.length} Befehle aus ${folder}.`);
+    bot.info(`Lade insgesamt ${files.length} Befehle aus ${folder}.`);
     await files.forEach(f => {
       try {
         const props = require(`../commands/${folder}/${f}`);
