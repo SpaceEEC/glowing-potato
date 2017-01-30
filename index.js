@@ -32,7 +32,7 @@ bot.aliases = new Discord.Collection();
 
 // internal
 bot.internal = require('./internal/internal.js');
-bot.internal.auth = JSON.parse(fs.readFileSync('./var/auth.json', 'utf8'));
+bot.internal.auth = require('./var/auth.json');
 bot.internal.init(bot);
 
 
