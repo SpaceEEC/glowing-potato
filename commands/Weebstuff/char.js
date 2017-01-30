@@ -26,14 +26,19 @@ Ich denke nicht. 👀`,
         collected.first().delete();
         return msg.delete();
       } else {
+        if (input.includes('?')) {
+          return msg.channel.sendEmbed(
+            new bot.methods.Embed()
+              .setColor(0xffff00)
+              .setDescription('Bitte keine Fragezeichen verwenden, die Anfrage würde dadurch ungültig werden.')
+          );
+        }
         return authcheck(bot, msg, input.split(' '));
       }
     } catch (err) {
-      if (!err.size) {
+      if (err.size) {
         msg.delete();
         return mes.delete();
-      } else {
-        return bot.err(err.stack ? err.stack : err);
       }
     }
   }
@@ -62,7 +67,9 @@ async function authcheck(bot, msg, params) {
       .set('Content-Type', 'application/json');
     bot.config.ani_token = res.body.access_token;
     bot.config.ani_expires = res.body.expires;
+    bot.debug(`"UPDATE \`config\` SET \`ani_expires\`=${bot.config.ani_expires} WHERE \`_rowid_\`='1';"`);
     bot.db.run("UPDATE `config` SET `ani_expires`=? WHERE `_rowid_`='1';", bot.config.ani_expires);
+    bot.debug(`"UPDATE \`config\` SET \`ani_token\`=${bot.config.ani_token} WHERE \`_rowid_\`='1';"`);
     bot.db.run("UPDATE `config` SET `ani_token`=? WHERE `_rowid_`='1'", bot.config.ani_token);
     fs.writeFile('./var/auth.json', JSON.stringify(bot.internal.auth, null, 2), 'utf-8');
     await message.edit('', {
@@ -138,11 +145,9 @@ async function getanswer(bot, msg, response) {
       answer(response[parseInt(input) - 1], msg, bot, message);
     }
   } catch (error) {
-    if (!error.size) {
+    if (error.size) {
       msg.delete();
       message.delete();
-    } else {
-      bot.err(error.stack ? error.stack : error);
     }
   }
 }
