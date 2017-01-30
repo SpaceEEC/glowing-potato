@@ -37,8 +37,6 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
       if (err.size) {
         msg.delete();
         mes.delete();
-      } else {
-        bot.err(err.stack ? err.stack : err);
       }
     }
   } else if (params[0].match(/^-\d+$/g)) {

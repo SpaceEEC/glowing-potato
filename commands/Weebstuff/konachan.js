@@ -26,11 +26,9 @@ exports.run = async (bot, msg, params = []) => {
         prepare(bot, msg, input.split(' '));
       }
     } catch (err) {
-      if (!err.size) {
+      if (err.size) {
         msg.delete();
         mes.delete();
-      } else {
-        bot.err(err.stack ? err.stack : err);
       }
     }
   } else {

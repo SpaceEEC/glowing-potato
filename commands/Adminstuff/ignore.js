@@ -110,7 +110,7 @@ function ignore(bot, msg, params) {
         });
     }
   } else {
-    return bot.users.random();
+    return 'derp';
   }
 }
 
