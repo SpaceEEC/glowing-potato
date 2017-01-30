@@ -79,19 +79,6 @@ bot.once('ready', async () => {
   bot.config.prefixMention = new RegExp(`^<@!?${bot.user.id}>`);
   const app = await bot.fetchApplication();
   bot.log(`${app.name} bereit!`);
-  /* bot.fetchApplication().then(coa => {
-    bot.channels
-      .get('257831397983518722')
-      .sendMessage(`[${moment().format('YYYY-MM-DD HH:mm:ss')}]
-Walte über
-\`${bot.users.size}\` Nutzer und
-\`${bot.channels.size}\` Channeln aus
-\`${bot.guilds.size}\` Servern.`);
-    bot.log(`${coa.name}: Walte über ${bot.users.size} Nutzer,
-     in ${bot.channels.size} Channeln von ${bot.guilds.size} Servern.`);
-  }).catch(e => {
-    bot.err(e);
-  }); */
   bot.user.setGame(bot.config.game);
 });
 
