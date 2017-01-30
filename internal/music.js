@@ -308,14 +308,14 @@ class Music {
     this._bot.debug(`[${this._guild}] playfunction reached.`);
     this._voiceChannel.join().then(con => {
       this._con = con;
-      this._bot.info(`[${this._guild}] Length of the queue: ${this._queue.length}`);
+      this._bot.debug(`[${this._guild}] Length of the queue: ${this._queue.length}`);
       if (this._msg !== null) {
         this._msg.delete()
           .catch((err) => { if (!err) this._bot.err('I think I made a mistake with the if.'); });
         this._msg = null;
       }
       if (this._queue.length === 0) {
-        this._bot.info(`[${this._guild}] Queue is empty.`);
+        this._bot.debug(`[${this._guild}] Queue is empty.`);
         this._loop = false;
         msg.channel.sendMessage('Da die Queue leer ist, werde ich in 30 Sekunden diesen Channel verlassen falls bis dahin nichts hinzugefügt wurde.').then(mes => {
           this._msg = mes;
@@ -378,7 +378,7 @@ class Music {
                     .catch(this._bot.err);
                   if (this._startup === 1) this._startup = 0;
                   this._playing = false;
-                  this._bot.log(`[${this._guild}] [disp] Song finished after: ${this._formatsecs(Math.floor(this._disp.time / 1000))} / ${this._formatsecs(this._queue[0].info.length_seconds)}`);
+                  this._bot.info(`[${this._guild}] [disp] Song finished after: ${this._formatsecs(Math.floor(this._disp.time / 1000))} / ${this._formatsecs(this._queue[0].info.length_seconds)}`);
                   if (!this._loop || !this._queue.length === 1 || reason === 'skip') this._queue.shift();
                   if (reason !== 'stop') this._play(this._msg);
                 });
@@ -525,6 +525,6 @@ exports.Player = Music;
 
 
 exports.init = async (bot) => {
-  bot.log('Lade Musikklasse.');
+  bot.info('Lade Musikklasse.');
   bot.internal.musik = new bot.methods.Collection();
 };
