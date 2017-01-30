@@ -10,7 +10,7 @@ bot.clk = new chalk.constructor({ enabled: true });
 
 // log stuff
 bot.debug = (msg) => console.log(`[${bot.clk.cyan(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`);  // eslint-disable-line
-bot.info = (msg) => console.log(`[${bot.clk.blue(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`);  // eslint-disable-line
+bot.info = (msg) => console.log(`[${bot.clk.magenta(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`);  // eslint-disable-line
 bot.log = (msg) => console.log(`[${bot.clk.green(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`);  // eslint-disable-line
 bot.warn = (msg) => console.warn(`[${bot.clk.yellow(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`); // eslint-disable-line
 bot.err = (msg) => console.error(`[${bot.clk.red(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`); // eslint-disable-line
