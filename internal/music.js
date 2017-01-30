@@ -28,7 +28,7 @@ class Music {
   add(msg, erl) {
     try {
       yt.getInfo(erl, (err, info) => {
-        if (err) this._bot.log(err.message);
+        if (err) this._bot.err(err.message);
         const newest = this._queue.push({ url: erl, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }) - 1;
         if (!(this._disp && (this._con && this._con.speaking))) {
           this._voiceChannel = msg.member.voiceChannel;
@@ -84,7 +84,7 @@ class Music {
               .then(tmp => tmp.delete(10000));
           } else {
             const urls = JSON.parse(res.text).items.map(s => s.snippet.resourceId.videoId);
-            this._bot.log(`[${this._guild}] bulkadd(msg_obj, ${urls.length})`);
+            this._bot.debug(`[${this._guild}] bulkadd(msg_obj, ${urls.length})`);
             let fin = urls.length;
             const toAdd = [];
             for (const erl in urls) {
@@ -98,7 +98,7 @@ class Music {
                         this._bulkaddvalidate(toAdd, true, undefined, msg, tmp);
                       }
                     } else {
-                      this._bot.log(`[${this._guild}] bulkadd() ${info.title}`);
+                      this._bot.debug(`[${this._guild}] bulkadd() ${info.title}`);
                       this._bulkaddvalidate(toAdd, fin, { order: erl, url: urls[erl], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, msg, tmp);
                     }
                   });
@@ -305,17 +305,17 @@ class Music {
   }
 
   _play(msg) {
-    this._bot.log(`[${this._guild}] playfunction reached.`);
+    this._bot.debug(`[${this._guild}] playfunction reached.`);
     this._voiceChannel.join().then(con => {
       this._con = con;
-      this._bot.log(`[${this._guild}] Length of the queue: ${this._queue.length}`);
+      this._bot.info(`[${this._guild}] Length of the queue: ${this._queue.length}`);
       if (this._msg !== null) {
         this._msg.delete()
-          .catch((err) => { if (!err) this._bot.log('I think I made a mistake with the if.'); });
+          .catch((err) => { if (!err) this._bot.err('I think I made a mistake with the if.'); });
         this._msg = null;
       }
       if (this._queue.length === 0) {
-        this._bot.log(`[${this._guild}] Queue is empty.`);
+        this._bot.info(`[${this._guild}] Queue is empty.`);
         this._loop = false;
         msg.channel.sendMessage('Da die Queue leer ist, werde ich in 30 Sekunden diesen Channel verlassen falls bis dahin nichts hinzugefügt wurde.').then(mes => {
           this._msg = mes;
@@ -326,7 +326,7 @@ class Music {
           this._bot.clearTimeout(this._timeout);
           this._timeout = null;
         }
-        this._bot.log(`[${this._guild}] Playing next song...`);
+        this._bot.debug(`[${this._guild}] Playing next song...`);
         msg.channel.sendEmbed(
           {
             color: 0x00ff08,
@@ -349,7 +349,7 @@ class Music {
             this._msg = mes;
             if ([0, 2].includes(this._startup)) {
               if (this._startup === 0) this._startup = 1;
-              this._bot.log(`[${this._guild}] [stream] [ytdl-core] start`);
+              this._bot.debug(`[${this._guild}] [stream] [ytdl-core] start`);
               const stream = yt(this._queue[0].url, { filter: 'audioonly' })
                 .on('error', err => {
                   if (this._startup === 1) this._startup = 0;
@@ -359,10 +359,10 @@ class Music {
                   this._play(this._msg);
                 });
               stream.once('end', () => {
-                this._bot.log(`[${this._guild}] [stream] [ytdl-core] end`);
+                this._bot.debug(`[${this._guild}] [stream] [ytdl-core] end`);
                 // this._disp = this._con.playStream(stream, { volume: this._volume, passes: 2 });
                 this._disp = this._con.playFile(`./var/tempmusicfile_${this._msg.guild.id}`, { volume: this._volume, passes: 2 });
-                this._bot.log(`[${this._guild}] Now playing: ${this._queue[0].info.title}`);
+                this._bot.info(`[${this._guild}] Now playing: ${this._queue[0].info.title}`);
                 this._bot.user.setGame(this._queue[0].info.title);
                 this._playing = true;
                 this._disp.once('error', (err) => {
@@ -371,7 +371,7 @@ class Music {
                   this._msg.channel.sendMessage(`Es ist ein Fehler beim Abspielen aufgetreten.`);
                 });
                 this._disp.on('debug', (message) => {
-                  this._bot.log(`[${this._guild}] [debug] [disp] ${message}`);
+                  this._bot.debug(`[${this._guild}] [debug] [disp] ${message}`);
                 });
                 this._disp.once('end', (reason) => {
                   fs.unlinkAsync(`./var/tempmusicfile_${this._con.channel.guild.id}`)
@@ -385,7 +385,7 @@ class Music {
               });
               stream.pipe(fs.createWriteStream(`./var/tempmusicfile_${this._msg.guild.id}`));
             } else {
-              this._bot.log(`[${this._guild}] Second message catched.`);
+              this._bot.warn(`[${this._guild}] Second message catched.`);
             }
           });
       }
@@ -399,12 +399,12 @@ class Music {
   }
 
   _bulkaddvalidate(toAdd, fullindex, pushobj, msg, mes) {
-    this._bot.log(`[${this._guild}] _confirm(${fullindex})`);
+    this._bot.debug(`[${this._guild}] _confirm(${fullindex})`);
     if (pushobj) pushobj = toAdd.push(pushobj);
     if (fullindex === true || pushobj === fullindex) {
       const ordered = toAdd.sort((a, b) => a.order - b.order);
       for (const song in ordered) {
-        this._bot.log(`[${this._guild}] Queue length: ${this._queue.push({ url: ordered[song].url, info: ordered[song].info, requester: ordered[song].requester })}`);
+        this._bot.debug(`[${this._guild}] Queue length: ${this._queue.push({ url: ordered[song].url, info: ordered[song].info, requester: ordered[song].requester })}`);
       }
       if (!(this._disp && (this._con && this._con.speaking))) {
         mes.edit(`Erfolgreich \`${ordered.length}\` Songs hinzugefügt.`)
@@ -472,7 +472,7 @@ class Music {
       }
       if (this._empty.msg) {
         this._empty.msg.delete()
-          .catch((err) => { if (!err) this._bot.log('noop'); });
+          .catch((err) => { if (!err) this._bot.warn('_emptyChannel delete message'); });
       }
       if (this._msg) {
         this._msg.channel.sendMessage('Da der Channel leer ist, werde ich ihn in 30 Sekunden verlassen, falls bis dahin nicht irgendjemand zu mir stößt.')
@@ -487,7 +487,7 @@ class Music {
       }
       if (this._empty.msg) {
         this._empty.msg.delete()
-          .catch((err) => { if (!err) this._bot.log('noop'); });
+          .catch((err) => { if (!err) this._bot.warn('_emptyChannel delete message'); });
       }
     }
   }
@@ -495,7 +495,7 @@ class Music {
   _emptyLeave() {
     this._bot.log('Verlasse Channel, da leer.');
     this._empty.msg.delete()
-      .catch((err) => { if (!err) this._bot.log('noop'); });
+      .catch((err) => { if (!err) this._bot.warn('_emptyLeave delete message'); });
     this._queue = this._queue.slice(this._queue.length - 1);
     if (this._disp) this._disp.end('stop');
     this._leaveChannel();
@@ -503,7 +503,7 @@ class Music {
 
   _leaveChannel() {
     this._msg.delete()
-      .catch((err) => { if (!err) this._bot.log('this won\'get logged'); });
+      .catch((err) => { if (!err) this._bot.warn('_emptyLeave delete message'); });
     this._timeout = null;
     this._bot.log(`[${this._guild}] Leaving channel: ${this._con.channel.name}`);
     this._con.channel.leave();
