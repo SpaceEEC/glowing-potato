@@ -353,6 +353,9 @@ class Music {
               const stream = yt(this._queue[0].url, { filter: 'audioonly' })
                 .on('error', err => {
                   this._bot.err(`[${this._guild}] [stream] [ytdl-core-error]: ${this._bot.inspect(err)}`);
+                  this._msg.channel.sendMessage('Es ist ein Fehler beim Herunterladen von Youtube aufgetreten.');
+                  this._queue.shift();
+                  this._play(this._msg);
                 });
               stream.once('end', () => {
                 this._bot.log(`[${this._guild}] [stream] [ytdl-core] end`);
