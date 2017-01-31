@@ -22,6 +22,6 @@
     "prism-media": "github:hydrabolt/prism-media",
     "sqlite": "^2.2.4",
     "uws": "^0.12.0",
-    "ytdl-core": "github:hcgrandon/node-ytdl-core"
+    "ytdl-core": "^0.7.24"
   }
 }
