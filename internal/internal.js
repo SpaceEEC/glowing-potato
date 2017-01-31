@@ -17,7 +17,7 @@ exports.init = async (bot) => {
         bot.internal[f.substring(0, f.length - 3)] = require(`./${f}`);
         modules.push(f.substring(0, f.length - 3));
         if (bot.internal[f.substring(0, f.length - 3)].init) {
-          bot.internal[f.substring(0, f.length - 3)].init(bot).catch(bot.err);
+          bot.internal[f.substring(0, f.length - 3)].init(bot).catch(e => bot.err(`${e}\n${e.stack}`));
         }
       }
     } catch (e) {
