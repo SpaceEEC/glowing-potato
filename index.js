@@ -1,10 +1,8 @@
 const Discord = require('discord.js');
-const fs = require('fs-extra-promise');
 const moment = require('moment');
 moment.locale('de');
 require('moment-duration-format');
 const bot = new Discord.Client();
-bot.db = require('sqlite');
 const chalk = require('chalk');
 bot.clk = new chalk.constructor({ enabled: true });
 
@@ -17,7 +15,6 @@ bot.err = (msg) => console.error(`[${bot.clk.red(`${moment().format('DD.MM.YYYY 
 
 // config and confs
 bot.confs = new Discord.Collection();
-bot.config = {};
 
 // methods
 bot.methods = {};
