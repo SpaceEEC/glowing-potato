@@ -410,10 +410,15 @@ class Music {
         this._bot.debug(`[${this._guild}] Queue length: ${this._queue.push({ url: ordered[song].url, info: ordered[song].info, requester: ordered[song].requester })}`);
       }
       if (!(this._disp && (this._con && this._con.speaking))) {
-        mes.edit(`Erfolgreich \`${ordered.length}\` Songs hinzugefügt.`)
-          .then((del) => del.delete(10000));
-        this._voiceChannel = msg.member.voiceChannel;
-        this._play(msg);
+        if (ordered.length) {
+          mes.edit(`Erfolgreich \`${ordered.length}\` Songs hinzugefügt.`)
+            .then((del) => del.delete(10000));
+          this._voiceChannel = msg.member.voiceChannel;
+          this._play(msg);
+        } else {
+          mes.edit(`\`${ordered.length}\` Songs hinzugefügt.`)
+            .then((del) => del.delete(10000));
+        }
       }
     }
   }
