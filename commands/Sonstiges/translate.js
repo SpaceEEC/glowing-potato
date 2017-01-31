@@ -26,7 +26,7 @@ exports.run = async (bot, msg, params = []) => {
         .addField(`Von ${res.body.from.name} (${res.body.from.local})`, res.body.query)
         .addField(`In ${res.body.to.name} (${res.body.to.local})`, res.body.result)
         .addField(`\u200b`, `API-Schnittstelle bereitgestellt von [Kurisu](http://kurisubrooks.com/) (Übersetzung von Google)`)
-        .setFooter('\u200b', 'http://kurisubrooks.com/favicon.ico'));
+        .setFooter('<- Kurisu', 'http://kurisubrooks.com/favicon.ico'));
   } else {
     return msg.channel.sendMessage(`Es ist ein Fehler beim Abrufen der Übersetzung aufgetreten:
 \`\`\`LDIF
