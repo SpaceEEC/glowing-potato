@@ -102,7 +102,7 @@ async function konachan(bot, msg, params = []) {
     type: 'image',
     image: { url: `http:${image.sample_url}` },
   }).catch((e) => {
-    msg.channel.sendCode(require('util').inspect(image));
+    msg.channel.sendCode(bot.inspect(image));
     return msg.channel.sendCode('js', e.stack);
   });
 }

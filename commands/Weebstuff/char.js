@@ -174,7 +174,7 @@ async function answer(response, msg, bot, mes) {
     if (mes) await mes.edit('', { embed });
     else await msg.channel.sendEmbed(embed);
   } catch (e) {
-    msg.channel.sendCode('js', `${e}${e && e.response && e.response.res && e.response.res.text ? `\n${require('util').inspect(JSON.parse(e.response.res.text), false, 1)}` : ''}`);
+    msg.channel.sendCode('js', `${e}${e && e.response && e.response.res && e.response.res.text ? `\n${bot.inspect(JSON.parse(e.response.res.text), false, 1)}` : ''}`);
   }
 }
 

@@ -3,7 +3,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
     return menu(bot, msg);
   }
   if (params[0] === 'list') {
-    return msg.channel.sendCode('js', require('util').inspect(msg.conf));
+    return msg.channel.sendCode('js', bot.inspect(msg.conf));
   }
   if (!params[1]) {
     return msg.channel.sendMessage('Bitte gib einen Schlüssel an, mit welchem diese Operation ausgeführt werden soll.');
