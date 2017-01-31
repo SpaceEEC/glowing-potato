@@ -1,3 +1,4 @@
+// Much thanks to Kurisu (http://kurisubrooks.com/) for the API!
 const request = require('superagent');
 
 exports.run = async (bot, msg, params = []) => {
@@ -24,7 +25,8 @@ exports.run = async (bot, msg, params = []) => {
         .setColor(0xb89bf8)
         .addField(`Von ${res.body.from.name} (${res.body.from.local})`, res.body.query)
         .addField(`In ${res.body.to.name} (${res.body.to.local})`, res.body.result)
-        .addField(`\u200b`, `API Schnittstelle bereitgestellt von [Kurisu](http://kurisubrooks.com/) (Übersetzung von Google)`));
+        .addField(`\u200b`, `API-Schnittstelle bereitgestellt von [Kurisu](http://kurisubrooks.com/) (Übersetzung von Google)`)
+        .setFooter('\u200b', 'http://kurisubrooks.com/favicon.ico'));
   } else {
     return msg.channel.sendMessage(`Es ist ein Fehler beim Abrufen der Übersetzung aufgetreten:
 \`\`\`LDIF
@@ -33,7 +35,7 @@ ${res.body.error}
   }
 };
 
-
+// Are all of them even supported by Kurisu?
 const langs = ['af', 'sq', 'am', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'bn', 'bs', 'bg', 'ca',
   'ceb', 'ny', 'zh-CN', 'zh-TW', 'co', 'hr', 'cs', 'da', 'nl', 'en', 'eo', 'et', 'tl', 'fi',
   'fr', 'fy', 'gl', 'ka', 'de', 'el', 'gu', 'ht', 'ha', 'haw', 'iw', 'hi', 'hmn', 'hu', 'is',
@@ -41,7 +43,6 @@ const langs = ['af', 'sq', 'am', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'bn', 'bs',
   'lt', 'lb', 'mk', 'mg', 'ms', 'ms', 'ml', 'mi', 'mr', 'mn', 'my', 'ne', 'no', 'ps', 'fa',
   'pl', 'pt', 'ma', 'ro', 'ru', 'sm', 'gd', 'sr', 'st', 'sn', 'sd', 'si', 'sk', 'sl', 'so', 'es',
   'su', 'sw', 'sv', 'tg', 'ta', 'te', 'th', 'tr', 'uk', 'uz', 'vi', 'cy', 'xh', 'yi', 'yo', 'zu'];
-
 
 exports.conf = {
   spamProtection: false,
