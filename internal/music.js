@@ -1,7 +1,4 @@
 const yt = require('ytdl-core');
-const moment = require('moment');
-moment.locale('de');
-require('moment-duration-format');
 const request = require('superagent');
 const fs = require('fs-extra-promise');
 
@@ -521,7 +518,7 @@ class Music {
   }
 
   _formatsecs(secs) {
-    return moment()
+    return this._bot.methods.moment()
       .startOf('day')
       .seconds(secs)
       .format(secs > 3599 ? 'hh:mm:ss' : 'mm:ss');
