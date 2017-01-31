@@ -12,17 +12,13 @@ bot.info = (msg) => console.log(`[${bot.clk.magenta(`${moment().format('DD.MM.YY
 bot.log = (msg) => console.log(`[${bot.clk.green(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`);  // eslint-disable-line
 bot.warn = (msg) => console.warn(`[${bot.clk.yellow(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`); // eslint-disable-line
 bot.err = (msg) => console.error(`[${bot.clk.red(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`); // eslint-disable-line
+bot.inspect = (obj, hidden = false, depth = 0) => require('util').inspect(obj, hidden, depth);
 
 // methods
 bot.methods = {};
-bot.methods.inspect = (obj, hidden = false, depth = 0) => require('util').inspect(obj, hidden, depth);
 bot.methods.moment = moment;
 bot.methods.Embed = Discord.RichEmbed;
 bot.methods.Collection = Discord.Collection;
-
-// commands and aliases
-bot.commands = new Discord.Collection();
-bot.aliases = new Discord.Collection();
 
 // internal
 bot.internal = require('./internal/internal.js');

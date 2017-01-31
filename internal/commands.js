@@ -1,5 +1,7 @@
 const fs = require('fs-extra-promise');
 exports.init = async (bot) => {
+  bot.commands = new bot.methods.Collection();
+  bot.aliases = new bot.methods.Collection();
   const folders = await fs.readdirAsync('./commands/');
   bot.info(`Lade insgesamt ${folders.length} Befehlskategorien.`);
   await folders.forEach(async folder => {
