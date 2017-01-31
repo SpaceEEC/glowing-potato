@@ -416,7 +416,7 @@ class Music {
           this._voiceChannel = msg.member.voiceChannel;
           this._play(msg);
         } else {
-          mes.edit(`\`${ordered.length}\` Songs hinzugefügt.`)
+          mes.edit(`\`${ordered.length}\` Songs hinzugefügt.\nSicher, dass die Playlist korrekt ist?\n(Gelöschte Videos / nicht in Deutschland erreichbar)`)
             .then((del) => del.delete(10000));
         }
       }
