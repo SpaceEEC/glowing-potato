@@ -13,9 +13,6 @@ bot.log = (msg) => console.log(`[${bot.clk.green(`${moment().format('DD.MM.YYYY 
 bot.warn = (msg) => console.warn(`[${bot.clk.yellow(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`); // eslint-disable-line
 bot.err = (msg) => console.error(`[${bot.clk.red(`${moment().format('DD.MM.YYYY HH:mm:ss')}`)}]: ${msg}`); // eslint-disable-line
 
-// config and confs
-bot.confs = new Discord.Collection();
-
 // methods
 bot.methods = {};
 bot.methods.inspect = (obj, hidden = false, depth = 0) => require('util').inspect(obj, hidden, depth);

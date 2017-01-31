@@ -119,6 +119,7 @@ exports.remove = (bot, msg, key, value) => new Promise((resolve, reject) => {
 
 
 exports.init = (bot) => new Promise((resolve, reject) => {
+  bot.confs = new Discord.Collection();
   bot.db.all('SELECT * FROM confs').then((guilds) => {
     bot.info(`Lade insgesamt ${guilds.length} Gilden.`);
     for (let i = 0; i < guilds.length; i++) {
