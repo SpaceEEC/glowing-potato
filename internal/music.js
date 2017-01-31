@@ -28,13 +28,16 @@ class Music {
   add(msg, erl) {
     try {
       yt.getInfo(erl, (err, info) => {
-        if (err) this._bot.err(err.message);
+        if (err) {
+          this._bot.err(err.message);
+          return msg.channel.sendMessage('Es ist ein Fehler, beim Abrufen von Youtube aufgetreten!');
+        }
         const newest = this._queue.push({ url: erl, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }) - 1;
         if (!(this._disp && (this._con && this._con.speaking))) {
           this._voiceChannel = msg.member.voiceChannel;
-          this._play(msg);
+          return this._play(msg);
         } else {
-          msg.channel.sendEmbed({
+          return msg.channel.sendEmbed({
             color: 0xFFFF00,
             author: {
               name: msg.member.displayName,
