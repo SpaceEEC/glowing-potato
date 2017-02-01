@@ -5,12 +5,11 @@ exports.run = async (bot, msg, params = []) => {
     const mes = await msg.channel.sendEmbed({
       title: 'Ein kleines Missgeschick',
       description: `\u200b
-Du hast vergessen mir deine Suchanfrage mitzugeben.
-Soll ich jetzt den ganzen Weg zum Server, ohne mindestens einen Suchbegriff zu haben, gehen?
-Ich denke nicht. 👀`,
+Einen Anime suchen wir also... Wonach soll ich suchen?
+Ein Teil des Titels würde schon reichen.`,
       fields: [
         {
-          name: `Ich bin gnädig und gebe dir noch eine Chance mir etwas mitzugeben.`,
+          name: `\u200b`,
           value: 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um diese Anfrage abzubrechen.',
         }],
       color: msg.member.highestRole.color,
@@ -40,7 +39,7 @@ async function authcheck(bot, msg, params) {
     const message = await msg.channel.sendEmbed(
       new bot.methods.Embed()
         .setColor(0xffff00)
-        .setDescription('Der Token ist ausgelaufen, fordere einen neuen an\nDies kann einen Moment dauern.'));
+        .setDescription('Der Token ist ausgelaufen, ich fordere einen neuen an.\nDies kann einen Moment dauern, ich bitte um Geduld.'));
     const res = await request.post(`https://anilist.co/api/auth/access_token`)
       .send({
         grant_type: 'client_credentials',
@@ -55,7 +54,7 @@ async function authcheck(bot, msg, params) {
     await message.edit('', {
       embed: new bot.methods.Embed()
         .setColor(0x00ff08)
-        .setDescription('Token erneuert.'),
+        .setDescription('Token wurde erfolgreich erneuert.'),
     });
     return query(params.join(' '), msg, bot);
   } else {
@@ -75,7 +74,7 @@ async function query(search, msg, bot) {
       return msg.channel.sendEmbed(
         new bot.methods.Embed()
           .setColor(0xffff00)
-          .setDescription(`Keinen ${msg.cmd} auf diese Anfrage gefunden.`)
+          .setDescription(`Leider keinen ${msg.cmd} auf diese Anfrage gefunden.`)
           .setFooter(`${msg.author.username}: ${msg.content}`, msg.author.avatarURL));
     } else {
       return msg.channel.sendEmbed(
@@ -83,7 +82,7 @@ async function query(search, msg, bot) {
           .setColor(0xffff00)
           .setTitle('Unerwarteter Fehler:')
           .setDescription(`Sowas sollte nicht passieren.
-Bitte kontaktiere \`spaceeec#0302\`\n\n${response.error.messages[0]}`)
+Bitte kontaktiere bitte \`spaceeec#0302\`\n\n${response.error.messages[0]}`)
           .setFooter(`${msg.author.username}: ${msg.content}`, msg.author.avatarURL));
     }
   } else if (!response[1]) {
@@ -101,8 +100,8 @@ const getanswer = async (bot, msg, response) => {
       .setColor(msg.member.color())
       .setTitle(`Es gibt mehrere ${msg.cmd} auf diese Suchanfrage:`)
       .setDescription(response.map(r => `${count++}\t\t${r.title_english}`).join('\n'))
-      .addField(`Gib die Nummer des ${msg.cmd}s, für den weiter Informationen haben möchtest an.`,
-      'Diese Anfrage wird bei `cancel` oder automatisch nach `30` Sekunden abgebrochen.'));
+      .addField(`Für welchen ${msg.cmd} darf es denn die Info geben?`,
+      'Diese Anfrage wird bei `cancel` oder nach `30` Sekunden automatisch abgebrochen.'));
   const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
     .catch(() => message.delete());
   const input = collected.first().content;
