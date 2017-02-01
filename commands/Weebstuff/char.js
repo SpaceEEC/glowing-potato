@@ -13,22 +13,26 @@ Ein Vor- oder Nachname würde mir reichen.`,
         }],
       color: msg.member.highestRole.color,
     });
-    const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
-      .catch(() => mes.delete());
-    const input = collected.first().content;
-    mes.delete();
-    if (input === 'cancel') {
-      collected.first().delete();
-      return msg.delete();
-    } else {
-      if (input.includes('?')) {
-        return msg.channel.sendEmbed(
-          new bot.methods.Embed()
-            .setColor(0xffff00)
-            .setDescription('Bitte keine Fragezeichen verwenden, die Anfrage würde dadurch ungültig werden.')
-        );
+    try {
+      const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
+      const input = collected.first().content;
+      mes.delete();
+      if (input === 'cancel') {
+        collected.first().delete();
+        return msg.delete();
+      } else {
+        if (input.includes('?')) {
+          return msg.channel.sendEmbed(
+            new bot.methods.Embed()
+              .setColor(0xffff00)
+              .setDescription('Bitte keine Fragezeichen verwenden, die Anfrage würde dadurch ungültig werden.')
+          );
+        }
+        return authcheck(bot, msg, input.split(' '));
       }
-      return authcheck(bot, msg, input.split(' '));
+    } catch (e) {
+      mes.delete();
+      return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
     }
   }
   if (params.join(' ').includes('?')) {
@@ -100,7 +104,7 @@ Bitte kontaktiere \`spaceeec#0302\`\n\n${response.error.messages[0]}`)
 }
 
 
-async function getanswer(bot, msg, response) {
+async function getanswer(bot, msg, response) { // eslint-disable-line consistent-return
   let count = 1;
   const message = await msg.channel.sendEmbed(
     new bot.methods.Embed()
@@ -109,20 +113,24 @@ async function getanswer(bot, msg, response) {
       .setDescription(response.map(r => `${count++}\t\t${r.name_first} ${r.name_last ? r.name_last : ''}`).join('\n'))
       .addField(`Gib die Nummer des Charakters, für den weitere Informationen haben möchtest an.`,
       'Diese Anfrage wird bei `cancel` oder nach `30` Sekunden automatisch abgebrochen.'));
-  const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
-    .catch(() => message.delete());
-  const input = collected.first().content;
-  if (input === 'cancel') {
-    msg.delete();
-    collected.first().delete();
+  try {
+    const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
+    const input = collected.first().content;
+    if (input === 'cancel') {
+      msg.delete();
+      collected.first().delete();
+      message.delete();
+    } else if (input % 1 !== 0 || !response[parseInt(input) - 1]) {
+      collected.first().delete();
+      message.delete();
+      getanswer(bot, msg, response);
+    } else {
+      collected.first().delete();
+      answer(response[parseInt(input) - 1], msg, bot, message);
+    }
+  } catch (e) {
     message.delete();
-  } else if (input % 1 !== 0 || !response[parseInt(input) - 1]) {
-    collected.first().delete();
-    message.delete();
-    getanswer(bot, msg, response);
-  } else {
-    collected.first().delete();
-    answer(response[parseInt(input) - 1], msg, bot, message);
+    return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
   }
 }
 

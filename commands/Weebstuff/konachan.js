@@ -1,23 +1,27 @@
 const request = require('superagent');
 
 
-exports.run = async (bot, msg, params = []) => {
-  // Validating
+exports.run = async (bot, msg, params = []) => { // eslint-disable-line consistent-return
   if (!params[0]) {
     const mes = await msg.channel.sendEmbed(new bot.methods.Embed()
       .setColor(msg.member.highestRole.color)
       .setDescription(`Also suchen wir heute nach einem Bild?
 Dazu benötige ich mindestens einen Suchbegriff (Tag)`)
       .addField('\u200b', 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um abzubrechen.'));
-    const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
-      .catch(() => mes.delete());
-    const input = collected.first().content;
-    mes.delete();
-    if (input === 'cancel') {
-      collected.first().delete();
-      msg.delete();
-    } else {
-      prepare(bot, msg, input.split(' '));
+    try {
+      const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
+        .catch(() => mes.delete());
+      const input = collected.first().content;
+      mes.delete();
+      if (input === 'cancel') {
+        collected.first().delete();
+        msg.delete();
+      } else {
+        prepare(bot, msg, input.split(' '));
+      }
+    } catch (e) {
+      mes.delete();
+      return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
     }
   } else {
     prepare(bot, msg, params);
