@@ -3,19 +3,32 @@ const request = require('superagent');
 
 exports.run = async (bot, msg, params = []) => {
   const obj = {};
-  if (!params[1]) return msg.channel.sendMessage('Fehlende(s) Argument(e)!');
+  if (!params[0]) {
+    try {
+      const mes = await msg.channel.sendMessage('Welche Sprache möchtest du übersetzen? (Bitte mit der zweistelligen Abkürzung dafür eingeben)');
+      const collected = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
+      mes.delete();
+      if (!langs.includes(collected.first().content.split(' ')[0])) return msg.channel.sendMessage('Diese Sprache ist ungültig, breche die Anfrage ab.').then(m => m.delete(5000));
+      params[0] = `-${collected.first().content.split(' ')[0]}`;
+      const mes2 = await msg.channel.sendMessage('Welcher Text soll denn übersetzt werden? (Optional eine Quellsprache mit `-xx` angeben, falls gewünscht)');
+      const collected2 = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
+      mes2.delete();
+      params = params.concat(collected2.first().content.split(' '));
+    } catch (e) {
+      return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
+    }
+  }
+  if (!params[1]) return msg.channel.sendMessage('Diesem Befehl fehlt es an etwas.');
   if (params[0].match(/^-..$/g)) {
-    obj.to = params[0].replace('-', '');
+    obj.to = params.shift().replace('-', '');
     if (!langs.includes(obj.to)) return msg.channel.sendMessage(`Unbekannte Sprache \`${obj.to}\`!`);
   }
-  if (params[1].match(/^-..$/g)) {
-    obj.from = params[1].replace('-', '');
+  if (params[0].match(/^-..$/)) {
+    obj.from = params.shift().replace('-', '');
     if (!langs.includes(obj.from)) return msg.channel.sendMessage(`Unbekannte Sprache \`${obj.from}\`!`);
-    if (!params[2]) return msg.channel.sendMessage('Fehlendes Argument!');
-    obj.query = params.slice(2).join(' ');
-  } else {
-    obj.query = params.slice(1).join(' ');
   }
+  if (!params[0]) return msg.channel.sendMessage('Fehlendes Argument!');
+  obj.query = params.join(' ');
   const res = await request.post(`https://api.kurisubrooks.com/api/translate`)
     .send(obj)
     .set('Content-Type', 'application/json');
@@ -23,10 +36,9 @@ exports.run = async (bot, msg, params = []) => {
     return msg.channel.sendEmbed(
       new bot.methods.Embed()
         .setColor(0xb89bf8)
+        .setAuthor(`API von Kurisu`, 'http://kurisubrooks.com/favicon.ico', 'http://kurisubrooks.com/')
         .addField(`Von ${res.body.from.name} (${res.body.from.local})`, res.body.query)
-        .addField(`In ${res.body.to.name} (${res.body.to.local})`, res.body.result)
-        .addField(`\u200b`, `API-Schnittstelle bereitgestellt von [Kurisu](http://kurisubrooks.com/) (Übersetzung von Google)`)
-        .setFooter('<- Kurisu', 'http://kurisubrooks.com/favicon.ico'));
+        .addField(`In ${res.body.to.name} (${res.body.to.local})`, res.body.result));
   } else {
     return msg.channel.sendMessage(`Es ist ein Fehler beim Abrufen der Übersetzung aufgetreten:
 \`\`\`LDIF
