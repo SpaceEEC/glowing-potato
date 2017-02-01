@@ -162,12 +162,10 @@ function answer(response, msg, bot, mes) {
     }
   }
   if (msg.cmd === 'anime') {
-    embed
-      .addField('Airing Status:', replaceMap(response.airing_status, { 'finished airing': 'Abgeschlossen', 'currently airing': 'Läuft', 'not yet aried': 'Noch nicht gelaufen', cancelled: 'Abgebrochen', null: 'Nicht Angegeben' }), true)
+    embed.addField('Airing Status:', replaceMap(response.airing_status, { 'finished airing': 'Abgeschlossen', 'currently airing': 'Läuft', 'not yet aried': 'Noch nicht gelaufen', cancelled: 'Abgebrochen', null: 'Nicht Angegeben' }), true)
       .addField('Herkunft', `${response.source}`.replace('null', 'Nicht Angegeben'), true);
   } else {
-    embed
-      .addField('Publishing Status:', replaceMap(response.publishing_status, { 'finished publishing': 'Abgeschlossen', 'publishing': 'Läuft', 'not yet published': 'Noch nicht begonnen', cancelled: 'Abgebrochen', null: 'Nicht Angegeben' }), true)
+    embed.addField('Publishing Status:', replaceMap(response.publishing_status, { 'finished publishing': 'Abgeschlossen', publishing: 'Läuft', 'not yet published': 'Noch nicht begonnen', cancelled: 'Abgebrochen', null: 'Nicht Angegeben' }), true);
   }
   if (mes) mes.edit('', { embed });
   else msg.channel.sendEmbed(embed);
