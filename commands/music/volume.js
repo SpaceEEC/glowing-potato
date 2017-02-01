@@ -1,16 +1,16 @@
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
   if (!bot.internal.musik.get(msg.guild.id)) {
-    msg.channel.send('Es läuft gerade nichts.')
+    msg.channel.send('Zur Zeit wird leider nichts gespielt.')
       .then(mes => mes.delete(30000));
   } else {
     const musik = bot.internal.musik.get(msg.guild.id);
     if (!msg.guild.member(bot.user).voiceChannel) {
-      msg.channel.sendMessage('Sehe ich so aus, als würde ich gerade etwas spielen?')
+      msg.channel.sendMessage('Zur Zeit spiele ich leider nichts.')
         .then((mes) => mes.delete(5000));
     } else if (msg.guild.member(bot.user).voiceChannel
       && (msg.guild.member(bot.user).voiceChannel.id
         !== msg.member.voiceChannel.id)) {
-      msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten Voicechannel bist?')
+      msg.channel.sendMessage('Für diesen Befehl müssen wir uns leider beide im selben Channel befinden.')
         .then((mes) => mes.delete(5000));
     } else if (params[0] % 1 === 0) {
       if (parseInt(params[0]) > 200 || parseInt(params[0]) < 0) {
