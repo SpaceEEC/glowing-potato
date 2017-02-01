@@ -1,5 +1,5 @@
-const fs = require('fs-extra-promise');
 const request = require('superagent');
+
 exports.run = async (bot, msg, params = []) => {
   if (!params[0]) {
     const mes = await msg.channel.sendEmbed({
@@ -15,24 +15,14 @@ Ich denke nicht. 👀`,
         }],
       color: msg.member.highestRole.color,
     });
-    try {
-      const collected = await msg.channel.awaitMessages(function filter(input, collector) { // eslint-disable-line
-        return input.author.id === this.options.mes.author.id; //eslint-disable-line
-      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] }
-      );
-      const input = collected.first().content;
-      mes.delete();
-      if (input === 'cancel') {
-        collected.first().delete();
-        return msg.delete();
-      } else {
-        return authcheck(bot, msg, input.split(' '));
-      }
-    } catch (err) {
-      if (err.size) {
-        msg.delete();
-        return mes.delete();
-      }
+    const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] }
+    ).catch(() => mes.delete());
+    mes.delete();
+    if (collected.first().content === 'cancel') {
+      collected.first().delete();
+      return msg.delete();
+    } else {
+      return authcheck(bot, msg, collected.first().content.split(' '));
     }
   }
   if (params.join(' ').includes('?')) {
@@ -60,16 +50,14 @@ async function authcheck(bot, msg, params) {
       .set('Content-Type', 'application/json');
     bot.config.ani_token = res.body.access_token;
     bot.config.ani_expires = res.body.expires;
-    bot.db.run("UPDATE `config` SET `ani_expires`=? WHERE `_rowid_`='1';", bot.config.ani_expires);
-    bot.db.run("UPDATE `config` SET `ani_token`=? WHERE `_rowid_`='1'", bot.config.ani_token);
-    fs.writeFile('./var/auth.json', JSON.stringify(bot.internal.auth, null, 2), 'utf-8');
+    bot.debug(`"UPDATE \`config\` SET \`ani_token\`=${bot.config.ani_token} AND \`ani_expires\`=${bot.config.ani_expires} WHERE \`_rowid_\`='1';"`);
+    await bot.db.run("UPDATE `config` SET `ani_expires`=? AND `ani_token`=? WHERE `_rowid_`='1';", bot.config.ani_expires, bot.config.ani_token);
     await message.edit('', {
       embed: new bot.methods.Embed()
         .setColor(0x00ff08)
         .setDescription('Token erneuert.'),
     });
     return query(params.join(' '), msg, bot);
-    // });
   } else {
     return query(params.join(' '), msg, bot);
   }
@@ -110,37 +98,25 @@ const getanswer = async (bot, msg, response) => {
   let count = 1;
   const message = await msg.channel.sendEmbed(
     new bot.methods.Embed()
-      .setColor(msg.guild.member(msg.author).highestRole.color)
+      .setColor(msg.member.color())
       .setTitle(`Es gibt mehrere ${msg.cmd} auf diese Suchanfrage:`)
       .setDescription(response.map(r => `${count++}\t\t${r.title_english}`).join('\n'))
       .addField(`Gib die Nummer des ${msg.cmd}s, für den weiter Informationen haben möchtest an.`,
       'Diese Anfrage wird bei `cancel` oder automatisch nach `30` Sekunden abgebrochen.'));
-  try {
-    const collected = await msg.channel.awaitMessages(function filter(input, collector) { // eslint-disable-line
-      if (input.author.id === this.options.mes.author.id) { // eslint-disable-line
-        return true;
-      } else {
-        return false;
-      }
-    }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
-    const input = collected.first().content;
-    if (input === 'cancel') {
-      msg.delete();
-      collected.first().delete();
-      message.delete();
-    } else if (input % 1 !== 0 || !response[parseInt(input) - 1]) {
-      collected.first().delete();
-      message.delete();
-      getanswer(bot, msg, response);
-    } else {
-      collected.first().delete();
-      answer(response[parseInt(input) - 1], msg, bot, message);
-    }
-  } catch (error) {
-    if (!error.size) {
-      msg.delete();
-      message.delete();
-    }
+  const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
+    .catch(() => message.delete());
+  const input = collected.first().content;
+  if (input === 'cancel') {
+    msg.delete();
+    collected.first().delete();
+    message.delete();
+  } else if (input % 1 !== 0 || !response[parseInt(input) - 1]) {
+    collected.first().delete();
+    message.delete();
+    getanswer(bot, msg, response);
+  } else {
+    collected.first().delete();
+    answer(response[parseInt(input) - 1], msg, bot, message);
   }
 };
 
@@ -188,30 +164,23 @@ function answer(response, msg, bot, mes) {
   }
   if (msg.cmd === 'anime') {
     embed
-      .addField('Airing Status:',
-      `${response.airing_status}`
-        .replace('finished airing', 'Abgeschlossen')
-        .replace('currently airing', 'Läuft')
-        .replace('not yet aried', 'Noch nicht gelaufen')
-        .replace('cancelled', 'Abgebrochen')
-        .replace('null', 'Nicht Angegeben'),
-      true)
-      .addField('Herkunft',
-      `${response.source}`.replace('null', 'Nicht Angegeben'),
-      true);
+      .addField('Airing Status:', replaceMap(response.airing_status, { 'finished airing': 'Abgeschlossen', 'currently airing': 'Läuft', 'not yet aried': 'Noch nicht gelaufen', cancelled: 'Abgebrochen', null: 'Nicht Angegeben' }), true)
+      .addField('Herkunft', `${response.source}`.replace('null', 'Nicht Angegeben'), true);
   } else {
     embed
-      .addField('Publishing Status:',
-      `${response.publishing_status}`
-        .replace('finished publishing', 'Abgeschlossen')
-        .replace('publishing', 'Läuft')
-        .replace('not yet published', 'Noch nicht begonnen')
-        .replace('cancelled', 'Abgebrochen')
-        .replace('null', 'Nicht Angegeben'),
-      true);
+      .addField('Publishing Status:', replaceMap(response.publishing_status, { 'finished publishing': 'Abgeschlossen', 'publishing': 'Läuft', 'not yet published': 'Noch nicht begonnen', cancelled: 'Abgebrochen', null: 'Nicht Angegeben' }), true)
   }
   if (mes) mes.edit('', { embed });
   else msg.channel.sendEmbed(embed);
+}
+
+
+function replaceMap(input, map) {
+  const regex = [];
+  for (var key in map) {
+    regex.push(key.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&'));
+  }
+  return input.replace(new RegExp(regex.join('|'), 'g'), w => map[w]);
 }
 
 
