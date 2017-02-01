@@ -9,9 +9,7 @@ exports.run = async (bot, msg, params = []) => {
       }],
     });
     try {
-      const collected = await msg.channel.awaitMessages(function filter(message, collector) { // eslint-disable-line
-        return message.author.id === this.options.mes.author.id; // eslint-disable-line
-      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
+      const collected = await msg.channel.awaitMessages(m => msg.author.id === m.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
       let content = collected.first().content;
       message.delete();
       if (content === 'cancel') {
