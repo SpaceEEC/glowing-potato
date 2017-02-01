@@ -26,8 +26,9 @@ class Music {
     try {
       yt.getInfo(erl, (err, info) => {
         if (err) {
-          this._bot.err(err.message);
-          return msg.channel.sendMessage('Es ist ein Fehler, beim Abrufen von Youtube aufgetreten!');
+          if (erl.indexOf('?v=') !== -1) erl = erl.substr(erl.indexOf('?v=') + 3);
+          this._bot.err(`${erl} | ${err.message}`);
+          return msg.channel.sendMessage('Es ist ein Fehler, beim Abrufen des Videos von Youtube aufgetreten!\nIst es vielleicht privat oder gelöscht?');
         }
         const newest = this._queue.push({ url: erl, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }) - 1;
         if (!(this._disp && (this._con && this._con.speaking))) {
