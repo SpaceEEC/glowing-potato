@@ -7,12 +7,12 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
     }
     const musik = bot.internal.musik.get(msg.guild.id);
     if (!msg.member.voiceChannel) {
-      msg.channel.sendMessage('Du bist in keinem Voicechannel.')
+      msg.channel.sendMessage('Ich kann dich in keinem Voicechannel finden, bist du sicher, dass gerade dich in einem in dieser Gilde befindest?')
         .then((mes) => mes.delete(5000));
     } else if (msg.guild.member(bot.user).voiceChannel
       && (msg.guild.member(bot.user).voiceChannel.id
         !== msg.member.voiceChannel.id)) {
-      msg.channel.sendMessage('Eine interstellare Interferenz behindert die Nachrichtenübertragung, bist du sicher, dass du im korrekten VoiceChannel bist?')
+      msg.channel.sendMessage('Für diesen Befehl müssen wir uns leider beide im selben Channel befinden.')
         .then((mes) => mes.delete(5000));
     } else if (params[0].includes('watch?v=') || params[0].length === 11) {
       musik.add(msg, params[0]);
