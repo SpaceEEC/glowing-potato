@@ -1,45 +1,34 @@
-const fs = require('fs-extra-promise');
 const request = require('superagent');
 exports.run = async (bot, msg, params = []) => {
   if (!params[0]) {
     const mes = await msg.channel.sendEmbed({
       title: 'Ein kleines Missgeschick',
       description: `\u200b
-Du hast vergessen mir deine Suchanfrage mitzugeben.
-Soll ich jetzt den ganzen Weg zum Server, ohne einen Namen zu haben, gehen?
-Ich denke nicht. 👀`,
+Einen Charakter suchen wir heute?
+Ein Vor- oder Nachname würde mir reichen.`,
       fields: [
         {
-          name: `Ich bin gnädig und gebe dir noch eine Chance mir etwas mitzugeben.`,
+          name: `\u200b`,
           value: 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um diese Anfrage abzubrechen.',
         }],
       color: msg.member.highestRole.color,
     });
-    try {
-      const collected = await msg.channel.awaitMessages(function filter(input, collector) { // eslint-disable-line
-        return input.author.id === this.options.mes.author.id; //eslint-disable-line
-      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] }
-      );
-      const input = collected.first().content;
-      mes.delete();
-      if (input === 'cancel') {
-        collected.first().delete();
-        return msg.delete();
-      } else {
-        if (input.includes('?')) {
-          return msg.channel.sendEmbed(
-            new bot.methods.Embed()
-              .setColor(0xffff00)
-              .setDescription('Bitte keine Fragezeichen verwenden, die Anfrage würde dadurch ungültig werden.')
-          );
-        }
-        return authcheck(bot, msg, input.split(' '));
+    const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
+      .catch(() => mes.delete());
+    const input = collected.first().content;
+    mes.delete();
+    if (input === 'cancel') {
+      collected.first().delete();
+      return msg.delete();
+    } else {
+      if (input.includes('?')) {
+        return msg.channel.sendEmbed(
+          new bot.methods.Embed()
+            .setColor(0xffff00)
+            .setDescription('Bitte keine Fragezeichen verwenden, die Anfrage würde dadurch ungültig werden.')
+        );
       }
-    } catch (err) {
-      if (err.size) {
-        msg.delete();
-        return mes.delete();
-      }
+      return authcheck(bot, msg, input.split(' '));
     }
   }
   if (params.join(' ').includes('?')) {
@@ -57,7 +46,7 @@ async function authcheck(bot, msg, params) {
     const message = await msg.channel.sendEmbed(
       new bot.methods.Embed()
         .setColor(0xffff00)
-        .setDescription('Der Token ist ausgelaufen, fordere einen neuen an\nDies kann einen Moment dauern.'));
+        .setDescription('Der Token ist ausgelaufen, ich fordere einen neuen an.\nDies kann einen Moment dauern, ich bitte um Geduld.'));
     const res = await request.post(`https://anilist.co/api/auth/access_token`)
       .send({
         grant_type: 'client_credentials',
@@ -67,15 +56,12 @@ async function authcheck(bot, msg, params) {
       .set('Content-Type', 'application/json');
     bot.config.ani_token = res.body.access_token;
     bot.config.ani_expires = res.body.expires;
-    bot.debug(`"UPDATE \`config\` SET \`ani_expires\`=${bot.config.ani_expires} WHERE \`_rowid_\`='1';"`);
-    bot.db.run("UPDATE `config` SET `ani_expires`=? WHERE `_rowid_`='1';", bot.config.ani_expires);
-    bot.debug(`"UPDATE \`config\` SET \`ani_token\`=${bot.config.ani_token} WHERE \`_rowid_\`='1';"`);
-    bot.db.run("UPDATE `config` SET `ani_token`=? WHERE `_rowid_`='1'", bot.config.ani_token);
-    fs.writeFile('./var/auth.json', JSON.stringify(bot.internal.auth, null, 2), 'utf-8');
+    bot.debug(`"UPDATE \`config\` SET \`ani_token\`=${bot.config.ani_token} AND \`ani_expires\`=${bot.config.ani_expires} WHERE \`_rowid_\`='1';"`);
+    await bot.db.run("UPDATE `config` SET `ani_expires`=? AND `ani_token`=? WHERE `_rowid_`='1';", bot.config.ani_expires, bot.config.ani_token);
     await message.edit('', {
       embed: new bot.methods.Embed()
         .setColor(0x00ff08)
-        .setDescription('Token erneuert.'),
+        .setDescription('Token wurde erfolgreich erneuert.'),
     });
     return query(params.join(' '), msg, bot);
   } else {
@@ -95,7 +81,7 @@ async function query(search, msg, bot) {
       return msg.channel.sendEmbed(
         new bot.methods.Embed()
           .setColor(0xffff00)
-          .setDescription(`Keinen Charakter auf diese Anfrage gefunden.`)
+          .setDescription(`Leider keinen Charakter auf diese Anfrage gefunden.`)
           .setFooter(`${msg.author.username}: ${msg.content}`, msg.author.avatarURL));
     } else {
       return msg.channel.sendEmbed(
@@ -121,34 +107,22 @@ async function getanswer(bot, msg, response) {
       .setColor(msg.guild.member(msg.author).highestRole.color)
       .setTitle(`Es gibt mehrere Charaktere auf diese Suchanfrage:`)
       .setDescription(response.map(r => `${count++}\t\t${r.name_first} ${r.name_last ? r.name_last : ''}`).join('\n'))
-      .addField(`Gib die Nummer des Charaktere, für den weiter Informationen haben möchtest an.`,
-      'Diese Anfrage wird bei `cancel` oder automatisch nach `30` Sekunden abgebrochen.'));
-  try {
-    const collected = await msg.channel.awaitMessages(function filter(input, collector) { // eslint-disable-line
-      if (input.author.id === this.options.mes.author.id) { // eslint-disable-line
-        return true;
-      } else {
-        return false;
-      }
-    }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
-    const input = collected.first().content;
-    if (input === 'cancel') {
-      msg.delete();
-      collected.first().delete();
-      message.delete();
-    } else if (input % 1 !== 0 || !response[parseInt(input) - 1]) {
-      collected.first().delete();
-      message.delete();
-      getanswer(bot, msg, response);
-    } else {
-      collected.first().delete();
-      answer(response[parseInt(input) - 1], msg, bot, message);
-    }
-  } catch (error) {
-    if (error.size) {
-      msg.delete();
-      message.delete();
-    }
+      .addField(`Gib die Nummer des Charakters, für den weitere Informationen haben möchtest an.`,
+      'Diese Anfrage wird bei `cancel` oder nach `30` Sekunden automatisch abgebrochen.'));
+  const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
+    .catch(() => message.delete());
+  const input = collected.first().content;
+  if (input === 'cancel') {
+    msg.delete();
+    collected.first().delete();
+    message.delete();
+  } else if (input % 1 !== 0 || !response[parseInt(input) - 1]) {
+    collected.first().delete();
+    message.delete();
+    getanswer(bot, msg, response);
+  } else {
+    collected.first().delete();
+    answer(response[parseInt(input) - 1], msg, bot, message);
   }
 }
 
