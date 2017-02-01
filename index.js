@@ -31,5 +31,10 @@ process.on('unhandledRejection', (err) => {
   else bot.err(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`);
 });
 
+// because i want those cool colors
+Discord.GuildMember.prototype.color = function getColor() {
+  const roles = this.roles.filter(r => r.color !== 0).array().sort((a, b) => a.position - b.position);
+  return roles[roles.length - 1] ? roles[roles.length - 1].color : 0;
+};
 
 bot.login(bot.internal.auth.dtoken);
