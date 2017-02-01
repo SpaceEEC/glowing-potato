@@ -392,7 +392,7 @@ class Music {
       }
     })
       .catch((e) => {
-        if (e.message.startsWith('You do not have permission to join this voice channel.')) {
+        if (e && e.message.startsWith('You do not have permission to join this voice channel.')) {
           msg.channel.sendMessage('Ich darf deinem Channel nicht betreten.');
           this.stop();
         }
