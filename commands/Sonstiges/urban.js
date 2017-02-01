@@ -4,9 +4,9 @@ const request = require('superagent');
 exports.run = async (bot, msg, params = []) => { // eslint-disable-line
   if (!params[0]) {
     const mes = await msg.channel.sendEmbed({
-      title: 'Was soll ich Nachschlagen?',
-      description: 'Bedenke, dass du mit `-Nummer` (Nummer mit einer Zahl ersetzen)'
-      + '\nweitere Definitionen nachschlagen kannst.',
+      title: 'Was soll den nachgeschlagen werden?',
+      description: 'Bedenke, dass mit `-n` (n ist eine Zahl)'
+      + '\nweitere Definitionen angezeigt werden können.',
       fields: [
         {
           name: `\u200b`,
@@ -14,30 +14,18 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
         }],
       color: msg.member.highestRole.color,
     });
-    try {
-      const collected = msg.channel.awaitMessages(function filter(input, collector) { // eslint-disable-line
-        if (input.author.id === this.options.mes.author.id) { // eslint-disable-line
-          return true;
-        } else {
-          return false;
-        }
-      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
-      const input = collected.first().content;
-      mes.delete();
-      let parems = collected.first().content.split(' ');
-      if (input === 'cancel') {
-        collected.first().delete();
-        msg.delete();
-      } else if (parems[0].match(/^-\d+$/g)) {
-        query(bot, msg, params.slice(1), params[0].replace('-', ''));
-      } else {
-        query(bot, msg, parems, 1);
-      }
-    } catch (err) {
-      if (err.size) {
-        msg.delete();
-        mes.delete();
-      }
+    const collected = msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
+      .catch(() => mes.delete());
+    const input = collected.first().content;
+    mes.delete();
+    let parems = collected.first().content.split(' ');
+    if (input === 'cancel') {
+      collected.first().delete();
+      msg.delete();
+    } else if (parems[0].match(/^-\d+$/g)) {
+      query(bot, msg, params.slice(1), params[0].replace('-', ''));
+    } else {
+      query(bot, msg, parems, 1);
     }
   } else if (params[0].match(/^-\d+$/g)) {
     query(bot, msg, params.slice(1), params[0].replace('-', ''));
