@@ -508,8 +508,7 @@ class Music {
   }
 
   _leaveChannel() {
-    this._msg.delete()
-      .catch((err) => { if (!err) this._bot.warn('_emptyLeave delete message'); });
+    if (this._msg) this._msg.delete().catch((err) => { if (!err) this._bot.warn('_emptyLeave delete message'); });
     this._timeout = null;
     this._bot.info(`[${this._guild}] Leaving channel: ${this._con.channel.name}`);
     this._con.channel.leave();
