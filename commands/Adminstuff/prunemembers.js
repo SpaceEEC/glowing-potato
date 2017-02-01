@@ -21,10 +21,10 @@ exports.run = async (bot, msg, params = []) => {
       mes.delete();
     });
   mes.delete();
-  if (['ja', 'yes', 'j', 'y'].includes(collected.first().content.content.split(' ')[0])) {
+  if (['ja', 'yes', 'j', 'y'].includes(collected.first().content.split(' ')[0])) {
     const kicked = await msg.guild.pruneMembers(days);
     return msg.channel.sendMessage(`Es wurden erfolgreich ${kicked} Member gekickt!`);
-  } else if (['nein', 'no', 'n'].includes(collected.first().content.content.split(' ')[0])) {
+  } else if (['nein', 'no', 'n'].includes(collected.first().content.split(' ')[0])) {
     return msg.channel.sendMessage('Breche den Vorgang dann, wie gewünscht, ab.');
   } else {
     return msg.channel.sendMessage('Konnte diese Eingabe nicht eindeutig zuordnen, breche den Vorgang daher vorsichtshabler ab.');
