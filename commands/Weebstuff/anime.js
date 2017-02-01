@@ -14,14 +14,18 @@ Ein Teil des Titels würde schon reichen.`,
         }],
       color: msg.member.highestRole.color,
     });
-    const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] }
-    ).catch(() => mes.delete());
-    mes.delete();
-    if (collected.first().content === 'cancel') {
-      collected.first().delete();
-      return msg.delete();
-    } else {
-      return authcheck(bot, msg, collected.first().content.split(' '));
+    try {
+      const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
+      mes.delete();
+      if (collected.first().content === 'cancel') {
+        collected.first().delete();
+        return msg.delete();
+      } else {
+        return authcheck(bot, msg, collected.first().content.split(' '));
+      }
+    } catch (e) {
+      mes.delete();
+      return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
     }
   }
   if (params.join(' ').includes('?')) {
@@ -93,7 +97,7 @@ Bitte kontaktiere bitte \`spaceeec#0302\`\n\n${response.error.messages[0]}`)
 }
 
 
-const getanswer = async (bot, msg, response) => {
+const getanswer = async (bot, msg, response) => { // eslint-disable-line consistent-return
   let count = 1;
   const message = await msg.channel.sendEmbed(
     new bot.methods.Embed()
@@ -102,20 +106,24 @@ const getanswer = async (bot, msg, response) => {
       .setDescription(response.map(r => `${count++}\t\t${r.title_english}`).join('\n'))
       .addField(`Für welchen ${msg.cmd} darf es denn die Info geben?`,
       'Diese Anfrage wird bei `cancel` oder nach `30` Sekunden automatisch abgebrochen.'));
-  const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
-    .catch(() => message.delete());
-  const input = collected.first().content;
-  if (input === 'cancel') {
-    msg.delete();
-    collected.first().delete();
+  try {
+    const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
+    const input = collected.first().content;
+    if (input === 'cancel') {
+      msg.delete();
+      collected.first().delete();
+      message.delete();
+    } else if (input % 1 !== 0 || !response[parseInt(input) - 1]) {
+      collected.first().delete();
+      message.delete();
+      getanswer(bot, msg, response);
+    } else {
+      collected.first().delete();
+      answer(response[parseInt(input) - 1], msg, bot, message);
+    }
+  } catch (e) {
     message.delete();
-  } else if (input % 1 !== 0 || !response[parseInt(input) - 1]) {
-    collected.first().delete();
-    message.delete();
-    getanswer(bot, msg, response);
-  } else {
-    collected.first().delete();
-    answer(response[parseInt(input) - 1], msg, bot, message);
+    return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
   }
 };
 

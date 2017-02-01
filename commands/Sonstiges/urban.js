@@ -14,18 +14,22 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
         }],
       color: msg.member.highestRole.color,
     });
-    const collected = msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
-      .catch(() => mes.delete());
-    const input = collected.first().content;
-    mes.delete();
-    let parems = collected.first().content.split(' ');
-    if (input === 'cancel') {
-      collected.first().delete();
-      msg.delete();
-    } else if (parems[0].match(/^-\d+$/g)) {
-      query(bot, msg, params.slice(1), params[0].replace('-', ''));
-    } else {
-      query(bot, msg, parems, 1);
+    try {
+      const collected = msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
+      const input = collected.first().content;
+      mes.delete();
+      let parems = collected.first().content.split(' ');
+      if (input === 'cancel') {
+        collected.first().delete();
+        msg.delete();
+      } else if (parems[0].match(/^-\d+$/g)) {
+        query(bot, msg, params.slice(1), params[0].replace('-', ''));
+      } else {
+        query(bot, msg, parems, 1);
+      }
+    } catch (e) {
+      mes.delete();
+      msg.channel.sendMessage('Breche die Anfrage ab.');
     }
   } else if (params[0].match(/^-\d+$/g)) {
     query(bot, msg, params.slice(1), params[0].replace('-', ''));
