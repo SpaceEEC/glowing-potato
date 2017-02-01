@@ -96,13 +96,7 @@ function menu(bot, msg) {
 async function sendconf(bot, msg, embed, options) {
   const mes = await msg.channel.sendEmbed(embed);
   try {
-    const collected = await mes.channel.awaitMessages(function filter(message, collector) { // eslint-disable-line
-      if (message.author.id === this.options.mes.author.id) { // eslint-disable-line
-        return true;
-      } else {
-        return false;
-      }
-    }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
+    const collected = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
     let content = collected.first().content;
     mes.delete();
     if (content === 'cancel') {
@@ -146,13 +140,7 @@ async function sendvalue(bot, msg, key) {
     },
   });
   try {
-    const collected = await mes.channel.awaitMessages(function filter(message, collector) { // eslint-disable-line
-      if (message.author.id === this.options.mes.author.id) { // eslint-disable-line
-        return true;
-      } else {
-        return false;
-      }
-    }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
+    const collected = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
     let content = collected.first().content;
     mes.delete();
     if (content === 'cancel') {
