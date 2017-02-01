@@ -6,30 +6,18 @@ exports.run = async (bot, msg, params = []) => {
   if (!params[0]) {
     const mes = await msg.channel.sendEmbed(new bot.methods.Embed()
       .setColor(msg.member.highestRole.color)
-      .setDescription('Du hast vergessen die Tags anzugeben.\n\nDas war absicht, oder? 👀'
-      + '\n\nSchreibe sie in den Chat und du bekommst dein Bild.')
+      .setDescription(`Also suchen wir heute nach einem Bild?
+Dazu benötige ich mindestens einen Suchbegriff (Tag)`)
       .addField('\u200b', 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um abzubrechen.'));
-    try {
-      const collected = await msg.channel.awaitMessages(function filter(input, collector) { // eslint-disable-line
-        if (input.author.id === this.options.mes.author.id) { // eslint-disable-line
-          return true;
-        } else {
-          return false;
-        }
-      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
-      const input = collected.first().content;
-      mes.delete();
-      if (input === 'cancel') {
-        collected.first().delete();
-        msg.delete();
-      } else {
-        prepare(bot, msg, input.split(' '));
-      }
-    } catch (err) {
-      if (err.size) {
-        msg.delete();
-        mes.delete();
-      }
+    const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
+      .catch(() => mes.delete());
+    const input = collected.first().content;
+    mes.delete();
+    if (input === 'cancel') {
+      collected.first().delete();
+      msg.delete();
+    } else {
+      prepare(bot, msg, input.split(' '));
     }
   } else {
     prepare(bot, msg, params);
@@ -66,7 +54,7 @@ function prepare(bot, msg, params) {
   } else if (msg.cmd === 'konachan') {
     return konachan(bot, msg, params);
   } else {
-    return msg.channel.sendMessage('Das hier sollte eigentlich nie passieren, aber: `${params[0]}` ');
+    return msg.channel.sendMessage(`Das hier sollte eigentlich nie passieren, aber: ${params[0]}`);
   }
 }
 
