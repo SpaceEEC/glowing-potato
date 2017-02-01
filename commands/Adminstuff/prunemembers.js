@@ -2,7 +2,7 @@ exports.run = async (bot, msg, params = []) => {
   let days;
   if (!params[0]) {
     const mes = await msg.channel.sendMessage('Wir kicken heute also inaktive Member?\nVon wie vielen Tagen der Inaktivität sprechen wir hier denn?');
-    const collected = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { time: 30000, maxMatches: 1 })
+    const collected = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { time: 30000, maxMatches: 1, errors: ['time'] })
       .catch(() => {
         msg.delete();
         mes.delete();
@@ -15,7 +15,7 @@ exports.run = async (bot, msg, params = []) => {
   }
   const count = await msg.guild.pruneMembers(days, true);
   const mes = await msg.channel.sendMessage(`Das wären dann ${count} Member welche gekickt werden sollen.\nIst das korrekt? (__j__a/__y__es oder __n__ein/__n__o)`);
-  const collected = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { time: 30000, maxMatches: 1 })
+  const collected = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { time: 30000, maxMatches: 1, errors: ['time'] })
     .catch(() => {
       msg.delete();
       mes.delete();
