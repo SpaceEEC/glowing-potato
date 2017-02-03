@@ -20,8 +20,7 @@ exports.add = (bot, guild, type, id, color, name, icon_url, description, img) =>
                 value: description,
               },
             ],
-            footer: { text: name },
-            thumbnail: { url: icon_url },
+            footer: { text: `${name} | ${id}`, icon_url: icon_url },
           });
           resolve();
         } catch (e) {
@@ -45,7 +44,7 @@ exports.add = (bot, guild, type, id, color, name, icon_url, description, img) =>
             color: color,
             description: description,
             footer: {
-              text: name,
+              text: `${name} | ${id}`,
               icon_url: icon_url,
             },
             type: 'image',
@@ -60,6 +59,10 @@ exports.add = (bot, guild, type, id, color, name, icon_url, description, img) =>
   }
 });
 
+exports.remove = async (bot, guild, id) => {
+  bot.internal.quotes.delete(`${guild}|${id}`);
+  await bot.db.run('DELETE FROM quotes WHERE guild=? AND id=?', [guild, id]);
+};
 
 exports.init = (bot) => new Promise((resolve, reject) => {
   bot.internal.quotes = new bot.methods.Collection();
@@ -75,15 +78,14 @@ exports.init = (bot) => new Promise((resolve, reject) => {
               value: rows[i].description,
             },
           ],
-          footer: { text: rows[i].name },
-          thumbnail: { url: rows[i].icon_url },
+          footer: { text: `${rows[i].name} | ${rows[i].id}`, icon_url: rows[i].icon_url },
         });
       } else if (rows[i].type === 'img') {
         bot.internal.quotes.set(`${rows[i].guild}|${rows[i].id}`, {
           color: rows[i].color,
           description: rows[i].description,
           footer: {
-            text: rows[i].name,
+            text: `${rows[i].name} | ${rows[i].id}`,
             icon_url: rows[i].icon_url,
           },
           type: 'image',
