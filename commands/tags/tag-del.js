@@ -21,7 +21,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line consiste
       .then(() => msg.channel.sendMessage('Dieser Tag wurde Erfolgreich gelöscht.'))
       .catch((e) => {
         bot.err(`[tag-del tag.remove()] ${e}`);
-        msg.channel.sendMessage('Es ist ein interner Fehler beim Löschen dieses Tags aufgetreten. (Es kann sein, dass der Tag nur temporär gelöscht worden ist.\n\nFalls der Tag nach einen Neustart wieder da ist kontaktiere bitte `spaceeec#0302`)');
+        msg.channel.sendMessage('Es ist ein interner Fehler beim Löschen dieses Tags aufgetreten.\nEs kann sein, dass der Tag nur temporär gelöscht worden ist.\n\nFalls der Tag nach einen Neustart wieder erscheint kontaktiere bitte `spaceeec#0302`');
       });
   } else {
     return msg.channel.sendMessage('Du hast keine Rechte diesen Tag zu löschen, da er dir nicht gehört.');

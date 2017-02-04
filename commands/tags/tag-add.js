@@ -6,7 +6,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line consiste
       const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
       if (collected.first().content === 'cancel') {
         mes.delete();
-        return msg.channel.sendMessage('Breche Anfrage wie gewünscht ab.');
+        return msg.channel.sendMessage('Breche die Anfrage, wie gewünscht, ab.');
       } else if (['add', 'edit', 'remove', 'list'].includes(collected.first().content) || bot.internal.tags.has(`${msg.guild.id}|${collected.first().content}`)) {
         return msg.channel.sendMessage('Dieser Tagname ist ungütlig oder bereits belegt.');
       } else {
@@ -40,7 +40,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line consiste
     })
     .catch((e) => {
       bot.err(`[tag-add tag.add()] ${e}`);
-      msg.channel.sendMessage('Es ist ein interner Fehler beim erstellen dieses Tags aufgetreten.\nDer Tag wurde vielleicht erstellt, bevor du es erneut zu erstellen versuchst, prüfe ob der Tag erstellt wurde.');
+      msg.channel.sendMessage('Es ist ein interner Fehler beim Erstellen dieses Tags aufgetreten.\nDer Tag wurde vielleicht erstellt, bevor du es erneut zu erstellen versuchst, prüfe zunächst ob der Tag erstellt wurde.');
     });
 };
 
