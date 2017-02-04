@@ -10,7 +10,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line consiste
     bot.commands.get('tag-edit').run(bot, msg, params.splice(1, 1));
   } else if (params[0] === 'remove') {
     bot.commands.get('tag-del').run(bot, msg, params.splice(1, 1));
-  } if (params[0] !== 'add' && params[0] !== 'remove' && params[0] !== 'edit') {
+  } else {
     wrongTag(msg);
   }
 };
