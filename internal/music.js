@@ -28,8 +28,9 @@ class Music {
         if (err) {
           if (erl.indexOf('?v=') !== -1) erl = erl.substr(erl.indexOf('?v=') + 3);
           this._bot.err(`${erl} | ${err.message}`);
-          return msg.channel.sendMessage('Es ist ein Fehler, beim Abrufen des Videos von Youtube aufgetreten!\nIst es vielleicht privat oder gelöscht?');
+          return msg.channel.sendMessage('Es ist ein Fehler, beim Abrufen des Videos von Youtube aufgetreten!\nIst es öffentlich abrufbar?');
         }
+        this._bot.info(`[${this._guild}] Song added: ${info.title} Length: ${this._formatsecs(info.length_seconds)}.`);
         const newest = this._queue.push({ url: erl, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }) - 1;
         if (!(this._disp && (this._con && this._con.speaking))) {
           this._voiceChannel = msg.member.voiceChannel;
