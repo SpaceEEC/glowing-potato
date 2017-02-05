@@ -136,7 +136,7 @@ class Music {
               return msg.channel.send(`Auf diese Suchanfrage wurde nichts gefunden.`);
             } else if (JSON.parse(res.text).items.length === 1) {
               this.add(msg, JSON.parse(res.text).items[0].id.videoId);
-              return temp.edit('Erfolgreich gefunden, spiele jetzt...').then(tmp => tmp.delete(5000));
+              return temp.edit('Erfolgreich gefunden!').then(tmp => tmp.delete(5000));
             } else {
               this._selectsearchitem(msg, JSON.parse(res.text).items, 0);
               return temp.delete();
@@ -349,7 +349,7 @@ class Music {
         )
           .then(mes => {
             this._msg = mes;
-            if ([0, 2].includes(this._startup)) {
+            if (this._startup === 0) {
               if (this._startup === 0) this._startup = 1;
               this._bot.debug(`[${this._guild}] [stream] [ytdl-core] start`);
               const stream = yt(this._queue[0].url, { filter: 'audioonly' })
@@ -359,33 +359,15 @@ class Music {
                   this._msg.channel.sendMessage('Es ist ein Fehler beim Herunterladen von Youtube aufgetreten.');
                   this._queue.shift();
                   this._play(this._msg);
+                })
+                .once('end', () => {
+                  this._bot.debug(`[${this._guild}] [stream] [ytdl-core] end`);
+                  this._stream(`./var/tempmusicfile_${this._msg.guild.id}`);
+                  // this._disp = this._con.playStream(stream, { volume: this._volume, passes: 2 });
+                  // this._disp = this._con.playFile(`./var/tempmusicfile_${this._msg.guild.id}`, { volume: this._volume, passes: 2 });
                 });
-              stream.once('end', () => {
-                this._bot.debug(`[${this._guild}] [stream] [ytdl-core] end`);
-                // this._disp = this._con.playStream(stream, { volume: this._volume, passes: 2 });
-                this._disp = this._con.playFile(`./var/tempmusicfile_${this._msg.guild.id}`, { volume: this._volume, passes: 2 });
-                this._bot.info(`[${this._guild}] Now playing: ${this._queue[0].info.title}`);
-                this._bot.user.setGame(this._queue[0].info.title);
-                this._playing = true;
-                this._disp.once('error', (err) => {
-                  if (this._startup === 1) this._startup = 0;
-                  this._bot.err(`[${this._guild}] [disp] [error] ${err.message ? err.message : err}`);
-                  this._msg.channel.sendMessage(`Es ist ein Fehler beim Abspielen aufgetreten.`);
-                });
-                this._disp.on('debug', (message) => {
-                  this._bot.debug(`[${this._guild}] [debug] [disp] ${message}`);
-                });
-                this._disp.once('end', (reason) => {
-                  fs.unlinkAsync(`./var/tempmusicfile_${this._con.channel.guild.id}`)
-                    .catch(this._bot.err);
-                  if (this._startup === 1) this._startup = 0;
-                  this._playing = false;
-                  this._bot.info(`[${this._guild}] [disp] Song finished after: ${this._formatsecs(Math.floor(this._disp.time / 1000))} / ${this._formatsecs(this._queue[0].info.length_seconds)}`);
-                  if (!this._loop || !this._queue.length === 1 || reason === 'skip') this._queue.shift();
-                  if (reason !== 'stop') this._play(this._msg);
-                });
-              });
-              stream.pipe(fs.createWriteStream(`./var/tempmusicfile_${this._msg.guild.id}`));
+              if (this._queue[0].info.length_seconds < 3599) stream.pipe(fs.createWriteStream(`./var/tempmusicfile_${this._msg.guild.id}`));
+              else this._stream(stream);
             } else {
               this._bot.warn(`[${this._guild}] Second message catched.`);
             }
@@ -396,8 +378,35 @@ class Music {
         if (e && e.message.startsWith('You do not have permission to join this voice channel.')) {
           msg.channel.sendMessage('Ich darf deinem Channel nicht betreten.');
           this.stop();
+        } else {
+          this._bot.err(`[${this._guild}] [_play: joinChannel] ${e.stack ? e.stack : e}`);
         }
       });
+  }
+
+  _stream(stream) {
+    if (typeof stream === 'string') this._disp = this._con.playFile(stream, { volume: this._volume, passes: 2 });
+    else this._disp = this._con.playStream(stream, { volume: this._volume, passes: 2 });
+    this._bot.info(`[${this._guild}] Now playing: ${this._queue[0].info.title}`);
+    this._bot.user.setGame(this._queue[0].info.title);
+    this._playing = true;
+    this._disp.once('error', (err) => {
+      if (this._startup === 1) this._startup = 0;
+      this._bot.err(`[${this._guild}] [disp] [error] ${err.message ? err.message : err}`);
+      this._msg.channel.sendMessage(`Es ist ein Fehler beim Abspielen aufgetreten.`);
+    });
+    this._disp.on('debug', (message) => {
+      this._bot.debug(`[${this._guild}] [debug] [disp] ${message}`);
+    });
+    this._disp.once('end', (reason) => {
+      fs.unlinkAsync(`./var/tempmusicfile_${this._con.channel.guild.id}`)
+        .catch(this._bot.err);
+      if (this._startup === 1) this._startup = 0;
+      this._playing = false;
+      this._bot.info(`[${this._guild}] [disp] Song finished after: ${this._formatsecs(Math.floor(this._disp.time / 1000))} / ${this._formatsecs(this._queue[0].info.length_seconds)}`);
+      if (!this._loop || !this._queue.length === 1 || reason === 'skip') this._queue.shift();
+      if (reason !== 'stop') this._play(this._msg);
+    });
   }
 
   _bulkaddvalidate(toAdd, fullindex, pushobj, msg, mes) {
