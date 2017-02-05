@@ -18,7 +18,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line consiste
     bot.internal.tags.get(`${msg.guild.id}|${params.join(' ')}`).author === msg.author.id
     && bot.commands.get('tag').conf.editLevel > msg.permlvl)) {
     return bot.internal.tag.remove(bot, msg.guild.id, params.join(' ').toLowerCase())
-      .then(() => msg.channel.sendMessage('Dieser Tag wurde Erfolgreich gelöscht.'))
+      .then(() => msg.channel.sendMessage('Dieser Tag wurde erfolgreich gelöscht.'))
       .catch((e) => {
         bot.err(`[tag-del tag.remove()] ${e}`);
         msg.channel.sendMessage('Es ist ein interner Fehler beim Löschen dieses Tags aufgetreten.\nEs kann sein, dass der Tag nur temporär gelöscht worden ist.\n\nFalls der Tag nach einen Neustart wieder erscheint kontaktiere bitte `spaceeec#0302`');
