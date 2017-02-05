@@ -140,7 +140,7 @@ async function answer(response, msg, bot, mes) {
     .split('`').join('\'').split('<br>').join('\n'); // eslint-disable-line 
   const embed = new bot.methods.Embed()
     .setColor(0x0800ff)
-    .setTitle(`${response.name_first} ${response.name_last}`)
+    .setTitle(`${response.name_first ? response.name_first : ''} ${response.name_last ? response.name_last : ''}`)
     .setDescription(`${response.name_japanese}\n\n${response.name_alt ? `Aliases:\n${response.name_alt}` : ''}`)
     .setThumbnail(response.image_url_med);
   if (response.info.length < 1025) {
