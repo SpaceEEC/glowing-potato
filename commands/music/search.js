@@ -1,6 +1,6 @@
-exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => {
   if (msg.permlvl >= 5
-    || ((!msg.conf.musicgroup || (msg.conf.musicgroup && msg.member.roles.has(msg.conf.musicgroup)))
+    || ((!msg.conf.musicrole || (msg.conf.musicrole && msg.member.roles.has(msg.conf.musicrole)))
       && (!msg.conf.musicchannel || (msg.conf.musicchannel && msg.channel.id === msg.conf.musicchannel)))) {
     if (!bot.internal.musik.get(msg.guild.id)) {
       bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg.guild.id));
@@ -21,7 +21,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
         .then((mes) => mes.delete(5000));
     }
   }
-});
+};
 
 
 exports.conf = {
