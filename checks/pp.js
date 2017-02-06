@@ -2,12 +2,12 @@ exports.run = (bot, msg, cmd) => new Promise((resolve, reject) => {
   let permlvl = 1;
   try {
     msg.guild.fetchMember(msg.author).then((member) => {
-      const modRole = msg.guild.roles.get(msg.conf.modRole);
-      if (modRole && member.roles.has(modRole.id)) {
+      const modrole = msg.guild.roles.get(msg.conf.modrole);
+      if (modrole && member.roles.has(modrole.id)) {
         permlvl = 5;
       }
-      const adminRole = msg.guild.roles.get(msg.conf.adminRole);
-      if (adminRole && member.roles.has(adminRole.id)) {
+      const adminrole = msg.guild.roles.get(msg.conf.adminrole);
+      if (adminrole && member.roles.has(adminrole.id)) {
         permlvl = 10;
       }
       /* const users = bot.confs.get(msg.guild.id).users;
