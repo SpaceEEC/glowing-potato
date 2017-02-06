@@ -4,7 +4,7 @@ exports.run = async (bot, member) => {
   if (!conf.joinmsg) return;
   const response = conf.joinmsg
     .split(':user:').join(member)
-    .split(':server:').join(member.guild.name); // eslint-disable-line
+    .split(':server:').join(member.guild.name); // eslint-disable-line newline-per-chained-call
   if (conf.logchannel) {
     if (!bot.channels.get(conf.logchannel)
       .permissionsFor(member.guild.member(bot.user))

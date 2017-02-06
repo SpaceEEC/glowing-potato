@@ -1,4 +1,4 @@
-exports.run = async (bot, msg, params = []) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => { // eslint-disable-line consistent-return
   if (!params[0] || !['get', 'set', 'reset', 'list', 'show'].includes(params[0])) {
     return menu(bot, msg);
   }

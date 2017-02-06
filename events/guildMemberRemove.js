@@ -4,14 +4,13 @@ exports.run = async (bot, member) => {
   if (!conf.leavemsg) return;
   const response = conf.leavemsg
     .split(':user:').join(member)
-    .split(':server:').join(member.guild.name); // eslint-disable-line
+    .split(':server:').join(member.guild.name); // eslint-disable-line newline-per-chained-call
   if (conf.logchannel) {
     if (!bot.channels.get(conf.logchannel)
       .permissionsFor(member.guild.member(bot.user))
       .hasPermission('SEND_MESSAGES')) return;
     member.guild.channels.get(conf.logchannel).sendMessage(response).catch(e => {
-      bot.err(`Fehler beim Schreiben in logchannel(${conf.logchannel}) auf (${member.guild.id}): ${member.guild.name}
-${e.stack ? e.stack : e}`);
+      bot.err(`Fehler beim Schreiben in logchannel(${conf.logchannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`);
     });
   }
   if (conf.anchannel) {

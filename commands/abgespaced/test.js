@@ -1,9 +1,9 @@
-exports.run = async (bot, msg, params = []) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unused-vars
   return msg.channel.sendEmbed(nichts(bot, msg));
 };
 
 
-function nichts(bot, msg) { // eslint-disable-line
+function nichts(bot, msg) {
   return {
     color: 0xFFFF00,
     // description: '\u200B',
@@ -13,7 +13,7 @@ function nichts(bot, msg) { // eslint-disable-line
     },
     fields: [
       {
-        name: '¯\_(ツ)_/¯', // eslint-disable-line
+        name: '¯\_(ツ)_/¯', // eslint-disable-line no-useless-escape
         value: 'Dieser Befehl macht gerade nichts.\nVersuche es doch später erneut.',
       },
     ],

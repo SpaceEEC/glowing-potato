@@ -14,7 +14,7 @@ exports.run = async (bot, msg) => {
     prefixLength = bot.config.prefixMention.exec(msg.content)[0].length + 1;
   }
   const command = msg.content.slice(prefixLength).split(' ')[0].toLowerCase();
-  const params = msg.content.slice(prefixLength).split(' ').slice(1).filter(a => a); // eslint-disable-line
+  const params = msg.content.slice(prefixLength).split(' ').slice(1).filter(a => a); // eslint-disable-line newline-per-chained-call
   let cmd;
   if (bot.commands.has(command)) {
     cmd = bot.commands.get(command);

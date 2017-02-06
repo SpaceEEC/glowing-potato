@@ -20,11 +20,11 @@ exports.run = async (bot, msg, params = []) => {
 \`\`\`
 
 Ausführungszeitraum: \`${new Date().getTime() - time}\`ms`).catch((e) => {
-          msg.channel.sendMessage(`Fehler beim Senden der Antwort:\n` + // eslint-disable-line
-            `\`\`\`js
+  msg.channel.sendMessage(`Fehler beim Senden der Antwort:\n
+            \`\`\`js
 ${e.stack ? e.stack : e}
 \`\`\``);
-        }); // eslint-disable-line
+});
     } catch (e) {
       msg.channel.sendMessage(`\`E-ROHR\`
 \`\`\`js

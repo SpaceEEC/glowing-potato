@@ -1,7 +1,7 @@
 const fs = require('fs-extra-promise');
 
 
-exports.run = async (bot, msg, params = []) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => {
   if (!params[0]) {
     const message = await msg.channel.sendEmbed(new bot.methods.Embed()
       .setColor(msg.member.highestRole.color)
@@ -11,13 +11,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
       .setFooter(`${msg.author.username}: ${msg.content}`,
       msg.author.avatarURL));
     try {
-      const collected = await msg.channel.awaitMessages(function filter(message, collector) { // eslint-disable-line
-        if (message.author.id === this.options.mes.author.id) { // eslint-disable-line
-          return true;
-        } else {
-          return false;
-        }
-      }, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
+      const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
       let mesg = collected.first();
       message.delete();
       if (mesg.content === 'cancel') {
@@ -31,7 +25,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line
       msg.delete();
     }
   } else {
-    return reload(bot, msg, params);
+    reload(bot, msg, params);
   }
 };
 
@@ -59,7 +53,7 @@ async function reload(bot, msg, params) {
     });
   } else {
     for (let i = 0; i < params.length; i++) {
-      bot.internal.commands.reload(bot, params[i]).then(cmd => { // eslint-disable-line
+      bot.internal.commands.reload(bot, params[i]).then(cmd => {
         bot.log(`"./commands/${cmd.conf.group}/${params[i]}.js" erfolgreich neu geladen.`);
         msg.channel.sendMessage(`Neu laden von \`${params[i]}\` erfolgreich abgeschlossen.`);
       })

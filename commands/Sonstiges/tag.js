@@ -1,8 +1,7 @@
-exports.run = async (bot, msg, params = []) => { // eslint-disable-line consistent-return
+exports.run = async (bot, msg, params = []) => {
   if (params[0] && bot.internal.tags.has(`${msg.guild.id}|${params.join(' ')}`)) {
-    return msg.channel.sendMessage(bot.internal.tags.get(`${msg.guild.id}|${params.join(' ')}`).response);
-  }
-  if (!params[0] || params[0] === 'list') {
+    msg.channel.sendMessage(bot.internal.tags.get(`${msg.guild.id}|${params.join(' ')}`).response);
+  } else if (!params[0] || params[0] === 'list') {
     bot.commands.get('tag-list').run(bot, msg, params);
   } else if (params[0] === 'add') {
     bot.commands.get('tag-add').run(bot, msg, params.splice(1, 1));

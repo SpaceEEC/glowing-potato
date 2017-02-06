@@ -1,4 +1,4 @@
-exports.run = async (bot, msg, params = []) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => {
   const status_msg = await msg.channel.sendMessage('Starte Update...');
   const exec = require('child_process');
   exec.exec('git pull', async (error, stdout, stderr) => {

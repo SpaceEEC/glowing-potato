@@ -139,7 +139,7 @@ async function getanswer(bot, msg, response) { // eslint-disable-line consistent
 async function answer(response, msg, bot, mes) {
   const map = { amp: '&', lt: '<', gt: '>', quot: '"', '#039': "'" };
   response.info = response.info.replace(/&([^;]+);/g, (m, c) => map[c])
-    .split('`').join('\'').split('<br>').join('\n'); // eslint-disable-line 
+    .split('`').join('\'').split('<br>').join('\n'); // eslint-disable-line newline-per-chained-call
   const embed = new bot.methods.Embed()
     .setColor(0x0800ff)
     .setTitle(`${response.name_first ? response.name_first : ''} ${response.name_last ? response.name_last : ''}`)
