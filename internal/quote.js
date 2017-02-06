@@ -14,12 +14,7 @@ exports.add = (bot, guild, type, id, color, name, icon_url, description, img) =>
         try {
           bot.internal.quotes.set(`${guild}|${id}`, {
             color: color,
-            fields: [
-              {
-                name: '\u200b',
-                value: description,
-              },
-            ],
+            description: description,
             footer: { text: `${name} | ${id}`, icon_url: icon_url },
           });
           resolve();
@@ -72,12 +67,7 @@ exports.init = (bot) => new Promise((resolve, reject) => {
       if (rows[i].type === 'text') {
         bot.internal.quotes.set(`${rows[i].guild}|${rows[i].id}`, {
           color: rows[i].color,
-          fields: [
-            {
-              name: '\u200b',
-              value: rows[i].description,
-            },
-          ],
+          description: rows[i].description,
           footer: { text: `${rows[i].name} | ${rows[i].id}`, icon_url: rows[i].icon_url },
         });
       } else if (rows[i].type === 'img') {
