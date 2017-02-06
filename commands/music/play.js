@@ -6,8 +6,11 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg.guild.id));
     }
     const musik = bot.internal.musik.get(msg.guild.id);
-    if (!msg.member.voiceChannel) {
-      msg.channel.sendMessage('Ich kann dich in keinem Voicechannel finden, bist du sicher, dass gerade dich in einem in dieser Gilde befindest?')
+    if (!params[0]) {
+      msg.channel.sendMessage('Bitte gib mir einen Youtubelink oder ID mit, andernfalls kann ich leider nichts spielen.')
+        .then((mes) => mes.delete(5000));
+    } else if (!msg.member.voiceChannel) {
+      msg.channel.sendMessage('Ich kann dich in keinem Voicechannel finden, bist du sicher, dass du dich gerade in einem Voice Channel in dieser Gilde befindest?')
         .then((mes) => mes.delete(5000));
     } else if (msg.guild.member(bot.user).voiceChannel
       && (msg.guild.member(bot.user).voiceChannel.id
