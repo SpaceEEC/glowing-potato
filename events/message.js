@@ -26,7 +26,11 @@ exports.run = async (bot, msg) => {
     msg.cmd = command;
     bot.internal.checks.run(bot, msg, cmd)
       .then(() => {
-        cmd.run(bot, msg, params);
+        cmd.run(bot, msg, params)
+        .catch((e) => {
+          bot.err(`[${command}] [uncaught]: ${e.stack}`);
+          msg.channel.sendMessage(`Es ist ein unbehandelter Fehler aufgetreten.\n\nKontaktiere bitte \`${bot.config.owner}\`.`);
+        });
       })
       .catch((reason) => {
         if (reason) {

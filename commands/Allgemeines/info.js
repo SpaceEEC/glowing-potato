@@ -13,7 +13,7 @@ exports.run = async (bot, msg, params = []) => {
       : bot.users.has(params[0]) ? bot.users.get(params[0]) : msg.author;
   }
   const gmember = msg.guild.member(member);
-  if (!member) { return msg.channel.sendMessage('Fehler im Code, bitte `@space#0302` anschreiben.'); }
+  if (!member) { return msg.channel.sendMessage(`Fehler im Code, bitte \`${bot.config.owner}\` anschreiben.`); }
   if (!gmember) {
     return msg.channel.sendMessage(
       'Dieser Nutzer befindet sich in der Datenbank, ist aber nicht in dieser Gilde zu finden.');
@@ -58,7 +58,7 @@ ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
       };
     } catch (e) {
       bot.err(`[info stats] ${e.stack}`);
-      return msg.channel.sendMessage(`Es ist ein Fehler beim Erstellen der Antwort aufgetreten.\n\nBitte kontaktiere: \`space#0302\``);
+      return msg.channel.sendMessage(`Es ist ein Fehler beim Erstellen der Antwort aufgetreten.\n\nBitte kontaktiere: \`${bot.config.owner}\``);
     }
   } else {
     embed = {

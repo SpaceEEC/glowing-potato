@@ -86,7 +86,7 @@ async function query(search, msg, bot) {
           .setColor(0xffff00)
           .setTitle('Unerwarteter Fehler:')
           .setDescription(`Sowas sollte nicht passieren.
-Bitte kontaktiere bitte \`spaceeec#0302\`\n\n${response.error.messages[0]}`)
+Bitte kontaktiere bitte \`${bot.config.owner}\`\n\n${response.error.messages[0]}`)
           .setFooter(`${msg.author.username}: ${msg.content}`, msg.author.avatarURL));
     }
   } else if (!response[1]) {

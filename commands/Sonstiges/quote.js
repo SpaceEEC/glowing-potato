@@ -27,7 +27,7 @@ Zitate auf diesem Server: \`${bot.internal.quotes.filter((w, q) => q.startsWith(
     await bot.internal.quote.remove(bot, msg.guild.id, params[1])
       .catch((e) => {
         bot.err(`[quote removeQuote] ${e}`);
-        msg.channel.sendMessage('Es ist ein Fehler beim Löschen des Zitates aufgetreten.\nBitte kontaktiere `spaceeec#0302`.');
+        msg.channel.sendMessage(`Es ist ein Fehler beim Löschen des Zitates aufgetreten.\nBitte kontaktiere \`${bot.config.owner}\`.`);
       });
     return msg.channel.sendMessage('Tag erfolgreich gelöscht.');
   } else if (params[0].toLowerCase() === 'add' && msg.permlvl >= 5) {
@@ -76,7 +76,7 @@ Zitate auf diesem Server: \`${bot.internal.quotes.filter((w, q) => q.startsWith(
               msg.channel.sendMessage('Zitat eingefügt');
             })
             .catch((e) => {
-              msg.channel.sendMessage('Es ist ein Fehler beim Einfügen des Zitates aufgetreten.\nBitte kontaktiere `spaceeec#0302`.');
+              msg.channel.sendMessage(`Es ist ein Fehler beim Einfügen des Zitates aufgetreten.\nBitte kontaktiere \`${bot.config.owner}\`.`);
               bot.err(`[quote add text] ${e}`);
             });
         } else {
