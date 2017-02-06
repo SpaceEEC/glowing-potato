@@ -1,7 +1,7 @@
 const request = require('superagent');
 
 
-exports.run = async (bot, msg, params = []) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => {
   if (!params[0]) {
     const mes = await msg.channel.sendEmbed({
       title: 'Was soll den nachgeschlagen werden?',

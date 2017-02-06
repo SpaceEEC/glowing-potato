@@ -130,7 +130,7 @@ const getanswer = async (bot, msg, response) => { // eslint-disable-line consist
 function answer(response, msg, bot, mes) {
   const map = { amp: '&', lt: '<', gt: '>', quot: '"', '#039': "'" };
   response.description = response.description.replace(/&([^;]+);/g, (m, c) => map[c])
-    .split('`').join('\'').split('<br>').join('\n'); // eslint-disable-line
+    .split('`').join('\'').split('<br>').join('\n'); // eslint-disable-line newline-per-chained-call
   const embed = new bot.methods.Embed()
     .setColor(0x0800ff)
     .setTitle(response.title_japanese)

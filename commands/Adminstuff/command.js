@@ -1,4 +1,4 @@
-exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => { // eslint-disable-line consistent-return
   if (!params[1] || !['disable', 'enable'].includes(params[0])) {
     return msg.channel.sendMessage('Fehlender Parameter oder ungültige Operation');
   }
@@ -25,7 +25,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       })
       .catch(e => msg.channel.sendMessage(e));
   }
-});
+};
 
 
 exports.conf = {

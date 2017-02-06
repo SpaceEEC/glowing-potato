@@ -4,7 +4,7 @@ require('moment-duration-format');
 const package = require('../../package.json');
 
 
-exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => {
   let member;
   if (msg.cmd === 'info') {
     member = bot.user;
@@ -57,7 +57,8 @@ ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
         },
       };
     } catch (e) {
-      return msg.channel.sendMessage(`Es ist ein Fehler beim Erstellen der Antwort aufgetreten:\n${e.stack}`);
+      bot.err(`[info stats] ${e.stack}`);
+      return msg.channel.sendMessage(`Es ist ein Fehler beim Erstellen der Antwort aufgetreten.\n\nBitte kontaktiere: \`space#0302\``);
     }
   } else {
     embed = {
@@ -104,7 +105,7 @@ ${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
     };
   }
   return msg.channel.sendEmbed(embed);
-});
+};
 
 
 exports.conf = {

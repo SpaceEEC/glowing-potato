@@ -1,4 +1,4 @@
-exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.run = (bot, msg, params = []) => {
   if (!msg.member.hasPermission('MANAGE_MESSAGES')) {
     return msg.channel.sendMessage('Du darfst keine Chatnachrichten löschen, also darf ich das leider nicht für dich tun.'); // eslint-disable-line
   }
@@ -7,22 +7,22 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
   }
   if (params[0] % 1 !== 0) {
     return msg.channel.sendEmbed(new bot.methods.Embed()
-    .setColor(0xff0000)
-    .addField('Fehlerhafter Parameter',
+      .setColor(0xff0000)
+      .addField('Fehlerhafter Parameter',
       `\`${params[0]}\` ist keine Zahl!`)
-    .setFooter(`${msg.author.username}: ${msg.content}`,
+      .setFooter(`${msg.author.username}: ${msg.content}`,
       bot.user.avatarURL)
     );
   }
   msg.channel.bulkDelete(parseInt(params[0]) + 1);
   return msg.channel.sendEmbed(new bot.methods.Embed()
-  .setColor(0x00ff08)
-  .addField('Erfolgreich',
+    .setColor(0x00ff08)
+    .addField('Erfolgreich',
     `${parseInt(params[0]) + 1} Nachrichten gelöscht!`)
-  .setFooter(`${msg.author.username}: ${msg.content}`,
+    .setFooter(`${msg.author.username}: ${msg.content}`,
     msg.author.avatarURL)
   ).then((mes) => mes.delete(5000));
-});
+};
 
 
 exports.conf = {

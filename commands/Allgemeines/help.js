@@ -1,10 +1,10 @@
-exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => { // eslint-disable-line consistent-return
   if (!params[0] || params[0] === 'all') {
     let stuff = [];
     let notall = false;
     if (params[0]) {
       if (params[0] === 'all') {
-        bot.commands.forEach((item, key, mapObj) => { // eslint-disable-line
+        bot.commands.forEach((item, key) => {
           const cmd = bot.commands.get(key);
           if (!stuff[cmd.conf.group]) {
             stuff[cmd.conf.group] = [`${cmd.help.name}\` - ${cmd.help.shortdescription
@@ -17,7 +17,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
         });
       }
     } else {
-      bot.commands.forEach((item, key, mapObj) => { // eslint-disable-line
+      bot.commands.forEach((item, key) => {
         const cmd = bot.commands.get(key);
         if (!msg.conf.disabledcommands.includes(cmd.help.name)) {
           if (msg.permlvl > parseInt(cmd.conf.permLevel) - 1) {
@@ -135,7 +135,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       text: `${msg.author.username}: ${msg.content}`,
     },
   });
-});
+};
 
 
 exports.conf = {

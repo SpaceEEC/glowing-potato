@@ -1,4 +1,4 @@
-exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.run = (bot, msg, params = []) => { // eslint-disable-line no-unused-vars
   const embed = new bot.methods.Embed();
   embed
     .setAuthor(`${msg.member.displayName}:`, msg.author.displayAvatarURL)
@@ -7,7 +7,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
     .setTitle('\u200b')
     .setDescription(`**${messages[Math.floor(Math.random() * messages.length)]}**\n\u200b`);
   msg.channel.sendEmbed(embed);
-});
+};
 
 
 const messages = ['Mami sagt immer, dass Leute in meinem Alter nicht mehr an ihrem Daumen nuckeln sollten.',
