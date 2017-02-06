@@ -21,7 +21,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unuse
       }
     }
   }
-});
+};
 
 
 exports.conf = {
