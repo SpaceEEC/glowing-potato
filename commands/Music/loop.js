@@ -15,6 +15,9 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
           !== msg.member.voiceChannel.id)) {
         msg.channel.sendMessage('Für diesen Befehl müssen wir uns leider beide im selben Channel befinden.')
           .then((mes) => mes.delete(5000));
+      } else if (!params[0]) {
+        msg.channel.send(musik.loop())
+          .then((mes) => mes.delete(5000));
       } else if (['an', 'true', 'y', 'on'].includes(params[0].toLowerCase())) {
         msg.channel.send(musik.loop(true))
           .then((mes) => mes.delete(5000));
