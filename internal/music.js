@@ -53,7 +53,7 @@ class Music {
             .then((mes) => {
               mes.delete(30000);
             })
-            .catch(e => console.error(e)); // eslint-disable-line
+            .catch(e => console.error(e));
         }
       });
     } catch (err) {
