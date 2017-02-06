@@ -1,5 +1,5 @@
 exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
-  if (msg.permlvl >= 11
+  if (msg.permlvl >= 5
     || ((!msg.conf.musicgroup || (msg.conf.musicgroup && msg.member.roles.has(msg.conf.musicgroup)))
       && (!msg.conf.musicchannel || (msg.conf.musicchannel && msg.channel.id === msg.conf.musicchannel)))) {
     if (!bot.internal.musik.get(msg.guild.id)) {
