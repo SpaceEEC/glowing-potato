@@ -25,7 +25,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line consiste
         mes.delete();
         return msg.channel.sendMessage('Breche Anfrage, wie gewünscht, ab.');
       } else if (!bot.commands.get('tag').blacklist(msg, collected.first().content)) {
-        return msg.channel.sendMessage('Diese Antwort enthält einen Link, welcher nicht hotlinkbar scheint, verlinke das Bild über einen hotlinkbaren Hoster.\n\nFalls dieses Bild hotlinkbar ist kontaktiere `spaceeec#0302`.');
+        return msg.channel.sendMessage(`Diese Antwort enthält einen Link, welcher nicht hotlinkbar scheint, verlinke das Bild über einen hotlinkbaren Hoster.\n\nFalls dieses Bild hotlinkbar ist kontaktiere \`${bot.config.owner}\``);
       } else {
         params[1] = collected.first().content;
       }
