@@ -28,7 +28,7 @@ ${e.stack ? e.stack : e}
     } catch (e) {
       msg.channel.sendMessage(`\`E-ROHR\`
 \`\`\`js
-${e}
+${e}${e.response && e.response.res && e.response.res.text ? `\n${e.response.res.text}` : ''}
 \`\`\`
 
 Versuchungszeitraum: \`${new Date().getTime() - time}\`ms`);
