@@ -1,6 +1,6 @@
-exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unused-vars
   if (msg.permlvl >= 5
-    || ((!msg.conf.musicgroup || (msg.conf.musicgroup && msg.member.roles.has(msg.conf.musicgroup)))
+    || ((!msg.conf.musicrole || (msg.conf.musicrole && msg.member.roles.has(msg.conf.musicrole)))
       && (!msg.conf.musicchannel || (msg.conf.musicchannel && msg.channel.id === msg.conf.musicchannel)))) {
     if (!bot.internal.musik.get(msg.guild.id)) {
       msg.channel.send('Zur Zeit wird leider nichts gespielt.')
@@ -21,7 +21,7 @@ exports.run = (bot, msg, params = []) => new Promise((resolve, reject) => { // e
       }
     }
   }
-});
+};
 
 
 exports.conf = {

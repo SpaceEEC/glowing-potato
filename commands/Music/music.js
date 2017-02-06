@@ -1,4 +1,4 @@
-exports.run = async (bot, msg, params = []) => { // eslint-disable-line
+exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unused-vars
   bot.commands.get('help').run(bot, msg, ['music']);
 };
 
