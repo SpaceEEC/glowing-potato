@@ -22,8 +22,8 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unuse
     .setThumbnail(bot.user.avatarURL)
     .setFooter(`${msg.author.username}: ${msg.content}`,
     bot.user.avatarURL)
-    .addField('Verfügbare Tags:', alle)
-    .addField(`Tags von ${msg.author.username}:`, users)
+    .addField('Verfügbare Tags:', alle.join(' '))
+    .addField(`Tags von ${msg.author.username}:`, users.join(' '))
   );
 };
 
