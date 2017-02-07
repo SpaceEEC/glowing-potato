@@ -53,8 +53,8 @@ async function authcheck(bot, msg, params) {
       .set('Content-Type', 'application/json');
     bot.config.ani_token = res.body.access_token;
     bot.config.ani_expires = res.body.expires;
-    bot.debug(`UPDATE config SET ani_expires=${res.body.expires}, ani_token=${res.body.access_token};`);
-    await bot.db.run(`[anime] UPDATE config SET ani_expires=?, ani_token=?;`, [res.body.expires, res.body.access_token]);
+    bot.debug(`[anime] UPDATE config SET ani_expires=${res.body.expires}, ani_token=${res.body.access_token};`);
+    await bot.db.run(`UPDATE config SET ani_expires=?, ani_token=?;`, [res.body.expires, res.body.access_token]);
     await message.edit('', {
       embed: new bot.methods.Embed()
         .setColor(0x00ff08)
