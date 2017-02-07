@@ -1,6 +1,6 @@
 exports.run = async (bot, msg, params = []) => { // eslint-disable-line consistent-return
   if (!params[0] || (params[0] && !bot.internal.tags.has(`${msg.guild.id}|${params.join(' ')}`))) {
-    const mes = await msg.channel.sendMessage('Entweder hast du keinen Tag angegeben, oder dieser Tag existiert nicht.\nVersuche es noch ein weiteres mal.\n\nDiese Anfrage wird bei Eingabe von `cancel`, einer fehlerhaften Eingabe, oder nach 30 Sekunden abgebrochen.');
+    const mes = await msg.channel.sendMessage('Bitte gib nun den Namen des zu löschenden Tags ein.\n\nDiese Anfrage wird bei Eingabe von `cancel`, einer fehlerhaften Eingabe, oder nach 30 Sekunden abgebrochen.');
     try {
       const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
       if (bot.internal.tags.has(`${msg.guild.id}|${collected.first().content}`)) {
