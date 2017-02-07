@@ -31,7 +31,7 @@ class Music {
           return msg.channel.sendMessage('Es ist ein Fehler, beim Abrufen des Videos von Youtube aufgetreten!\nIst es öffentlich abrufbar?');
         }
         this._bot.info(`[${this._guild}] Song added: ${info.title} Length: ${this._formatsecs(info.length_seconds)}.`);
-        const newest = this._queue.push({ url: erl, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }) - 1;
+        const newest = this._queue.push({ url: erl, info: { title: info.title, loaderUrl: `https://youtu.be/UgnQ2jF-t-A${info.video_id}`, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }) - 1;
         if (!(this._disp && (this._con && this._con.speaking))) {
           this._voiceChannel = msg.member.voiceChannel;
           return this._play(msg);
@@ -101,7 +101,7 @@ class Music {
                       }
                     } else {
                       this._bot.debug(`[${this._guild}] bulkadd() ${info.title}`);
-                      this._bulkaddvalidate(toAdd, fin, { order: erl, url: urls[erl], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, msg, tmp);
+                      this._bulkaddvalidate(toAdd, fin, { order: erl, url: urls[erl], info: { title: info.title, loaderUrl: `https://youtu.be/UgnQ2jF-t-A${info.video_id}`, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, msg, tmp);
                     }
                   });
                 });
