@@ -11,6 +11,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unuse
         msg.channel.sendMessage('Zur Zeit spiele ich leider nichts.')
           .then((mes) => mes.delete(5000));
       } else if (msg.guild.member(bot.user).voiceChannel
+        && msg.member.voiceChannel
         && (msg.guild.member(bot.user).voiceChannel.id
           !== msg.member.voiceChannel.id)) {
         msg.channel.sendMessage('Für diesen Befehl müssen wir uns leider beide im selben Channel befinden.')
