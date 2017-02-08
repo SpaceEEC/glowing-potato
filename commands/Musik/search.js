@@ -5,7 +5,7 @@ exports.run = async (bot, msg, params = []) => {
     || ((!msg.conf.musicrole || (msg.conf.musicrole && msg.member.roles.has(msg.conf.musicrole)))
       && (!msg.conf.musicchannel || (msg.conf.musicchannel && msg.channel.id === msg.conf.musicchannel)))) {
     if (!bot.internal.musik.get(msg.guild.id)) {
-      bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg.guild.id));
+      bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg));
     }
     if (!msg.member.voiceChannel) {
       msg.channel.sendMessage('Ich kann dich in keinem Voicechannel finden, bist du sicher, dass gerade dich in einem in dieser Gilde befindest?')
