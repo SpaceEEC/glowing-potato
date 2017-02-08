@@ -16,16 +16,16 @@ exports.run = async (bot, msg, params = []) => {
         msg.channel.sendMessage('Für diesen Befehl müssen wir uns leider beide im selben Channel befinden.')
           .then((mes) => mes.delete(5000));
       } else if (!params[0]) {
-        msg.channel.send(musik.loop())
+        msg.channel.send(musik.loop() ? 'Loop ist aktiv.' : 'Loop ist nicht aktiv.')
           .then((mes) => mes.delete(5000));
       } else if (['an', 'true', 'y', 'on'].includes(params[0].toLowerCase())) {
-        msg.channel.send(musik.loop(true))
+        msg.channel.send(musik.loop(true) ? 'Loop ist aktiv.' : 'Loop ist nicht aktiv.')
           .then((mes) => mes.delete(5000));
       } else if (['aus', 'false', 'n', 'off'].includes(params[0].toLowerCase())) {
-        msg.channel.send(musik.loop(false))
+        msg.channel.send(musik.loop(false) ? 'Loop ist aktiv.' : 'Loop ist nicht aktiv.')
           .then((mes) => mes.delete(5000));
       } else {
-        msg.channel.send(musik.loop())
+        msg.channel.send(musik.loop() ? 'Loop ist aktiv.' : 'Loop ist nicht aktiv.')
           .then((mes) => mes.delete(5000));
       }
     }
