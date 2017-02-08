@@ -4,7 +4,7 @@ const yt = require('ytdl-core');
 
 exports.run = async (bot, msg, params = []) => {
   if (bot.internal.music.perms(msg)) {
-    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg.guild.id));
+    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg));
   }
   if (!params[0]) {
     msg.channel.sendMessage('Bitte gib mir einen Youtubelink oder ID mit, andernfalls kann ich leider nichts spielen.')
