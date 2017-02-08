@@ -392,7 +392,7 @@ class Music {
     this._playing = true;
     this._disp.once('error', (err) => {
       if (this._startup === 1) this._startup = 0;
-      this._bot.err(`[${this._guild}] [disp] [error] ${err.message ? err.message : err}`);
+      this._bot.err(`[${this._guild}] [disp] [error] ${err.stack ? err.stack : err}`);
       this._msg.channel.sendMessage(`Es ist ein Fehler beim Abspielen aufgetreten.`);
     });
     this._disp.on('debug', (message) => {
