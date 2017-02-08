@@ -44,6 +44,7 @@ async function searchVideo(bot, msg, params) {
       bot.commands.get('play').add(bot, statusmsg, JSON.parse(res.text).items[0].id.videoId);
       statusmsg.edit('Erfolgreich gefunden!').then(tmp => tmp.delete(5000));
     } else {
+      statusmsg.delete();
       selectItem(bot, msg, JSON.parse(res.text).items, 0);
     }
   } catch (e) {
