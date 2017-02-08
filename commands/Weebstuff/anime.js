@@ -97,7 +97,7 @@ Bitte kontaktiere bitte \`${bot.config.owner}\`\n\n${response.error.messages[0]}
 }
 
 
-const getanswer = async (bot, msg, response) => { // eslint-disable-line consistent-return
+const getanswer = async (bot, msg, response) => {
   let count = 1;
   const message = await msg.channel.sendEmbed(
     new bot.methods.Embed()
@@ -123,7 +123,7 @@ const getanswer = async (bot, msg, response) => { // eslint-disable-line consist
     }
   } catch (e) {
     message.delete();
-    return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
+    msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
   }
 };
 
