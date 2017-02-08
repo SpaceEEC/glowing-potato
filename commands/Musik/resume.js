@@ -16,7 +16,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unuse
         msg.channel.sendMessage('Für diesen Befehl müssen wir uns leider beide im selben Channel befinden.')
           .then((mes) => mes.delete(5000));
       } else {
-        msg.channel.send(musik.pauseresume(true))
+        msg.channel.send(musik.toggleState(true) ? 'Läuft jetzt.' : 'Jetzt pausiert.')
           .then((mes) => mes.delete(5000));
       }
     }
