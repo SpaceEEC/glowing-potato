@@ -379,7 +379,7 @@ class Music {
           msg.channel.sendMessage('Ich darf deinem Channel nicht betreten.');
           this.stop();
         } else {
-          this._bot.err(`[${this._guild}] [_play: joinChannel] ${e.stack ? e.stack : e}`);
+          this._bot.err(`[${this._guild}] [_play: joinChannel] ${e && e.stack ? e.stack : e}`);
         }
       });
   }
