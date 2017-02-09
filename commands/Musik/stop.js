@@ -13,13 +13,15 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unuse
       const musik = bot.internal.musik.get(msg.guild.id);
       if (musik._music.queue.length === 0) {
         msg.channel.sendMessage('Die Queue ist leer.');
-      } else {
-        const response = `Leere die Queue (**${musik._music.queue.length}** Songs) und beende die Wiedergabe.`;
+      } else if (musik._music.disp) {
+        msg.channel.send(`Leere die Queue (**${musik._music.queue.length}** Songs) und beende die Wiedergabe.`)
+          .then((mes) => mes.delete(5000));
         bot.info(`[${msg.guild.id}] Stopped playing through command.`);
         musik._music.queue = musik._music.queue.slice(musik._music.queue.length - 1);
         if (musik._music.disp) musik._music.disp.end('stop');
         bot.setTimeout(musik._leaveChannel.bind(musik), 2000);
-        msg.channel.send(response)
+      } else {
+        msg.channel.sendMessage('Vor der Abschluss, der Intialisierung ist ein Stoppen leider nicht möglich.')
           .then((mes) => mes.delete(5000));
       }
     }
