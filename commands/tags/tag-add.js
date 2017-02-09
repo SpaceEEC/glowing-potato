@@ -1,7 +1,7 @@
 exports.run = async (bot, msg, params = []) => { // eslint-disable-line consistent-return
   if (bot.commands.get('tag').conf.createLevel > msg.permlvl) return msg.channel.sendMessage('Du darfst leider keine Tags erstellen.');
   if (!params[0] || (params[0] && ['add', 'edit', 'remove', 'list'].includes(params[0])) || (params[0] && bot.internal.tags.has(`${msg.guild.id}|${params.join(' ')}`))) {
-    const mes = await msg.channel.sendMessage('Entweder ist kein Tagname angegeben, oder dieser ist bereits belegt.\nVersuch es bitte erneut.\n\nDiese Anfrage wird bei Eingabe von `cancel`, einer fehlerhaften Eingabe, oder nach 30 Sekunden abgebrochen');
+    const mes = await msg.channel.sendMessage('Bitte gib einen Namen für diesen neuen Tag an.\n\nDiese Anfrage wird bei Eingabe von `cancel`, einer fehlerhaften Eingabe, oder nach 30 Sekunden abgebrochen');
     try {
       const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
       if (collected.first().content === 'cancel') {
@@ -18,7 +18,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line consiste
     }
   }
   if (!params[1] || (params[1] && !bot.commands.get('tag').blacklist(msg, params.slice(1).join(' ')))) {
-    const mes = await msg.channel.sendMessage('Es wurde kein Inhalt für diesen Tag angegeben oder dieser enthält einen ungültigen Link.\nBitte gebe an, was auf diesen Tag gesendet werden soll.\n\nDiese Anfrage wird bei Eingabe von `cancel`, einer fehlerhaften Eingabe, oder nach 30 Sekunden abgebrochen');
+    const mes = await msg.channel.sendMessage('Gib bitte nun den Inhalt für den neuen Tag an.\n\nDiese Anfrage wird bei Eingabe von `cancel`, einer fehlerhaften Eingabe, oder nach 30 Sekunden abgebrochen');
     try {
       const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
       if (collected.first().content === 'cancel') {
