@@ -176,7 +176,7 @@ class Music {
     this._bot.info(`[${this._guild}] Verlasse Channel.`);
     this._leave.timeout = null;
     if (this._music.statusmsg) this._music.statusmsg.delete().catch(() => { }); // eslint-disable-line no-empty-function
-    this._leave.msg.delete().catch(() => { }); // eslint-disable-line no-empty-function
+    if (this._leave.msg) this._leave.msg.delete().catch(() => { }); // eslint-disable-line no-empty-function
     this._music.con.disconnect();
     this._bot.user.setGame(this._bot.config.game);
     this._bot.internal.musik.delete(this._guild);
