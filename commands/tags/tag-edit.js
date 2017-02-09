@@ -1,6 +1,6 @@
 exports.run = async (bot, msg, params = []) => { // eslint-disable-line consistent-return
   if (!params[0] || (params[0] && !bot.internal.tags.has(`${msg.guild.id}|${params.join(' ')}`))) {
-    const mes = await msg.channel.sendMessage('Entweder hast du keinen Tag angegeben, oder dieser Tag existiert nicht.\nVersuche es noch ein weiteres mal.\n\nDiese Anfrage wird bei Eingabe von `cancel`, einer fehlerhaften Eingabe, oder nach 30 Sekunden abgebrochen.');
+    const mes = await msg.channel.sendMessage('Bitte gib den Namen des zu ändernen Tags an.\n\nDiese Anfrage wird bei Eingabe von `cancel`, einer fehlerhaften Eingabe, oder nach 30 Sekunden abgebrochen.');
     try {
       const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
       if (bot.internal.tags.has(`${msg.guild.id}|${collected.first().content}`)) {
@@ -19,7 +19,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line consiste
     return msg.channel.sendMessage('Du hast keine Rechte diesen Tag zu bearbeiten, da er dir nicht gehört.');
   }
   if (!params[1] || (params[1] && !bot.commands.get('tag').blacklist(msg, params.slice(1).join(' ')))) {
-    const mes = await msg.channel.sendMessage('Bitte gib einen neuen Inhalt für diesen Tag an.\n\nDiese Anfrage wird bei Eingabe von `cancel`, einer fehlerhaften Eingabe, oder nach 30 Sekunden abgebrochen');
+    const mes = await msg.channel.sendMessage('Bitte gib nun einen neuen Inhalt für diesen Tag an.\n\nDiese Anfrage wird bei Eingabe von `cancel`, einer fehlerhaften Eingabe, oder nach 30 Sekunden abgebrochen');
     try {
       const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
       if (collected.first().content === 'cancel') {
