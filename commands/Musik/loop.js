@@ -19,10 +19,10 @@ exports.run = async (bot, msg, params = []) => {
         msg.channel.send(musik.loop() ? 'Loop ist aktiv.' : 'Loop ist nicht aktiv.')
           .then((mes) => mes.delete(5000));
       } else if (['an', 'true', 'y', 'on'].includes(params[0].toLowerCase())) {
-        msg.channel.send(musik.loop(true) ? 'Loop ist aktiv.' : 'Loop ist nicht aktiv.')
+        msg.channel.send(musik.loop(true) ? 'Loop ist jetzt aktiviert.' : 'Loop ist bereits aktiv!')
           .then((mes) => mes.delete(5000));
       } else if (['aus', 'false', 'n', 'off'].includes(params[0].toLowerCase())) {
-        msg.channel.send(musik.loop(false) ? 'Loop ist aktiv.' : 'Loop ist nicht aktiv.')
+        msg.channel.send(musik.loop(false) ? 'Loop ist jetzt nicht mehr aktiv.' : 'Loop ist bereits aus!')
           .then((mes) => mes.delete(5000));
       } else {
         msg.channel.send(musik.loop() ? 'Loop ist aktiv.' : 'Loop ist nicht aktiv.')
