@@ -45,7 +45,7 @@ exports.add = async (bot, msg, url) => {
         + `Hinzugefügt von: ${msg.member}`,
         type: 'image',
         image: { url: info.iurl },
-        footer: { text: `wurde hinzugefügt.${musik._disp ? ` (Ungefähre Zeit bis dahin: ${musik._formatSecs(musik._queue.reduce((a, b) => a + parseInt(b.info.length_seconds), parseInt(`-${musik._formatSecs(Math.floor(musik._disp.time / 1000))}`)))})` : ''}`, icon_url: bot.user.avatarURL },
+        footer: { text: `wurde hinzugefügt.${musik._music.disp ? ` (Ungefähre Zeit bis dahin: ${musik._formatSecs(musik._music.queue.reduce((a, b) => a + parseInt(b.info.length_seconds), parseInt(`-${musik._formatSecs(Math.floor(musik._music.disp.time / 1000))}`)))})` : ''}`, icon_url: bot.user.avatarURL },
       }
     }).then((mes) => {
       mes.delete(30000);
