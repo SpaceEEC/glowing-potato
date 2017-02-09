@@ -1,18 +1,14 @@
 const request = require('superagent');
 
 exports.run = async (bot, msg, params = []) => {
-  if (msg.permlvl >= 5
-    || ((!msg.conf.musicrole || (msg.conf.musicrole && msg.member.roles.has(msg.conf.musicrole)))
-      && (!msg.conf.musicchannel || (msg.conf.musicchannel && msg.channel.id === msg.conf.musicchannel)))) {
+  if (bot.internal.music.perms(msg)) {
     if (!bot.internal.musik.get(msg.guild.id)) {
       bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg));
     }
     if (!msg.member.voiceChannel) {
       msg.channel.sendMessage('Ich kann dich in keinem Voicechannel finden, bist du sicher, dass gerade dich in einem in dieser Gilde befindest?')
         .then((mes) => mes.delete(5000));
-    } else if (msg.guild.member(bot.user).voiceChannel
-      && (msg.guild.member(bot.user).voiceChannel.id
-        !== msg.member.voiceChannel.id)) {
+    } else if (bot.internal.music.channel(bot, msg, true)) {
       msg.channel.sendMessage('Für diesen Befehl müssen wir uns leider beide im selben Channel befinden.')
         .then((mes) => mes.delete(5000));
     } else if (params[0]) {
@@ -41,7 +37,7 @@ async function searchVideo(bot, msg, params) {
     if (JSON.parse(res.text).items.length === 0) {
       statusmsg.edit(`Auf diese Suchanfrage wurde nichts gefunden.`);
     } else if (JSON.parse(res.text).items.length === 1) {
-      bot.commands.get('play').add(bot, statusmsg, JSON.parse(res.text).items[0].id.videoId);
+      bot.commands.get('play').add(bot, statusmsg, JSON.parse(res.text).items[0].id.videoId, msg);
       statusmsg.edit('Erfolgreich gefunden!').then(tmp => tmp.delete(5000));
     } else {
       statusmsg.delete();
