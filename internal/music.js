@@ -35,7 +35,7 @@ class Music {
   }
 
   loop(status) {
-    if (status) {
+    if (status === true || status === false) {
       const r = this._music.loop !== status;
       this._music.loop = status;
       return r;
