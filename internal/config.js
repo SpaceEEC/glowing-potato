@@ -37,7 +37,7 @@ exports.set = (bot, msg, key, params) => new Promise((resolve, reject) => {
     if (!(params instanceof Array)) value = params;
     if (!value) value = params.join(' ');
     if (value.length === 0) {
-      reject('Um Schlüssel zu löschen bitte die `delete` Option verwenden.');
+      reject('Um Schlüssel zu löschen bitte die `reset` Option verwenden.');
       return;
     }
     bot.confs.get(msg.guild.id)[key] = value;
