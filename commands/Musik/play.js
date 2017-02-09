@@ -67,36 +67,49 @@ async function bulkadd(bot, msg, id, count) {
   const statusmsg = await msg.channel.sendMessage('Rufe die Playlist ab...');
   const ids = await new Promise(resolve => query(bot, id, count, null, resolve));
   statusmsg.edit(`Verarbeite \`${ids.length}\` in der Playlist gefundene Songs, dies kann einen Moment dauern...`);
-  let fin = ids.length;
-  const toAdd = [];
+  let finalsongs = 0;
+  while (ids.length !== 0) {
+    const newAdd = [];
+    const idsPart = ids.splice(0, 25);
+    const finPart = idsPart.length;
+    bot.debug(`Awaiting validating of ${finPart} Songs.`);
+    const awaited = await new Promise(resolve => getInfo(bot, newAdd, msg, idsPart, finPart, resolve));
+    finalsongs += awaited;
+    if (ids.length) statusmsg.edit(`Verarbeite noch \`${ids.length}\` weitere Songs, dies kann einen Moment dauern...`);
+    bot.debug(`Awaited validating of ${awaited} Songs`);
+  }
+  if (finalsongs) {
+    statusmsg.edit(`Erfolgreich \`${finalsongs}\` Songs hinzugefügt.`)
+      .then((del) => del.delete(10000));
+  } else {
+    statusmsg.edit(`\`${finalsongs}\` Songs hinzugefügt.\nSicher, dass die Playlist korrekt ist?\n(Gelöschte Videos / nicht in Deutschland erreichbar)`)
+      .then((del) => del.delete(10000));
+  }
+}
+function getInfo(bot, toAdd, msg, ids, fin, resolve) {
   for (const vid in ids) {
     yt.getInfo(ids[vid], (err, info) => {
       if (err) {
         bot.err(err.message);
         fin--;
         if (toAdd.length === fin) {
-          validate(bot, toAdd, true, null, statusmsg, bot.internal.musik.get(msg.guild.id));
+          validate(bot, toAdd, true, null, bot.internal.musik.get(msg.guild.id), resolve);
         }
       } else {
         bot.debug(info.title);
-        validate(bot, toAdd, fin, { order: vid, url: ids[vid], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, statusmsg, bot.internal.musik.get(msg.guild.id));
+        validate(bot, toAdd, fin, { order: vid, url: ids[vid], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, bot.internal.musik.get(msg.guild.id), resolve);
       }
     });
   }
 }
-
-function validate(bot, toAdd, fin, pushobj, statusmsg, musik) {
+function validate(bot, toAdd, fin, pushobj, musik, resolve) {
   bot.debug('validate');
   if (pushobj) pushobj = toAdd.push(pushobj);
   if (fin === true || pushobj === fin) {
     const ordered = toAdd.sort((a, b) => a.order - b.order);
     if (ordered.length) {
       musik.add(ordered);
-      statusmsg.edit(`Erfolgreich \`${ordered.length}\` Songs hinzugefügt.`)
-        .then((del) => del.delete(10000));
-    } else {
-      statusmsg.edit(`\`${ordered.length}\` Songs hinzugefügt.\nSicher, dass die Playlist korrekt ist?\n(Gelöschte Videos / nicht in Deutschland erreichbar)`)
-        .then((del) => del.delete(10000));
+      resolve(ordered.length);
     }
   }
 }
