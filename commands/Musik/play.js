@@ -11,7 +11,7 @@ exports.run = async (bot, msg, params = []) => {
       msg.channel.sendMessage('Bitte gib mir einen Youtubelink oder ID mit, andernfalls kann ich leider nichts spielen.')
         .then((mes) => mes.delete(5000));
     } else if (!bot.internal.music.channel(bot, msg, true)) {
-      msg.channel.sendMessage('Bist du sicher, dass du dich im korrekten Voicechannel befindest?')
+      msg.channel.sendMessage('Du bist nicht in einem Channel, dem ich beitreten und sprechen darf.')
         .then((mes) => mes.delete(5000));
     } else if (params[0].includes('watch?v=') || params[0].length === 11) {
       exports.add(bot, await msg.channel.sendMessage('Rufe Video ab...'), params[0], msg);

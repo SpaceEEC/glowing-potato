@@ -9,7 +9,7 @@ exports.run = async (bot, msg, params = []) => {
       msg.channel.sendMessage('Ich kann dich in keinem Voicechannel finden, bist du sicher, dass gerade dich in einem in dieser Gilde befindest?')
         .then((mes) => mes.delete(5000));
     } else if (!bot.internal.music.channel(bot, msg, true)) {
-      msg.channel.sendMessage('Für diesen Befehl müssen wir uns leider beide im selben Channel befinden.')
+      msg.channel.sendMessage('Du bist nicht in einem Channel, dem ich beitreten und sprechen darf.')
         .then((mes) => mes.delete(5000));
     } else if (params[0]) {
       searchVideo(bot, msg, params);
