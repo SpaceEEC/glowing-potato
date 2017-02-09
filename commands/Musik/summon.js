@@ -3,15 +3,18 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unuse
     if (!bot.internal.musik.get(msg.guild.id)) {
       msg.channel.send('Zur Zeit wird leider nichts gespielt.')
         .then(mes => mes.delete(30000));
-    } else {
+    } else if (!msg.guild.member(bot.user).voiceChannel) {
+      msg.channel.sendMessage('Zur Zeit spiele ich leider nichts, füge doch einfach etwas hinzu!')
+        .then((mes) => mes.delete(5000));
+    } else if (bot.internal.music.channel(bot, msg, true)) {
       const musik = bot.internal.musik.get(msg.guild.id);
-      if (!msg.guild.member(bot.user).voiceChannel || !bot.internal.music.channel(bot, msg, true)) {
-        msg.channel.sendMessage('Zur Zeit spiele ich leider nichts, füge doch einfach etwas hinzu!')
-          .then((mes) => mes.delete(5000));
-      } else {
-        msg.channel.send(musik.summon(msg))
-          .then((mes) => mes.delete(5000));
-      }
+      musik._music.con = await msg.member.voiceChannel.join();
+      musik._vChannel = msg.member.voiceChannel;
+      msg.channel.sendMessage('Deinem Channel erfolgreich beigetreten.')
+        .then((mes) => mes.delete(5000));
+    } else {
+      msg.channel.sendMessage('Du bist nicht in einem Channel, dem ich beitreten und sprechen darf.')
+        .then((mes) => mes.delete(5000));
     }
   }
 };
