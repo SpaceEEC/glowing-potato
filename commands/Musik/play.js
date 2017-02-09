@@ -3,7 +3,7 @@ const yt = require('ytdl-core');
 
 
 exports.run = async (bot, msg, params = []) => {
-  if (bot.internal.music.perms(msg)) {
+  if (bot.internal.musik.has(msg.guild.id)) {
     bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg));
   }
   if (!params[0]) {
@@ -13,15 +13,15 @@ exports.run = async (bot, msg, params = []) => {
     msg.channel.sendMessage('Bist du sicher, dass du dich im korrekten Voicechannel befindest?')
       .then((mes) => mes.delete(5000));
   } else if (params[0].includes('watch?v=') || params[0].length === 11) {
-    exports.add(bot, await msg.channel.sendMessage('Rufe Video ab...'), params[0]);
+    exports.add(bot, await msg.channel.sendMessage('Rufe Video ab...'), params[0], msg);
   } else if (params[0].includes('playlist?list=') || params[0].length > 11) {
     bulkadd(bot, msg, params[0].includes('playlist?list=') ? params[0].split('playlist?list=')[1] : params[0], params[1]);
   }
 };
 
-exports.add = async (bot, msg, url) => {
-  if (bot.internal.music.perms(msg)) {
-    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg.guild.id));
+exports.add = async (bot, msg, url, originalmsg) => {
+  if (!bot.internal.musik.has(msg.guild.id)) {
+    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, originalmsg));
   }
   const musik = bot.internal.musik.get(msg.guild.id);
   yt.getInfo(url, (err, info) => {
