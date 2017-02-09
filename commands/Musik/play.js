@@ -1,31 +1,142 @@
+const request = require('superagent');
+const yt = require('ytdl-core');
+
+
 exports.run = async (bot, msg, params = []) => {
-  if (msg.permlvl >= 5
-    || ((!msg.conf.musicrole || (msg.conf.musicrole && msg.member.roles.has(msg.conf.musicrole)))
-      && (!msg.conf.musicchannel || (msg.conf.musicchannel && msg.channel.id === msg.conf.musicchannel)))) {
-    if (!bot.internal.musik.get(msg.guild.id)) {
-      bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg.guild.id));
+  if (bot.internal.music.perms(msg)) {
+    if (!bot.internal.musik.has(msg.guild.id)) {
+      bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg));
     }
-    const musik = bot.internal.musik.get(msg.guild.id);
     if (!params[0]) {
       msg.channel.sendMessage('Bitte gib mir einen Youtubelink oder ID mit, andernfalls kann ich leider nichts spielen.')
         .then((mes) => mes.delete(5000));
-    } else if (!msg.member.voiceChannel) {
-      msg.channel.sendMessage('Ich kann dich in keinem Voicechannel finden, bist du sicher, dass du dich gerade in einem Voice Channel in dieser Gilde befindest?')
-        .then((mes) => mes.delete(5000));
-    } else if (msg.guild.member(bot.user).voiceChannel
-      && (msg.guild.member(bot.user).voiceChannel.id
-        !== msg.member.voiceChannel.id)) {
-      msg.channel.sendMessage('Für diesen Befehl müssen wir uns leider beide im selben Channel befinden.')
+    } else if (!bot.internal.music.channel(bot, msg, true)) {
+      msg.channel.sendMessage('Du bist nicht in einem Channel, dem ich beitreten und sprechen darf.')
         .then((mes) => mes.delete(5000));
     } else if (params[0].includes('watch?v=') || params[0].length === 11) {
-      musik.add(msg, params[0]);
-    } else if (params[0].includes('playlist?list=')) {
-      musik.bulkadd(msg, params[0].split('playlist?list=')[1], params[1]);
-    } else if (params[0].length > 11) {
-      musik.bulkadd(msg, params[0], params[1]);
+      exports.add(bot, await msg.channel.sendMessage('Rufe Video ab...'), params[0], msg);
+    } else if (params[0].includes('playlist?list=') || params[0].length > 11) {
+      bulkadd(bot, msg, params[0].includes('playlist?list=') ? params[0].split('playlist?list=')[1] : params[0], params[1]);
     }
   }
 };
+
+exports.add = async (bot, msg, url, originalmsg) => {
+  if (!bot.internal.musik.has(msg.guild.id)) {
+    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, originalmsg));
+  }
+  const musik = bot.internal.musik.get(msg.guild.id);
+  yt.getInfo(url, (err, info) => {
+    if (err) {
+      if (url.indexOf('?v=') !== -1) url = url.substr(url.indexOf('?v=') + 3);
+      bot.err(`${url} | ${err.message}`);
+      return msg.edit('Es ist ein Fehler, beim Abrufen des Videos von Youtube aufgetreten!\nIst es öffentlich abrufbar?');
+    }
+    bot.info(`[${msg.guild.id}] Song added: ${info.title} Length: ${musik._formatSecs(info.length_seconds)}.`);
+    if (musik.add({ url: url, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: originalmsg.member })) {
+      return msg.delete();
+    } else {
+      return msg.edit('', {
+        embed: {
+          color: 0xFFFF00,
+          author: {
+            name: originalmsg.member.displayName,
+            icon_url: originalmsg.author.displayAvatarURL,
+          },
+          description: `**++** [${info.title}](${info.loaderUrl})\n`
+          + `Dauer: ${musik._formatSecs(info.length_seconds)}\n`
+          + `Hinzugefügt von: ${originalmsg.member}`,
+          type: 'image',
+          image: { url: info.iurl },
+          footer: { text: `wurde hinzugefügt.${musik._music.disp ? ` (Ungefähre Zeit bis dahin: ${musik._formatSecs(musik._music.queue.reduce((a, b) => a + parseInt(b.info.length_seconds), parseInt(`-${musik._formatSecs(Math.floor(musik._music.disp.time / 1000))}`)))})` : ''}`, icon_url: bot.user.avatarURL },
+        }
+      }).then((mes) => {
+        mes.delete(30000);
+      });
+    }
+  });
+};
+
+async function bulkadd(bot, msg, id, count) {
+  if (!parseInt(count)) {
+    count = 20;
+  } else if (parseInt(count) < 0) {
+    count = count + count + count;
+  }
+  bot.debug(count);
+  const statusmsg = await msg.channel.sendMessage('Rufe die Playlist ab...');
+  const ids = await new Promise(resolve => query(bot, id, count, null, resolve));
+  statusmsg.edit(`Verarbeite \`${ids.length}\` in der Playlist gefundene Songs, dies kann einen Moment dauern...`);
+  let finalsongs = 0;
+  while (ids.length !== 0) {
+    const newAdd = [];
+    const idsPart = ids.splice(0, 25);
+    const finPart = idsPart.length;
+    bot.debug(`Awaiting validating of ${finPart} Songs.`);
+    const awaited = await new Promise(resolve => getInfo(bot, newAdd, msg, idsPart, finPart, resolve));
+    finalsongs += awaited;
+    if (ids.length) statusmsg.edit(`Verarbeite noch \`${ids.length}\` weitere Songs, dies kann einen Moment dauern...`);
+    bot.debug(`Awaited validating of ${awaited} Songs`);
+  }
+  if (finalsongs) {
+    statusmsg.edit(`Erfolgreich \`${finalsongs}\` Songs hinzugefügt.`)
+      .then((del) => del.delete(10000));
+  } else {
+    statusmsg.edit(`\`${finalsongs}\` Songs hinzugefügt.\nSicher, dass die Playlist korrekt ist?\n(Gelöschte Videos / nicht in Deutschland erreichbar)`)
+      .then((del) => del.delete(10000));
+  }
+}
+function getInfo(bot, toAdd, msg, ids, fin, resolve) {
+  for (const vid in ids) {
+    yt.getInfo(ids[vid], (err, info) => {
+      if (err) {
+        bot.err(err.message);
+        fin--;
+        if (toAdd.length === fin) {
+          validate(bot, toAdd, true, null, bot.internal.musik.get(msg.guild.id), resolve);
+        }
+      } else {
+        bot.debug(info.title);
+        validate(bot, toAdd, fin, { order: vid, url: ids[vid], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, bot.internal.musik.get(msg.guild.id), resolve);
+      }
+    });
+  }
+}
+function validate(bot, toAdd, fin, pushobj, musik, resolve) {
+  bot.debug('validate');
+  if (pushobj) pushobj = toAdd.push(pushobj);
+  if (fin === true || pushobj === fin) {
+    const ordered = toAdd.sort((a, b) => a.order - b.order);
+    if (ordered.length) {
+      musik.add(ordered);
+      resolve(ordered.length);
+    }
+  }
+}
+
+async function query(bot, id, finalamount, token, resolve, arr = []) {
+  let requestamount = finalamount > 50 ? 50 : finalamount;
+  finalamount -= requestamount;
+  try {
+    const res = await request.get(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${requestamount}&playlistId=${id}&${token ? `pageToken=${token}` : ''}&fields=items/snippet/resourceId/videoId,nextPageToken,pageInfo/totalResults&key=${bot.internal.auth.googletoken}`)
+      .send(null)
+      .set('Accept', 'application/json');
+    arr = arr.concat(JSON.parse(res.text).items.map(s => s.snippet.resourceId.videoId));
+    bot.debug(['query', requestamount, finalamount, JSON.parse(res.text).nextPageToken]);
+    if (!JSON.parse(res.text).nextPageToken || finalamount === 0) resolve(arr);
+    else query(bot, id, finalamount, JSON.parse(res.text).nextPageToken, resolve, arr);
+  } catch (e) {
+    if (e.status === 404) {
+      resolve(`Diese Playlist wurde nicht gefunden:\n`
+        + `https://www.youtube.com/playlist?list=${id}\n`
+        + `Sicher, dass dieser Link korrekt ist?`);
+    } else if (e) {
+      resolve(`Es ist ein Fehler beim ab Abrufen der Playlist aufgetreten:\n`
+        + `Responsecode: ${e.status}\n`
+        + `Nachricht: ${e.message}`);
+    }
+  }
+}
 
 
 exports.conf = {
