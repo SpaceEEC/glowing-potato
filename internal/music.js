@@ -34,6 +34,28 @@ class Music {
     return this._music.queue.length === input.length;
   }
 
+  loop(status) {
+    if (status) {
+      const r = this._music.loop !== status;
+      this._music.loop = status;
+      return r;
+    }
+    return this._music.loop;
+  }
+
+  toggleState(state) {
+    if (!this._music.disp) return false;
+    this._playing = state;
+    if (state) {
+      this._music.disp.resume();
+      this._bot.user.setGame(this._music.queue[0].info.title);
+    } else {
+      this._music.disp.pause();
+      this._bot.user.setGame(this._bot.config.game);
+    }
+    return state;
+  }
+
   async _play() {
     this._bot.debug(`[${this._guild}] playfunction reached.`);
     this._music.con = await this._vChannel.join();
@@ -57,7 +79,7 @@ class Music {
       }
       this._bot.debug(`[${this._guild}] Playing next song...`);
       this._music.statusmsg = await this._tChannel.sendEmbed(new this._bot.methods.Embed()
-        .setColor(0x00ff08).setAuthor(this._music.queue[0].requester.displayName, this._music.queue[0].requester.displayAvatarURL)
+        .setColor(0x00ff08).setAuthor(this._music.queue[0].requester.displayName, this._music.queue[0].requester.user.displayAvatarURL)
         .setDescription(`**>>** [${this._music.queue[0].info.title}](${this._music.queue[0].info.loaderUrl})\n`
         + `Dauer: ${this._formatSecs(this._music.queue[0].info.length_seconds)}\n`
         + `Hinzugefügt von: ${this._music.queue[0].requester}`
@@ -89,18 +111,6 @@ class Music {
         this._bot.warn(`[${this._guild}] Second message catched.`);
       }
     }
-  }
-
-  toggleState(state) {
-    if (!this._music.disp) return false;
-    this._playing = state;
-    if (state) {
-      this._music.disp.resume();
-      this._bot.user.setGame(this._music.queue[0].info.title);
-    } else {
-      this._music.disp.pause();
-    }
-    return state;
   }
 
   _stream(stream) {
@@ -165,9 +175,9 @@ class Music {
   _leaveChannel() {
     this._bot.info(`[${this._guild}] Verlasse Channel.`);
     this._leave.timeout = null;
+    if (this._music.statusmsg) this._music.statusmsg.delete().catch(() => { }); // eslint-disable-line no-empty-function
     this._leave.msg.delete().catch(() => { }); // eslint-disable-line no-empty-function
     this._music.con.disconnect();
-    this._disp = null;
     this._bot.user.setGame(this._bot.config.game);
     this._bot.internal.musik.delete(this._guild);
   }
@@ -190,7 +200,7 @@ exports.perms = async (msg) => {
 
 exports.channel = (bot, msg, start = false) => {
   if (!msg.member.voiceChannel) return false;
-  if (start) return true;
+  if (start) return start && msg.member.voiceChannel.joinable && msg.member.voiceChannel.speakable;
   if (!msg.guild.member(bot.user).voiceChannel) return false;
   if (!msg.guild.member(bot.user).voiceChannel.members.has(msg.author.id)) return false;
   return true;
