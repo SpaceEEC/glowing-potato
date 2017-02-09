@@ -53,8 +53,8 @@ async function authcheck(bot, msg, params) {
       .set('Content-Type', 'application/json');
     bot.config.ani_token = res.body.access_token;
     bot.config.ani_expires = res.body.expires;
-    bot.debug(`UPDATE config SET ani_expires=${res.body.expires}, ani_token=${res.body.access_token};`);
-    await bot.db.run(`[anime] UPDATE config SET ani_expires=?, ani_token=?;`, [res.body.expires, res.body.access_token]);
+    bot.debug(`[anime] UPDATE config SET ani_expires=${res.body.expires}, ani_token=${res.body.access_token};`);
+    await bot.db.run(`UPDATE config SET ani_expires=?, ani_token=?;`, [res.body.expires, res.body.access_token]);
     await message.edit('', {
       embed: new bot.methods.Embed()
         .setColor(0x00ff08)
@@ -97,7 +97,7 @@ Bitte kontaktiere bitte \`${bot.config.owner}\`\n\n${response.error.messages[0]}
 }
 
 
-const getanswer = async (bot, msg, response) => { // eslint-disable-line consistent-return
+const getanswer = async (bot, msg, response) => {
   let count = 1;
   const message = await msg.channel.sendEmbed(
     new bot.methods.Embed()
@@ -123,7 +123,7 @@ const getanswer = async (bot, msg, response) => { // eslint-disable-line consist
     }
   } catch (e) {
     message.delete();
-    return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
+    msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
   }
 };
 
