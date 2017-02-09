@@ -2,13 +2,13 @@ const request = require('superagent');
 
 exports.run = async (bot, msg, params = []) => {
   if (bot.internal.music.perms(msg)) {
-    if (!bot.internal.musik.get(msg.guild.id)) {
+    if (!bot.internal.musik.has(msg.guild.id)) {
       bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg));
     }
     if (!msg.member.voiceChannel) {
       msg.channel.sendMessage('Ich kann dich in keinem Voicechannel finden, bist du sicher, dass gerade dich in einem in dieser Gilde befindest?')
         .then((mes) => mes.delete(5000));
-    } else if (bot.internal.music.channel(bot, msg, true)) {
+    } else if (!bot.internal.music.channel(bot, msg, true)) {
       msg.channel.sendMessage('Für diesen Befehl müssen wir uns leider beide im selben Channel befinden.')
         .then((mes) => mes.delete(5000));
     } else if (params[0]) {

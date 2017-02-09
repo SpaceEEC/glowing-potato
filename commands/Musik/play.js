@@ -4,7 +4,7 @@ const yt = require('ytdl-core');
 
 exports.run = async (bot, msg, params = []) => {
   if (bot.internal.music.perms(msg)) {
-    if (bot.internal.musik.has(msg.guild.id)) {
+    if (!bot.internal.musik.has(msg.guild.id)) {
       bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg));
     }
     if (!params[0]) {
@@ -33,25 +33,27 @@ exports.add = async (bot, msg, url, originalmsg) => {
       return msg.edit('Es ist ein Fehler, beim Abrufen des Videos von Youtube aufgetreten!\nIst es öffentlich abrufbar?');
     }
     bot.info(`[${msg.guild.id}] Song added: ${info.title} Length: ${musik._formatSecs(info.length_seconds)}.`);
-    musik.add({ url: url, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member });
-    return msg.edit('', {
-      embed: {
-        color: 0xFFFF00,
-        author: {
-          name: msg.member.displayName,
-          icon_url: msg.author.displayAvatarURL,
-          url: null
-        },
-        description: `**++** [${info.title}](${info.loaderUrl})\n`
-        + `Dauer: ${musik._formatSecs(info.length_seconds)}\n`
-        + `Hinzugefügt von: ${msg.member}`,
-        type: 'image',
-        image: { url: info.iurl },
-        footer: { text: `wurde hinzugefügt.${musik._music.disp ? ` (Ungefähre Zeit bis dahin: ${musik._formatSecs(musik._music.queue.reduce((a, b) => a + parseInt(b.info.length_seconds), parseInt(`-${musik._formatSecs(Math.floor(musik._music.disp.time / 1000))}`)))})` : ''}`, icon_url: bot.user.avatarURL },
-      }
-    }).then((mes) => {
-      mes.delete(30000);
-    });
+    if (musik.add({ url: url, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: originalmsg.member })) {
+      return msg.delete();
+    } else {
+      return msg.edit('', {
+        embed: {
+          color: 0xFFFF00,
+          author: {
+            name: originalmsg.member.displayName,
+            icon_url: originalmsg.author.displayAvatarURL,
+          },
+          description: `**++** [${info.title}](${info.loaderUrl})\n`
+          + `Dauer: ${musik._formatSecs(info.length_seconds)}\n`
+          + `Hinzugefügt von: ${originalmsg.member}`,
+          type: 'image',
+          image: { url: info.iurl },
+          footer: { text: `wurde hinzugefügt.${musik._music.disp ? ` (Ungefähre Zeit bis dahin: ${musik._formatSecs(musik._music.queue.reduce((a, b) => a + parseInt(b.info.length_seconds), parseInt(`-${musik._formatSecs(Math.floor(musik._music.disp.time / 1000))}`)))})` : ''}`, icon_url: bot.user.avatarURL },
+        }
+      }).then((mes) => {
+        mes.delete(30000);
+      });
+    }
   });
 };
 
