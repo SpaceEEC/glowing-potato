@@ -89,33 +89,6 @@ async function bulkadd(bot, msg, id, count) {
     }
   }
 }
-function getInfo(bot, toAdd, msg, ids, fin, resolve) {
-  for (const vid in ids) {
-    yt.getInfo(ids[vid], (err, info) => {
-      if (err) {
-        bot.err(err.message);
-        fin--;
-        if (toAdd.length === fin) {
-          validate(bot, toAdd, true, null, bot.internal.musik.get(msg.guild.id), resolve);
-        }
-      } else {
-        bot.debug(info.title);
-        validate(bot, toAdd, fin, { order: vid, url: ids[vid], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, bot.internal.musik.get(msg.guild.id), resolve);
-      }
-    });
-  }
-}
-function validate(bot, toAdd, fin, pushobj, musik, resolve) {
-  bot.debug('validate');
-  if (pushobj) pushobj = toAdd.push(pushobj);
-  if (fin === true || pushobj === fin) {
-    const ordered = toAdd.sort((a, b) => a.order - b.order);
-    if (ordered.length) {
-      musik.add(ordered);
-      resolve(ordered.length);
-    }
-  }
-}
 
 async function query(bot, id, finalamount, token, resolve, arr = []) {
   let requestamount = finalamount > 50 ? 50 : finalamount;
@@ -141,6 +114,34 @@ async function query(bot, id, finalamount, token, resolve, arr = []) {
   }
 }
 
+function getInfo(bot, toAdd, msg, ids, fin, resolve) {
+  for (const vid in ids) {
+    yt.getInfo(ids[vid], (err, info) => {
+      if (err) {
+        bot.err(err.message);
+        fin--;
+        if (toAdd.length === fin) {
+          validate(bot, toAdd, true, null, bot.internal.musik.get(msg.guild.id), resolve);
+        }
+      } else {
+        bot.debug(info.title);
+        validate(bot, toAdd, fin, { order: vid, url: ids[vid], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, bot.internal.musik.get(msg.guild.id), resolve);
+      }
+    });
+  }
+}
+
+function validate(bot, toAdd, fin, pushobj, musik, resolve) {
+  bot.debug('validate');
+  if (pushobj) pushobj = toAdd.push(pushobj);
+  if (fin === true || pushobj === fin) {
+    const ordered = toAdd.sort((a, b) => a.order - b.order);
+    if (ordered.length) {
+      musik.add(ordered);
+      resolve(ordered.length);
+    }
+  }
+}
 
 exports.conf = {
   spamProtection: false,
