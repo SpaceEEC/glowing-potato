@@ -21,31 +21,31 @@ exports.run = async (bot, msg, params = []) => {
   }
 };
 
-exports.add = async (bot, msg, url, originalmsg) => {
+exports.add = async (bot, statusmsg, url, msg) => {
   if (!bot.internal.musik.has(msg.guild.id)) {
-    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, originalmsg));
+    bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg));
   }
   const musik = bot.internal.musik.get(msg.guild.id);
   yt.getInfo(url, (err, info) => {
     if (err) {
       if (url.indexOf('?v=') !== -1) url = url.substr(url.indexOf('?v=') + 3);
       bot.err(`${url} | ${err.message}`);
-      return msg.edit('Es ist ein Fehler, beim Abrufen des Videos von Youtube aufgetreten!\nIst es öffentlich abrufbar?');
+      return statusmsg.edit('Es ist ein Fehler, beim Abrufen des Videos von Youtube aufgetreten!\nIst es öffentlich abrufbar?');
     }
     bot.info(`[${msg.guild.id}] Song added: ${info.title} Length: ${musik._formatSecs(info.length_seconds)}.`);
-    if (musik.add({ url: url, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: originalmsg.member })) {
-      return msg.delete();
+    if (musik.add({ url: url, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member })) {
+      return statusmsg.delete();
     } else {
-      return msg.edit('', {
+      return statusmsg.edit('', {
         embed: {
           color: 0xFFFF00,
           author: {
-            name: originalmsg.member.displayName,
-            icon_url: originalmsg.author.displayAvatarURL,
+            name: msg.member.displayName,
+            icon_url: msg.author.displayAvatarURL,
           },
           description: `**++** [${info.title}](${info.loaderUrl})\n`
           + `Dauer: ${musik._formatSecs(info.length_seconds)}\n`
-          + `Hinzugefügt von: ${originalmsg.member}`,
+          + `Hinzugefügt von: ${msg.member}`,
           type: 'image',
           image: { url: info.iurl },
           footer: { text: `wurde hinzugefügt.${musik._music.disp ? ` (Ungefähre Zeit bis dahin: ${musik._formatSecs(musik._music.queue.reduce((a, b) => a + parseInt(b.info.length_seconds), parseInt(`-${musik._formatSecs(Math.floor(musik._music.disp.time / 1000))}`)))})` : ''}`, icon_url: bot.user.avatarURL },
