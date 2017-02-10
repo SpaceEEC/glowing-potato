@@ -63,27 +63,30 @@ async function bulkadd(bot, msg, id, count) {
   } else if (parseInt(count) < 0) {
     count = count + count + count;
   }
-  bot.debug(count);
   const statusmsg = await msg.channel.sendMessage('Rufe die Playlist ab...');
   const ids = await new Promise(resolve => query(bot, id, count, null, resolve));
-  statusmsg.edit(`Verarbeite \`${ids.length}\` in der Playlist gefundene Songs, dies kann einen Moment dauern...`);
-  let finalsongs = 0;
-  while (ids.length !== 0) {
-    const newAdd = [];
-    const idsPart = ids.splice(0, 25);
-    const finPart = idsPart.length;
-    bot.debug(`Awaiting validating of ${finPart} Songs.`);
-    const awaited = await new Promise(resolve => getInfo(bot, newAdd, msg, idsPart, finPart, resolve));
-    finalsongs += awaited;
-    if (ids.length) statusmsg.edit(`Verarbeite noch \`${ids.length}\` weitere Songs, dies kann einen Moment dauern...`);
-    bot.debug(`Awaited validating of ${awaited} Songs`);
-  }
-  if (finalsongs) {
-    statusmsg.edit(`Erfolgreich \`${finalsongs}\` Songs hinzugefügt.`)
-      .then((del) => del.delete(10000));
+  if (typeof ids === 'string') {
+    statusmsg.edit(ids);
   } else {
-    statusmsg.edit(`\`${finalsongs}\` Songs hinzugefügt.\nSicher, dass die Playlist korrekt ist?\n(Gelöschte Videos / nicht in Deutschland erreichbar)`)
-      .then((del) => del.delete(10000));
+    statusmsg.edit(`Verarbeite \`${ids.length}\` in der Playlist gefundene Songs, dies kann einen Moment dauern...`);
+    let finalsongs = 0;
+    while (ids.length !== 0) {
+      const newAdd = [];
+      const idsPart = ids.splice(0, 25);
+      const finPart = idsPart.length;
+      bot.debug(`[${msg.guild.id}] Awaiting validating of ${finPart} Songs.`);
+      const awaited = await new Promise(resolve => getInfo(bot, newAdd, msg, idsPart, finPart, resolve));
+      finalsongs += awaited;
+      if (ids.length) statusmsg.edit(`Verarbeite noch \`${ids.length}\` weitere Songs, dies kann einen Moment dauern...`);
+      bot.debug(`[${msg.guild.id}] Awaited validating of ${awaited} Songs`);
+    }
+    if (finalsongs) {
+      statusmsg.edit(`Erfolgreich \`${finalsongs}\` Songs hinzugefügt.`)
+        .then((del) => del.delete(10000));
+    } else {
+      statusmsg.edit(`\`${finalsongs}\` Songs hinzugefügt.\nSicher, dass die Playlist korrekt ist?\n(Gelöschte Videos / nicht in Deutschland erreichbar)`)
+        .then((del) => del.delete(10000));
+    }
   }
 }
 function getInfo(bot, toAdd, msg, ids, fin, resolve) {
