@@ -3,10 +3,9 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unuse
 };
 
 
-function nichts(bot, msg) {
+function nichts(bot, msg) { // eslint-disable-line no-unused-vars
   return {
     color: 0xFFFF00,
-    // description: '\u200B',
     author: {
       icon: bot.user.avatarURL,
       name: bot.user.username,
