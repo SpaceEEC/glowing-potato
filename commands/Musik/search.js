@@ -107,8 +107,8 @@ exports.conf = {
 exports.help = {
   name: 'search',
   shortdescription: '',
-  description: 'Ermöglicht die Suche über Youtube.',
-  usage: '$conf.prefixsearch (-N) [Suche]\n'
+  description: 'Ermöglicht die Suche nach Songs auf Youtube.',
+  usage: '$conf.prefixsearch (-N) [Suchgebriffe]\n'
   + 'Beispiele:\n'
   + '`$conf.prefixsearch (-3) Cash Cash` - Lässt zwischen den ersten drei Ergebnissen auswählen.\n'
   + '`$conf.prefixsearch Cash Cash` - Nimmt einfach das erste Ergebnis und fügt es hinzu.\n',

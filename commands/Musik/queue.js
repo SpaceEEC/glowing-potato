@@ -56,6 +56,6 @@ exports.conf = {
 exports.help = {
   name: 'queue',
   shortdescription: '',
-  description: 'Zeigt die aktuelle Warteschlange an. (Falls spezifiziert die Seite).',
+  description: 'Zeigt die aktuelle Warteschlange an. (Optional kann eine bestimmte Seite angegeben werden.)',
   usage: '$conf.prefixqueue (Seite)',
 };

@@ -154,6 +154,6 @@ exports.conf = {
 exports.help = {
   name: 'play',
   shortdescription: '',
-  description: 'Spielt Songs.\nDer Befehl Akzeptiert Videos und Playlists als Youtube IDs und Links.',
-  usage: '$conf.prefixplay [ID/Url]',
+  description: 'Spielt Songs.\nDer Befehl Akzeptiert Videos und Playlists als Youtube IDs und Links.\nBei Playlists werden, falls nicht anders angegeben, maximal 20 Elemente aus dieser Abgerufen.',
+  usage: '$conf.prefixplay [ID/Url] (Anzahl)',
 };
