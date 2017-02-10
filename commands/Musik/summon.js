@@ -31,6 +31,6 @@ exports.conf = {
 exports.help = {
   name: 'summon',
   shortdescription: '',
-  description: 'Lässt den Bot in den aktuallen Channel wechseln.',
+  description: 'Lässt den Bot in den aktuallen Channel wechseln.\nFunktioniert nur, falls der Bot bereits spielt.',
   usage: '$conf.prefixsummon',
 };
