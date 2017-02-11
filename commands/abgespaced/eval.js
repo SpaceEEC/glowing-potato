@@ -6,7 +6,7 @@ exports.run = async (bot, msg, params = []) => {
       let evaled = eval(code);
       if (evaled instanceof Promise) evaled = await evaled;
       const response_typeof = typeof evaled;
-      if (typeof evaled !== 'string') { evaled = bot.inspect(evaled, false, 1); }
+      if (typeof evaled !== 'string') { evaled = bot.inspect(evaled, false, 0); }
       if (evaled.includes(bot.token)) {
         msg.channel.sendMessage('Was willst du damit anstellen? 👀.');
         return;
