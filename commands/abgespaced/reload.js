@@ -3,27 +3,7 @@ const fs = require('fs-extra-promise');
 
 exports.run = async (bot, msg, params = []) => {
   if (!params[0]) {
-    const message = await msg.channel.sendEmbed(new bot.methods.Embed()
-      .setColor(msg.member.highestRole.color)
-      .setDescription('Gib die Befehle die du neu Laden möchtest ein, oder `all` für alle.')
-      .addField('\u200b',
-      'Diese Anfrage wird in 30 Sekunden oder bei Eingabe von `cancel` abgebrochen.')
-      .setFooter(`${msg.author.username}: ${msg.content}`,
-      msg.author.avatarURL));
-    try {
-      const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
-      let mesg = collected.first();
-      message.delete();
-      if (mesg.content === 'cancel') {
-        msg.delete();
-        mesg.delete();
-      } else {
-        reload(bot, mesg, mesg.content.split(' '));
-      }
-    } catch (e) {
-      message.delete();
-      msg.delete();
-    }
+    msg.channel.sendMessage('Keinen Befehl zum neu Laden angegeben.');
   } else {
     reload(bot, msg, params);
   }
