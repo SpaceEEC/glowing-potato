@@ -4,11 +4,11 @@ exports.run = async (bot, msg, params = []) => {
   } else if (!params[0] || params[0] === 'list') {
     bot.commands.get('tag-list').run(bot, msg, params);
   } else if (params[0] === 'add') {
-    bot.commands.get('tag-add').run(bot, msg, params.splice(1, 1));
+    bot.commands.get('tag-add').run(bot, msg, params.slice(1));
   } else if (params[0] === 'edit') {
-    bot.commands.get('tag-edit').run(bot, msg, params.splice(1, 1));
+    bot.commands.get('tag-edit').run(bot, msg, params.slice(1));
   } else if (params[0] === 'remove') {
-    bot.commands.get('tag-del').run(bot, msg, params.splice(1, 1));
+    bot.commands.get('tag-del').run(bot, msg, params.slice(1));
   } else {
     wrongTag(msg);
   }
