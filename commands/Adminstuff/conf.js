@@ -104,9 +104,9 @@ async function sendvalue(bot, msg, key) {
     collected.delete();
     msg.delete();
   } else if (collected.content === 'reset') {
-    msg.channel.sendMessage(bot.internal.config.reset(bot, collected, key));
+    msg.channel.sendMessage(await bot.internal.config.reset(bot, collected, key));
   } else {
-    msg.channel.sendMessage(bot.internal.config.set(bot, collected, key, collected.content.split(' ')));
+    msg.channel.sendMessage(await bot.internal.config.set(bot, collected, key, collected.content.split(' ')));
   }
 }
 
