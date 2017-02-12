@@ -1,25 +1,20 @@
-exports.run = async (bot, msg, params = []) => {
-  if (!msg.channel.permissionsFor(msg.member).hasPermission('MANAGE_MESSAGES')) {
-    msg.channel.sendMessage('Du darfst keine Chatnachrichten löschen, also darf ich das leider nicht für dich tun.'); // eslint-disable-line
-  } else if (!msg.channel.permissionsFor(bot.user).hasPermission('MANAGE_MESSAGES')) {
-    msg.channel.sendMessage('Ich darf keine Nachrichten löschen.');
-  } else if (params[0] % 1 !== 0 || parseInt(params[0]) > 99 || parseInt(params[0]) < 1) {
-    msg.channel.sendEmbed(new bot.methods.Embed()
-      .setColor(0xff0000)
-      .addField('Fehlerhafter Parameter',
-      `\`${params[0] || '\u200b'}\` ist keine gültige Zahl!`)
-      .setFooter(`${msg.author.username}: ${msg.content}`,
-      bot.user.avatarURL)
-    );
+exports.run = async (bot, msg, params = []) => { // eslint-disable-line consistent-return
+  if (!msg.channel.permissionsFor(msg.member).hasPermission('MANAGE_MESSAGES') || !msg.channel.permissionsFor(bot.user).hasPermission('MANAGE_MESSAGES')) {
+    return msg.channel.sendMessage('Wir beide müssen hier Rechte zum löschen haben. Mindestens einer hat sie nicht.');
+  }
+  const user = msg.mentions.users.first() || bot.users.get(params[0]);
+  let amount = parseInt(params.pop());
+  if (!amount) return msg.channel.sendMessage('Bitte eine Anzahl an, zu löschender Nachrichten angeben. (Optional auch einen Nutzer)');
+  if (user) {
+    let messages = (await msg.channel.fetchMessages({ limit: amount }))
+      .filter(m => m.author.id === user.id && m.deletable);
+    if (!messages.size) return '';
+    if (messages.size === 1) await messages.first().delete();
+    else await msg.channel.bulkDelete(messages);
+  } else if (amount <= 1) {
+    await msg.delete();
   } else {
-    await msg.channel.bulkDelete(parseInt(params[0]) + 1);
-    msg.channel.sendEmbed(new bot.methods.Embed()
-      .setColor(0x00ff08)
-      .addField('Erfolgreich',
-      `${parseInt(params[0]) + 1} Nachrichten gelöscht!`)
-      .setFooter(`${msg.author.username}: ${msg.content}`,
-      msg.author.avatarURL)
-    ).then((mes) => mes.delete(5000));
+    await msg.channel.bulkDelete(amount);
   }
 };
 
@@ -34,7 +29,7 @@ exports.conf = {
 
 exports.help = {
   name: 'prune',
-  description: 'Löscht die letzten [Anzahl] Nachrichten aus diesem Channel.',
+  description: 'Löscht die letzten [Anzahl] Nachrichten von (User) aus diesem Channel.',
   shortdescription: 'Tilgt Nachrichten',
-  usage: '$conf.prefixprune [Anzahl]',
+  usage: '$conf.prefixprune (User) [Anzahl]',
 };
