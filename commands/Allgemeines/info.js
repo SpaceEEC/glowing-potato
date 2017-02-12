@@ -5,47 +5,47 @@ const package = require('../../package.json');
 
 
 exports.run = async (bot, msg, params = []) => {
-  let member;
+  let user;
   if (msg.cmd === 'info') {
-    member = bot.user;
+    user = bot.user;
   } else {
-    member = msg.mentions.users.size !== 0 ? msg.mentions.users.first()
+    user = msg.mentions.users.size !== 0 ? msg.mentions.users.first()
       : bot.users.has(params[0]) ? bot.users.get(params[0]) : msg.author;
   }
-  const gmember = await msg.guild.fetchMember(member);
-  if (!gmember) return msg.channel.sendMessage('Dieser Nutzer befindet sich in der Datenbank, ist aber nicht in dieser Gilde zu finden.');
+  const member = await msg.guild.fetchMember(user);
+  if (!member) return msg.channel.sendMessage('Dieser Nutzer befindet sich in der Datenbank, ist aber nicht in dieser Gilde zu finden.');
   let embed;
-  if (member !== bot.user) {
+  if (user !== bot.user) {
     try {
       embed = {
         color: 0xffa500,
         author: {
           name: `Stats`,
-          icon_url: member.displayAvatarURL,
-          url: member.displayAvatarURL,
+          icon_url: user.displayAvatarURL,
+          url: user.displayAvatarURL,
         },
-        description: gmember.toString(),
+        description: member.toString(),
         fields: [
           {
             name: '❯ Clientseitig',
-            value: `• Avatar: ${member.avatarURL ? `[Link](${member.avatarURL})` : 'Kein Avatar'}
+            value: `• Avatar: ${user.avatarURL ? `[Link](${user.avatarURL})` : 'Kein Avatar'}
 • Account erstellt am:
-${moment(member.createdAt).format('DD.MM.YYYY')}
-• Status: \`${member.presence.status}\`
-• Spiel: \n\`${member.presence.game ? member.presence.game.name : 'Kein Spiel'}\``,
+${moment(user.createdAt).format('DD.MM.YYYY')}
+• Status: \`${user.presence.status}\`
+• Spiel: \n\`${user.presence.game ? user.presence.game.name : 'Kein Spiel'}\``,
             inline: true,
           },
           {
             name: '❯ Serverseitig:',
             value: `${
-            gmember.nickname ? `• Nickname: \`${gmember.nickname}\`` : ''}
+            member.nickname ? `• Nickname: \`${member.nickname}\`` : ''}
 • Beigetreten am:
-${moment(gmember.joinedAt).format('DD.MM.YYYY')}
-${msg.author === member ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
+${moment(member.joinedAt).format('DD.MM.YYYY')}
+${msg.author === user ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
             inline: true,
           },
         ],
-        thumbnail: { url: member.displayAvatarURL },
+        thumbnail: { url: user.displayAvatarURL },
         timestamp: new Date(),
         footer: {
           icon_url: msg.author.avatarURL,
