@@ -14,18 +14,14 @@ Ein Teil des Titels würde schon reichen.`,
         }],
       color: msg.member.highestRole.color,
     });
-    try {
-      const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
-      mes.delete();
-      if (collected.first().content === 'cancel') {
-        collected.first().delete();
-        return msg.delete();
-      } else {
-        return authcheck(bot, msg, collected.first().content.split(' '));
-      }
-    } catch (e) {
-      mes.delete();
-      return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
+    const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
+    mes.delete();
+    if (!collected) return msg.delete();
+    if (collected.content === 'cancel') {
+      collected.delete();
+      return msg.delete();
+    } else {
+      return authcheck(bot, msg, collected.content.split(' '));
     }
   }
   if (params.join(' ').includes('?')) {
@@ -55,7 +51,7 @@ async function authcheck(bot, msg, params) {
     bot.config.ani_expires = res.body.expires;
     bot.debug(`[anime] UPDATE config SET ani_expires=${res.body.expires}, ani_token=${res.body.access_token};`);
     await bot.db.run(`UPDATE config SET ani_expires=?, ani_token=?;`, [res.body.expires, res.body.access_token]);
-    await message.edit('', {
+    await message.edit({
       embed: new bot.methods.Embed()
         .setColor(0x00ff08)
         .setDescription('Token wurde erfolgreich erneuert.'),
@@ -107,18 +103,18 @@ const getanswer = async (bot, msg, response) => {
       .addField(`Für welchen ${msg.cmd} darf es denn die Info geben?`,
       'Diese Anfrage wird bei `cancel` oder nach `30` Sekunden automatisch abgebrochen.'));
   try {
-    const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
-    const input = collected.first().content;
+    const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
+    const input = collected.content;
     if (input === 'cancel') {
       msg.delete();
-      collected.first().delete();
+      collected.delete();
       message.delete();
     } else if (input % 1 !== 0 || !response[parseInt(input) - 1]) {
-      collected.first().delete();
+      collected.delete();
       message.delete();
       getanswer(bot, msg, response);
     } else {
-      collected.first().delete();
+      collected.delete();
       answer(response[parseInt(input) - 1], msg, bot, message);
     }
   } catch (e) {
@@ -175,7 +171,7 @@ function answer(response, msg, bot, mes) {
   } else {
     embed.addField('Publishing Status:', replaceMap(response.publishing_status, { 'finished publishing': 'Abgeschlossen', publishing: 'Läuft', 'not yet published': 'Noch nicht begonnen', cancelled: 'Abgebrochen', null: 'Nicht Angegeben' }), true);
   }
-  if (mes) mes.edit('', { embed });
+  if (mes) mes.edit({ embed });
   else msg.channel.sendEmbed(embed);
 }
 

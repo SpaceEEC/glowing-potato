@@ -15,21 +15,19 @@ exports.run = async (bot, msg, params = []) => {
       color: msg.member.highestRole.color,
     });
     try {
-      const collected = msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
-      const input = collected.first().content;
+      const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })).first();
+      if (!collected) msg.delete();
       mes.delete();
-      let parems = collected.first().content.split(' ');
-      if (input === 'cancel') {
+      if (collected.content === 'cancel') {
         collected.first().delete();
         msg.delete();
-      } else if (parems[0].match(/^-\d+$/g)) {
+      } else if (collected.content.split(' ')[0].match(/^-\d+$/g)) {
         query(bot, msg, params.slice(1), params[0].replace('-', ''));
       } else {
-        query(bot, msg, parems, 1);
+        query(bot, msg, collected.content.split(' '), 1);
       }
     } catch (e) {
       mes.delete();
-      msg.channel.sendMessage('Breche die Anfrage ab.');
     }
   } else if (params[0].match(/^-\d+$/g)) {
     query(bot, msg, params.slice(1), params[0].replace('-', ''));

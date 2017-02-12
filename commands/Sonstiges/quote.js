@@ -1,6 +1,5 @@
 const moment = require('moment');
 
-
 exports.run = async (bot, msg, params = []) => { // eslint-disable-line consistent-return
   if (!params[0] || !['info', 'reload', 'add', 'remove'].includes(params[0].toLowerCase())) {
     const quotes = bot.internal.quotes.filter((w, q) => q.startsWith(msg.guild.id) || q.startsWith('all'));
@@ -11,58 +10,35 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line consiste
 Zitate auf diesem Server: \`${bot.internal.quotes.filter((w, q) => q.startsWith(msg.guild.id)).size}\``);
   } else if (params[0].toLowerCase() === 'remove' && msg.permlvl >= 5) {
     if (!params[1] || !bot.internal.quotes.has(`${msg.guild.id}|${params[1]}`)) {
-      const mes = await msg.channel.sendMessage('Entweder fehlt hier eine ID, oder die Angegebene ID ist ungültig.\nIch bitte um einen weiteren Versuch die ID einzugeben.');
-      try {
-        const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
-        if (bot.internal.quotes.has(`${msg.guild.id}|${collected.first().content}`)) {
-          params[1] = collected.first().content;
-        } else {
-          mes.delete();
-          return msg.channel.sendMessage('Breche die Anfrage, aufgrund einer ungültigen Eingabe, ab.');
-        }
-      } catch (e) {
-        return msg.channel.sendMessage('Breche die Anfrage, wie durch die inaktivität gewünscht, ab.');
-      }
+      return msg.channel.sendMessage('Entweder fehlt hier eine ID, oder die Angegebene ID ist ungültig.');
     }
-    await bot.internal.quote.remove(bot, msg.guild.id, params[1])
-      .catch((e) => {
-        bot.err(`[quote removeQuote] ${e}`);
-        msg.channel.sendMessage(`Es ist ein Fehler beim Löschen des Zitates aufgetreten.\nBitte kontaktiere \`${bot.config.owner}\`.`);
-      });
+    await bot.internal.quote.remove(bot, msg.guild.id, params[1]);
     return msg.channel.sendMessage('Tag erfolgreich gelöscht.');
   } else if (params[0].toLowerCase() === 'add' && msg.permlvl >= 5) {
     if (!['img', 'text'].includes(params[1])) {
       const mes = await msg.channel.sendMessage('Handelt es sich bei diesem Zitat um ein reines Textzitat (text)? Oder beinhaltet es auch ein Bild (img)?');
-      try {
-        const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
-        if (collected.first().content.toLowerCase() === 'img') {
-          params[1] = 'img';
-        } else if (collected.first().content.toLowerCase() === 'text') {
-          params[1] = 'text';
-        } else {
-          mes.delete();
-          return msg.channel.sendMessage('Breche die Anfrage, aufgrund einer ungültigen Eingabe, ab.');
-        }
-      } catch (e) {
-        return msg.channel.sendMessage('Breche die Anfrage, wie durch die inaktivität gewünscht, ab.');
+      const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
+      if (!collected) return msg.channel.sendMessage('Breche die Anfrage, wie durch die inaktivität gewünscht, ab.');
+      if (collected.content.toLowerCase() === 'img') {
+        params[1] = 'img';
+      } else if (collected.content.toLowerCase() === 'text') {
+        params[1] = 'text';
+      } else {
+        mes.delete();
+        return msg.channel.sendMessage('Breche die Anfrage, aufgrund einer ungültigen Eingabe, ab.');
       }
     }
     if (!params[2] || params[2].search(/\D/g) !== -1) {
-      const mes = await msg.channel.sendMessage('Die angegebene ID scheint ungültigt.\nIch bitte um einen weitern Versuch. (Rechtsklick auf die Nachricht -> ID kopieren)');
-      try {
-        const collected = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
-        if (collected.first().content.search(/\D/g) === -1) {
-          params[2] = collected.first().content;
-        } else {
-          mes.delete();
-          return msg.channel.sendMessage('Breche die Anfrage, aufgrund einer ungültigen Eingabe, ab.');
-        }
-      } catch (e) {
-        return msg.channel.sendMessage('Breche die Anfrage, wie durch die inaktivität gewünscht, ab.');
+      const mes = await msg.channel.sendMessage('Die angegebene ID scheint ungültigt.\nIch bitte um einen weiteren Versuch. (Rechtsklick auf die Nachricht -> ID kopieren)');
+      const collected = (await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
+      if (!collected) return msg.channel.sendMessage('Breche die Anfrage, wie durch die inaktivität gewünscht, ab.');
+      if (collected.content.search(/\D/g) === -1) {
+        params[2] = collected.content;
+      } else {
+        mes.delete();
+        return msg.channel.sendMessage('Breche die Anfrage, aufgrund einer ungültigen Eingabe, ab.');
       }
     }
-    // quote in die datenbank aufnehmen
-
     if (bot.internal.quotes.has(`${msg.guild.id}|${params[2]}`)) {
       return msg.channel.sendMessage('Dieses Zitat existiert bereits!');
     }
@@ -94,12 +70,12 @@ Zitate auf diesem Server: \`${bot.internal.quotes.filter((w, q) => q.startsWith(
         }
       })
         .catch((e) => {
-          msg.channel.sendMessage('Es ist ein Fehler beim Abrufen des Zitierten aufgetreten.\nBitte kontaktiere `spaceeec#0302`.');
+          msg.channel.sendMessage(`Es ist ein Fehler beim Abrufen des Zitierten aufgetreten.\nBitte kontaktiere \`\`.`);
           bot.err(`[quote fetchMember] ${e}`);
         });
     })
       .catch((error) => {
-        msg.channel.sendMessage('Diese ID wurde nicht gefunden.\nBefindet sich diese Nachricht auch in diesem Channel?\n'); // eslint-disable-line
+        msg.channel.sendMessage('Diese ID wurde nicht gefunden.\nBefindet sich diese Nachricht auch in diesem Channel?\n');
         bot.err(`[quote fetchMessage] ${error}`);
       });
   }

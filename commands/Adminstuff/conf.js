@@ -1,61 +1,28 @@
-exports.run = async (bot, msg, params = []) => { // eslint-disable-line consistent-return
+exports.run = async (bot, msg, params = []) => {
   if (!params[0] || !['get', 'set', 'reset', 'list', 'show'].includes(params[0])) {
-    return menu(bot, msg);
-  }
-  if (params[0] === 'list') {
-    return msg.channel.sendCode('js', bot.inspect(msg.conf));
-  }
-  if (!params[1]) {
-    return msg.channel.sendMessage('Bitte gib einen Schlüssel an, mit welchem diese Operation ausgeführt werden soll.');
-  }
-  if (params[0] === 'get') {
-    const response = await bot.internal.config.get(bot, msg, params[1]);
-    return msg.channel.sendMessage(response);
-  }
-  if (params[0] === 'reset') {
-    if (['id'].includes(params[1])) {
-      return msg.channel.sendMessage('Dieser Schlüssel kann nicht zurückgesetzt werden.');
-    }
-    if (params[1] === 'name') {
-      return bot.internal.config.set(bot, msg, params[1], msg.guild.name).then(r => msg.channel.sendMessage(r))
-        .catch((e) => msg.channel.sendMessage(
-          `Es ist ein Fehler beim Zurücksetzen des Schlüssels \`${params[1]}\` aufgetreten:
-\`\`\`js
-${e.stack ? e.stack : e}
-\`\`\``));
-    }
-    return bot.internal.config.reset(bot, msg, params[1]).then(r => msg.channel.sendMessage(r))
-      .catch((e) => msg.channel.sendMessage(
-        `Es ist ein Fehler beim Zurücksetzen des Schlüssels \`${params[1]}\` aufgetreten:
-\`\`\`js
-${e.stack ? e.stack : e}
-\`\`\``));
-  }
-  if (params[0] === 'set') {
+    menu(bot, msg);
+  } else if (params[0] === 'list') {
+    msg.channel.sendCode('js', bot.inspect(msg.conf));
+  } else if (!params[1]) {
+    msg.channel.sendMessage('Bitte gib einen Schlüssel an, mit welchem diese Operation ausgeführt werden soll.');
+  } else if (params[0] === 'get') {
+    msg.channel.sendMessage(await bot.internal.config.get(bot, msg, params[1]));
+  } else if (params[0] === 'reset') {
+    if (['id'].includes(params[1])) msg.channel.sendMessage('Dieser Schlüssel kann nicht zurückgesetzt werden.');
+    else if (params[1] === 'name') msg.channel.sendMessage(await bot.internal.config.set(bot, msg, params[1], msg.guild.name));
+    else msg.channel.sendMessage(await bot.internal.config.reset(bot, msg, params[1]));
+  } else if (params[0] === 'set') {
     if (['ignchannels', 'ignusers'].includes(params[1])) {
-      return msg.channel.sendMessage(
-        `Zum Ignorieren von Nutzern oder Channeln bitte \`${msg.conf.prefix}ignore\` verwenden.`);
+      msg.channel.sendMessage(`Zum Ignorieren von Nutzern oder Channeln bitte \`${msg.conf.prefix}ignore\` verwenden.`);
+    } else if (params[1] === 'disabledcommands') {
+      msg.channel.sendMessage(`Zum Deaktivieren von Befehlen bitte \`${msg.conf.prefix}command\` verwenden.`);
+    } else if (params[1] === 'id') {
+      msg.channel.sendMessage('Die `id` ist auf dem neusten Stand.');
+    } else if (params[1] === 'name') {
+      msg.channel.sendMessage(await bot.internal.config.set(bot, msg, params[1], msg.guild.name));
+    } else {
+      msg.channel.sendMessage(await bot.internal.config.set(bot, msg, params[1], params.slice(2)));
     }
-    if (params[1] === 'disabledcommands') {
-      return msg.channel.sendMessage(`Zum Deaktivieren von Befehlen bitte \`${msg.conf.prefix}command\` verwenden.`);
-    }
-    if (params[1] === 'id') {
-      return msg.channel.sendMessage('Die `id` ist auf dem neusten Stand.');
-    }
-    if (params[1] === 'name') {
-      return bot.internal.config.set(bot, msg, params[1], msg.guild.name).then(r => msg.channel.sendMessage(r))
-        .catch((e) => msg.channel.sendMessage(
-          `Es ist ein Fehler beim Zurücksetzen des Schlüssels \`${params[1]}\` aufgetreten:
-\`\`\`js
-${e.stack ? e.stack : e}
-\`\`\``));
-    }
-    return bot.internal.config.set(bot, msg, params[1], params.slice(2)).then(r => msg.channel.sendMessage(r))
-      .catch((e) => msg.channel.sendMessage(
-        `Es ist ein Fehler beim Setzen des Schlüssels \`${params[1]}\` aufgetreten:
-\`\`\`js
-${e.stack ? e.stack : e}
-\`\`\``));
   }
 };
 
@@ -95,35 +62,25 @@ function menu(bot, msg) {
 
 async function sendconf(bot, msg, embed, options) {
   const mes = await msg.channel.sendEmbed(embed);
-  try {
-    const collected = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
-    let content = collected.first().content;
-    mes.delete();
-    if (content === 'cancel') {
-      return msg.channel.sendMessage('Vorgang wird abgebrochen...')
-        .then(mesg => {
-          mesg.delete();
-          msg.delete();
-          collected.first().delete();
-        });
-    }
-    collected.first().delete();
-    if (options.has(content)) {
-      content = options.get(content);
-    } else if (!(content in msg.conf)) {
-      embed.fields[1] = {
-        name: 'Diese Eingabe ist ungültig.',
-        value: '\u200b',
-      };
-      return sendconf(bot, msg, embed, options);
-    }
-    return sendvalue(bot, msg, content);
-  } catch (e) {
+  const collected = (await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
+  mes.delete();
+  if (!collected) {
     msg.delete();
-    return mes.delete();
+  } else if (collected.content === 'cancel') {
+    msg.delete();
+  } else if (options.has(collected.content)) {
+    collected.delete();
+    collected.content = options.get(collected.content);
+    sendvalue(bot, msg, collected.content);
+  } else if (!(collected.content in msg.conf)) {
+    collected.delete();
+    embed.fields[1] = {
+      name: 'Diese Eingabe ist ungültig.',
+      value: '\u200b',
+    };
+    sendconf(bot, msg, embed, options);
   }
 }
-
 
 async function sendvalue(bot, msg, key) {
   const _key = await bot.internal.config.get(bot, msg, key);
@@ -139,37 +96,17 @@ async function sendvalue(bot, msg, key) {
       }],
     },
   });
-  try {
-    const collected = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { mes: msg, maxMatches: 1, time: 30000, errors: ['time'] });
-    let content = collected.first().content;
-    mes.delete();
-    if (content === 'cancel') {
-      return msg.channel.sendMessage('Vorgang wird abgebrochen...')
-        .then(mesg => {
-          collected.first().delete();
-          mesg.delete();
-          msg.delete();
-        });
-    } else if (content === 'reset') {
-      return bot.internal.config.reset(bot, collected.first(), key).then(r => {
-        msg.channel.sendMessage(r);
-      })
-        .catch((e) => msg.channel.sendMessage(
-          `Es ist ein Fehler beim Zurücksetzen des Schlüssels \`${key}\` aufgetreten:
-\`\`\`js
-${e.stack ? e.stack : e}
-\`\`\``));
-    }
-    return bot.internal.config.set(bot, collected.first(), key, content.split(' '))
-      .then(r => msg.channel.sendMessage(r))
-      .catch((e) => msg.channel.sendMessage(
-        `Es ist ein Fehler beim Setzen des Schlüssels \`${key}\` aufgetreten:
-\`\`\`js
-${e.stack ? e.stack : e}
-\`\`\``));
-  } catch (e) {
+  const collected = (await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { mes: msg, maxMatches: 1, time: 30000 })).first();
+  mes.delete();
+  if (!collected) {
     msg.delete();
-    return mes.delete();
+  } else if (collected.content === 'cancel') {
+    collected.delete();
+    msg.delete();
+  } else if (collected.content === 'reset') {
+    msg.channel.sendMessage(bot.internal.config.reset(bot, collected, key));
+  } else {
+    msg.channel.sendMessage(bot.internal.config.set(bot, collected, key, collected.content.split(' ')));
   }
 }
 
