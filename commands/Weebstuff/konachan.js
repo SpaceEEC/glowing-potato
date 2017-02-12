@@ -9,15 +9,13 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line consiste
 Dazu benötige ich mindestens einen Suchbegriff (Tag)`)
       .addField('\u200b', 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um abzubrechen.'));
     try {
-      const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] })
-        .catch(() => mes.delete());
-      const input = collected.first().content;
+      const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
       mes.delete();
-      if (input === 'cancel') {
-        collected.first().delete();
+      if (collected.content === 'cancel') {
+        collected.delete();
         msg.delete();
       } else {
-        prepare(bot, msg, input.split(' '));
+        prepare(bot, msg, collected.content.split(' '));
       }
     } catch (e) {
       mes.delete();

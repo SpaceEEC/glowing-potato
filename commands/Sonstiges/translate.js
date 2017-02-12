@@ -5,20 +5,17 @@ exports.run = async (bot, msg, params = []) => {
   const obj = {};
   if (!params[0]) {
     let mes;
-    try {
-      mes = await msg.channel.sendMessage('Welche Sprache möchtest du übersetzen? (Bitte mit der zweistelligen Abkürzung dafür angeben)');
-      const collected = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
-      mes.delete();
-      if (!langs.includes(collected.first().content.split(' ')[0])) return msg.channel.sendMessage('Diese Sprache ist ungültig, breche die Anfrage ab.').then(m => m.delete(5000));
-      params[0] = `-${collected.first().content.split(' ')[0]}`;
-      mes = await msg.channel.sendMessage('Welcher Text soll denn übersetzt werden? (Optional eine Quellsprache mit `-xx` angeben, falls gewünscht)');
-      const collected2 = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
-      mes.delete();
-      params = params.concat(collected2.first().content.split(' '));
-    } catch (e) {
-      mes.delete();
-      return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
-    }
+    mes = await msg.channel.sendMessage('Welche Sprache möchtest du übersetzen? (Bitte mit der zweistelligen Abkürzung dafür angeben)');
+    let collected = (await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
+    mes.delete();
+    if (!collected) return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
+    if (!langs.includes(collected.content.split(' ')[0])) return msg.channel.sendMessage('Diese Sprache ist ungültig, breche die Anfrage ab.').then(m => m.delete(5000));
+    params[0] = `-${collected.content.split(' ')[0]}`;
+    mes = await msg.channel.sendMessage('Welcher Text soll denn übersetzt werden? (Optional eine Quellsprache mit `-xx` angeben, falls gewünscht)');
+    collected = (await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
+    mes.delete();
+    if (!collected) return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
+    params = params.concat(collected.content.split(' '));
   }
   if (!params[1]) return msg.channel.sendMessage('Diesem Befehl fehlt es an etwas.');
   if (params[0].match(/^-..$/g)) {
