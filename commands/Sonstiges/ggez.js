@@ -2,7 +2,6 @@ exports.run = (bot, msg, params = []) => { // eslint-disable-line no-unused-vars
   const embed = new bot.methods.Embed();
   embed
     .setAuthor(`${msg.member.displayName}:`, msg.author.displayAvatarURL)
-    .setThumbnail(msg.author.displayAvatarURL)
     .setColor(msg.member.highestRole.color)
     .setTitle('\u200b')
     .setDescription(`**${messages[Math.floor(Math.random() * messages.length)]}**\n\u200b`);
