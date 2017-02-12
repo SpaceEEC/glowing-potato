@@ -12,12 +12,8 @@ exports.run = async (bot, msg, params = []) => {
     member = msg.mentions.users.size !== 0 ? msg.mentions.users.first()
       : bot.users.has(params[0]) ? bot.users.get(params[0]) : msg.author;
   }
-  const gmember = msg.guild.member(member);
-  if (!member) { return msg.channel.sendMessage(`Fehler im Code, bitte \`${bot.config.owner}\` anschreiben.`); }
-  if (!gmember) {
-    return msg.channel.sendMessage(
-      'Dieser Nutzer befindet sich in der Datenbank, ist aber nicht in dieser Gilde zu finden.');
-  }
+  const gmember = await msg.guild.fetchMember(member);
+  if (!gmember) return msg.channel.sendMessage('Dieser Nutzer befindet sich in der Datenbank, ist aber nicht in dieser Gilde zu finden.');
   let embed;
   if (member !== bot.user) {
     try {
