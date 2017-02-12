@@ -122,15 +122,11 @@ exports.init = (bot) => new Promise((resolve, reject) => {
   bot.confs = new bot.methods.Collection();
   bot.db.all('SELECT * FROM confs').then((guilds) => {
     bot.info(`Lade insgesamt ${guilds.length} Gilden.`);
-    for (let i = 0; i < guilds.length; i++) {
+    for (const i in guilds) {
       const guild = guilds[i];
       bot.info(`Lade Gilde ${guild.id} | ${guild.name}`);
-      try {
-        guild.ignchannels = JSON.parse(guild.ignchannels);
-        guild.ignusers = JSON.parse(guild.ignusers);
-        guild.disabledcommands = JSON.parse(guild.disabledcommands);
-      } catch (e) {
-        bot.err(e.stack ? e.stack : e);
+      for (const k in guild) {
+        guild[k] = JSON.parse(guild[k]);
       }
       bot.confs.set(guild.id, guild);
     }

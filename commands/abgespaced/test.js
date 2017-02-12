@@ -1,5 +1,17 @@
 exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unused-vars
-  return msg.channel.sendEmbed(nichts(bot, msg));
+  const guilds = await bot.db.all('SELECT * FROM confs');
+  for (const guild of guilds) {
+    for (const i in guild) {
+      console.log([i, guild[i], guild.id]);
+      if (i === 'id') continue;
+      await bot.db.run(`UPDATE confs SET '${i}'=? WHERE id=?`,
+        [JSON.stringify(guild[i]), guild.id]).catch(console.error);
+      console.log('ran');
+    }
+    await bot.db.run(`UPDATE confs SET 'id'=? WHERE id=?`,
+      [JSON.stringify(guild.id), guild.id]).catch(console.error);
+    console.log('finished');
+  }
 };
 
 
