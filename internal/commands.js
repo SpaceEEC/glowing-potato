@@ -4,10 +4,10 @@ exports.init = async (bot) => {
   bot.aliases = new bot.methods.Collection();
   const folders = await fs.readdirAsync('./commands/');
   bot.info(`Lade insgesamt ${folders.length} Befehlskategorien.`);
-  await folders.forEach(async folder => {
+  folders.forEach(async folder => {
     const files = await fs.readdirAsync(`./commands/${folder}`);
     bot.info(`Lade insgesamt ${files.length} Befehle aus ${folder}.`);
-    await files.forEach(f => {
+    files.forEach(f => {
       try {
         const props = require(`../commands/${folder}/${f}`);
         if (props.help.shortdescription.length === 0) props.conf.group = 'hidden';
