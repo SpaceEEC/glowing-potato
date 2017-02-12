@@ -3,7 +3,9 @@ exports.run = async (bot, msg, params = []) => {
     const time = +new Date;
     try {
       const code = params.join(' ');
-      let evaled = eval(code);
+      let evaled;
+      if (msg.cmd === 'async') evaled = eval(`(async(bot,msg,params=[])=>{${code}})(bot,msg,params);`);
+      else evaled = eval(code);
       if (evaled instanceof Promise) evaled = await evaled;
       const response_typeof = typeof evaled;
       if (typeof evaled !== 'string') { evaled = bot.inspect(evaled, false, 0); }
@@ -42,7 +44,7 @@ Versuchungszeitraum: \`${new Date().getTime() - time}\`ms`);
 exports.conf = {
   spamProtection: false,
   enabled: true,
-  aliases: [],
+  aliases: ['async'],
   permLevel: 12,
 };
 
