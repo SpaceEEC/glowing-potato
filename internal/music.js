@@ -114,8 +114,8 @@ class Music {
   }
 
   _stream(stream) {
-    if (typeof stream === 'string') this._music.disp = this._music.con.playFile(stream, { volume: this._music.volume, passes: 2 });
-    else this._music.disp = this._music.con.playStream(stream, { volume: this._music.volume, passes: 2 });
+    if (typeof stream === 'string') this._music.disp = this._music.con.playFile(stream, { volume: this._music.volume, passes: 4 });
+    else this._music.disp = this._music.con.playStream(stream, { volume: this._music.volume, passes: 4 });
     this._bot.debug(`[${this._guild}] Now playing: ${this._music.queue[0].info.title}`);
     this._bot.user.setGame(this._music.queue[0].info.title);
     this._music.playing = true;
