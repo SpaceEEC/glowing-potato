@@ -29,7 +29,7 @@ bot.internal.init(bot);
 process.on('unhandledRejection', (err) => {
   if (err) {
     if (err.message === 'Something took too long to do.') process.exit(2);
-    if (err.response && err.response.res && err.response.res.text) bot.err(`Uncaught Promise Error:\n$ ${err.response.res.text}`);
+    if (err.response && err.response.res && err.response.res.text) bot.err(`Uncaught Promise Error:\n$ ${err.response.res.text}${err.stack ? `\n${err.stack}` : ''}`);
     else bot.err(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`);
   } else {
     bot.err('Unhandled Promise Rejection WITHOUT error. (No stacktrace, response or message.)');
