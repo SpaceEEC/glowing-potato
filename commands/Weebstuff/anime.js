@@ -178,7 +178,7 @@ function answer(response, msg, bot, mes) {
 
 function replaceMap(input, map) {
   const regex = [];
-  for (var key in map) {
+  for (const key in map) {
     regex.push(key.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&'));
   }
   return input.replace(new RegExp(regex.join('|'), 'g'), w => map[w]);
