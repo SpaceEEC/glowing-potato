@@ -92,7 +92,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line consiste
     }
   } else { com = params[0]; }
   const cmd = bot.commands.get(com);
-  var aliases = '';
+  let aliases = '';
   bot.aliases.forEach((item, key, mapObj) => { // eslint-disable-line
     if (bot.aliases.get(key) === com) {
       aliases += `\`${msg.conf.prefix + key.toString()}\` `;
