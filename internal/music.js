@@ -142,6 +142,7 @@ class Music {
     if (empty) {
       if (this._leave.msg) {
         this._leave.msg.delete().catch(() => { }); // eslint-disable-line no-empty-function
+        this._leave.msg = null;
       }
       if (this._leave.timeout) {
         this._bot.clearTimeout(this._leave.timeout);
@@ -161,7 +162,10 @@ class Music {
           this.toggleState(true);
         }
       }
-      if (this._leave.msg) this._leave.msg.delete().catch(() => { }); // eslint-disable-line no-empty-function
+      if (this._leave.msg) {
+        this._leave.msg.delete().catch(() => { }); // eslint-disable-line no-empty-function
+        this._leave.msg = null;
+      }
     }
   }
 
@@ -175,8 +179,14 @@ class Music {
   _leaveChannel() {
     this._bot.info(`[${this._guild}] Verlasse Channel.`);
     this._leave.timeout = null;
-    if (this._music.statusmsg) this._music.statusmsg.delete().catch(() => { }); // eslint-disable-line no-empty-function
-    if (this._leave.msg) this._leave.msg.delete().catch(() => { }); // eslint-disable-line no-empty-function
+    if (this._music.statusmsg) {
+      this._music.statusmsg.delete().catch(() => { }); // eslint-disable-line no-empty-function
+      this._music.statusmsg = null;
+    }
+    if (this._leave.msg) {
+      this._leave.msg.delete().catch(() => { }); // eslint-disable-line no-empty-function
+      this._leave.msg = null;
+    }
     this._music.con.disconnect();
     this._bot.user.setGame(this._bot.config.game);
     this._bot.internal.musik.delete(this._guild);
