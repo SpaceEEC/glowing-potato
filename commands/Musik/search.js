@@ -76,24 +76,22 @@ async function selectItem(bot, msg, search, index, original) {
   if (original) func = original.edit('', { embed: embed });
   else func = msg.channel.sendEmbed(embed);
   const mes = await func;
-  try {
-    const collected = await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
-    let input = collected.first().content;
-    if (input !== 'y' && input !== 'n') {
-      msg.delete();
-      mes.delete();
-      collected.first().delete();
-    } else if (input === 'n') {
-      collected.first().delete();
-      selectItem(bot, msg, search, index + 1, mes);
-    } else {
-      collected.first().delete();
-      mes.delete();
-      bot.commands.get('play').add(msg, search[index].id.videoId);
-    }
-  } catch (e) {
+  const collected = (await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
+  let input = collected ? collected.content : null;
+  if (!input) {
     msg.delete();
     mes.delete();
+  } else if (input !== 'y' && input !== 'n') {
+    msg.delete();
+    mes.delete();
+    collected.first().delete();
+  } else if (input === 'n') {
+    collected.first().delete();
+    selectItem(bot, msg, search, index + 1, mes);
+  } else {
+    collected.first().delete();
+    mes.delete();
+    bot.commands.get('play').add(msg, search[index].id.videoId);
   }
 }
 exports.conf = {
