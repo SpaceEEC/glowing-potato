@@ -1,4 +1,4 @@
-exports.run = (bot, msg, params = []) => {
+exports.run = async (bot, msg, params = []) => {
   if (!params[0]) {
     return msg.channel.sendEmbed(new bot.methods.Embed()
       .setColor(0xffee00)
