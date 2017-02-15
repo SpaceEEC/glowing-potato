@@ -29,7 +29,7 @@ exports.run = async (bot, msg) => {
         cmd.run(bot, msg, params)
           .catch((e) => {
             bot.err(`[${command}] [uncaught]: ${e.stack}\n${e.response && e.response.res && e.response.res.text ? e.response.res.text : ''}`);
-            msg.channel.sendMessage(`Es ist ein unbehandelter Fehler aufgetreten.\n\nKontaktiere bitte \`${bot.config.owner}\`.`);
+            msg.channel.sendMessage(`Es ist ein unbehandelter Fehler aufgetreten: \`${e.message}\`.\n\nBitten kontaktiere \`${bot.config.owner}\`.`);
           });
       })
       .catch((reason) => {
