@@ -200,7 +200,7 @@ class Music {
   }
 }
 
-exports.perms = async (msg) => {
+exports.perms = (msg) => {
   if (msg.permlvl >= 5) return true;
   if (msg.conf.musicrole && msg.conf.musicchannel) return msg.member.roles.has(msg.conf.musicrole) && msg.channel.id === msg.conf.musicchannel;
   if (msg.member.roles.has(msg.conf.musicrole)) return true;
