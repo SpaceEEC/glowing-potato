@@ -1,4 +1,4 @@
-exports.run = (bot, msg, params = []) => { // eslint-disable-line no-unused-vars
+exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unused-vars
   const embed = new bot.methods.Embed();
   embed
     .setAuthor(`${msg.member.displayName}:`, msg.author.displayAvatarURL)
