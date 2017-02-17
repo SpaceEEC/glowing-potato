@@ -1,16 +1,17 @@
-#devstuff
+#dev stuff
 node_modules/
 .vscode/
 
-#authstuff
+#auth stuff
 var/auth.json
 var/db.sqlite
 var/db.sqlite-journal
 
-#nobodycaresstuff
+#nobody cares stuff
 .eslintrc.json
 
-#musicstuff
-#commands/music.js
-#internal/music.js
+#music stuff
 ffmpeg.exe
+
+#canvas stuff
+res/
