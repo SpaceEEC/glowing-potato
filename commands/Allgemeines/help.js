@@ -106,7 +106,7 @@ exports.run = async (bot, msg, params = []) => { // eslint-disable-line consiste
     fields: [
       {
         name: `Der Befehl \`${msg.conf.prefix + cmd.help.name}\` hat folgende Funktion:`,
-        value: cmd.help.description,
+        value: cmd.help.description.split('$conf.prefix').join(msg.conf.prefix),
       },
       {
         name: `Der Befehl \`${msg.conf.prefix + cmd.help.name}\` hat folgende Aliasse`,
