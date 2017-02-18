@@ -25,8 +25,6 @@ module.exports = class Eval {
         await files.forEach(f => {
           try {
             const props = require(`../commands/${folder}/${f}`);
-            if (props.help.shortdescription.length === 0) props.conf.group = 'hidden';
-            else props.conf.group = folder;
             this.bot.commands.set(props.help.name, props);
             props.conf.aliases.forEach(alias => {
               this.bot.aliases.set(alias, props.help.name);
