@@ -53,6 +53,7 @@ Versuchungszeitraum: \`${new Date().getTime() - time}\`ms`);
       enabled: true,
       aliases: ['async'],
       permLevel: 12,
+      group: __dirname.split(require('path').sep).pop()
     };
   }
   static get help() {
