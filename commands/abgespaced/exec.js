@@ -49,7 +49,7 @@ ${stderr ? `\`STERR\`\n\`\`\`xl\n${stderr}\`\`\`` : ''}
       enabled: true,
       aliases: [],
       permLevel: 12,
-
+      group: __dirname.split(require('path').sep).pop()
     };
   }
 

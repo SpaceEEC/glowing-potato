@@ -38,6 +38,7 @@ module.exports = class Test {
       enabled: true,
       aliases: ['bakaero'],
       permLevel: 0,
+      group: __dirname.split(require('path').sep).pop()
     };
   }
 
