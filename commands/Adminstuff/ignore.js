@@ -87,6 +87,7 @@ module.exports = class Ignore {
       enabled: true,
       aliases: ['ign'],
       permLevel: 10,
+      group: __dirname.split(require('path').sep).pop()
     };
   }
 

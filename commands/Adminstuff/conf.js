@@ -124,6 +124,7 @@ module.exports = class Conf {
       enabled: true,
       aliases: ['config'],
       permLevel: 10,
+      group: __dirname.split(require('path').sep).pop()
     };
   }
 
