@@ -1,4 +1,4 @@
-exports.run = (bot, msg, cmd) => new Promise((resolve, reject) => {
+exports.run = (bot, msg, Command) => new Promise((resolve, reject) => {
   let permlvl = 1;
   msg.guild.fetchMember(msg.author).then((member) => {
     const modrole = msg.guild.roles.get(msg.conf.modrole);
@@ -22,8 +22,8 @@ exports.run = (bot, msg, cmd) => new Promise((resolve, reject) => {
       permlvl = 12;
     }
     msg.permlvl = permlvl;
-    if (permlvl >= cmd.conf.permLevel) resolve();
-    else reject(`Du darfst den Befehl \`${cmd.help.name}\` leider nicht verwenden.`);
+    if (permlvl >= Command.conf.permLevel) resolve();
+    else reject(`Du darfst den Befehl \`${Command.help.name}\` leider nicht verwenden.`);
   });
 });
 
