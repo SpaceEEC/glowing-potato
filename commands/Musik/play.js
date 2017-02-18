@@ -17,6 +17,8 @@ exports.run = async (bot, msg, params = []) => {
       exports.add(bot, await msg.channel.sendMessage('Rufe Video ab...'), params[0], msg);
     } else if (params[0].includes('playlist?list=') || params[0].length > 11) {
       bulkadd(bot, msg, params[0].includes('playlist?list=') ? params[0].split('playlist?list=')[1] : params[0], params[1]);
+    } else {
+      msg.channel.send(`Dieser Befehl akzeptiert nur Youtube Links und IDs.\nKonnte diesen Input nicht zuordnen.\nFalls du nach einem Titel suchen willst, nutze \`${msg.conf.prefix}search [Inhalt]\`.`);
     }
   }
 };
