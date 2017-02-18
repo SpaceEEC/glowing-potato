@@ -2,6 +2,8 @@ module.exports = class Ignore {
   constructor(bot) {
     this.bot = bot;
   }
+
+
   async run(msg, params) {
     if (!params[0]) {
       const message = await msg.channel.sendEmbed({

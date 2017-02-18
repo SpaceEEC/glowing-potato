@@ -2,6 +2,8 @@ module.exports = class Update {
   constructor(bot) {
     this.bot = bot;
   }
+
+
   async run(msg, params) {
     const status_msg = await msg.channel.sendMessage('Starte Update...');
     const exec = require('child_process');

@@ -2,6 +2,8 @@ module.exports = class Conf {
   constructor(bot) {
     this.bot = bot;
   }
+
+
   async run(msg, params) {
     if (!params[0] || !['get', 'set', 'reset', 'list', 'show'].includes(params[0])) {
       this.menu(msg);
