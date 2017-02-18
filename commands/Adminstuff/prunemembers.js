@@ -36,6 +36,7 @@ module.exports = class Prune {
       enabled: true,
       aliases: [],
       permLevel: 11,
+      group: __dirname.split(require('path').sep).pop()
     };
   }
 
