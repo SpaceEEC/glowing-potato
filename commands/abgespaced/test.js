@@ -1,6 +1,22 @@
 exports.run = async (bot, msg, params = []) => { // eslint-disable-line no-unused-vars
-  return msg.channel.sendEmbed(nichts(bot, msg));
+  const cmd = new Testcommand(bot);
+  await cmd.run(msg, params);
 };
+
+class Testcommand {
+  constructor(bot) {
+    this.bot = bot;
+  }
+  async run(msg, params) {
+    this.test();
+  }
+
+  async test() {
+    return new Promise(resolve => {
+      throw new Error('derp');
+    });
+  }
+}
 
 
 function nichts(bot, msg) { // eslint-disable-line no-unused-vars
