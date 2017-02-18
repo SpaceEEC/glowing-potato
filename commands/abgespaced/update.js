@@ -1,36 +1,46 @@
-exports.run = async (bot, msg, params = []) => {
-  const status_msg = await msg.channel.sendMessage('Starte Update...');
-  const exec = require('child_process');
-  exec.exec('git pull', async (error, stdout, stderr) => {
-    if (error) {
-      status_msg.edit(`
+module.exports = class Update {
+  constructor(bot) {
+    this.bot = bot;
+  }
+  async run(msg, params) {
+    const status_msg = await msg.channel.sendMessage('Starte Update...');
+    const exec = require('child_process');
+    exec.exec('git pull', async (error, stdout, stderr) => {
+      if (error) {
+        status_msg.edit(`
 \`INFO\`\n\`\`\`xl\n${stdout}\n\n${stderr}\`\`\`
 ${error.code ? `Exit Code: ${error.code}` : ''}
 ${error.signal ? `Signal erhalten: ${error.signal}` : ''}
 Update mit Fehlern ausgeführt, starte nicht automatisch neu.
 Änderungen werden in der Regel erst nach einem Neustart wirksam.`);
-    } else {
-      await status_msg.edit(`
+      } else {
+        await status_msg.edit(`
 ${stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`` : ''}
 ${params[0] !== '--norestart' ? 'Starte automatisch neu damit das Update wirksam wird...' : 'Starte nicht neu.\nÄnderungen werden erst nach einem Neustart wirksam.'}
     `);
-      if (params[0] !== '--norestart') process.exit(1335);
-    }
-  });
-};
+        if (params[0] !== '--norestart') process.exit(1335);
+      }
+    });
+  }
 
 
-exports.conf = {
-  spamProtection: false,
-  enabled: true,
-  aliases: ['bakaero'],
-  permLevel: 0,
-};
+  static get conf() {
+    return {
+      spamProtection: false,
+      enabled: true,
+      aliases: ['bakaero'],
+      permLevel: 0,
+      group: __dirname.split(require('path').sep).pop()
+    };
+  }
 
 
-exports.help = {
-  name: 'update',
-  shortdescription: 'Updates',
-  description: 'Updated den Bot halt',
-  usage: '$conf.prefixupdate',
+  static get help() {
+    return {
+      name: 'update',
+      shortdescription: 'Updates',
+      description: 'Updated den Bot halt',
+      usage: '$conf.prefixupdate',
+    };
+  }
 };
