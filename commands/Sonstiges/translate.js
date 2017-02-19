@@ -67,7 +67,7 @@ ${res.body.error}
   static get conf() {
     return {
       spamProtection: false,
-      enabled: true,
+      enabled: false,
       aliases: [],
       permLevel: 0,
       group: __dirname.split(require('path').sep).pop()
