@@ -6,7 +6,7 @@ module.exports = class Eval {
   }
 
 
-  async run(msg, params) {
+  async run(msg, params = []) {
     if (!params[0]) {
       msg.channel.sendMessage('Keinen Befehl zum neu Laden angegeben.');
     } else {
@@ -15,7 +15,7 @@ module.exports = class Eval {
   }
 
 
-  async reload(msg, params) {
+  async reload(msg, params = []) {
     if (params[0] === 'all') {
       const folders = await fs.readdirAsync('./commands/');
       this.bot.log(`Lade insgesamt ${folders.length} Befehlskategorien.`);

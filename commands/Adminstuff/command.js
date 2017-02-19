@@ -4,7 +4,7 @@ module.exports = class Command {
   }
 
 
-  async run(msg, params) { // eslint-disable-line consistent-return
+  async run(msg, params = []) { // eslint-disable-line consistent-return
     if (!params[1] || !['disable', 'enable'].includes(params[0])) {
       return msg.channel.sendMessage('Fehlender Parameter oder ungültige Operation');
     }

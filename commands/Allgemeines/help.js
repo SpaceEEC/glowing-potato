@@ -4,13 +4,13 @@ module.exports = class Help {
   }
 
 
-  async run(msg, params) {
+  async run(msg, params = []) {
     if (!params[0] || params[0] === 'all') this.all(msg, params);
     this.one(msg, params);
   }
 
 
-  one(msg, params) { // eslint-disable-line consistent-return
+  one(msg, params = []) { // eslint-disable-line consistent-return
     if (params[0].startsWith(msg.conf.prefix)) params[0] = params[0].replace(msg.conf.prefix, '');
     let com;
     let alias = false;
@@ -73,7 +73,7 @@ module.exports = class Help {
   }
 
 
-  all(msg, params) {
+  all(msg, params = []) {
     let stuff = [];
     let notall = false;
     if (params[0]) {

@@ -9,7 +9,7 @@ exports.module = class Info {
   }
 
 
-  async run(msg, params) {
+  async run(msg, params = []) {
     let user;
     if (msg.cmd === 'info') {
       user = this.bot.user;

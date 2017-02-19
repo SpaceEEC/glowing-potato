@@ -3,7 +3,7 @@ module.exports = class Exec {
     this.bot = bot;
   }
 
-  async run(msg, params) {
+  async run(msg, params = []) {
     if (msg.author.id === this.bot.config.ownerID) {
       const mes = await msg.channel.sendEmbed(new this.bot.methods.Embed()
         .setColor(0x0800ff)

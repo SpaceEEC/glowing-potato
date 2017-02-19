@@ -4,14 +4,14 @@ module.exports = class Eval {
   }
 
 
-  async run(msg, params) {
+  async run(msg, params = []) {
     if (msg.author.id === this.bot.config.ownerID) {
       const time = +new Date;
       const bot = this.bot;
       try {
         const code = params.join(' ');
         let evaled;
-        if (msg.cmd === 'async') evaled = eval(`(async(bot,msg,params=[])=>{${code}})(bot,msg,params);`);
+        if (msg.cmd === 'async') evaled = eval(`(async(bot,msg,params=[])=>{${code}})(bot,msg,params = []);`);
         else evaled = eval(code);
         if (evaled instanceof Promise) evaled = await evaled;
         const response_typeof = typeof evaled;

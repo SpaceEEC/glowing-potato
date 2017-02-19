@@ -4,7 +4,7 @@ module.exports = class Conf {
   }
 
 
-  async run(msg, params) {
+  async run(msg, params = []) {
     if (!params[0] || !['get', 'set', 'reset', 'list', 'show'].includes(params[0])) {
       this.menu(msg);
     } else if (params[0] === 'list') {

@@ -4,7 +4,7 @@ module.exports = class Prune {
   }
 
 
-  async run(msg, params) { // eslint-disable-line consistent-return
+  async run(msg, params = []) { // eslint-disable-line consistent-return
     if (!msg.channel.permissionsFor(msg.member).hasPermission('MANAGE_MESSAGES') || !msg.channel.permissionsFor(this.bot.user).hasPermission('MANAGE_MESSAGES')) {
       return msg.channel.sendMessage('Wir beide müssen hier Rechte zum löschen haben. Mindestens einer hat sie nicht.');
     }

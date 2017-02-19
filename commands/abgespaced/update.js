@@ -4,7 +4,7 @@ module.exports = class Update {
   }
 
 
-  async run(msg, params) {
+  async run(msg, params = []) {
     const status_msg = await msg.channel.sendMessage('Starte Update...');
     const exec = require('child_process');
     exec.exec('git pull', async (error, stdout, stderr) => {

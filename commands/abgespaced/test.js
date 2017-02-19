@@ -4,7 +4,7 @@ module.exports = class Test {
   }
 
 
-  async run(msg, params) { // eslint-disable-line no-unused-vars
+  async run(msg, params = []) { // eslint-disable-line no-unused-vars
     msg.channel.sendEmbed(this.nichts(this.bot, msg));
   }
 
