@@ -142,6 +142,7 @@ Dazu benötige ich mindestens einen Suchbegriff (Tag)`)
       enabled: true,
       aliases: ['donmai'],
       permLevel: 1,
+      group: __dirname.split(require('path').sep).pop()
     };
   }
 
