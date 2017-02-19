@@ -1,9 +1,9 @@
-const package = require('../../package.json');
+const notpackage = require('../../package.json');
 const moment = require('moment');
 moment.locale('de');
 require('moment-duration-format');
 
-exports.module = class Info {
+module.exports = class Info {
   constructor(bot) {
     this.bot = bot;
   }
@@ -84,7 +84,7 @@ ${msg.author === user ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
           },
           {
             name: '❯ spacebot-Version:',
-            value: `• v${package.version} ([glowing-potato](http://puu.sh/teDYW/d6f9555fbd.png))`,
+            value: `• v${notpackage.version} ([glowing-potato](http://puu.sh/teDYW/d6f9555fbd.png))`,
             inline: true,
           },
           {
