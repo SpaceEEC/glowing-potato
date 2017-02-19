@@ -32,6 +32,7 @@ exports.module = class Resume {
       enabled: true,
       aliases: [],
       permLevel: 0,
+      group: __dirname.split(require('path').sep).pop()
     };
   }
 
