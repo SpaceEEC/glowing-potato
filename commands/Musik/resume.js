@@ -1,4 +1,4 @@
-exports.module = class Resume {
+module.exports = class Resume {
   constructor(bot) {
     this.bot = bot;
   }
