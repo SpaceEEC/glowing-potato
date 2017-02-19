@@ -1,4 +1,4 @@
-exports.module = class Shuffle {
+module.exports = class Shuffle {
   constructor(bot) {
     this.bot.this = bot;
   }
