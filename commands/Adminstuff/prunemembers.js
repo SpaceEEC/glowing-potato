@@ -4,7 +4,7 @@ module.exports = class Prune {
   }
 
 
-  async run(msg, params) {
+  async run(msg, params = []) {
     let days;
     if (!params[0]) {
       const mes = await msg.channel.sendMessage('Wir kicken heute also inaktive Member?\nVon wie vielen Tagen der Inaktivität sprechen wir hier denn?');

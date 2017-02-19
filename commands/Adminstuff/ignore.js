@@ -4,7 +4,7 @@ module.exports = class Ignore {
   }
 
 
-  async run(msg, params) {
+  async run(msg, params = []) {
     if (!params[0]) {
       const message = await msg.channel.sendEmbed({
         description: 'Gib den zu Ignorierenden Nutzer/Channel per @Mention, #Channel oder per ID an.',
