@@ -47,6 +47,7 @@ exports.conf = {
   enabled: true,
   aliases: [],
   permLevel: 5,
+  group: __dirname.split(require('path').sep).pop()
 };
 
 
