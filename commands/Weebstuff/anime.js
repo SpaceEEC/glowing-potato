@@ -182,7 +182,7 @@ Bitte kontaktiere bitte \`${this.bot.config.owner}\`\n\n${response.error.message
   }
 
 
-  static replaceMap(input, map) {
+  replaceMap(input, map) {
     const regex = [];
     for (const key in map) {
       regex.push(key.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&'));
@@ -191,7 +191,7 @@ Bitte kontaktiere bitte \`${this.bot.config.owner}\`\n\n${response.error.message
   }
 
 
-  static formatFuzzy(input) {
+  formatFuzzy(input) {
     input = input.toString();
     return `${input.substring(6, 8)}.${input.substring(4, 6)}.${input.substring(0, 4)}`;
   }
