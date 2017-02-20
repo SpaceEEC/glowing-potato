@@ -23,7 +23,7 @@ exports.run = async (bot, msg) => {
   }
   if (Command) {
     msg.conf = conf;
-    msg.command = command;
+    msg.cmd = command;
     bot.internal.checks.run(bot, msg, Command)
       .then(() => {
         new Command(bot).run(msg, params)
