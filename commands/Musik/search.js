@@ -2,6 +2,9 @@ const request = require('superagent');
 
 module.exports = class Search {
   constructor(bot) {
+    const klasse = bot.commands.get(__filename.split(require('path').sep).pop().split('.')[0]);
+    const statics = Object.getOwnPropertyNames(klasse).filter(prop => !['name', 'length', 'prototype'].includes(prop));
+    for (const thing of statics) this[thing] = klasse[thing];
     this.bot = bot;
   }
 

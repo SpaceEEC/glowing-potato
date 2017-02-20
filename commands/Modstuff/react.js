@@ -5,6 +5,8 @@ module.exports = class React {
     for (const thing of statics) this[thing] = klasse[thing];
     this.bot = bot;
   }
+
+
   async run(msg, params = []) {
     if (!params[0]) {
       return msg.channel.sendEmbed(new this.bot.methods.Embed()

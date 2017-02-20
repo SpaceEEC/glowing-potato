@@ -1,7 +1,12 @@
 module.exports = class Shuffle {
   constructor(bot) {
-    this.bot.this = bot;
+    const klasse = bot.commands.get(__filename.split(require('path').sep).pop().split('.')[0]);
+    const statics = Object.getOwnPropertyNames(klasse).filter(prop => !['name', 'length', 'prototype'].includes(prop));
+    for (const thing of statics) this[thing] = klasse[thing];
+    this.bot = bot;
   }
+
+
   async run(msg, params = []) { // eslint-disable-line no-unused-vars
     if (this.this.bot.internal.music.perms(msg)) {
       if (!this.bot.internal.musik.get(msg.guild.id)) {

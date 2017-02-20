@@ -1,11 +1,15 @@
 module.exports = class Music {
   constructor(bot) {
+    const klasse = bot.commands.get(__filename.split(require('path').sep).pop().split('.')[0]);
+    const statics = Object.getOwnPropertyNames(klasse).filter(prop => !['name', 'length', 'prototype'].includes(prop));
+    for (const thing of statics) this[thing] = klasse[thing];
     this.bot = bot;
   }
 
 
   async run(msg, params = []) { // eslint-disable-line no-unused-vars
-    this.bot.commands.get('help').run(this.bot, msg, ['music']);
+    const Help = this.bot.commands.get('help');
+    return new Help(this.bot).run(msg, ['music']);
   }
 
 
