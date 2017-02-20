@@ -3,6 +3,9 @@ const yt = require('ytdl-core');
 
 module.exports = class Play {
   constructor(bot) {
+    const klasse = bot.commands.get(__filename.split(require('path').sep).pop().split('.')[0]);
+    const statics = Object.getOwnPropertyNames(klasse).filter(prop => !['name', 'length', 'prototype'].includes(prop));
+    for (const thing of statics) this[thing] = klasse[thing];
     this.bot = bot;
   }
 
@@ -19,7 +22,7 @@ module.exports = class Play {
         msg.channel.sendMessage('Du bist nicht in einem Channel, dem ich beitreten und sprechen darf.')
           .then((mes) => mes.delete(5000));
       } else if (params[0].includes('watch?v=') || params[0].length === 11) {
-        this.bot.commands.get('play').add(this.bot, await msg.channel.sendMessage('Rufe Video ab...'), params[0], msg);
+        this.add(this.bot, await msg.channel.sendMessage('Rufe Video ab...'), params[0], msg);
       } else if (params[0].includes('playlist?list=') || params[0].length > 11) {
         this.bulkadd(msg, params[0].includes('playlist?list=') ? params[0].split('playlist?list=')[1] : params[0], params[1]);
       } else {

@@ -1,7 +1,8 @@
-const moment = require('moment');
-
 module.exports = class Quote {
   constructor(bot) {
+    const klasse = bot.commands.get(__filename.split(require('path').sep).pop().split('.')[0]);
+    const statics = Object.getOwnPropertyNames(klasse).filter(prop => !['name', 'length', 'prototype'].includes(prop));
+    for (const thing of statics) this[thing] = klasse[thing];
     this.bot = bot;
   }
 
@@ -53,7 +54,7 @@ Zitate auf diesem Server: \`${this.bot.internal.quotes.filter((w, q) => q.starts
           if (params[1] === 'text') {
             this.bot.internal.quote
               .add(this.bot, mes.guild.id, params[1], mes.id, member.color(),
-              `${mes.author.username} (${moment().format('DD.MM.YYYY')})`, mes.author.avatarURL, mes.content)
+              `${mes.author.username} (${this.bot.methods.moment().format('DD.MM.YYYY')})`, mes.author.avatarURL, mes.content)
               .then(() => {
                 msg.channel.sendMessage('Zitat eingefügt');
               })
@@ -64,7 +65,7 @@ Zitate auf diesem Server: \`${this.bot.internal.quotes.filter((w, q) => q.starts
           } else {
             this.bot.internal.quote
               .add(this.bot, mes.guild.id, params[1], mes.id, member.color(),
-              `${mes.author.username} (${moment().format('DD.MM.YYYY')})`, mes.author.avatarURL,
+              `${mes.author.username} (${this.bot.methods.moment().format('DD.MM.YYYY')})`, mes.author.avatarURL,
               mes.content.replace(mes.embeds[0].thumbnail.url, ''), mes.embeds[0].thumbnail.url)
               .then(() => {
                 msg.channel.sendMessage('Zitat eingefügt');

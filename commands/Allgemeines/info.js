@@ -1,10 +1,10 @@
 const notpackage = require('../../package.json');
-const moment = require('moment');
-moment.locale('de');
-require('moment-duration-format');
 
 module.exports = class Info {
   constructor(bot) {
+    const klasse = bot.commands.get(__filename.split(require('path').sep).pop().split('.')[0]);
+    const statics = Object.getOwnPropertyNames(klasse).filter(prop => !['name', 'length', 'prototype'].includes(prop));
+    for (const thing of statics) this[thing] = klasse[thing];
     this.bot = bot;
   }
 
@@ -35,7 +35,7 @@ module.exports = class Info {
               name: '❯ Clientseitig',
               value: `• Avatar: ${user.avatarURL ? `[Link](${user.avatarURL})` : 'Kein Avatar'}
 • Account erstellt am:
-${moment(user.createdAt).format('DD.MM.YYYY')}
+${this.bot.methods.moment(user.createdAt).format('DD.MM.YYYY')}
 • Status: \`${user.presence.status}\`
 • Spiel: \n\`${user.presence.game ? user.presence.game.name : 'Kein Spiel'}\``,
               inline: true,
@@ -45,7 +45,7 @@ ${moment(user.createdAt).format('DD.MM.YYYY')}
               value: `${
               member.nickname ? `• Nickname: \`${member.nickname}\`` : ''}
 • Beigetreten am:
-${moment(member.joinedAt).format('DD.MM.YYYY')}
+${this.bot.methods.moment(member.joinedAt).format('DD.MM.YYYY')}
 ${msg.author === user ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
               inline: true,
             },
@@ -69,7 +69,7 @@ ${msg.author === user ? `• Permissionlevel:\n\`${msg.permlvl}\`` : ''}`,
         fields: [
           {
             name: '❯ Online seit:',
-            value: `• ${moment.duration(this.bot.uptime).format(' D [Tage], H [Stunden], m [Min.], s [Sek.]')}`,
+            value: `• ${this.bot.methods.moment.duration(this.bot.uptime).format(' D [Tage], H [Stunden], m [Min.], s [Sek.]')}`,
             inline: true,
           },
           {
