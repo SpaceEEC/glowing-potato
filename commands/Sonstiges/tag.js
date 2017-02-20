@@ -11,17 +11,17 @@ module.exports = class Tag {
     if (params[0] && this.bot.internal.tags.has(`${msg.guild.id}|${params.join(' ')}`)) {
       msg.channel.sendMessage(this.bot.internal.tags.get(`${msg.guild.id}|${params.join(' ')}`).response);
     } else if (!params[0] || params[0] === 'list') {
-      const Command = this.bot.commands.get('tag-list');
-      new Command(this.bot).run(msg, params);
+      const TagList = this.bot.commands.get('tag-list');
+      new TagList(this.bot).run(msg);
     } else if (params[0] === 'add') {
-      const Command = this.bot.commands.get('tag-add');
-      new Command(this.bot).run(msg, params);
+      const TagAdd = this.bot.commands.get('tag-add');
+      new TagAdd(this.bot).run(msg, params.slice(1));
     } else if (params[0] === 'edit') {
-      const Command = this.bot.commands.get('tag-edit');
-      new Command(this.bot).run(msg, params);
+      const TagEdit = this.bot.commands.get('tag-edit');
+      new TagEdit(this.bot).run(msg, params.slice(1));
     } else if (params[0] === 'remove') {
-      const Command = this.bot.commands.get('tag-del');
-      new Command(this.bot).run(msg, params);
+      const TagDel = this.bot.commands.get('tag-del');
+      new TagDel(this.bot).run(msg, params.slice(1));
     } else {
       let response = ['http://puu.sh/t1PqI/026da4b79f.jpg',
         'https://memegen.link/kermit/i-don\'t-know-that-tag/but-that\'s-none-of-my-business.jpg',

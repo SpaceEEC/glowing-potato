@@ -1,4 +1,4 @@
-module.exports = class Tagadd {
+module.exports = class TagAdd {
   constructor(bot) {
     const klasse = bot.commands.get(__filename.split(require('path').sep).pop().split('.')[0]);
     const statics = Object.getOwnPropertyNames(klasse).filter(prop => !['name', 'length', 'prototype'].includes(prop));
@@ -8,6 +8,7 @@ module.exports = class Tagadd {
 
 
   async run(msg, params = []) { // eslint-disable-line consistent-return
+    console.log(params);
     if (this.bot.commands.get('tag').conf.createLevel > msg.permlvl) return msg.channel.sendMessage('Du darfst leider keine Tags erstellen.');
     if (!params[0] || (params[0] && ['add', 'edit', 'remove', 'list'].includes(params[0])) || (params[0] && this.bot.internal.tags.has(`${msg.guild.id}|${params.join(' ')}`))) {
       const mes = await msg.channel.sendMessage('Bitte gib einen Namen für diesen neuen Tag an.\n\nDiese Anfrage wird bei Eingabe von `cancel`, einer fehlerhaften Eingabe, oder nach 30 Sekunden abgebrochen');
