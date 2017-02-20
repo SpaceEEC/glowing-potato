@@ -27,30 +27,30 @@ Ein Teil des Titels würde schon reichen.`,
         collected.delete();
         return msg.delete();
       } else {
-        return this.bot.authcheck(msg, collected.content.split(' '));
+        return this.authcheck(msg, collected.content.split(' '));
       }
     }
     if (params.join(' ').includes('?')) {
       return msg.channel.sendEmbed(
-        new this.bot.bot.methods.Embed()
+        new this.bot.methods.Embed()
           .setColor(0xffff00)
           .setDescription('Bitte keine Fragezeichen verwenden, die Anfrage würde dadurch ungültig werden.')
       );
     }
-    return this.bot.authcheck(msg, params);
+    return this.authcheck(msg, params);
   }
 
 
   async authcheck(msg, params) {
-    if (this.bot.bot.config.ani_expires <= Math.floor(Date.now() / 1000) + 300) {
+    if (this.bot.config.ani_expires <= Math.floor(Date.now() / 1000) + 300) {
       const message = await msg.channel.sendEmbed(
-        new this.bot.bot.methods.Embed()
+        new this.bot.methods.Embed()
           .setColor(0xffff00)
           .setDescription('Der Token ist ausgelaufen, ich fordere einen neuen an.\nDies kann einen Moment dauern, ich bitte um Geduld.'));
       const res = await request.post(`https://anilist.co/api/auth/access_token`)
         .send({
           grant_type: 'client_credentials',
-          client_id: this.bot.bot.internal.auth.anilist.client_id,
+          client_id: this.bot.internal.auth.anilist.client_id,
           client_secret: this.bot.internal.auth.anilist.client_secret,
         })
         .set('Content-Type', 'application/json');
