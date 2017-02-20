@@ -56,7 +56,7 @@ Ein Vor- oder Nachname würde mir reichen.`,
   }
 
 
-  async authcheck(bot, msg, params) {
+  async authcheck(msg, params) {
     if (this.bot.config.ani_expires <= Math.floor(Date.now() / 1000) + 300) {
       const message = await msg.channel.sendEmbed(
         new this.bot.methods.Embed()
@@ -80,14 +80,14 @@ Ein Vor- oder Nachname würde mir reichen.`,
           .setColor(0x00ff08)
           .setDescription('Token wurde erfolgreich erneuert.'),
       });
-      return this.query(params.join(' '), msg, bot);
+      return this.query(params.join(' '), msg);
     } else {
-      return this.query(params.join(' '), msg, bot);
+      return this.query(params.join(' '), msg);
     }
   }
 
 
-  async query(search, msg, bot) {
+  async query(search, msg) {
     const res = await request.get(`https://anilist.co/api/character/search/${search}?access_token=${this.bot.config.ani_token}`)
       .send(null)
       .set('Content-Type', 'application/json');
@@ -110,14 +110,14 @@ Bitte kontaktiere \`${this.bot.config.owner}\`\n\n${response.error.messages[0]}`
             .setFooter(`${msg.author.username}: ${msg.content}`, msg.author.avatarURL));
       }
     } else if (!response[1]) {
-      return this.answer(response[0], msg, bot);
+      return this.answer(response[0], msg);
     } else {
-      return this.getanswer(bot, msg, response);
+      return this.getanswer(msg, response);
     }
   }
 
 
-  async getanswer(bot, msg, response) { // eslint-disable-line consistent-return
+  async getanswer(msg, response) { // eslint-disable-line consistent-return
     let count = 1;
     const message = await msg.channel.sendEmbed(
       new this.bot.methods.Embed()
@@ -137,10 +137,10 @@ Bitte kontaktiere \`${this.bot.config.owner}\`\n\n${response.error.messages[0]}`
       } else if (collected.content % 1 !== 0 || !response[parseInt(collected.content) - 1]) {
         collected.first().delete();
         message.delete();
-        this.getanswer(bot, msg, response);
+        this.getanswer(msg, response);
       } else {
         collected.first().delete();
-        this.answer(response[parseInt(collected.content) - 1], msg, bot, message);
+        this.answer(response[parseInt(collected.content) - 1], msg, message);
       }
     } catch (e) {
       message.delete();
@@ -149,7 +149,7 @@ Bitte kontaktiere \`${this.bot.config.owner}\`\n\n${response.error.messages[0]}`
   }
 
 
-  async answer(response, msg, bot, mes) {
+  async answer(response, msg, mes) {
     const map = { amp: '&', lt: '<', gt: '>', quot: '"', '#039': "'" };
     response.info = response.info.replace(/&([^;]+);/g, (m, c) => map[c])
       .split('`').join('\'').split('<br>').join('\n'); // eslint-disable-line newline-per-chained-call
