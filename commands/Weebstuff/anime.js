@@ -2,7 +2,7 @@ const request = require('superagent');
 
 module.exports = class Anime {
   constructor(bot) {
-    this.bot.bot = bot;
+    this.bot = bot;
   }
 
 
