@@ -205,6 +205,7 @@ exports.perms = (msg) => {
   if (msg.conf.musicrole && msg.conf.musicchannel) return msg.member.roles.has(msg.conf.musicrole) && msg.channel.id === msg.conf.musicchannel;
   if (msg.member.roles.has(msg.conf.musicrole)) return true;
   if (msg.conf.musicchannel && msg.channel.id === msg.conf.musicchannel) return true;
+  if (!(msg.conf.musicrole && msg.conf.musicchannel)) return true;
   return false;
 };
 
