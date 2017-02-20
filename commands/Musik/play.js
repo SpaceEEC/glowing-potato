@@ -19,7 +19,7 @@ module.exports = class Play {
         msg.channel.sendMessage('Du bist nicht in einem Channel, dem ich beitreten und sprechen darf.')
           .then((mes) => mes.delete(5000));
       } else if (params[0].includes('watch?v=') || params[0].length === 11) {
-        this.add(this.bot, await msg.channel.sendMessage('Rufe Video ab...'), params[0], msg);
+        this.bot.commands.get('play').add(this.bot, await msg.channel.sendMessage('Rufe Video ab...'), params[0], msg);
       } else if (params[0].includes('playlist?list=') || params[0].length > 11) {
         this.bulkadd(msg, params[0].includes('playlist?list=') ? params[0].split('playlist?list=')[1] : params[0], params[1]);
       } else {
