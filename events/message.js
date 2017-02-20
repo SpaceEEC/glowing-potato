@@ -15,18 +15,18 @@ exports.run = async (bot, msg) => {
   }
   const command = msg.content.slice(prefixLength).split(' ')[0].toLowerCase();
   const params = msg.content.slice(prefixLength).split(' ').slice(1).filter(a => a); // eslint-disable-line newline-per-chained-call
-  let cmd;
+  let Command;
   if (bot.commands.has(command)) {
-    cmd = bot.commands.get(command);
+    Command = bot.commands.get(command);
   } else if (bot.aliases.has(command)) {
-    cmd = bot.commands.get(bot.aliases.get(command));
+    Command = bot.commands.get(bot.aliases.get(command));
   }
-  if (cmd) {
+  if (Command) {
     msg.conf = conf;
     msg.cmd = command;
-    bot.internal.checks.run(bot, msg, cmd)
+    bot.internal.checks.run(bot, msg, Command)
       .then(() => {
-        cmd.run(bot, msg, params)
+        new Command(bot).run(msg, params)
           .catch((e) => {
             bot.err(`[${command}] [uncaught]: ${e.stack}\n${e.response && e.response.res && e.response.res.text ? e.response.res.text : ''}`);
             msg.channel.sendMessage(`Es ist ein unbehandelter Fehler aufgetreten: \`${e.message}\`.\n\nBitten kontaktiere \`${bot.config.owner}\`.`);
