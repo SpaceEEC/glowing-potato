@@ -23,26 +23,23 @@ Ein Vor- oder Nachname würde mir reichen.`,
           }],
         color: msg.member.highestRole.color,
       });
-      try {
-        const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
-        mes.delete();
-        if (!collected) return msg.delete();
-        if (collected.content === 'cancel') {
-          collected.first().delete();
-          return msg.delete();
-        } else {
-          if (collected.content.includes('?')) {
-            return msg.channel.sendEmbed(
-              new this.bot.methods.Embed()
-                .setColor(0xffff00)
-                .setDescription('Bitte keine Fragezeichen verwenden, die Anfrage würde dadurch ungültig werden.')
-            );
-          }
-          return this.authcheck(msg, collected.content.split(' '));
-        }
-      } catch (e) {
-        mes.delete();
+      const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
+      mes.delete();
+      if (!collected) {
+        msg.delete();
         return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
+      } else if (collected.content === 'cancel') {
+        collected.first().delete();
+        return msg.delete();
+      } else {
+        if (collected.content.includes('?')) {
+          return msg.channel.sendEmbed(
+            new this.bot.methods.Embed()
+              .setColor(0xffff00)
+              .setDescription('Bitte keine Fragezeichen verwenden, die Anfrage würde dadurch ungültig werden.')
+          );
+        }
+        return this.authcheck(msg, collected.content.split(' '));
       }
     }
     if (params.join(' ').includes('?')) {
@@ -73,8 +70,6 @@ Ein Vor- oder Nachname würde mir reichen.`,
       this.bot.config.ani_expires = res.body.expires;
       this.bot.debug(`[char] UPDATE config SET ani_expires=${res.body.expires}, ani_token=${res.body.access_token};`);
       await this.bot.db.run(`UPDATE config SET ani_expires=?, ani_token=?;`, [res.body.expires, res.body.access_token]);
-      // await this.bot.db.run(`UPDATE config SET ani_token=?`, []);
-      // await this.bot.db.run("UPDATE 'config' SET 'ani_expires'=? AND 'ani_token'=?; WHERE true", [res.body.expires, res.body.access_token]);
       await message.edit({
         embed: new this.bot.methods.Embed()
           .setColor(0x00ff08)
@@ -117,7 +112,7 @@ Bitte kontaktiere \`${this.bot.config.owner}\`\n\n${response.error.messages[0]}`
   }
 
 
-  async getanswer(msg, response) { // eslint-disable-line consistent-return
+  async getanswer(msg, response) {
     let count = 1;
     const message = await msg.channel.sendEmbed(
       new this.bot.methods.Embed()
@@ -126,33 +121,28 @@ Bitte kontaktiere \`${this.bot.config.owner}\`\n\n${response.error.messages[0]}`
         .setDescription(response.map(r => `${count++}\t\t${r.name_first} ${r.name_last ? r.name_last : ''}`).join('\n'))
         .addField(`Gib die Nummer des Charakters, für den weitere Informationen haben möchtest an.`,
         'Diese Anfrage wird bei `cancel` oder nach `30` Sekunden automatisch abgebrochen.'));
-    try {
-      const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
-      message.delete();
-      if (!collected) return msg.delete();
-      if (collected.content === 'cancel') {
-        msg.delete();
-        collected.first().delete();
-        message.delete();
-      } else if (collected.content % 1 !== 0 || !response[parseInt(collected.content) - 1]) {
-        collected.first().delete();
-        message.delete();
-        this.getanswer(msg, response);
-      } else {
-        collected.first().delete();
-        this.answer(response[parseInt(collected.content) - 1], msg, message);
-      }
-    } catch (e) {
+    const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
+    if (!collected) {
       message.delete();
       return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
+    } else if (collected.content === 'cancel') {
+      msg.delete();
+      collected.first().delete();
+      return message.delete();
+    } else if (collected.content % 1 !== 0 || !response[parseInt(collected.content) - 1]) {
+      collected.delete();
+      message.delete();
+      return this.getanswer(msg, response);
+    } else {
+      collected.delete();
+      return this.answer(response[parseInt(collected.content) - 1], msg, message);
     }
   }
 
 
   async answer(response, msg, mes) {
-    const map = { amp: '&', lt: '<', gt: '>', quot: '"', '#039': "'" };
-    response.info = response.info.replace(/&([^;]+);/g, (m, c) => map[c])
-      .split('`').join('\'').split('<br>').join('\n'); // eslint-disable-line newline-per-chained-call
+    const map = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'", '`': '\'', '<br>': '\n', '<br />': '\n' };
+    response.info = this.replaceMap(response.info, map);
     const embed = new this.bot.methods.Embed()
       .setColor(0x0800ff)
       .setTitle(`${response.name_first ? response.name_first : ''} ${response.name_last ? response.name_last : ''}`)
@@ -168,11 +158,20 @@ Bitte kontaktiere \`${this.bot.config.owner}\`\n\n${response.error.messages[0]}`
       }
     }
     try {
-      if (mes) await mes.edit({ embed });
-      else await msg.channel.sendEmbed(embed);
+      if (mes) return mes.edit({ embed });
+      else return msg.channel.sendEmbed(embed);
     } catch (e) {
-      msg.channel.sendCode('js', `${e}${e && e.response && e.response.res && e.response.res.text ? `\n${this.bot.inspect(JSON.parse(e.response.res.text), false, 1)}` : ''}`);
+      return msg.channel.sendCode('js', `${e}${e && e.response && e.response.res && e.response.res.text ? `\n${this.bot.inspect(JSON.parse(e.response.res.text), false, 1)}` : ''}`);
     }
+  }
+
+
+  replaceMap(input, map) {
+    const regex = [];
+    for (const key in map) {
+      regex.push(key.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&'));
+    }
+    return input.replace(new RegExp(regex.join('|'), 'g'), w => map[w]);
   }
 
 
