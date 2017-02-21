@@ -27,7 +27,7 @@ Ein Vor- oder Nachname würde mir reichen.`,
       mes.delete();
       if (!collected) {
         msg.delete();
-        return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
+        return msg.channel.sendMessage('Breche die Anfrage wie, durch die Inaktivität gewünscht, ab.');
       } else if (collected.content === 'cancel') {
         collected.first().delete();
         return msg.delete();
@@ -124,7 +124,7 @@ Bitte kontaktiere \`${this.bot.config.owner}\`\n\n${response.error.messages[0]}`
     const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
     if (!collected) {
       message.delete();
-      return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
+      return msg.channel.sendMessage('Breche die Anfrage wie, durch die Inaktivität gewünscht, ab.');
     } else if (collected.content === 'cancel') {
       msg.delete();
       collected.first().delete();
