@@ -101,7 +101,7 @@ module.exports = class Search {
     } else {
       collected.delete();
       mes.delete();
-      this.bot.commands.get('play').add(msg, search[index].id.videoId);
+      this.bot.commands.get('play').add(this.bot, msg, search[index].id.videoId);
     }
   }
 
