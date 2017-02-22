@@ -70,13 +70,10 @@ module.exports = class Search {
       }
       return;
     }
-    let thumbnail = search[index].snippet.thumbnails;
-    thumbnail = thumbnail.maxres ? thumbnail.maxres.url
-      : thumbnail.standard ? thumbnail.standard.url
-        : thumbnail.high ? thumbnail.high.url
-          : thumbnail.medium ? thumbnail.medium.url
-            : thumbnail.default ? thumbnail.default.url
-              : undefined;
+    let thumbnail;
+    for (const option of ['maxres', 'standard', 'high', 'medium', 'default']) {
+      if (search[index].snippet.thumbnails[option]) thumbnail = search[index].snippet.thumbnails[option];
+    }
     const embed = new this.bot.methods.Embed()
       .setColor(0x9370DB)
       .setTitle(search[index].snippet.title)
@@ -84,23 +81,22 @@ module.exports = class Search {
       .setDescription('`y` zum bestätigen\n`n` für das nächste Ergebnis\n\nDiese Anfrage wird entweder in `30` Sekunden, oder bei der Eingabe von `cancel` abgebrochen.')
       .setFooter(`Suchergebnis ${index + 1} von insgesamt ${search.length} Ergebnissen.`, this.bot.user.avatarURL);
     let func;
-    if (original) func = original.edit('', { embed: embed });
+    if (original) func = original.edit({ embed });
     else func = msg.channel.sendEmbed(embed);
     const mes = await func;
     const collected = (await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
-    let input = collected ? collected.content : null;
-    if (!input) {
+    if (!collected) {
       msg.delete();
       mes.delete();
-    } else if (input !== 'y' && input !== 'n') {
+    } else if (collected.content !== 'y' && collected.content !== 'n') {
       msg.delete();
       mes.delete();
-      collected.first().delete();
-    } else if (input === 'n') {
-      collected.first().delete();
+      collected.delete();
+    } else if (collected.content === 'n') {
+      collected.delete();
       this.selectItem(msg, search, index + 1, mes);
     } else {
-      collected.first().delete();
+      collected.delete();
       mes.delete();
       this.bot.commands.get('play').add(msg, search[index].id.videoId);
     }
