@@ -1,52 +1,43 @@
 const fs = require('fs-extra-promise');
+const path = require('path');
+
 exports.init = async (bot) => {
   bot.commands = new bot.methods.Collection();
   bot.aliases = new bot.methods.Collection();
-  const folders = await fs.readdirAsync('./commands/');
+  const folders = await fs.readdirAsync(`.${path.sep}commands`);
   bot.info(`Lade insgesamt ${folders.length} Befehlskategorien.`);
-  folders.forEach(async folder => {
-    const files = await fs.readdirAsync(`./commands/${folder}`);
+  for (const folder of folders) {
+    const files = await fs.readdirAsync(`.${path.sep}commands${path.sep + folder}`);
     bot.info(`Lade insgesamt ${files.length} Befehle aus ${folder}.`);
-    files.forEach(f => {
+    for (const f of files) {
       try {
-        const props = require(`../commands/${folder}/${f}`);
-        if (props.help.shortdescription.length === 0) props.conf.group = 'hidden';
-        else props.conf.group = folder;
+        const props = require(`..${path.sep}commands${path.sep + folder + path.sep + f}`);
         bot.commands.set(props.help.name, props);
-        props.conf.aliases.forEach(alias => {
-          bot.aliases.set(alias, props.help.name);
-        });
+        for (const alias of props.conf.aliases) bot.aliases.set(alias, props.help.name);
       } catch (e) {
-        bot.err(`Fehler beim Laden von ./commands/${folder}/${f}.js\n${e.stack ? e.stack : e}`);
+        bot.err(`Fehler beim Laden von .${path.sep}commands${path.sep + folder + path.sep + f}.js\n${e.stack ? e.stack : e}`);
       }
-    });
-  });
+    }
+  }
 };
 
 
 exports.reload = (bot, command) => new Promise((resolve, reject) => {
   try {
-    let dir = 'FEHLER';
+    let dir;
     if (bot.commands.has(command)) {
       dir = bot.commands.get(command).conf.group;
-      command = `${dir}/${command}`;
-    } else {
-      dir = command.split('/')[0];
-    }
-    delete require.cache[require.resolve(`../commands/${command}`)];
-    const cmd = require(`../commands/${command}`);
+      command = dir + path.sep + command;
+    } else { dir = command.split(path.sep)[0]; }
+    delete require.cache[require.resolve(`..${path.sep}commands${path.sep + command}`)];
+    const cmd = require(`..${path.sep}commands${path.sep + command}`);
     command = cmd.help.name;
-    if (cmd.help.shortdescription.length === 0) cmd.conf.group = 'hidden';
-    else cmd.conf.group = dir;
-    if (dir === 'FEHLER') throw new Error('Konnte Ordner nicht ermitteln!');
     bot.commands.delete(command);
     bot.aliases.forEach((cmd2, alias) => {
       if (cmd2 === command) bot.aliases.delete(alias);
     });
     bot.commands.set(command, cmd);
-    cmd.conf.aliases.forEach(alias => {
-      bot.aliases.set(alias, cmd.help.name);
-    });
+    for (const alias of cmd.conf.aliases) bot.aliases.set(alias, cmd.help.name);
     resolve(cmd);
   } catch (e) {
     reject(e);
