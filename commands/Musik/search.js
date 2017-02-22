@@ -72,7 +72,10 @@ module.exports = class Search {
     }
     let thumbnail;
     for (const option of ['maxres', 'standard', 'high', 'medium', 'default']) {
-      if (search[index].snippet.thumbnails[option]) thumbnail = search[index].snippet.thumbnails[option];
+      if (search[index].snippet.thumbnails[option]) {
+        thumbnail = search[index].snippet.thumbnails[option].url;
+        break;
+      }
     }
     const embed = new this.bot.methods.Embed()
       .setColor(0x9370DB)
