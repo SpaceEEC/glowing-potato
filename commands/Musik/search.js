@@ -47,8 +47,8 @@ module.exports = class Search {
       if (JSON.parse(res.text).items.length === 0) {
         statusmsg.edit(`Auf diese Suchanfrage wurde nichts gefunden.`);
       } else if (JSON.parse(res.text).items.length === 1) {
+        await statusmsg.edit('Erfolgreich gefunden!');
         this.bot.commands.get('play').add(this.bot, statusmsg, JSON.parse(res.text).items[0].id.videoId, msg);
-        statusmsg.edit('Erfolgreich gefunden!').then(tmp => tmp.delete(5000));
       } else {
         statusmsg.delete();
         this.selectItem(msg, JSON.parse(res.text).items, 0);
