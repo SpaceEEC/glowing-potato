@@ -100,8 +100,7 @@ module.exports = class Search {
       this.selectItem(msg, search, index + 1, mes);
     } else {
       collected.delete();
-      mes.delete();
-      this.bot.commands.get('play').add(this.bot, msg, search[index].id.videoId);
+      this.bot.commands.get('play').add(this.bot, mes, search[index].id.videoId, msg);
     }
   }
 
