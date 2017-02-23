@@ -1,21 +1,21 @@
 const fs = require('fs-extra-promise');
-const path = require('path');
+const { sep } = require('path');
 
 exports.init = async (bot) => {
   bot.commands = new bot.methods.Collection();
   bot.aliases = new bot.methods.Collection();
-  const folders = await fs.readdirAsync(`.${path.sep}commands`);
+  const folders = await fs.readdirAsync(`.${sep}commands`);
   bot.info(`Lade insgesamt ${folders.length} Befehlskategorien.`);
   for (const folder of folders) {
-    const files = await fs.readdirAsync(`.${path.sep}commands${path.sep + folder}`);
+    const files = await fs.readdirAsync(`.${sep}commands${sep + folder}`);
     bot.info(`Lade insgesamt ${files.length} Befehle aus ${folder}.`);
     for (const f of files) {
       try {
-        const props = require(`..${path.sep}commands${path.sep + folder + path.sep + f}`);
+        const props = require(`..${sep}commands${sep + folder + sep + f}`);
         bot.commands.set(props.help.name, props);
         for (const alias of props.conf.aliases) bot.aliases.set(alias, props.help.name);
       } catch (e) {
-        bot.err(`Fehler beim Laden von .${path.sep}commands${path.sep + folder + path.sep + f}.js\n${e.stack ? e.stack : e}`);
+        bot.err(`Fehler beim Laden von .${sep}commands${sep + folder + sep + f}.js\n${e.stack ? e.stack : e}`);
       }
     }
   }
@@ -27,10 +27,10 @@ exports.reload = (bot, command) => new Promise((resolve, reject) => {
     let dir;
     if (bot.commands.has(command)) {
       dir = bot.commands.get(command).conf.group;
-      command = dir + path.sep + command;
-    } else { dir = command.split(path.sep)[0]; }
-    delete require.cache[require.resolve(`..${path.sep}commands${path.sep + command}`)];
-    const cmd = require(`..${path.sep}commands${path.sep + command}`);
+      command = dir + sep + command;
+    } else { dir = command.split(sep)[0]; }
+    delete require.cache[require.resolve(`..${sep}commands${sep + command}`)];
+    const cmd = require(`..${sep}commands${sep + command}`);
     command = cmd.help.name;
     bot.commands.delete(command);
     bot.aliases.forEach((cmd2, alias) => {
