@@ -28,7 +28,7 @@ bot.internal.init(bot);
 
 process.on('unhandledRejection', (err) => {
   if (err) {
-    if (/(Something took too long to do.|getaddrinfo ENOTFOUND discordapp.com discordapp.com:443)/.test(err.message)) process.exit(2);
+    if (/(Something took too long to do.|getaddrinfo)/.test(err.message)) process.exit(2);
     if (err.response && err.response.res && err.response.res.text) bot.err(`Uncaught Promise Error:\n$ ${err.response.res.text}${err.stack ? `\n${err.stack}` : ''}`);
     else bot.err(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`);
   } else {
