@@ -13,7 +13,7 @@ module.exports = class Help {
   }
 
 
-  one(msg, params) { // eslint-disable-line consistent-return
+  one(msg, params) {
     if (params[0].startsWith(msg.conf.prefix)) params[0] = params[0].replace(msg.conf.prefix, '');
     let com;
     let alias = false;
@@ -24,55 +24,23 @@ module.exports = class Help {
         com = this.bot.aliases.get(params[0]);
       } else {
         return msg.channel.sendEmbed(new this.bot.methods.Embed()
-          .setColor(0xff0000)
-          .addField('Fehlerhafter Parameter',
+          .setColor(0xff0000).addField('Fehlerhafter Parameter',
           `Der Befehl \`${params[0]}\` existiert nicht. Vielleicht vertippt?`)
           .setFooter(`${msg.author.username}: ${msg.content}`, this.bot.user.avatarURL));
       }
     const cmd = this.bot.commands.get(com);
     let aliases = '';
-    this.bot.aliases.forEach((item, key) => {
-      if (this.bot.aliases.get(key) === com) {
-        aliases += `\`${msg.conf.prefix + key.toString()}\` `;
-      }
-    });
-    msg.channel.sendEmbed({
-      color: 3447003,
-      description: alias
-        ? `Der Befehl \`${msg.conf.prefix + params[0]}\` ist ein Alias von \`${msg.conf.prefix + cmd.help.name}\`.`
-        : undefined,
-      fields: [
-        {
-          name: `Der Befehl \`${msg.conf.prefix + cmd.help.name}\` hat folgende Funktion:`,
-          value: cmd.help.description.split('$conf.prefix').join(msg.conf.prefix),
-        },
-        {
-          name: `Der Befehl \`${msg.conf.prefix + cmd.help.name}\` hat folgende Aliasse`,
-          value: aliases.length === 0 ? 'Dieser Befehl hat keine Aliasse.' : aliases,
-          inline: true,
-        },
-        {
-          name: `Benötigtes Permissionlevel`,
-          value: `❯ ${cmd.conf.permLevel}`,
-          inline: true,
-        },
-        {
-          name: `Der Befehl \`${msg.conf.prefix + cmd.help.name}\` wird folgendermaßen angewandt:`,
-          value: cmd.help.usage.split('$conf.prefix').join(msg.conf.prefix),
-          inline: false,
-        },
-        {
-          name: 'Generell für Argumente:',
-          value: '`<>` heißt, dass eins davon so wie es ist genommen werden muss.\n'
-          + '`[]` heißt, dass das Argument zwingend erforderlich ist und mit dem entsprechendem Einsatz ersetzt werden muss.\n'
-          + '`()` heißt, dass das Argument weggelassen werden kann und mit dem entsprechendem Einsatz ersetzt werden muss.',
-        },
-      ],
-      footer: {
-        icon_url: this.bot.user.avatarURL,
-        text: `${msg.author.username}: ${msg.content}`,
-      },
-    });
+    this.bot.aliases.forEach((item, key) => { if (this.bot.aliases.get(key) === com) aliases += `\`${msg.conf.prefix + key}\` `; });
+    return msg.channel.sendEmbed(new this.bot.methods.Embed()
+      .setColor(3447003).setDescription(alias ? `Der Befehl \`${msg.conf.prefix + params[0]}\` ist ein Alias von \`${msg.conf.prefix + cmd.help.name}\`.` : undefined)
+      .addField(`Der Befehl \`${msg.conf.prefix + cmd.help.name}\` hat folgende Funktion:`, cmd.help.description.split('$conf.prefix').join(msg.conf.prefix))
+      .addField(`Der Befehl \`${msg.conf.prefix + cmd.help.name}\` hat folgende Aliasse`, aliases.length === 0 ? 'Dieser Befehl hat keine Aliasse.' : aliases, true)
+      .addField(`Benötigtes Permissionlevel`, `❯ ${cmd.conf.permLevel}`, true)
+      .addField(`Der Befehl \`${msg.conf.prefix + cmd.help.name}\` wird folgendermaßen angewandt:`, cmd.help.usage.split('$conf.prefix').join(msg.conf.prefix), false)
+      .addField('Generell für Argumente:', '`<>` heißt, dass eins davon so wie es ist genommen werden muss.\n'
+      + '`[]` heißt, dass das Argument zwingend erforderlich ist und mit dem entsprechendem Einsatz ersetzt werden muss.\n'
+      + '`()` heißt, dass das Argument weggelassen werden kann und mit dem entsprechendem Einsatz ersetzt werden muss.')
+      .setFooter(`${msg.author.username}: ${msg.content}`, this.bot.user.avatarURL));
   }
 
 
@@ -80,40 +48,34 @@ module.exports = class Help {
     let stuff = [];
     let notall = false;
     if (params[0]) {
-      if (params[0] === 'all') {
-        this.bot.commands.forEach((item, key) => {
-          const cmd = this.bot.commands.get(key);
-          if (cmd.help.shortdescription.length !== 0) {
+      this.bot.commands.forEach((item, key) => {
+        const cmd = this.bot.commands.get(key);
+        if (cmd.help.shortdescription.length !== 0) {
+          if (!stuff[cmd.conf.group]) {
+            stuff[cmd.conf.group] = [`${cmd.help.name}\` - ${cmd.help.shortdescription
+              .split('$conf.prefix').join(msg.conf.prefix)}`];
+          } else {
+            let temp = stuff[cmd.conf.group];
+            temp.push(`${cmd.help.name}\` - ${cmd.help.shortdescription.split('$conf.prefix').join(msg.conf.prefix)}`);
+            stuff[cmd.conf.group] = temp;
+          }
+        }
+      });
+    } else {
+      this.bot.commands.forEach((item, key) => {
+        const cmd = this.bot.commands.get(key);
+        if (cmd.help.shortdescription.length !== 0 && !msg.conf.disabledcommands.includes(cmd.help.name)) {
+          if (msg.permlvl > parseInt(cmd.conf.permLevel) - 1) {
             if (!stuff[cmd.conf.group]) {
               stuff[cmd.conf.group] = [`${cmd.help.name}\` - ${cmd.help.shortdescription
                 .split('$conf.prefix').join(msg.conf.prefix)}`];
             } else {
               let temp = stuff[cmd.conf.group];
-              temp.push(`${cmd.help.name}\` - ${cmd.help.shortdescription.split('$conf.prefix').join(msg.conf.prefix)}`);
+              temp.push(`${cmd.help.name}\` - ${cmd.help.shortdescription
+                .split('$conf.prefix').join(msg.conf.prefix)}`);
               stuff[cmd.conf.group] = temp;
             }
-          }
-        });
-      }
-    } else {
-      this.bot.commands.forEach((item, key) => {
-        const cmd = this.bot.commands.get(key);
-        if (cmd.help.shortdescription.length !== 0) {
-          if (!msg.conf.disabledcommands.includes(cmd.help.name)) {
-            if (msg.permlvl > parseInt(cmd.conf.permLevel) - 1) {
-              if (!stuff[cmd.conf.group]) {
-                stuff[cmd.conf.group] = [`${cmd.help.name}\` - ${cmd.help.shortdescription
-                  .split('$conf.prefix').join(msg.conf.prefix)}`];
-              } else {
-                let temp = stuff[cmd.conf.group];
-                temp.push(`${cmd.help.name}\` - ${cmd.help.shortdescription
-                  .split('$conf.prefix').join(msg.conf.prefix)}`);
-                stuff[cmd.conf.group] = temp;
-              }
-            } else if (cmd.conf.group !== 'abgespaced') {
-              if (!notall) notall = true;
-            }
-          }
+          } else if (cmd.conf.group !== 'abgespaced' && !notall) { notall = true; }
         }
       });
     }
