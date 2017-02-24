@@ -44,9 +44,7 @@ exports.set = (bot, msg, key, params) => new Promise((resolve, reject) => {
     bot.info(`[config] UPDATE confs SET ${key}='${JSON.stringify(value)}' WHERE id=${JSON.stringify(msg.guild.id)}`);
     bot.db.run(`UPDATE confs SET '${key}'=? WHERE id=?`, [JSON.stringify(value), JSON.stringify(msg.guild.id)]).then(() => {
       resolve(`Der Wert \`${key}\` wurde auf \`${value}\` gesetzt.`);
-    }).catch((e) => {
-      reject(e);
-    });
+    }).catch(reject);
   } else {
     resolve(`Der Wert \`${key}\` existiert nicht in der Config.`);
   }
@@ -60,9 +58,7 @@ exports.reset = (bot, msg, key) => new Promise((resolve, reject) => {
     bot.info(`[config] UPDATE confs SET ${key}='${JSON.stringify(value)}' WHERE id=${JSON.stringify(msg.guild.id)}`);
     bot.db.run(`UPDATE confs SET '${key}'=? WHERE id=?`, [JSON.stringify(value), JSON.stringify(msg.guild.id)]).then(() => {
       resolve(`Der Wert \`${key}\` wurde zurückgesetzt.`);
-    }).catch((e) => {
-      reject(e);
-    });
+    }).catch(reject);
   } else {
     resolve(`Der Wert \`${key}\` existiert nicht in der Config.`);
   }
@@ -80,12 +76,8 @@ exports.add = (bot, msg, key, value) => new Promise((resolve, reject) => {
     bot.info(`[config] UPDATE confs SET ${key}='${JSON.stringify(bot.confs.get(msg.guild.id)[key])}' WHERE id=${JSON.stringify(msg.guild.id)}`);
     bot.db.run(`UPDATE confs SET '${key}'=? WHERE id=?`,
       [JSON.stringify(bot.confs.get(msg.guild.id)[key]), JSON.stringify(msg.guild.id)])
-      .then(() => {
-        resolve();
-      })
-      .catch((e) => {
-        reject(e);
-      });
+      .then(resolve)
+      .catch(reject);
   } else {
     reject(`Der Wert \`${key}\` existiert nicht in der Config.`);
   }
@@ -105,12 +97,8 @@ exports.remove = (bot, msg, key, value) => new Promise((resolve, reject) => {
     bot.info(`[config] UPDATE confs SET ${key}='${JSON.stringify(bot.confs.get(msg.guild.id)[key])}' WHERE id=${JSON.stringify(msg.guild.id)}`);
     bot.db.run(`UPDATE confs SET '${key}'=? WHERE id=?`,
       [JSON.stringify(bot.confs.get(msg.guild.id)[key]), JSON.stringify(msg.guild.id)])
-      .then(() => {
-        resolve();
-      })
-      .catch((e) => {
-        reject(e);
-      });
+      .then(resolve)
+      .catch(reject);
   } else {
     reject(`Der Wert \`${key}\` existiert nicht in der Config.`);
   }
@@ -130,5 +118,5 @@ exports.init = (bot) => new Promise((resolve, reject) => {
       bot.confs.set(guild.id, guild);
     }
     resolve();
-  }).catch((e) => reject(e));
+  }).catch(reject);
 });
