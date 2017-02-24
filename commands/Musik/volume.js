@@ -9,29 +9,26 @@ module.exports = class Volume {
 
   async run(msg, params = []) {
     if (!this.bot.internal.musik.get(msg.guild.id)) {
-      msg.channel.send('Zur Zeit wird leider nichts gespielt.')
+      return msg.channel.send('Zur Zeit wird leider nichts gespielt.')
         .then(mes => mes.delete(30000));
     } else {
       const musik = this.bot.internal.musik.get(msg.guild.id);
       if (this.bot.internal.music.perms(msg)) {
         if (!msg.guild.member(this.bot.user).voiceChannel) {
-          msg.channel.sendMessage('Zur Zeit spiele ich leider nichts.')
+          return msg.channel.sendMessage('Zur Zeit spiele ich leider nichts.')
             .then((mes) => mes.delete(5000));
         } else if (!this.bot.internal.music.channel(this.bot, msg)) {
-          msg.channel.sendMessage('Für diesen Befehl müssen wir uns leider beide im selben Channel befinden.')
+          return msg.channel.sendMessage('Für diesen Befehl müssen wir uns leider beide im selben Channel befinden.')
             .then((mes) => mes.delete(5000));
         } else if (params[0] % 1 === 0) {
           if (parseInt(params[0]) > 200 || parseInt(params[0]) < 0) {
-            msg.channel.sendMessage('Bitte nur Zahlen von `0` bis `200` eingeben.');
+            return msg.channel.sendMessage('Bitte nur Zahlen von `0` bis `200` eingeben.');
           } else {
-            msg.channel.send(musik.volume(Math.round(params[0] / 10) / 10));
+            return msg.channel.send(musik.volume(Math.round(params[0] / 10) / 10));
           }
-        } else {
-          msg.channel.send(musik.volume('get'));
         }
-      } else {
-        msg.channel.send(musik.volume('get'));
       }
+      return msg.channel.send(musik.volume('get'));
     }
   }
 
