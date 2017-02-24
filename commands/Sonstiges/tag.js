@@ -9,19 +9,19 @@ module.exports = class Tag {
 
   async run(msg, params = []) {
     if (params[0] && this.bot.internal.tags.has(`${msg.guild.id}|${params.join(' ')}`)) {
-      msg.channel.sendMessage(this.bot.internal.tags.get(`${msg.guild.id}|${params.join(' ')}`).response);
+      return msg.channel.sendMessage(this.bot.internal.tags.get(`${msg.guild.id}|${params.join(' ')}`).response);
     } else if (!params[0] || params[0] === 'list') {
       const TagList = this.bot.commands.get('tag-list');
-      new TagList(this.bot).run(msg);
+      return new TagList(this.bot).run(msg);
     } else if (params[0] === 'add') {
       const TagAdd = this.bot.commands.get('tag-add');
-      new TagAdd(this.bot).run(msg, params.slice(1));
+      return new TagAdd(this.bot).run(msg, params.slice(1));
     } else if (params[0] === 'edit') {
       const TagEdit = this.bot.commands.get('tag-edit');
-      new TagEdit(this.bot).run(msg, params.slice(1));
+      return new TagEdit(this.bot).run(msg, params.slice(1));
     } else if (params[0] === 'remove') {
       const TagDel = this.bot.commands.get('tag-del');
-      new TagDel(this.bot).run(msg, params.slice(1));
+      return new TagDel(this.bot).run(msg, params.slice(1));
     } else {
       let response = ['http://puu.sh/t1PqI/026da4b79f.jpg',
         'https://memegen.link/kermit/i-don\'t-know-that-tag/but-that\'s-none-of-my-business.jpg',
@@ -30,12 +30,9 @@ module.exports = class Tag {
         'https://memegen.link/mordor/one-does-not-simply/use-a-none-existing-tag.jpg',
         'https://memegen.link/philosoraptor/what-if/this-tag-doesn\'t-exist.jpg',
         'https://memegen.link/winter/prepare-yourself/tags-are-coming.jpg'];
-      msg.channel.sendEmbed({
-        color: msg.guild.member(msg.author).highestRole.color,
-        description: 'Fehler: Tag nicht gefunden.',
-        type: 'image',
-        image: { url: response[Math.floor(Math.random() * response.length)] },
-      });
+      return msg.channel.sendEmbed(new this.bot.methods.Embed()
+        .setcolor(msg.member.color()).setDescription('Fehler: Tag nicht gefunden.')
+        .setImage(response[Math.floor(Math.random() * response.length)]));
     }
   }
 
