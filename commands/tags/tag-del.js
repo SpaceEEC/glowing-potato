@@ -7,24 +7,21 @@ module.exports = class TagDel {
   }
 
 
-  async run(msg, params = []) { // eslint-disable-line consistent-return
+  async run(msg, params = []) {
     if (!params[0] || (params[0] && !this.bot.internal.tags.has(`${msg.guild.id}|${params.join(' ')}`))) {
       const mes = await msg.channel.sendMessage('Bitte gib nun den Namen des zu löschenden Tags ein.\n\nDiese Anfrage wird bei Eingabe von `cancel`, einer fehlerhaften Eingabe, oder nach 30 Sekunden abgebrochen.');
-      try {
-        const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000, errors: ['time'] });
-        if (this.bot.internal.tags.has(`${msg.guild.id}|${collected.first().content}`)) {
-          params[0] = collected.first().content;
-        } else {
-          mes.delete();
-          return msg.channel.sendMessage('Dieser Tag wurde nicht gefunden.');
-        }
-      } catch (e) {
+      const collected = await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 });
+      if (!collected.size) {
         mes.delete();
         return msg.channel.sendMessage('Breche die Anfrage, wie durch die inaktivität gewünscht, ab.');
+      } else if (this.bot.internal.tags.has(`${msg.guild.id}|${collected.first().content}`)) {
+        params[0] = collected.first().content;
+      } else {
+        mes.delete();
+        return msg.channel.sendMessage('Dieser Tag wurde nicht gefunden.');
       }
     }
-    if (!(
-      this.bot.internal.tags.get(`${msg.guild.id}|${params.join(' ')}`).author === msg.author.id
+    if (!(this.bot.internal.tags.get(`${msg.guild.id}|${params.join(' ')}`).author === msg.author.id
       && this.bot.commands.get('tag').conf.editLevel > msg.permlvl)) {
       return this.bot.internal.tag.remove(this.bot, msg.guild.id, params.join(' ').toLowerCase())
         .then(() => msg.channel.sendMessage('Dieser Tag wurde erfolgreich gelöscht.'))
@@ -32,9 +29,7 @@ module.exports = class TagDel {
           this.bot.err(`[tag-del tag.remove()] ${e}`);
           msg.channel.sendMessage(`Es ist ein interner Fehler beim Löschen dieses Tags aufgetreten.\nEs kann sein, dass der Tag nur temporär gelöscht worden ist.\n\nFalls der Tag nach einen Neustart wieder erscheint kontaktiere bitte \`${this.bot.config.owner}\``);
         });
-    } else {
-      return msg.channel.sendMessage('Du hast keine Rechte diesen Tag zu löschen, da er dir nicht gehört.');
-    }
+    } else { return msg.channel.sendMessage('Du hast keine Rechte diesen Tag zu löschen, da er dir nicht gehört.'); }
   }
 
 
