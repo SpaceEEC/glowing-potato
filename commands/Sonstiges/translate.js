@@ -13,8 +13,7 @@ module.exports = class Translate {
   async run(msg, params = []) {
     const obj = {};
     if (!params[0]) {
-      let mes;
-      mes = await msg.channel.sendMessage('Welche Sprache möchtest du übersetzen? (Bitte mit der zweistelligen Abkürzung dafür angeben)');
+      let mes = await msg.channel.sendMessage('Welche Sprache möchtest du übersetzen? (Bitte mit der zweistelligen Abkürzung dafür angeben)');
       let collected = (await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
       mes.delete();
       if (!collected) return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
