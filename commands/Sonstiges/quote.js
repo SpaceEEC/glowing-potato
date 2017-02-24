@@ -49,7 +49,7 @@ Zitate auf diesem Server: \`${this.bot.internal.quotes.filter((w, q) => q.starts
       if (this.bot.internal.quotes.has(`${msg.guild.id}|${params[2]}`)) {
         return msg.channel.sendMessage('Dieses Zitat existiert bereits!');
       }
-      msg.channel.fetchMessage(params[2]).then(mes => {
+      return msg.channel.fetchMessage(params[2]).then(mes => {
         mes.guild.fetchMember(mes.author).then(member => {
           if (params[1] === 'text') {
             this.bot.internal.quote
@@ -71,13 +71,13 @@ Zitate auf diesem Server: \`${this.bot.internal.quotes.filter((w, q) => q.starts
                 msg.channel.sendMessage('Zitat eingefügt');
               })
               .catch((e) => {
-                msg.channel.sendMessage('Es ist ein Fehler beim Einfügen des Zitates aufgetreten.\nBitte kontaktiere `spaceeec#0302`.');
+                msg.channel.sendMessage(`Es ist ein Fehler beim Einfügen des Zitates aufgetreten.\nBitte kontaktiere \`${this.bot.config.owner}\`.`);
                 this.bot.err(`[quote add img] ${e}`);
               });
           }
         })
           .catch((e) => {
-            msg.channel.sendMessage(`Es ist ein Fehler beim Abrufen des Zitierten aufgetreten.\nBitte kontaktiere \`\`.`);
+            msg.channel.sendMessage(`Es ist ein Fehler beim Abrufen des Zitierten aufgetreten.\nBitte kontaktiere \`${this.bot.config.owner}\`.`);
             this.bot.err(`[quote fetchMember] ${e}`);
           });
       })
