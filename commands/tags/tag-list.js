@@ -21,7 +21,7 @@ module.exports = class TagList {
       if (users[0]) {
         alle = ['Dir gehören alle Tags auf diesem Server, du könntest andere dazu anstiften auch mal Tags zu erstellen.'];
       } else {
-        alle = ['Es existieren keine Tags auf diesem Server, erstell doch welche!'];
+        alle = ['Es existieren keine Tags auf diesem Server, erstell\' doch welche!'];
       }
     }
     if (!users[0]) users = ['Du hast keine Tags, erstell\' doch welche!'];
