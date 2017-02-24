@@ -9,14 +9,10 @@ module.exports = class Ignore {
 
   async run(msg, params = []) {
     if (!params[0]) {
-      const message = await msg.channel.sendEmbed({
-        description: 'Gib den zu Ignorierenden Nutzer/Channel per @Mention, #Channel oder per ID an.',
-        color: msg.member.highestRole.color,
-        fields: [{
-          name: '\u200b',
-          value: 'Um diese Anfrage abzubrechen gib `cancel` ein oder lass einfach 30 Sekunden verstreichen.',
-        }],
-      });
+      const message = await msg.channel.sendEmbed(new this.bot.methods.Embed()
+    .setDescription('Gib den zu Ignorierenden Nutzer/Channel per @Mention, #Channel oder per ID an.')
+    .setColor(msg.member.color())
+    .addField('\u200b', 'Um diese Anfrage abzubrechen gib `cancel` ein oder lass einfach 30 Sekunden verstreichen.'));
       const collected = (await msg.channel.awaitMessages(m => msg.author.id === m.author.id, { maxMatches: 1, time: 30000 })).first();
       message.delete();
       if (!collected) {
