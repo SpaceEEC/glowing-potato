@@ -11,18 +11,10 @@ module.exports = class Char {
 
   async run(msg, params = []) {
     if (!params[0]) {
-      const mes = await msg.channel.sendEmbed({
-        title: 'Ein kleines Missgeschick',
-        description: `\u200b
-Einen Charakter suchen wir heute?
-Ein Vor- oder Nachname würde mir reichen.`,
-        fields: [
-          {
-            name: `\u200b`,
-            value: 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um diese Anfrage abzubrechen.',
-          }],
-        color: msg.member.highestRole.color,
-      });
+      const mes = await msg.channel.sendEmbed(new this.bot.methods.Embed().setTitle('Ein kleines Missgeschick')
+        .setDescription('\nEinen Charakter suchen wir heute?\nEin Vor- oder Nachname würde mir reichen.')
+        .addField('\u200b', 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um diese Anfrage abzubrechen.')
+        .setColor(msg.member.color()));
       const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
       mes.delete();
       if (!collected) {
@@ -33,21 +25,16 @@ Ein Vor- oder Nachname würde mir reichen.`,
         return msg.delete();
       } else {
         if (collected.content.includes('?')) {
-          return msg.channel.sendEmbed(
-            new this.bot.methods.Embed()
-              .setColor(0xffff00)
-              .setDescription('Bitte keine Fragezeichen verwenden, die Anfrage würde dadurch ungültig werden.')
+          return msg.channel.sendEmbed(new this.bot.methods.Embed().setColor(0xffff00)
+            .setDescription('Bitte keine Fragezeichen verwenden, die Anfrage würde dadurch ungültig werden.')
           );
         }
-        return this.authcheck(msg, collected.content.split(' '));
+        params = collected.content.split(' ');
       }
     }
     if (params.join(' ').includes('?')) {
-      return msg.channel.sendEmbed(
-        new this.bot.methods.Embed()
-          .setColor(0xffff00)
-          .setDescription('Bitte keine Fragezeichen verwenden, die Anfrage würde dadurch ungültig werden.')
-      );
+      return msg.channel.sendEmbed(new this.bot.methods.Embed().setColor(0xffff00)
+        .setDescription('Bitte keine Fragezeichen verwenden, die Anfrage würde dadurch ungültig werden.'));
     }
     return this.authcheck(msg, params);
   }
@@ -55,17 +42,14 @@ Ein Vor- oder Nachname würde mir reichen.`,
 
   async authcheck(msg, params) {
     if (this.bot.config.ani_expires <= Math.floor(Date.now() / 1000) + 300) {
-      const message = await msg.channel.sendEmbed(
-        new this.bot.methods.Embed()
-          .setColor(0xffff00)
-          .setDescription('Der Token ist ausgelaufen, ich fordere einen neuen an.\nDies kann einen Moment dauern, ich bitte um Geduld.'));
+      const message = await msg.channel.sendEmbed(new this.bot.methods.Embed().setColor(0xffff00)
+        .setDescription('Der Token ist ausgelaufen, ich fordere einen neuen an.\nDies kann einen Moment dauern, ich bitte um Geduld.'));
       const res = await request.post(`https://anilist.co/api/auth/access_token`)
         .send({
           grant_type: 'client_credentials',
           client_id: this.bot.internal.auth.anilist.client_id,
           client_secret: this.bot.internal.auth.anilist.client_secret,
-        })
-        .set('Content-Type', 'application/json');
+        }).set('Content-Type', 'application/json');
       this.bot.config.ani_token = res.body.access_token;
       this.bot.config.ani_expires = res.body.expires;
       this.bot.debug(`[char] UPDATE config SET ani_expires=${res.body.expires}, ani_token=${res.body.access_token};`);
@@ -75,31 +59,25 @@ Ein Vor- oder Nachname würde mir reichen.`,
           .setColor(0x00ff08)
           .setDescription('Token wurde erfolgreich erneuert.'),
       });
-      return this.query(params.join(' '), msg);
-    } else {
-      return this.query(params.join(' '), msg);
     }
+    return this.query(params.join(' '), msg);
   }
 
 
   async query(search, msg) {
     const res = await request.get(`https://anilist.co/api/character/search/${search}?access_token=${this.bot.config.ani_token}`)
-      .send(null)
-      .set('Content-Type', 'application/json');
-    let response;
-    response = JSON.parse(res.text);
+      .send(null).set('Content-Type', 'application/json');
+    const response = JSON.parse(res.text);
     if (response.error) {
       if (response.error.messages[0] === 'No Results.') {
         return msg.channel.sendEmbed(
           new this.bot.methods.Embed()
-            .setColor(0xffff00)
-            .setDescription(`Leider keinen Charakter auf diese Anfrage gefunden.`)
+            .setColor(0xffff00).setDescription(`Leider keinen Charakter auf diese Anfrage gefunden.`)
             .setFooter(`${msg.author.username}: ${msg.content}`, msg.author.avatarURL));
       } else {
         return msg.channel.sendEmbed(
           new this.bot.methods.Embed()
-            .setColor(0xffff00)
-            .setTitle('Unerwarteter Fehler:')
+            .setColor(0xffff00).setTitle('Unerwarteter Fehler:')
             .setDescription(`Sowas sollte nicht passieren.
 Bitte kontaktiere \`${this.bot.config.owner}\`\n\n${response.error.messages[0]}`)
             .setFooter(`${msg.author.username}: ${msg.content}`, msg.author.avatarURL));
@@ -141,13 +119,11 @@ Bitte kontaktiere \`${this.bot.config.owner}\`\n\n${response.error.messages[0]}`
 
 
   async answer(response, msg, mes) {
-    const map = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'", '`': '\'', '<br>': '\n', '<br />': '\n' };
-    response.info = this.replaceMap(response.info, map);
+    response.info = this.replaceMap(response.info, { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'", '`': '\'', '<br>': '\n', '<br />': '\n' });
     const embed = new this.bot.methods.Embed()
-      .setColor(0x0800ff)
+      .setColor(0x0800ff).setThumbnail(response.image_url_med)
       .setTitle(`${response.name_first ? response.name_first : ''} ${response.name_last ? response.name_last : ''}`)
-      .setDescription(`${response.name_japanese}\n\n${response.name_alt ? `Aliases:\n${response.name_alt}` : ''}`)
-      .setThumbnail(response.image_url_med);
+      .setDescription(`${response.name_japanese}\n\n${response.name_alt ? `Aliases:\n${response.name_alt}` : ''}`);
     if (response.info.length < 1025) {
       embed.addField('Beschreibung', response.info.length ? response.info : 'Keine Beschreibung angegeben.');
     } else {
