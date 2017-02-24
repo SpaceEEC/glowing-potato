@@ -9,10 +9,9 @@ module.exports = class GGEZ {
 
   async run(msg, params = []) { // eslint-disable-line no-unused-vars
     const embed = new this.bot.methods.Embed()
+      .setTitle('\u200b').setDescription(`**${this.messages}**\n\u200b`)
       .setAuthor(`${msg.member.displayName}:`, msg.author.displayAvatarURL)
-      .setColor(msg.member.highestRole.color)
-      .setTitle('\u200b')
-      .setDescription(`**${this.messages}**\n\u200b`);
+      .setColor(msg.member.highestRole.color);
     msg.channel.sendEmbed(embed);
   }
 
