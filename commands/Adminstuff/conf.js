@@ -42,29 +42,21 @@ module.exports = class Conf {
     for (let key in msg.conf) {
       if (msg.conf.hasOwnProperty(key)) {
         if (!['id', 'name', 'ignchannels', 'ignusers', 'disabledcommands'].includes(key)) {
-          options.set(c.toString(), key);
-          c++;
+          options.set((c++).toString(), key);
         }
       }
     }
-    let embed = {
-      color: 0x0000FF,
-      title: 'Konfigurationsmenü',
-      description: `Welchen Wert wünscht du zu ändern?\n\n${options
+    const embed = new this.bot.methods.Embed().setColor(0x0000FF)
+      .setTitle('Konfigurationsmenü')
+      .setDescription(`Welchen Wert wünscht du zu ändern?\n\n${options
         .keyArray()
         .map(k => `${k}. ${options.get(k)} - \`${msg.conf[options.get(k)]
           ? msg.conf[options.get(k)].length === 0
             ? '[]'
             : msg.conf[options.get(k)]
           : msg.conf[options.get(k)]}\``)
-        .join('\n')}`,
-      fields: [
-        {
-          name: 'Einfach den Namen oder die Zahl des zu ändernden Objektes angeben.',
-          value: 'Zum Abbrechen `cancel` eingeben, oder einfach `30` Sekunden warten.',
-        },
-      ],
-    };
+        .join('\n')}`)
+      .addField('Einfach den Namen oder die Zahl des zu ändernden Objektes angeben.', 'Zum Abbrechen `cancel` eingeben, oder einfach `30` Sekunden warten.');
     this.sendconf(msg, embed, options);
   }
 
@@ -95,16 +87,11 @@ module.exports = class Conf {
   async sendvalue(msg, key) {
     const _key = await this.bot.internal.config.get(this.bot, msg, key);
     const mes = await msg.channel.sendMessage(_key, {
-      embed: {
-        color: 0x0000ff,
-        fields: [{
-          name: 'Bitte einen neuen Wert für diesen Schlüssel eingeben.',
-          value: 'Je nach Schlüssel sind ein Text oder die ID (@Mentions oder #Channel sind auch möglich) gültige Werte.'
-          + '\n\u200b'
-          + '\nZum Löschen `reset` eingeben.'
-          + '\nZum Abbrechen `cancel` eingeben.',
-        }],
-      },
+      embed: new this.bot.methods.Embed().setColor(0x0000ff)
+        .addField('Bitte einen neuen Wert für diesen Schlüssel eingeben.', 'Je nach Schlüssel sind ein Text oder die ID (@Mentions oder #Channel sind auch möglich) gültige Werte.'
+        + '\n\u200b'
+        + '\nZum Löschen `reset` eingeben.'
+        + '\nZum Abbrechen `cancel` eingeben.')
     });
     const collected = (await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { mes: msg, maxMatches: 1, time: 30000 })).first();
     mes.delete();
