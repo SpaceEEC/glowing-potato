@@ -9,134 +9,79 @@ module.exports = class Konachan {
   }
 
 
-  async run(msg, params = []) { // eslint-disable-line consistent-return
+  async run(msg, params = []) {
     if (!params[0]) {
       const mes = await msg.channel.sendEmbed(new this.bot.methods.Embed()
         .setColor(msg.member.highestRole.color)
         .setDescription(`Also suchen wir heute nach einem Bild?
 Dazu benötige ich mindestens einen Suchbegriff (Tag)`)
         .addField('\u200b', 'Antworte entweder mit `cancel` oder überlege länger als `30` Sekunden um abzubrechen.'));
-      try {
-        const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
-        mes.delete();
-        if (collected.content === 'cancel') {
-          collected.delete();
-          msg.delete();
-        } else {
-          this.prepare(msg, collected.content.split(' '));
-        }
-      } catch (e) {
-        mes.delete();
-        return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
+      const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
+      mes.delete();
+      if (!collected) return msg.channel.sendMessage('Breche die Anfrage wie, durch die inaktivität gewünscht, ab.');
+      if (collected.content === 'cancel') {
+        collected.delete();
+        return msg.delete();
       }
-    } else {
-      this.prepare(msg, params);
     }
+    return this.prepare(msg, params);
   }
 
 
-  prepare(bot, msg, params) {
-    if (msg.cmd === 'donmai' && typeof params[2] !== 'undefined') {
-      return msg.channel.sendEmbed(new bot.methods.Embed()
-        .setColor(0xff0000)
-        .setDescription('Donmai erlaubt nur `2` Tags.\nKonachan hingegen erlaubt `5`.')
+  prepare(msg, params) {
+    if (msg.cmd === 'donmai' && params[2]) {
+      return msg.channel.sendEmbed(new this.bot.methods.Embed()
+        .setColor(0xff0000).setDescription('Donmai erlaubt nur `2` Tags.')
       );
-    }
-    if (msg.cmd === 'konachan' && typeof params[4] !== 'undefined') {
-      return msg.channel.sendEmbed(new bot.methods.Embed()
-        .setColor(0xff0000)
-        .setDescription('Konachan erlaubt nur `5` Tags.')
+    } if (msg.cmd === 'konachan' && params[4]) {
+      return msg.channel.sendEmbed(new this.bot.methods.Embed()
+        .setColor(0xff0000).setDescription('Konachan erlaubt nur `5` Tags.')
       );
     }
 
-    // Regex-magic
     if (!params.join('+').match(/^[a-z0-9_=()!-:.]+$/i)) {
-      return msg.channel.sendEmbed(new bot.methods.Embed()
+      return msg.channel.sendEmbed(new this.bot.methods.Embed()
         .setColor(0xff0000)
         .setDescription('Nicht erlaubtes Zeichen in der Suche!')
         .addField('Erlaubte Zeichen:', 'A-z 0-9 _ = () ! - : .', true)
-        .addField('Fehlendes Zeichen?', `${bot.users.get('218348062828003328').toString()} anschreiben`, true)
+        .addField('Fehlendes Zeichen?', `${this.bot.users.get('218348062828003328').toString()} anschreiben`, true)
       );
     }
-    //
-    if (msg.cmd === 'donmai') {
-      return this.donmai(bot, msg, params);
-    } else if (msg.cmd === 'konachan') {
-      return this.konachan(bot, msg, params);
-    } else {
-      return msg.channel.sendMessage(`Das hier sollte eigentlich nie passieren, aber: ${params[0]}`);
-    }
+
+    if (msg.cmd === 'donmai') return this.donmai(msg, params);
+    return this.konachan(msg, params);
   }
 
 
-  async konachan(bot, msg, params = []) {
+  async konachan(msg, params = []) {
     const res = await request.get(`http://konachan.com/post.json?tags=${`${params.join('+')}+rating:s&limit=100`}`)
-      .send(null)
-      .set('Accept', 'application/json');
-    if (Array.from(res.body).length === 0) {
-      return msg.channel.sendEmbed({
-        color: 0xFFFF00,
-        author: {
-          name: 'konachan.net',
-          url: 'http://konachan.net/',
-          icon_url: 'http://konachan.net/favicon.ico',
-        },
-        fields: [
-          {
-            name: 'Keine Ergebnisse',
-            value: 'Vielleicht einen Tippfehler gemacht?',
-          },
-          {
-            name: 'Suche:',
-            value: `[Link](http://konachan.net/post?tags=${params.join('+')})`,
-          },
-        ],
-      });
+      .send(null).set('Accept', 'application/json');
+    if (res.body.length === 0) {
+      return msg.channel.sendEmbed(new this.bot.methods.Embed().setColor(0xFFFF00)
+        .setAuthor('konachan.net', 'http://konachan.net/', 'http://konachan.net/favicon.ico')
+        .addField('Keine Ergebnisse', 'Vielleicht einen Tippfehler gemacht?')
+        .addField('Suche:', `[Link](http://konachan.net/post?tags=${params.join('+')})`));
     }
     const image = res.body[Math.floor(Math.random() * (res.body.length - 0)) + 0];
-    return msg.channel.sendEmbed({
-      description: `[Source](http://konachan.net/post/show/${image.id})`,
-      color: msg.guild.member(msg.author).highestRole.color,
-      type: 'image',
-      image: { url: `http:${image.sample_url}` },
-    }).catch((e) => {
-      msg.channel.sendCode(bot.inspect(image));
-      return msg.channel.sendCode('js', e.stack);
-    });
+    return msg.channel.sendEmbed(new this.bot.methods.Embed()
+      .setColor(msg.member.color()).setImage(`http:${image.sample_url}`))
+      .setDescription(`[Source](http://konachan.net/post/show/${image.id})`);
   }
 
 
-  async donmai(bot, msg, params = []) {
+  async donmai(msg, params = []) {
     const res = await request.get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${params.join('+')}`)
-      .send(null)
-      .set('Accept', 'application/json');
+      .send(null).set('Accept', 'application/json');
     if (res.body.success === false) return msg.channel.sendMessage(`Der Server meldet:\n\`${res.body.message}\``);
     if (res.body.length === 0) {
-      return msg.channel.sendEmbed({
-        color: 0xFFFF00,
-        author: {
-          name: 'safebooru.donmai.us',
-          url: 'http://safebooru.donmai.us/',
-          icon_url: 'http://safebooru.donmai.us/favicon.ico',
-        },
-        fields: [
-          {
-            name: 'Keine Ergebnisse',
-            value: 'Vielleicht einen Tippfehler gemacht?',
-          },
-          {
-            name: 'Suche:',
-            value: `[Link](http://safebooru.donmai.us/posts/?tags=${params.join('+')})`,
-          },
-        ],
-      });
+      return msg.channel.sendEmbed(new this.bot.methods.Embed().setColor(0xFFFF00)
+        .setAuthor('safebooru.donmai.us', 'http://safebooru.donmai.us/', 'http://safebooru.donmai.us/favicon.ico')
+        .addField('Keine Ergebnisse', 'Vielleicht einen Tippfehler gemacht?')
+        .addField('Suche:', `[Link](http://safebooru.donmai.us/posts/?tags=${params.join('+')})`));
     }
-    return msg.channel.sendEmbed({
-      description: `[Source](http://safebooru.donmai.us/posts/${res.body[0].id}/)`,
-      color: msg.guild.member(msg.author).highestRole.color,
-      type: 'image',
-      image: { url: `http://safebooru.donmai.us/${res.body[0].file_url}` },
-    });
+    return msg.channel.sendEmbed(new this.bot.methos.Embed().setColor(msg.member.color())
+      .setDescription(`[Source](http://safebooru.donmai.us/posts/${res.body[0].id}/)`)
+      .setImage(`http://safebooru.donmai.us/${res.body[0].file_url}`));
   }
 
 
