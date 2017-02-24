@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^1.1.3",
-    "discord.js": "git://github.com/hydrabolt/discord.js.git#indev-prism",
+    "discord.js": "git://github.com/hydrabolt/discord.js.git#master",
     "fs-extra-promise": "^0.4.1",
     "moment": "^2.17.1",
     "moment-duration-format": "^1.3.0",
