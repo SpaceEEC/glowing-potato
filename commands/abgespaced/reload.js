@@ -1,6 +1,6 @@
 const fs = require('fs-extra-promise');
 
-module.exports = class Eval {
+module.exports = class Reload {
   constructor(bot) {
     const klasse = bot.commands.get(__filename.split(require('path').sep).pop().split('.')[0]);
     const statics = Object.getOwnPropertyNames(klasse).filter(prop => !['name', 'length', 'prototype'].includes(prop));
@@ -10,11 +10,8 @@ module.exports = class Eval {
 
 
   async run(msg, params = []) {
-    if (!params[0]) {
-      msg.channel.sendMessage('Keinen Befehl zum neu Laden angegeben.');
-    } else {
-      this.reload(msg, params);
-    }
+    if (!params[0]) return msg.channel.send('Keinen Befehl zum neu Laden angegeben.');
+    else return this.reload(msg, params);
   }
 
 
@@ -22,39 +19,41 @@ module.exports = class Eval {
     if (params[0] === 'all') {
       const folders = await fs.readdirAsync('./commands/');
       this.bot.log(`Lade insgesamt ${folders.length} Befehlskategorien.`);
-      await folders.forEach(async folder => {
+      for (const folder of folders) {
         const files = await fs.readdirAsync(`./commands/${folder}`);
         this.bot.log(`Lade insgesamt ${files.length} Befehle aus ${folder}.`);
-        await files.forEach(f => {
+        for (const f of files) {
           try {
             const props = require(`../commands/${folder}/${f}`);
             this.bot.commands.set(props.help.name, props);
-            props.conf.aliases.forEach(alias => {
+            for (const alias of props.conf.aliases) { // eslint-disable-line max-depth
               this.bot.aliases.set(alias, props.help.name);
-            });
+            }
           } catch (e) {
             this.bot.err(`Fehler beim Laden von ./commands/${folder}/${f}.js\n${e.stack ? e.stack : e}`);
           }
-        });
-      });
-    } else {
-      for (let i = 0; i < params.length; i++) {
-        this.bot.internal.commands.reload(this.bot, params[i]).then(cmd => {
-          this.bot.log(`"./commands/${cmd.conf.group}/${params[i]}.js" erfolgreich neu geladen.`);
-          msg.channel.sendMessage(`Neu laden von \`${params[i]}\` erfolgreich abgeschlossen.`);
-        })
-          .catch((err) => {
-            console.log(err);
-            if (err.message.startsWith('Cannot find module ')) {
-              msg.channel.sendMessage(`Konnte die Datei \`${params[i]}.js\` nicht finden.\nVerwendest du einen Alias? 👀`);
-            } else {
-              this.bot.err(`Es ist ein Fehler beim neu Laden von ${params[i]} aufgetreten:\n${err.stack ? err.stack : err}`);
-              msg.channel.sendMessage(`Es ist ein Fehler beim neu Laden von \`${params[i]}\` aufgetreten.`);
-            }
-          });
+        }
       }
+      return msg.channel.send('Laden abgeschlossen.');
+    } else {
+      const arr = [];
+      for (const command of params) {
+        try {
+          const cmd = await this.bot.internal.commands.reload(this.bot, command);
+          this.bot.log(`"./commands/${cmd.conf.group}/${command}.js" erfolgreich neu geladen.`);
+          arr.push(`Neu laden von \`${command}\` erfolgreich abgeschlossen.`);
+        } catch (err) {
+          if (err.message.startsWith('Cannot find module ')) {
+            this.bot.err(`Cannot find module: ${command}`);
+            arr.push(`Konnte die Datei \`${command}.js\` nicht finden.\nVerwendest du einen Alias? 👀`);
+          } else {
+            this.bot.err(`Es ist ein Fehler beim neu Laden von ${command} aufgetreten:\n${err.stack ? err.stack : err}`);
+            arr.push(`Es ist ein Fehler beim neu Laden von \`${command}\` aufgetreten.`);
+          }
+        }
+      }
+      return msg.channel.send(arr.join('\n\n'), { split: true });
     }
-    return 'end-of-function';
   }
 
   static get conf() {
