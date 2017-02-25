@@ -22,14 +22,17 @@ module.exports = class Volume {
             .then((mes) => mes.delete(5000));
         } else if (params[0] % 1 === 0) {
           if (parseInt(params[0]) > 200 || parseInt(params[0]) < 0) {
-            return msg.channel.sendMessage('Bitte nur Zahlen von `0` bis `200` eingeben.');
+            return msg.channel.sendMessage('Bitte nur Zahlen von `0` bis `200` eingeben.')
+              .then((mes) => mes.delete(5000));
           } else {
             musik._music.volume = Math.round(parseInt(params[0]) / 10) / 10;
-            return msg.channel.send(`Läutstärke angepasst auf \`${musik._music.volume * 100}\`%.`);
+            return msg.channel.send(`Läutstärke angepasst auf \`${musik._music.volume * 100}\`%.`)
+              .then((mes) => mes.delete(5000));
           }
         }
       }
-      return msg.channel.send(`Aktuelle Läutstärke beträgt \`${musik._music.volume * 100}\`%.`);
+      return msg.channel.send(`Aktuelle Läutstärke beträgt \`${musik._music.volume * 100}\`%.`)
+        .then((mes) => mes.delete(5000));
     }
   }
 
