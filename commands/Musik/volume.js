@@ -24,11 +24,12 @@ module.exports = class Volume {
           if (parseInt(params[0]) > 200 || parseInt(params[0]) < 0) {
             return msg.channel.sendMessage('Bitte nur Zahlen von `0` bis `200` eingeben.');
           } else {
-            return msg.channel.send(musik.volume(Math.round(params[0] / 10) / 10));
+            musik._music.volume = Math.round(parseInt(params[0]) / 10) / 10;
+            return msg.channel.send(`Läutstärke angepasst auf \`${musik._music.volume * 100}\`%.`);
           }
         }
       }
-      return msg.channel.send(musik.volume('get'));
+      return msg.channel.send(`Aktuelle Volume beträgt \`${musik._music.volume * 100}\`%.`);
     }
   }
 
