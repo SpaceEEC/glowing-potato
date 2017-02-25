@@ -7,7 +7,7 @@ module.exports = class Command {
   }
 
 
-  async run(msg, params = []) { // eslint-disable-line consistent-return
+  async run(msg, params = []) {
     if (!params[1] || !['disable', 'enable'].includes(params[0])) {
       return msg.channel.sendMessage('Fehlender Parameter oder ungültige Operation');
     }
@@ -27,13 +27,12 @@ module.exports = class Command {
         })
         .catch(e => msg.channel.sendMessage(e));
     }
-    if (params[0] === 'enable') {
-      return this.bot.internal.config.remove(this.bot, msg, 'disabledcommands', cmd)
-        .then(() => {
-          msg.channel.sendMessage(`Der Befehl \`${cmd}\` wurde Erfolgreich aktiviert.`);
-        })
-        .catch(e => msg.channel.sendMessage(e));
-    }
+    // enable
+    return this.bot.internal.config.remove(this.bot, msg, 'disabledcommands', cmd)
+      .then(() => {
+        msg.channel.sendMessage(`Der Befehl \`${cmd}\` wurde Erfolgreich aktiviert.`);
+      })
+      .catch(e => msg.channel.sendMessage(e));
   }
 
 
