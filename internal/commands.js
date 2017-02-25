@@ -22,24 +22,20 @@ exports.init = async (bot) => {
 };
 
 
-exports.reload = (bot, command) => new Promise((resolve, reject) => {
-  try {
-    let dir;
-    if (bot.commands.has(command)) {
-      dir = bot.commands.get(command).conf.group;
-      command = dir + sep + command;
-    } else { dir = command.split(sep)[0]; }
-    delete require.cache[require.resolve(`..${sep}commands${sep + command}`)];
-    const cmd = require(`..${sep}commands${sep + command}`);
-    command = cmd.help.name;
-    bot.commands.delete(command);
-    bot.aliases.forEach((cmd2, alias) => {
-      if (cmd2 === command) bot.aliases.delete(alias);
-    });
-    bot.commands.set(command, cmd);
-    for (const alias of cmd.conf.aliases) bot.aliases.set(alias, cmd.help.name);
-    resolve(cmd);
-  } catch (e) {
-    reject(e);
-  }
-});
+exports.reload = async (bot, command) => {
+  let dir;
+  if (bot.commands.has(command)) {
+    dir = bot.commands.get(command).conf.group;
+    command = dir + sep + command;
+  } else { dir = command.split(sep)[0]; }
+  delete require.cache[require.resolve(`..${sep}commands${sep + command}`)];
+  const cmd = require(`..${sep}commands${sep + command}`);
+  command = cmd.help.name;
+  bot.commands.delete(command);
+  bot.aliases.forEach((cmd2, alias) => {
+    if (cmd2 === command) bot.aliases.delete(alias);
+  });
+  bot.commands.set(command, cmd);
+  for (const alias of cmd.conf.aliases) bot.aliases.set(alias, cmd.help.name);
+  return cmd;
+};
