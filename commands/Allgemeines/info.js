@@ -13,7 +13,6 @@ module.exports = class Info {
     let user;
     if (msg.cmd === 'info') user = this.bot.user;
     else user = msg.mentions.users.size ? msg.mentions.users.first() : this.bot.users.get(params[0]) || msg.author;
-    console.log(user.id);
     const member = await msg.guild.fetchMember(user);
     if (!member) return msg.channel.sendMessage('Dieser Nutzer befindet sich in der Datenbank, ist aber nicht in dieser Gilde zu finden.');
     if (user.id === this.bot.user.id) {
