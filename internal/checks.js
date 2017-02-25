@@ -25,25 +25,17 @@ exports.run = (bot, msg, cmd) => new Promise((resolve, reject) => {
 });
 
 
-exports.init = (bot) => new Promise((resolve, reject) => {
+exports.init = async (bot) => {
   bot.internal.checks.check = new bot.methods.Collection();
-  fs.readdirAsync('./checks/')
-    .then((files) => {
-      bot.info(`Lade insgesamt ${files.length} Checks.`);
-      try {
-        files = files.filter(f => f.slice(-3) === '.js');
-        files.forEach((f) => {
-          const file = f.split('.');
-          delete require.cache[require.resolve(`../checks/${f}`)];
-          const props = require(`../checks/${f}`);
-          bot.internal.checks.check.set(file[0], props);
-        });
-        resolve();
-      } catch (e) {
-        reject(e);
-      }
-    })
-    .catch((e) => {
-      reject(e);
-    });
-});
+  const files = (await fs.readdirAsync('./checks/')).filter(f => f.slice(-3) === '.js');
+  bot.info(`Lade insgesamt ${files.length} Checks.`);
+  try {
+    for (const f of files) {
+      delete require.cache[require.resolve(`../checks/${f}`)];
+      const props = require(`../checks/${f}`);
+      bot.internal.checks.check.set(f.split('.')[0], props);
+    }
+  } catch (e) {
+    bot.err(`[checks.js] Fehler beim Laden: ${e.stack ? e.stack : e}`);
+  }
+};
