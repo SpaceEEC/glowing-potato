@@ -8,7 +8,7 @@ module.exports = class Conf {
 
 
   async run(msg, params = []) {
-    if (!params[0] || !['get', 'set', 'reset', 'list', 'show'].includes(params[0])) {
+    if (!params[0] || !['get', 'set', 'reset', 'list'].includes(params[0])) {
       this.menu(msg);
     } else if (params[0] === 'list') {
       msg.channel.sendCode('js', this.bot.inspect(msg.conf));
@@ -125,9 +125,9 @@ module.exports = class Conf {
       shortdescription: 'Konfiguration',
       description: 'Mit diesem Befehl ist es möglich den Bot auf dieser Gilde zu konfigurieren.',
       usage: '$conf.prefixconf menu - Interaktives Menü'
-      + '\n$conf.prefixconf <list|show> - Zeigt die Konfiguration an.'
+      + '\n$conf.prefixconf list - Zeigt die Konfiguration an.'
       + '\n$conf.prefixconf <get|reset> [Key]'
-      + '\n$conf.prefixconf <set> [Key] [Value]',
+      + '\n$conf.prefixconf set [Key] [Value]',
     };
   }
 };
