@@ -29,7 +29,7 @@ module.exports = class Volume {
           }
         }
       }
-      return msg.channel.send(`Aktuelle Volume beträgt \`${musik._music.volume * 100}\`%.`);
+      return msg.channel.send(`Aktuelle Läutstärke beträgt \`${musik._music.volume * 100}\`%.`);
     }
   }
 
