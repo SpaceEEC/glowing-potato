@@ -33,5 +33,5 @@ exports.init = async (bot) => {
   bot.internal.tags = new bot.methods.Collection();
   const rows = await bot.db.all(`SELECT * FROM tags`);
   bot.info(`Lade insgesamt ${rows.length} Tags.`);
-  for (let i = 0; i < rows.length; i++) bot.internal.tags.set(`${rows[i].guild}|${rows[i].name}`, rows[i]);
+  for (const row of rows) bot.internal.tags.set(`${row.guild}|${row.name}`, row);
 };
