@@ -62,7 +62,14 @@ class Music {
 
   async _play() {
     this._bot.debug(`[${this._guild}] playfunction reached.`);
-    this._music.con = await this._vChannel.join();
+    try {
+      this._music.con = await this._getConnection();
+    } catch (e) {
+      this._bot.err(`[${this._guild}] [join()] ${this._bot.inspect(e)}`);
+      this._tChannel.send(`Es ist ein Fehler aufgetreten: ${e}\n\nDies sollte nicht passieren, kontaktiere bitte \`${this._bot.owner}\``);
+      this._music.queue = [];
+      this.bot.setTimeout(this._leaveChannel.bind(this), 2000);
+    }
     this._bot.debug(`[${this._guild}] Length of the queue: ${this._music.queue.length}`);
     if (this._music.statusmsg) {
       this._music.statusmsg.delete().catch(() => { }); // eslint-disable-line no-empty-function
@@ -195,7 +202,7 @@ class Music {
       this._leave.msg.delete().catch(() => { }); // eslint-disable-line no-empty-function
       this._leave.msg = null;
     }
-    this._music.con.disconnect();
+    if (this._music.con) this._music.con.disconnect();
     this._bot.user.setGame(this._bot.config.game);
     this._bot.internal.musik.delete(this._guild);
   }
@@ -207,6 +214,13 @@ class Music {
       .seconds(secs)
       .format(secs > 3599 ? 'hh:mm:ss' : 'mm:ss');
   }
+
+
+  _getConnection() {
+    if (!this._music.con) return this._vChannel.join();
+    else return Promise.resolve(this._music.con);
+  }
+
 }
 
 
