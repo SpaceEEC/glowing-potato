@@ -44,7 +44,7 @@ module.exports = class Play {
         return statusmsg.edit('Es ist ein Fehler, beim Abrufen des Videos von Youtube aufgetreten!\nIst es öffentlich abrufbar?');
       }
       bot.info(`[${msg.guild.id}] Song added: ${info.title} Length: ${musik._formatSecs(info.length_seconds)}.`);
-      if (musik.add({ url: url, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member })) {
+      if (musik.add({ url: url, info: { title: info.title, video_url: info.video_url, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member })) {
         return statusmsg.delete();
       } else {
         return statusmsg.edit({
@@ -54,7 +54,7 @@ module.exports = class Play {
               name: msg.member.displayName,
               icon_url: msg.author.displayAvatarURL,
             },
-            description: `**++** [${info.title}](${info.loaderUrl})\n`
+            description: `**++** [${info.title}](${info.video_url})\n`
             + `Dauer: ${musik._formatSecs(info.length_seconds)}\n`
             + `Hinzugefügt von: ${msg.member}`,
             type: 'image',
@@ -139,7 +139,7 @@ module.exports = class Play {
           }
         } else {
           this.bot.debug(info.title);
-          this.validate(toAdd, fin, { order: vid, url: ids[vid], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, this.bot.internal.musik.get(msg.guild.id), resolve);
+          this.validate(toAdd, fin, { order: vid, url: ids[vid], info: { title: info.title, video_url: info.video_url, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, this.bot.internal.musik.get(msg.guild.id), resolve);
         }
       });
     }

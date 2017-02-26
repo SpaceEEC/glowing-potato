@@ -19,7 +19,7 @@ module.exports = class NP {
         if (isNaN(params[0]) || !musik._music.queue[0]) params[0] = 0;
         msg.channel.sendEmbed(new this.bot.methods.Embed().setColor(0x0800ff).setThumbnail(musik._music.queue[params[0]].info.iurl)
           .setTitle(params[0] ? `**An Position: \`${params[0]}\`**` : musik._music.playing ? '**Wird gerade gespielt:**' : '**Momentan pausiert:**')
-          .setDescription(`[${musik._music.queue[params[0]].info.title}](${musik._music.queue[params[0]].info.loaderUrl})\n`
+          .setDescription(`[${musik._music.queue[params[0]].info.title}](${musik._music.queue[params[0]].info.video_url})\n`
           + `Hinzugefügt von: ${musik._music.queue[params[0]].requester}\n`
           + `Stand: \`(${musik._formatSecs(Math.floor(musik._music.disp.time / 1000))}/${musik._formatSecs(musik._music.queue[params[0]].info.length_seconds)})\`\n`))
           .then(mes => mes.delete(30000));
