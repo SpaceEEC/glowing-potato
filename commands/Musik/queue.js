@@ -30,13 +30,13 @@ module.exports = class Queue {
             .setDescription(`${musik._music.playing ? '**Spiele gerade:**' : '**Momentan pausiert:**'} `
             + `\`(${musik._formatSecs(Math.floor(musik._music.disp.time / 1000))}/${musik._formatSecs(musik._music.queue[0].info.length_seconds)})\` `
             + `Von: ${musik._music.queue[0].requester}\n`
-            + `[${musik._music.queue[0].info.title}](${musik._music.queue[0].info.loaderUrl})`);
+            + `[${musik._music.queue[0].info.title}](${musik._music.queue[0].info.video_url})`);
         }
         let fieldtext = '';
         const fields = [];
         for (const song in musik._music.queue) {
           if (song === '0') continue;
-          let songtext = `\`${song}.\` [${musik._music.queue[song].info.title}](${musik._music.queue[song].info.loaderUrl}) Länge: ${musik._formatSecs(musik._music.queue[song].info.length_seconds)} | Von: ${musik._music.queue[song].requester}\n`;
+          let songtext = `\`${song}.\` [${musik._music.queue[song].info.title}](${musik._music.queue[song].info.video_url}) Länge: ${musik._formatSecs(musik._music.queue[song].info.length_seconds)} | Von: ${musik._music.queue[song].requester}\n`;
           if ((songtext.length + fieldtext.length) > 1024) {
             fields.push(fieldtext);
             fieldtext = songtext;

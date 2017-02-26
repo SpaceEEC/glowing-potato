@@ -26,7 +26,7 @@ module.exports = class Skip {
           const element = musik._music.queue[params[0]] ? musik._music.queue[params[0]] : musik._music.queue[0];
           msg.channel.sendEmbed(new this.bot.methods.Embed().setColor(0xff0000).setThumbnail(element.info.iurl)
             .setAuthor(`${msg.member.displayName} hat geskippt:`, msg.author.displayAvatarURL)
-            .setDescription(`[${element.info.title}](${element.info.loaderUrl})\n`
+            .setDescription(`[${element.info.title}](${element.info.video_url})\n`
             + `Hinzugefügt von: ${element.requester}\n`
             + `Stand: \`(${musik._formatSecs(Math.floor(musik._music.disp.time / 1000))}/${musik._formatSecs(element.info.length_seconds)})\`\n`))
             .then(mes => mes.delete(30000));

@@ -80,7 +80,7 @@ class Music {
       this._bot.debug(`[${this._guild}] Playing next song...`);
       this._music.statusmsg = await this._tChannel.sendEmbed(new this._bot.methods.Embed()
         .setColor(0x00ff08).setAuthor(this._music.queue[0].requester.displayName, this._music.queue[0].requester.user.displayAvatarURL)
-        .setDescription(`**>>** [${this._music.queue[0].info.title}](${this._music.queue[0].info.loaderUrl})\n`
+        .setDescription(`**>>** [${this._music.queue[0].info.title}](${this._music.queue[0].info.video_url})\n`
         + `Dauer: ${this._formatSecs(this._music.queue[0].info.length_seconds)}\n`
         + `Hinzugefügt von: ${this._music.queue[0].requester}`
         + `${this._loop && this._music.queue.length === 1 ? '\n**Loop aktiv!**' : ''}`)
