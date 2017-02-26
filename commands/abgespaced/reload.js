@@ -36,23 +36,23 @@ module.exports = class Reload {
       }
       return msg.channel.send('Laden abgeschlossen.');
     } else {
-      const arr = [];
+      const response = [];
       for (const command of params) {
         try {
           const cmd = await this.bot.internal.commands.reload(this.bot, command);
           this.bot.log(`"./commands/${cmd.conf.group}/${command}.js" erfolgreich neu geladen.`);
-          arr.push(`Neu laden von \`${command}\` erfolgreich abgeschlossen.`);
+          response.push(`Neu laden von \`${command}\` erfolgreich abgeschlossen.`);
         } catch (err) {
           if (err.message.startsWith('Cannot find module ')) {
             this.bot.err(`Cannot find module: ${command}`);
-            arr.push(`Konnte die Datei \`${command}.js\` nicht finden.\nVerwendest du einen Alias? 👀`);
+            response.push(`Konnte die Datei \`${command}.js\` nicht finden.\nVerwendest du einen Alias? 👀`);
           } else {
             this.bot.err(`Es ist ein Fehler beim neu Laden von ${command} aufgetreten:\n${err.stack ? err.stack : err}`);
-            arr.push(`Es ist ein Fehler beim neu Laden von \`${command}\` aufgetreten.`);
+            response.push(`Es ist ein Fehler beim neu Laden von \`${command}\` aufgetreten.`);
           }
         }
       }
-      return msg.channel.send(arr.join('\n\n'), { split: true });
+      return msg.channel.send(response.join('\n\n'), { split: true });
     }
   }
 
