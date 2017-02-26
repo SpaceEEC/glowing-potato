@@ -38,7 +38,7 @@ module.exports = class TagAdd {
         return msg.channel.sendMessage('Breche Anfrage, wie gewünscht, ab.');
       } else if (!this.bot.commands.get('tag').blacklist(msg, collected.first().content)) {
         return msg.channel.sendMessage(`Diese Antwort enthält einen Link, welcher nicht hotlinkbar scheint, verlinke das Bild über einen hotlinkbaren Hoster.\n\nFalls dieses Bild hotlinkbar ist kontaktiere \`${this.bot.config.owner}\``);
-      } else if (collected.first().attachments.first().height) {
+      } else if (collected.first().attachments.first() && collected.first().attachments.first().height) {
         params[1] = `${collected.first().content}\n${collected.first().attachments.first().url}`;
       } else if (collected.first().content.length) {
         params[1] = collected.first().content;
