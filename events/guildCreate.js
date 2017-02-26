@@ -6,5 +6,5 @@ exports.run = async (bot, guild) => {
   bot.confs.set(newguild.id, newguild);
   await bot.db.run('INSERT INTO confs(id,name,prefix,ignchannels,ignusers,disabledcommands)'
     + 'VALUES (?,?,?,?,?,?);',
-    [newguild.id, newguild.name, newguild.prefix, '[]', '[]', '[]']);
+    [JSON.stringify(newguild.id), JSON.stringify(newguild.name), JSON.stringify(newguild.prefix), '[]', '[]', '[]']);
 };
