@@ -9,6 +9,7 @@ exports.run = async (bot, msg, Command) => {
   if (permlvl < Command.conf.permLevel) throw String(`Du darfst den Befehl \`${Command.help.name}\` leider nicht verwenden.`);
 };
 
+
 exports.conf = {
   spamProtection: false,
   enabled: true,
