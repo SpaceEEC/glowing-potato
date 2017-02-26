@@ -47,7 +47,7 @@ module.exports = class Play {
       if (musik.add({ url: url, info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member })) {
         return statusmsg.delete();
       } else {
-        return statusmsg.edit('', {
+        return statusmsg.edit({
           embed: {
             color: 0xFFFF00,
             author: {
@@ -128,25 +128,25 @@ module.exports = class Play {
   }
 
 
-  getInfo(bot, toAdd, msg, ids, fin, resolve) {
+  getInfo(toAdd, msg, ids, fin, resolve) {
     for (const vid in ids) {
       yt.getInfo(ids[vid], (err, info) => {
         if (err) {
           this.bot.err(err.message);
           fin--;
           if (toAdd.length === fin) {
-            this.validate(bot, toAdd, true, null, this.bot.internal.musik.get(msg.guild.id), resolve);
+            this.validate(toAdd, true, null, this.bot.internal.musik.get(msg.guild.id), resolve);
           }
         } else {
           this.bot.debug(info.title);
-          this.validate(bot, toAdd, fin, { order: vid, url: ids[vid], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, this.bot.internal.musik.get(msg.guild.id), resolve);
+          this.validate(toAdd, fin, { order: vid, url: ids[vid], info: { title: info.title, loaderUrl: info.loaderUrl, length_seconds: info.length_seconds, iurl: info.iurl }, requester: msg.member }, this.bot.internal.musik.get(msg.guild.id), resolve);
         }
       });
     }
   }
 
 
-  validate(bot, toAdd, fin, pushobj, musik, resolve) {
+  validate(toAdd, fin, pushobj, musik, resolve) {
     this.bot.debug('validate');
     if (pushobj) pushobj = toAdd.push(pushobj);
     if (fin === true || pushobj === fin) {
