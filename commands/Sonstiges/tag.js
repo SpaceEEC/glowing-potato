@@ -31,7 +31,7 @@ module.exports = class Tag {
         'https://memegen.link/philosoraptor/what-if/this-tag-doesn\'t-exist.jpg',
         'https://memegen.link/winter/prepare-yourself/tags-are-coming.jpg'];
       return msg.channel.sendEmbed(new this.bot.methods.Embed()
-        .setcolor(msg.member.color()).setDescription('Fehler: Tag nicht gefunden.')
+        .setColor(msg.member.color()).setDescription('Fehler: Tag nicht gefunden.')
         .setImage(response[Math.floor(Math.random() * response.length)]));
     }
   }
