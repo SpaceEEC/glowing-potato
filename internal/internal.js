@@ -22,11 +22,13 @@ exports.init = async (bot) => {
   }
 };
 
+
 exports.setGame = async (bot, game) => {
   await bot.db.run(`UPDATE config SET game=?`, [game]);
   await bot.user.setGame(game);
   return bot.user.presence.game.name ? bot.user.presence.game.name : 'null';
 };
+
 
 exports.reload = (bot, name, file) => {
   delete require.cache[require.resolve(`./${file}.js`)];

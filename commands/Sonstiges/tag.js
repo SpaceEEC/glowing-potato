@@ -36,6 +36,7 @@ module.exports = class Tag {
     }
   }
 
+
   static blacklist(msg, rsp) {
     // Nicht Hotlinkbare Bilderhoster
     const response = rsp.toLowerCase();
@@ -46,6 +47,7 @@ module.exports = class Tag {
       && !response.includes('i.stack.imgur.com')) return false;
     return true;
   }
+
 
   static get conf() {
     return {

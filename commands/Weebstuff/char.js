@@ -161,6 +161,7 @@ Bitte kontaktiere \`${this.bot.config.owner}\`\n\n${response.error.messages[0]}`
     };
   }
 
+
   static get help() {
     return {
       name: 'char',

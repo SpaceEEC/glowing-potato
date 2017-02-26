@@ -54,6 +54,7 @@ ${res.body.error}
     }
   }
 
+
   // Are all of them even supported by Kurisu?
   langs(lang) {
     return ['af', 'sq', 'am', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'bn', 'bs', 'bg', 'ca',
@@ -75,6 +76,7 @@ ${res.body.error}
       group: __dirname.split(require('path').sep).pop()
     };
   }
+
 
   static get help() {
     return {

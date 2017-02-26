@@ -27,12 +27,14 @@ class Music {
     };
   }
 
+
   add(input) {
     if (!input.length) input = [input];
     this._music.queue = this._music.queue.concat(input);
     if (this._music.queue.length === input.length) this._play();
     return this._music.queue.length === input.length;
   }
+
 
   loop(status) {
     if (status === true || status === false) {
@@ -42,6 +44,7 @@ class Music {
     }
     return this._music.loop;
   }
+
 
   toggleState(state) {
     if (!this._music.disp) return false;
@@ -55,6 +58,7 @@ class Music {
     }
     return state;
   }
+
 
   async _play() {
     this._bot.debug(`[${this._guild}] playfunction reached.`);
@@ -113,6 +117,7 @@ class Music {
     }
   }
 
+
   _stream(stream) {
     if (typeof stream === 'string') this._music.disp = this._music.con.playFile(stream, { volume: this._music.volume, passes: 4 });
     else this._music.disp = this._music.con.playStream(stream, { volume: this._music.volume, passes: 4 });
@@ -137,6 +142,7 @@ class Music {
       if (reason !== 'stop') this._play();
     });
   }
+
 
   async _emptyChannel(empty) { // eslint-disable-line consistent-return
     if (empty) {
@@ -169,12 +175,14 @@ class Music {
     }
   }
 
+
   _emptyLeave() {
     this._bot.info(`[${this._guild}] Verlasse Channel, da leer.`);
     this._music.queue = this._music.queue.slice(this._music.queue.length - 1);
     if (this._music.disp) this._music.disp.end('stop');
     this._leaveChannel();
   }
+
 
   _leaveChannel() {
     this._bot.info(`[${this._guild}] Verlasse Channel.`);
@@ -192,6 +200,7 @@ class Music {
     this._bot.internal.musik.delete(this._guild);
   }
 
+
   _formatSecs(secs) {
     return this._bot.methods.moment()
       .startOf('day')
@@ -199,6 +208,7 @@ class Music {
       .format(secs > 3599 ? 'hh:mm:ss' : 'mm:ss');
   }
 }
+
 
 exports.perms = (msg) => {
   if (msg.permlvl >= 5) return true;
@@ -209,6 +219,7 @@ exports.perms = (msg) => {
   return false;
 };
 
+
 exports.channel = (bot, msg, start = false) => {
   if (!msg.member.voiceChannel) return false;
   if (start) return start && msg.member.voiceChannel.joinable && msg.member.voiceChannel.speakable;
@@ -217,9 +228,11 @@ exports.channel = (bot, msg, start = false) => {
   return true;
 };
 
+
 exports.init = async (bot) => {
   bot.info('Lade Musikklasse.');
   bot.internal.musik = new bot.methods.Collection();
 };
+
 
 exports.Player = Music;
