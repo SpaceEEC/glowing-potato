@@ -4,11 +4,11 @@ exports.get = (bot, msg, key) => new Promise((resolve) => {
     if (value instanceof Array) {
       let response;
       if (bot.channels.has(value[0])) {
-        response = `\n${value.map(v => bot.channels.get(v)).join('\n')}`;
+        response = `\n${value.map(v => bot.channels.get(v) || v).join('\n')}`;
       } else if (bot.users.has(value[0])) {
-        response = `\n${value.map(v => bot.users.get(v)).join('\n')}`;
+        response = `\n${value.map(v => bot.users.get(v) || v).join('\n')}`;
       } else if (msg.guild.roles.has(value[0])) {
-        response = `\n${value.map(v => msg.guild.roles.get(v)).join('\n')}`;
+        response = `\n${value.map(v => msg.guild.roles.get(v) || v).join('\n')}`;
       } else {
         response = `\n${value.map(v => v).join('\n')}`;
       }
