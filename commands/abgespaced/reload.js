@@ -56,6 +56,7 @@ module.exports = class Reload {
     }
   }
 
+
   static get conf() {
     return {
       spamProtection: false,

@@ -47,6 +47,7 @@ module.exports = class TagList {
     };
   }
 
+
   static get help() {
     return {
       name: 'tag-list',

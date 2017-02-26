@@ -50,6 +50,7 @@ Versuchungszeitraum: \`${new Date().getTime() - time}\`ms`);
     }
   }
 
+
   static get conf() {
     return {
       spamProtection: false,
@@ -59,6 +60,8 @@ Versuchungszeitraum: \`${new Date().getTime() - time}\`ms`);
       group: __dirname.split(require('path').sep).pop()
     };
   }
+
+
   static get help() {
     return {
       name: 'eval',

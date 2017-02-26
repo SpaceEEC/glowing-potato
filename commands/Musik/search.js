@@ -115,6 +115,7 @@ module.exports = class Search {
     };
   }
 
+
   static get help() {
     return {
       name: 'search',

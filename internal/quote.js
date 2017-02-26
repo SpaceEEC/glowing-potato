@@ -25,10 +25,12 @@ exports.add = async (bot, guild, type, id, color, name, icon_url, description, i
   }
 };
 
+
 exports.remove = async (bot, guild, id) => {
   await bot.db.run('DELETE FROM quotes WHERE guild=? AND id=?', [guild, id]);
   bot.internal.quotes.delete(`${guild}|${id}`);
 };
+
 
 exports.init = async (bot) => {
   bot.internal.quotes = new bot.methods.Collection();

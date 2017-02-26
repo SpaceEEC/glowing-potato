@@ -38,7 +38,7 @@ Dazu benötige ich mindestens einen Suchbegriff (Tag)`)
         .setColor(0xff0000).setDescription('Konachan erlaubt nur `5` Tags.')
       );
     }
-
+    
     if (!params.join('+').match(/^[a-z0-9_=()!-:.]+$/i)) {
       return msg.channel.sendEmbed(new this.bot.methods.Embed()
         .setColor(0xff0000)

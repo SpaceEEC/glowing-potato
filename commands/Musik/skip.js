@@ -39,6 +39,7 @@ module.exports = class Skip {
     }
   }
 
+
   static get conf() {
     return {
       spamProtection: false,
