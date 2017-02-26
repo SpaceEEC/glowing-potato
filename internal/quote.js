@@ -36,23 +36,23 @@ exports.init = async (bot) => {
   bot.internal.quotes = new bot.methods.Collection();
   const rows = await bot.db.all(`SELECT * FROM quotes`);
   bot.info(`Lade insgesamt ${rows.length} Zitate.`);
-  for (let i = 0; i < rows.length; i++) {
-    if (rows[i].type === 'text') {
-      bot.internal.quotes.set(`${rows[i].guild}|${rows[i].id}`, {
-        color: rows[i].color,
-        description: rows[i].description,
-        footer: { text: `${rows[i].name} | ${rows[i].id}`, icon_url: rows[i].icon_url },
+  for (const row of rows) {
+    if (row.type === 'text') {
+      bot.internal.quotes.set(`${row.guild}|${row.id}`, {
+        color: row.color,
+        description: row.description,
+        footer: { text: `${row.name} | ${row.id}`, icon_url: row.icon_url },
       });
-    } else if (rows[i].type === 'img') {
-      bot.internal.quotes.set(`${rows[i].guild}|${rows[i].id}`, {
-        color: rows[i].color,
-        description: rows[i].description,
+    } else if (row.type === 'img') {
+      bot.internal.quotes.set(`${row.guild}|${row.id}`, {
+        color: row.color,
+        description: row.description,
         footer: {
-          text: `${rows[i].name} | ${rows[i].id}`,
-          icon_url: rows[i].icon_url,
+          text: `${row.name} | ${row.id}`,
+          icon_url: row.icon_url,
         },
         type: 'image',
-        image: { url: rows[i].img },
+        image: { url: row.img },
       });
     }
   }
