@@ -23,14 +23,14 @@ module.exports = class Skip {
         if (musik._music.queue.length === 0 || !musik._music.disp) {
           msg.channel.sendMessage('Die Queue ist leer, da gibt es nichts zu skippen.\nOder die Intialisierungsphase ist noch nicht vollendet, dies dauert einen kleinen moment.');
         } else {
-          const element = musik._music.queue[params[0]] ? musik._music.queue[params[0]] : musik._music.queue[0];
+          const element = musik._music.queue[params[0]] || musik._music.queue[0];
           msg.channel.sendEmbed(new this.bot.methods.Embed().setColor(0xff0000).setThumbnail(element.info.iurl)
             .setAuthor(`${msg.member.displayName} hat geskippt:`, msg.author.displayAvatarURL)
             .setDescription(`[${element.info.title}](${element.info.video_url})\n`
             + `Hinzugefügt von: ${element.requester}\n`
             + `Stand: \`(${musik._formatSecs(Math.floor(musik._music.disp.time / 1000))}/${musik._formatSecs(element.info.length_seconds)})\`\n`))
             .then(mes => mes.delete(30000));
-          if (!isNaN(params[0]) && params[0] !== '0' && musik._music.queue[params[0]]) {
+          if (params[0] === '0' || !params[0]) {
             this.bot.info(`[${msg.guild.id}] Song skipped.`);
             musik._music.disp.end('skip');
           }
