@@ -8,7 +8,7 @@ module.exports = class Shuffle {
 
 
   async run(msg, params = []) { // eslint-disable-line no-unused-vars
-    if (this.this.bot.internal.music.perms(msg)) {
+    if (this.bot.internal.music.perms(msg)) {
       if (!this.bot.internal.musik.get(msg.guild.id)) {
         msg.channel.send('Zur Zeit wird leider nichts gespielt.')
           .then(mes => mes.delete(30000));
