@@ -1,6 +1,6 @@
 exports.run = async (bot, oldMember, newMember) => {
   if (bot.internal.musik.has(newMember.guild.id) && newMember.guild.member(bot.user).voiceChannel) {
-    if (newMember.guild.member(bot.user).voiceChannel.members.size === 1 && oldMember.voiceChannel.id === newMember.guild.member(bot.user).voiceChannel.id) {
+    if (newMember.guild.member(bot.user).voiceChannel.members.size === 1 && (oldMember.voiceChannel && oldMember.voiceChannel.id === newMember.guild.member(bot.user).voiceChannel.id)) {
       bot.internal.musik.get(newMember.guild.id)._emptyChannel(true);
     } else {
       bot.internal.musik.get(newMember.guild.id)._emptyChannel(false);

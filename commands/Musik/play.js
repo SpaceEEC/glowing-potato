@@ -34,7 +34,7 @@ module.exports = class Play {
 
   static async add(bot, statusmsg, url, msg) {
     if (!bot.internal.musik.has(msg.guild.id)) {
-      bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(bot, msg));
+      bot.internal.musik.set(msg.guild.id, new bot.internal.music.Player(this.bot, msg));
     }
     const musik = bot.internal.musik.get(msg.guild.id);
     yt.getInfo(url, (err, info) => {
