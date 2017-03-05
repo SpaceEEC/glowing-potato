@@ -21,17 +21,28 @@ module.exports = class PauseMusicCommand extends Command {
   async run(msg) {
     const queue = this.queue.get(msg.guild.id);
 
-    if (!queue) return msg.say('Trying to pause without anything playing? 👀');
-    if (!queue.voiceChannel.members.has(msg.author.id)) {
-      return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so why are you even trying to pause?`);
+    if (!queue) {
+      return msg.say('Trying to pause without anything playing is certainly a smart move.')
+        .then((mes) => mes.delete(5000));
     }
-    if (!queue.songs[0].dispatcher) return msg.say('Pausing is only possible after the song started.');
-    if (!queue.songs[0].playing) return msg.say('That song is already paused. 👀');
+    if (!queue.voiceChannel.members.has(msg.author.id)) {
+      return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so why are you even trying to pause?`)
+        .then((mes) => mes.delete(5000));
+    }
+    if (!queue.songs[0].dispatcher) {
+      return msg.say('Pausing is only possible after the song started.')
+        .then((mes) => mes.delete(5000));
+    }
+    if (!queue.songs[0].playing) {
+      return msg.say('That song is already paused, you genius.')
+        .then((mes) => mes.delete(5000));
+    }
 
     queue.songs[0].dispatcher.pause();
     queue.songs[0].playing = false;
 
-    return msg.say('Song is paused, be sure to finish it!');
+    return msg.say('Paused the song, be sure to finish it!')
+      .then((mes) => mes.delete(5000));
   }
 
   get queue() {

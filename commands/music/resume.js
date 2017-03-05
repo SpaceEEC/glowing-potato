@@ -22,17 +22,28 @@ module.exports = class ResumeMusicCommand extends Command {
   async run(msg) {
     const queue = this.queue.get(msg.guild.id);
 
-    if (!queue) return msg.say('Trying to resume without anything queued up? 👀');
-    if (!queue.voiceChannel.members.has(msg.author.id)) {
-      return msg.say(`I am sitting over here in ${queue.voiceChannel.name}, you are not here. 👀`);
+    if (!queue) {
+      return msg.say('Sorry to disappoint you, but you can\'t resume an empty queue.')
+        .then((mes) => mes.delete(5000));
     }
-    if (!queue.songs[0].dispatcher) return msg.say('Resuming a not even yet started song, what a nice idea!');
-    if (queue.songs[0].playing) return msg.say('Trying to resume a currently playing song? 🤔');
+    if (!queue.voiceChannel.members.has(msg.author.id)) {
+      return msg.say(`I am over here in ${queue.voiceChannel.name}, either you come to me, or you summon me to you.`)
+        .then((mes) => mes.delete(5000));
+    }
+    if (!queue.songs[0].dispatcher) {
+      return msg.say('Resuming a not even yet started song, what a nice idea!')
+        .then((mes) => mes.delete(5000));
+    }
+    if (queue.songs[0].playing) {
+      return msg.say('Trying to resume a currently playing song? ')
+        .then((mes) => mes.delete(5000));
+    }
 
     queue.songs[0].dispatcher.resume();
     queue.songs[0].playing = true;
 
-    return msg.say('Revived the party!');
+    return msg.say('Revived the party!')
+      .then((mes) => mes.delete(5000));
   }
 
   get queue() {

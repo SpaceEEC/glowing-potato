@@ -22,9 +22,13 @@ module.exports = class StopMusicCommand extends Command {
   async run(msg) {
     const queue = this.queue.get(msg.guild.id);
 
-    if (!queue) return msg.say('What do you expect to stop? 👀');
+    if (!queue) {
+      return msg.say('What do you expect to stop? 👀')
+        .then((mes) => mes.delete(5000));
+    }
     if (!queue.voiceChannel.members.has(msg.author.id)) {
-      return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so I will continue playing.`);
+      return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so I will continue playing.`)
+        .then((mes) => mes.delete(5000));
     }
 
     const song = queue.songs[0];
@@ -32,7 +36,8 @@ module.exports = class StopMusicCommand extends Command {
 
     if (song.dispatcher) song.dispatcher.end('stop');
 
-    return msg.say('Party is over! 🚪 👈');
+    return msg.say('Party is over! 🚪 👈')
+      .then((mes) => mes.delete(5000));
   }
 
   get queue() {

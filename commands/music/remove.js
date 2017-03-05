@@ -29,18 +29,31 @@ module.exports = class RemoveMusicCommand extends Command {
 
   async run(msg, args) {
     const queue = this.queue.get(msg.guild.id);
-    if (!queue) return msg.say('There is no queue, why not add some songs yourself?');
+    if (!queue) {
+      return msg.say('There is no queue, why not add some songs yourself?')
+        .then((mes) => mes.delete(5000));
+    }
     const song = queue[args.index];
-    if (!song) return msg.say('This entry wasn\'t found!');
+    if (!song) {
+      return msg.say('This entry wasn\'t found!')
+        .then((mes) => mes.delete(5000));
+    }
 
     const requestMessage = await msg.say(`Are you sure you want to skip this masterpiece of a song?\n${song.title}\n\n__y__es/__n__o`);
     const response = (await requestMessage.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
     requestMessage.delete().catch(() => null);
-    if (!response) return msg.say('Aborting then.');
-    if (!['yes', 'y'].includes(response.content)) return msg.say('Aborting then.');
+    if (!response) {
+      return msg.say('Aborting then.')
+        .then((mes) => mes.delete(5000));
+    }
+    if (!['yes', 'y'].includes(response.content)) {
+      return msg.say('Aborting then.')
+        .then((mes) => mes.delete(5000));
+    }
 
     queue.splice(queue.indexOf(song), 1);
-    return msg.say(`What a shame, removed this wonderful song.\n${song.title}`);
+    return msg.say(`What a shame, removed this wonderful song.\n${song.title}`)
+      .then((mes) => mes.delete(5000));
   }
 
   get queue() {
