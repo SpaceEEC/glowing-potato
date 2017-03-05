@@ -25,7 +25,7 @@ module.exports = class QueueCommand extends Command {
 
   async run(msg, args) {
     const queue = this.queue.get(msg.guild.id);
-    if (!queue) return msg.say('There is no queue, why not add some songs yourself?');
+    if (!queue) return msg.say('There is no queue, why not add some songs yourself?').then((mes) => mes.delete(5000));
 
     const pages = util.paginate(queue.songs, args.page, 11);
     const currentSong = queue.songs[0];
@@ -40,7 +40,7 @@ module.exports = class QueueCommand extends Command {
 
     if (args.page === 1) {
       page.splice(0, 1, stripIndents`${queue.loop ? '**Queue is enabled!**\n' : ''}${currentSong.playing ? '**Currently playing:**' : '**Currently paused**'}: ${Song.timeString(currentTime)}/${currentSong.lengthString}
-      [${currentSong.name}](${currentSong.url})${page.length !== 1 ? stripIndents`\n
+      [${currentSong.name}](${currentSong.url})${page.length !== 1 ? stripIndents`\u200b\n
 
       **Queue:**` : ''}`);
       embed.setThumbnail(currentSong.thumbnail);
@@ -52,7 +52,7 @@ module.exports = class QueueCommand extends Command {
     return msg.embed(embed.setDescription(stripIndents`${page}
 
     Use ${msg.usage()} to display a specific page`)
-    );
+    ).then((mes) => mes.delete(30000));
   }
 
   get queue() {
