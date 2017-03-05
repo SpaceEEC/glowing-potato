@@ -22,19 +22,28 @@ module.exports = class VolumeCommand extends Command {
     args = parseInt(args);
     const queue = this.queue.get(msg.guild.id);
 
-    if (!queue) return msg.say('The queue is empty, better add some songs to change the volume!');
-    if (isNaN(args)) return msg.say(`The volume is \`${queue.volume}\`.`);
+    if (!queue) {
+      return msg.say('The queue is empty, no need to change the volume.')
+        .then((mes) => mes.delete(5000));
+    }
+    if (isNaN(args)) {
+      return msg.say(`The volume is \`${queue.volume}\`.`)
+        .then((mes) => mes.delete(30000));
+    }
     if (!queue.voiceChannel.members.has(msg.author.id)) {
-      return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so I wont change the volume.`);
+      return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so I the current volume will stay.`)
+        .then((mes) => mes.delete(5000));
     }
 
     const volume = args;
     if (volume > 10 || volume < 0) {
-      return msg.say('Volumes goes from 1-10, my friend.');
+      return msg.say('Volumes goes from 1-10, my friend. Not higher not lower.')
+        .then((mes) => mes.delete(5000));
     }
     queue.volume = volume;
     if (queue.songs[0].dispatcher) queue.songs[0].dispatcher.setVolumeLogarithmic(volume / 5);
-    return msg.say(`Volume is now \`${volume}\`.`);
+    return msg.say(`Volume is now \`${volume}\`.`)
+      .then((mes) => mes.delete(5000));
   }
 
   get queue() {

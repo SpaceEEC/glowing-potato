@@ -25,7 +25,10 @@ module.exports = class ShuffleQueueCommand extends Command {
   async run(msg) {
     const queue = this.queue.get(msg.guild.id);
 
-    if (!queue) return msg.say('There is nothing to shuffle in this guild. Change that!');
+    if (!queue) {
+      return msg.say('There is nothing to shuffle in this guild. Change that!')
+        .then((mes) => mes.delete(5000));
+    }
     const array = queue.songs.slice(1);
 
     let currentIndex = array.length;
@@ -42,7 +45,8 @@ module.exports = class ShuffleQueueCommand extends Command {
     array.splice(0, 0, queue.songs[0]);
     queue.songs = array;
 
-    return msg.say('The queue has been shuffled.');
+    return msg.say('The queue has been shuffled.')
+      .then((mes) => mes.delete(5000));
   }
 
   get queue() {

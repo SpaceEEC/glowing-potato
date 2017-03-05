@@ -17,7 +17,10 @@ module.exports = class NowPlayingCommand extends Command {
 
   async run(msg) {
     const queue = this.queue.get(msg.guild.id);
-    if (!queue) return msg.say('There is nothing going on in this guild. Add some songs!');
+    if (!queue) {
+      return msg.say('There is nothing going on in this guild. Add some songs!')
+        .then((mes) => mes.delete(5000));
+    }
 
     const song = queue.songs[0];
     const currentTime = song.dispatcher ? song.dispatcher.time / 1000 : 0;
@@ -26,7 +29,8 @@ module.exports = class NowPlayingCommand extends Command {
       .setAuthor(song.username, song.avatar)
       .setDescription(stripIndents`${queue.loop ? '**Queue is enabled!**\n' : ''}[${song.name}](${song.url})
     Currently at \`${Song.timeString(currentTime)}\`/\`${song.lengthString}\`
-    ${song.playing ? '' : 'Currently paused.'}`));
+    ${song.playing ? '' : 'Currently paused.'}`))
+      .then((mes) => mes.delete(30000));
   }
 
   get queue() {

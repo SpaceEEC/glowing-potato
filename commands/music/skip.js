@@ -26,15 +26,20 @@ module.exports = class SkipMusicCommand extends Command {
   async run(msg) {
     const queue = this.queue.get(msg.guild.id);
 
-    if (!queue) return msg.say('Skipping with an empty queue? I don\'t think so. 👀');
+    if (!queue) {
+      return msg.say('The queue is empty. 👀')
+        .then((mes) => mes.delete(5000));
+    }
     if (!queue.voiceChannel.members.has(msg.author.id)) {
-      return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so no skipping for you.`);
+      return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so no skipping for you.`)
+        .then((mes) => mes.delete(5000));
     }
 
     const song = queue.songs[0];
     song.dispatcher.end('skip');
 
-    return msg.say(`What a lame decision, skipped \`${song}}\`!`);
+    return msg.say(`What a lame decision, you forced me to skipped \`${song}}\`!`)
+      .then((mes) => mes.delete(5000));
   }
 
   get queue() {
