@@ -13,7 +13,7 @@ module.exports = class UpdateCommand extends Command {
       args: [
         {
           key: 'restart',
-          prompt: 'doy you like to restart?\n',
+          prompt: 'do you like to restart?\n',
           type: 'boolean',
         }
       ]
