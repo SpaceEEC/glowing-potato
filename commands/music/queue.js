@@ -40,7 +40,7 @@ module.exports = class QueueCommand extends Command {
 
     if (args.page === 1) {
       page.splice(0, 1, stripIndents`${queue.loop ? '**Queue is enabled!**\n' : ''}${currentSong.playing ? '**Currently playing:**' : '**Currently paused**'}: ${Song.timeString(currentTime)}/${currentSong.lengthString}
-      [${currentSong.name}](${currentSong.url})}${page.length !== 1 ? stripIndents`
+      [${currentSong.name}](${currentSong.url})${page.length !== 1 ? stripIndents`\n
 
       **Queue:**` : ''}`);
       embed.setThumbnail(currentSong.thumbnail);
