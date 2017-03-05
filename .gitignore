@@ -1,0 +1,10 @@
+#dev stuff
+node_modules/
+.vscode/
+
+
+settings.sqlite
+settings.sqlite-journal
+auth.json
+
+commands/league.json
