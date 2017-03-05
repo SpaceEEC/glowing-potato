@@ -46,8 +46,6 @@ module.exports = class PlayMusicCommand extends Command {
         args.limit = 1;
       }
       args.url = args.url.split(' ').slice(1).join(' ');
-    } else {
-      args.limit = 1;
     }
     args.url = args.url.replace(/<(.+)>/g, '$1');
     const queue = this.queue.get(msg.guild.id);
@@ -81,6 +79,7 @@ module.exports = class PlayMusicCommand extends Command {
           fetchMessage.edit('❌ Error while fetching the songs of the playlist.');
         });
       }).catch(() => {
+        if (!args.limit) args.limit = 5;
         if (args.limit > 50) args.limit = 50;
         this.youtube.searchVideos(args.url, args.limit).then(async videos => {
           const video = videos.length === 1 ? videos[0] : await this.chooseSong(msg, videos, 0, fetchMessage);
@@ -179,7 +178,7 @@ module.exports = class PlayMusicCommand extends Command {
       .setImage(queue.songs[queue.songs.length - 1].thumbnail)
       .setColor(0xFFFF00)
       .setFooter('has been added.', this.client.user.displayAvatarURL)
-      .setDescription(stripIndent`${queue.loop ? '**Loop is enabled**\n' : ''}\`**++** ${videos.length - ignored}\`/\`${videos.length}\` Songs
+      .setDescription(stripIndent`${queue.loop ? '**Loop is enabled**\n' : ''}**++** \`${videos.length - ignored}\`/\`${videos.length}\` Songs
 
       Last Song of queue:
       [${lastsong.name}](${lastsong.url})
