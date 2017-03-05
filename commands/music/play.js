@@ -29,6 +29,8 @@ module.exports = class PlayMusicCommand extends Command {
     // hello crawl (or other curious people)
     this.queue = new Map();
     this.statusMessage = null;
+    this.playlistTimeout = null;
+    this.emptyTimeout = null;
   }
 
   hasPermission(msg) {
@@ -54,16 +56,20 @@ module.exports = class PlayMusicCommand extends Command {
     if (!queue) {
       voiceChannel = msg.member.voiceChannel;
       if (!voiceChannel) {
-        return msg.say('You are not in a voice channel, I won\'t whisper you the song or stuff.\nMove into a voice channel!');
+        return msg.say('You are not in a voice channel, I won\'t whisper you the song.\nMove into a voice channel!')
+          .then((mes) => mes.delete(5000));
       }
       if (!voiceChannel.joinable) {
-        return msg.say('Your voice channel sure looks nice, but I unfortunately don\' have permissions to join it.\nBetter luck next time.');
+        return msg.say('Your voice channel sure looks nice, but I unfortunately don\' have permissions to join it.\nBetter luck next time, buddy.')
+          .then((mes) => mes.delete(5000));
       }
       if (!voiceChannel.speakable) {
-        return msg.say('Your party looks nice I\'d love to join, but I am unfortunately not allowed to speak there, so I don\'t even join.');
+        return msg.say('Your party sure looks nice, I\'d love to join, but I am unfortunately not allowed to speak there, so forget that.')
+          .then((mes) => mes.delete(5000));
       }
     } else if (!queue.voiceChannel.members.has(msg.author.id)) {
-      return msg.say('The party over here is good, you should join us!');
+      return msg.say('The party over here is good, you better join us!')
+        .then((mes) => mes.delete(5000));
     }
 
     const fetchMessage = await msg.say('Fetching info...');
@@ -76,17 +82,18 @@ module.exports = class PlayMusicCommand extends Command {
           this.input(videos, queue, msg, voiceChannel, fetchMessage);
         }).catch((err) => {
           winston.error('[YT-API]', err);
-          fetchMessage.edit('❌ Error while fetching the songs of the playlist.');
+          fetchMessage.edit('❌ Playlist was found, but there an error occured while fetching the songs. Better try again or something different!');
         });
       }).catch(() => {
-        if (!args.limit) args.limit = 5;
+        if (!args.limit) args.limit = 1;
         if (args.limit > 50) args.limit = 50;
         this.youtube.searchVideos(args.url, args.limit).then(async videos => {
           const video = videos.length === 1 ? videos[0] : await this.chooseSong(msg, videos, 0, fetchMessage);
           if (video === null) return;
           this.input(video, queue, msg, voiceChannel, fetchMessage);
         }).catch(() => {
-          fetchMessage.edit('❔ Nothing found.');
+          fetchMessage.edit('❔ Nothing found. Search better!')
+            .then(mes => mes.delete(5000));
         });
       });
     });
@@ -108,26 +115,29 @@ module.exports = class PlayMusicCommand extends Command {
       const [success, embed] = video instanceof Array ? await this.addPlaylist(msg, video) : await this.add(msg, video);
       if (!success) {
         this.queue.delete(msg.guild.id);
-        return msg.say(embed);
+        return msg.say(embed)
+          .then((mes) => mes.delete(30000));
       }
 
       try {
         queue.connection = await queue.voiceChannel.join();
-        this.statusMessage = fetchMessage;
+        fetchMessage.delete().catch(() => null);
         await this.play(msg.guild.id, queue.songs[0]);
       } catch (err) {
         winston.error('[Join/play]', err);
         this.queue.delete(msg.guild.id);
-        fetchMessage.edit(`❌ There was an error while joining your channel.`, { embed: null });
+        fetchMessage.edit('❌ There was an error while joining your channel, such a shame.', { embed: null });
       }
     } else {
       const [success, embed] = video instanceof Array ? await this.addPlaylist(msg, video) : await this.add(msg, video);
       if (!success) {
         if (embed instanceof Array && embed.length > 5) embed.splice(5, embed.length - 5);
-        return fetchMessage.edit(embed, { embed: null });
+        return fetchMessage.edit(embed, { embed: null })
+          .then((mes) => mes.delete(10000));
       }
 
-      fetchMessage.edit('', { embed });
+      fetchMessage.edit('', { embed })
+        .then((mes) => mes.delete(5000));
     }
   }
 
@@ -135,10 +145,13 @@ module.exports = class PlayMusicCommand extends Command {
     const queue = this.queue.get(msg.guild.id);
 
     if (video.durationSeconds === 0) {
-      return [false, `❌ Live streams are not supported.`];
+      return [false, '❌ Live streams are not supported.'];
     }
     if (queue.songs.some(song => song.id === video.id)) {
-      return [false, `⚠ That song is already in the queue.`];
+      return [false, '⚠ That song is already in the queue.'];
+    }
+    if (video.durationSeconds > 60 * 60) {
+      return [false, 'ℹ That song is too long, max length is one hour.'];
     }
 
     const song = new Song(video, msg.member);
@@ -167,6 +180,11 @@ module.exports = class PlayMusicCommand extends Command {
         ignored++;
         continue;
       }
+      if (video.durationSeconds > 60 * 60) {
+        ignored++;
+        continue;
+      }
+
       lastsong = new Song(video, msg.member);
       queue.songs.push(lastsong);
     }
@@ -188,8 +206,8 @@ module.exports = class PlayMusicCommand extends Command {
   async chooseSong(msg, videos, index, statusmsg) {
     if (!videos[index]) {
       if (statusmsg) {
-        statusmsg.delete();
-        msg.delete();
+        statusmsg.delete().catch(() => null);
+        msg.delete().catch(() => null);
       }
       return null;
     }
@@ -227,12 +245,21 @@ module.exports = class PlayMusicCommand extends Command {
 
   async play(guildID, song, stopped = false) {
     if (this.statusMessage) this.statusMessage.delete().catch(() => null);
+    if (this.emptyTimeout) this.client.clearTimeout(this.emptyTimeout);
     const queue = this.queue.get(guildID);
 
     if (!song) {
-      if (!stopped) this.statusMessage = await queue.textChannel.send('The queue is empty, I\'ll wait another 30 seconds for new songs before leaving.');
-      queue.voiceChannel.leave();
       this.queue.delete(guildID);
+      if (!stopped) {
+        this.statusMessage = await queue.textChannel.send('The queue is empty, I\'ll wait another 30 seconds for new songs before leaving.');
+        if (this.emptyTimeout) this.client.clearTimeout(this.emptyTimeout);
+        this.emptyTimeout = this.client.setTimeout(() => {
+          this.statusMessage.delete().catch(() => null);
+          queue.voiceChannel.leave();
+        }, 30000);
+        return;
+      }
+      queue.voiceChannel.leave();
       return;
     }
 
@@ -249,7 +276,7 @@ module.exports = class PlayMusicCommand extends Command {
       .on('error', async err => {
         streamErrored = true;
         winston.error('[YTDL]', guildID, err);
-        await this.statusMessage.edit(`An error occured while playing (ytdl).`);
+        await this.statusMessage.edit('❌ An error occured while playing the youtube stream.');
         this.statusMessage = null;
         queue.songs.shift();
         this.play(guildID, queue.songs[0]);
@@ -257,7 +284,7 @@ module.exports = class PlayMusicCommand extends Command {
 
     const dispatcher = queue.connection.playStream(stream, { passes: 2 })
       .on('end', (reason) => {
-        winston.info(`[Dispatcher] [${guildID}] ${reason ? `[${reason}]` : ''} Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${song.length}`);
+        winston.info(`[Dispatcher] [${guildID}] ${reason && reason !== 'Stream is not generating quickly enough.' ? `[${reason}]` : ''} Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${song.lengthString}`);
         if (streamErrored) return;
         const oldSong = queue.songs.shift();
         if (queue.loop) queue.songs.push(oldSong);
@@ -265,7 +292,7 @@ module.exports = class PlayMusicCommand extends Command {
       })
       .on('error', async err => {
         winston.error(`[Dispatcher] [${guildID}]`, err);
-        await this.statusMessage.edit(`An internal error occured while playing.`);
+        await this.statusMessage.edit(`❌ An internal error occured while playing.`);
         this.statusMessage = null;
       });
 
