@@ -17,7 +17,7 @@ module.exports = class UtilClass {
   /**
    * Gets the used command (including aliases) from the message.
    * @param {message} msg The message to get the used command from.
-   * @param {?map} map The optional map to replace matches.
+   * @param {?object} object The optional object, containing key and value pairs to replace matches.
    * @returns {string}
    */
   static getUsedAlias(msg, map = {}) {
