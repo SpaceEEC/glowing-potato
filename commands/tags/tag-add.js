@@ -1,6 +1,6 @@
 const { Command } = require('discord.js-commando');
 const { join } = require('path');
-const Tag = require(join(__dirname, '..', '..', 'dataProviders', 'models', 'Tag'));
+const tag = require(join(__dirname, '..', '..', 'dataProviders', 'models', 'Tag'));
 
 module.exports = class TagAdd extends Command {
   constructor(client) {
@@ -33,7 +33,7 @@ module.exports = class TagAdd extends Command {
   async run(msg, args) {
     const { name, content } = args;
 
-    await Tag.create({ name, guildID: msg.guild.id, userID: msg.author.id, content });
+    await tag.create({ name, guildID: msg.guild.id, userID: msg.author.id, content });
 
     msg.say(`Tag **${name}** sucessfully created!`);
   }

@@ -1,6 +1,6 @@
 const { Command, FriendlyError } = require('discord.js-commando');
 const { join } = require('path');
-const Tag = require(join(__dirname, '..', '..', 'dataProviders', 'models', 'Tag'));
+const tag = require(join(__dirname, '..', '..', 'dataProviders', 'models', 'Tag'));
 
 module.exports = class TagEdit extends Command {
   constructor(client) {
@@ -37,7 +37,7 @@ module.exports = class TagEdit extends Command {
     if (userID !== msg.author.id && !member.hasPermission('ADMINISTRATOR') && !this.client.isOwner(member) && !msg.member.roles.some(r => roles.includes(r.id))) {
       throw new FriendlyError(`you can not edit the **${name}** tag, since it was not created by yourself!`);
     }
-    await Tag.update({ content }, { where: { guildID, userID } });
+    await tag.update({ content }, { where: { guildID, userID } });
 
     msg.say(`The tag **${name}** has been updated.`);
   }
