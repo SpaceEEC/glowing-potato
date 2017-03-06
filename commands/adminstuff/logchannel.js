@@ -48,8 +48,7 @@ module.exports = class LogchannelCommand extends Command {
     const config = (await GuildConfig.findOrCreate({ where: { guildID } }))['0'].dataValues;
 
     if (args.message === 'show') {
-      msg.say(stripIndents`${args.type}
-      ${config[args.type] ? config[args.type] : 'No channel set.'}`);
+      msg.say(config[args.type] ? config[args.type] : `No ${args.type} set.`);
       return;
     }
 

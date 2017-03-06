@@ -1,6 +1,5 @@
 const { Command } = require('discord.js-commando');
 const { RichEmbed: Embed } = require('discord.js');
-const { stripIndents } = require('common-tags');
 
 module.exports = class ConfigCommand extends Command {
   constructor(client) {
@@ -43,8 +42,7 @@ module.exports = class ConfigCommand extends Command {
 
     if (args.role === 'show') {
       msg.embed(new Embed().setColor(0xFFFF00)
-        .setDescription(stripIndents`${args.type}:
-      ${roles.length ? roles.map(r => `<@&${r}>`).join(', ') : '@nobody'}`));
+        .setDescription(roles.length ? roles.map(r => `<@&${r}>`).join(', ') : `No ${args.type} set.`));
       return;
     }
 
