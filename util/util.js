@@ -21,7 +21,7 @@ module.exports = class UtilClass {
    * @returns {string}
    */
   static getUsedAlias(msg, map = {}) {
-    const alias = msg.content.slice(msg.guild.commandPrefix.length).split(' ')[0];
+    const alias = msg.content.slice(msg.guild.commandPrefix.length).split(' ')[0].toLowerCase();
     return map[alias] || alias;
   }
 
