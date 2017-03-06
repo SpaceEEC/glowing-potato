@@ -9,7 +9,8 @@ module.exports = class ConfigCommand extends Command {
       aliases: ['djchannel', 'djchannels', 'mchannel', 'mchannels', 'musicchannels'],
       group: 'adminstuff',
       memberName: 'musicchannel',
-      description: 'Adds or removes a musicchannel (music commands are only allowed in those) for this guild.\nIf no channel is present the commands are allowed anywhere.',
+      description: stripIndents`Adds or removes a musicchannel (music commands are only allowed in those) for this guild.\nIf no channel is present the commands are allowed anywhere.
+      To remove a channel, specify an already linked one, it will be removed then.`,
       guildOnly: true,
       args: [
         {
@@ -31,8 +32,7 @@ module.exports = class ConfigCommand extends Command {
     const channels = msg.guild.settings.get('djChannel', []);
 
     if (args.channel === 'show') {
-      msg.embed(new Embed().setColor(0xFFFF00)
-        .setDescription(channels.length ? channels.map(r => `<#${r}>`).join(', ') : 'No channel set, so everywhere.'));
+      msg.say(channels.length ? channels.map(r => `<#${r}>`).join(', ') : 'No channel set, so everywhere.');
       return;
     }
 
@@ -45,7 +45,7 @@ module.exports = class ConfigCommand extends Command {
 
     msg.guild.settings.set('djChannel', channels);
 
-    msg.embed(new Embed().setColor(args.added ? 0x32CD32 : 0xFF0000)
-      .setDescription(`${args.channel} ${args.added ? `has been added to` : 'has been removed from'} the music channels!`));
+    msg.say(stripIndents`${args.channel} ${args.added ? `has been added to` : 'has been removed from'} the music channels!
+    ${channels.length ? `Current channels: ${channels.map(r => `<#${r} > `).join(', ')}` : 'No channel set, so everywhere.'}`);
   }
 };

@@ -1,36 +1,24 @@
 const { Command } = require('discord.js-commando');
 const { join } = require('path');
 const GuildConfig = require(join(__dirname, '..', '..', 'dataProviders', 'models', 'GuildConfig'));
+const { getUsedAlias } = require(join(__dirname, '..', '..', 'util', 'util'));
 const { stripIndents } = require('common-tags');
 
 module.exports = class LogchannelCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'logchannel',
-      aliases: ['log', 'logs'],
+      aliases: ['vlogchannel', 'anchannel'],
       group: 'adminstuff',
       memberName: 'logchannel',
       description: 'Enables or disables logging of different types for this guild.',
-      details: 'There is either vlogChannel, anChannel or logChannel as the type.',
+      details: stripIndents`There is either vlogChannel, anChannel or logChannel as the type, use the aliases to set these.
+      To remove a channel, specify just specify that channel.`,
       guildOnly: true,
       args: [
         {
-          key: 'type',
-          prompt: 'which type of logs do you wish to enable or disable?\n',
-          validate: async (value) => {
-            if (['vlogchannel', 'logchannel', 'anchannel'].includes(value.toLowerCase())) return true;
-            return 'Pick one of either vlogChannel, anChannel or logChannel.';
-          },
-          parse: (value) => {
-            if (value.toLowerCase() === 'vlogchannel') return 'vlogChannel';
-            if (value.toLowerCase() === 'logchannel') return 'logChannel';
-            if (value.toLowerCase() === 'anchannel') return 'anChannel';
-            throw new Error('Unknown value');
-          }
-        },
-        {
           key: 'channel',
-          prompt: 'to which channel shall the messages be send?\n',
+          prompt: 'wich channel do you like to set up or remove?\n',
           type: 'channel',
           default: 'show'
         }
@@ -45,14 +33,16 @@ module.exports = class LogchannelCommand extends Command {
 
   async run(msg, args) {
     const { id: guildID } = msg.guild;
+    args.cmd = getUsedAlias(msg);
+
     const config = (await GuildConfig.findOrCreate({ where: { guildID } }))['0'].dataValues;
 
-    if (args.message === 'show') {
+    if (args.message === 'show' || args.channel === 'show') {
       msg.say(config[args.type] ? config[args.type] : `No ${args.type} set.`);
       return;
     }
 
-    config[args.type] = args.channel === '' ? null : args.channel.id;
+    config[args.type] = args.channel === config[args.type] ? null : args.channel.id;
 
     await GuildConfig.update(config, { where: { guildID } });
 
