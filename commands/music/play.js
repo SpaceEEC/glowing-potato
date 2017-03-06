@@ -82,7 +82,7 @@ module.exports = class PlayMusicCommand extends Command {
           this.input(videos, queue, msg, voiceChannel, fetchMessage);
         }).catch((err) => {
           winston.error('[YT-API]', err);
-          fetchMessage.edit('❌ Playlist was found, but there an error occured while fetching the songs. Better try again or something different!');
+          fetchMessage.edit('❌ Playlist was found, but an error occured while fetching the songs. Better try again or something different!');
         });
       }).catch(() => {
         if (!args.limit) args.limit = 1;
@@ -126,7 +126,7 @@ module.exports = class PlayMusicCommand extends Command {
       } catch (err) {
         winston.error('[Join/play]', err);
         this.queue.delete(msg.guild.id);
-        fetchMessage.edit('❌ There was an error while joining your channel, such a shame.', { embed: null });
+        fetchMessage.edit('❌ There was an error while joining your channel, such a shame!', { embed: null });
       }
     } else {
       const [success, embed] = video instanceof Array ? await this.addPlaylist(msg, video) : await this.add(msg, video);
@@ -189,7 +189,7 @@ module.exports = class PlayMusicCommand extends Command {
       queue.songs.push(lastsong);
     }
 
-    if (!lastsong) return [false, 'No song qualifys for adding. Maybe all of them are already queued?'];
+    if (!lastsong) return [false, 'No song qualifies for adding. Maybe all of them are already queued?'];
     return [true, new Embed()
       .setAuthor(lastsong.member, lastsong.avatar)
       .setTimestamp()
@@ -216,7 +216,7 @@ module.exports = class PlayMusicCommand extends Command {
       .setColor(0x9370DB)
       .setTitle(videos[index].title)
       .setImage(`https://img.youtube.com/vi/${videos[index].id}/mqdefault.jpg`)
-      .setDescription('`y` to confirm\n`n` the next result\n\n Respond with `cancel` to cancel the command.\nThe command will automatically be cancelled in 30 seconds.')
+      .setDescription('`y` to confirm\n`n` the next result\n\n Respond with `cancel` to cancel the command.\nThis prompt will automatically be cancelled in 30 seconds.')
       .setFooter(`Result ${index + 1} from ${videos.length} results.`, this.client.user.avatarURL);
 
     let func;
@@ -224,7 +224,7 @@ module.exports = class PlayMusicCommand extends Command {
     else func = msg.channel.sendEmbed(embed);
     const mes = await func;
 
-    const collected = (await mes.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
+    const collected = (await mes.channel.awaitMessages(m => m.author.id === msg.author.id && !msg.content.startsWith(msg.guild.commandPrefix), { maxMatches: 1, time: 30000 })).first();
     if (!collected) {
       msg.delete();
       mes.delete();

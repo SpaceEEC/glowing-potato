@@ -35,7 +35,7 @@ module.exports = class ResumeMusicCommand extends Command {
         .then((mes) => mes.delete(5000));
     }
     if (queue.songs[0].playing) {
-      return msg.say('Trying to resume a currently playing song? ')
+      return msg.say('Trying to resume a currently playing song? You are not the smartes one.')
         .then((mes) => mes.delete(5000));
     }
 
