@@ -44,7 +44,7 @@ module.exports = class ShuffleQueueCommand extends Command {
           .then((mes) => mes.delete(5000));
       }
       queue.loop = false;
-      return msg.say('Loopins is now disabled!')
+      return msg.say('Looping is now disabled!')
         .then((mes) => mes.delete(5000));
     }
 

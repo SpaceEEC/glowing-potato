@@ -39,7 +39,7 @@ module.exports = class RemoveMusicCommand extends Command {
         .then((mes) => mes.delete(5000));
     }
 
-    const requestMessage = await msg.say(`Are you sure you want to skip this masterpiece of a song?\n${song.title}\n\n__y__es/__n__o`);
+    const requestMessage = await msg.say(`Are you sure you want to skip this wonderful song?\n${song.title}\n\n__y__es/__n__o`);
     const response = (await requestMessage.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
     requestMessage.delete().catch(() => null);
     if (!response) {
@@ -52,7 +52,7 @@ module.exports = class RemoveMusicCommand extends Command {
     }
 
     queue.splice(queue.indexOf(song), 1);
-    return msg.say(`What a shame, removed this wonderful song.\n${song.title}`)
+    return msg.say(`What a shame, you forced me to remove this wonderful song from the queue:\`${song.title}\``)
       .then((mes) => mes.delete(5000));
   }
 
