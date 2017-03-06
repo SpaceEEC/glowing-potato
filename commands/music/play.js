@@ -284,6 +284,7 @@ module.exports = class PlayMusicCommand extends Command {
 
     const dispatcher = queue.connection.playStream(stream, { passes: 2 })
       .on('end', (reason) => {
+        dispatcher.stream.destroy();
         winston.info(`[Dispatcher] [${guildID}] ${reason && reason !== 'Stream is not generating quickly enough.' ? `[${reason}]` : ''} Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${song.lengthString}`);
         if (streamErrored) return;
         const oldSong = queue.songs.shift();
