@@ -54,8 +54,8 @@ client
   .on('ready', () => {
     winston.info(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
   })
-  .on('disconnect', () => {
-    winston.error(`Disconnected after ${moment.duration(client.uptime).format(' D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]')}.`);
+  .on('disconnect', (event) => {
+    winston.error(`Disconnected after ${moment.duration(client.uptime).format('D hh:mm:ss')}.`, event);
     process.exit(100);
   })
   .on('commandError', (cmd, err) => {
