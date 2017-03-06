@@ -1,6 +1,6 @@
 const { Command, FriendlyError } = require('discord.js-commando');
 const { join } = require('path');
-const Tag = require(join(__dirname, '..', '..', 'dataProviders', 'models', 'Tag'));
+const tag = require(join(__dirname, '..', '..', 'dataProviders', 'models', 'Tag'));
 
 module.exports = class TagDel extends Command {
   constructor(client) {
@@ -29,7 +29,7 @@ module.exports = class TagDel extends Command {
     if (userID !== msg.author.id && !member.hasPermission('ADMINISTRATOR') && !this.client.isOwner(member) && !msg.member.roles.some(r => roles.includes(r.id))) {
       throw new FriendlyError(`you can not delete the **${name}** tag, since it was not created by yourself!`);
     }
-    await Tag.destroy({ where: { guildID, name } });
+    await tag.destroy({ where: { guildID, name } });
 
     msg.say(`The tag **${name}** was deleted!`);
   }
