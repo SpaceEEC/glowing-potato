@@ -9,6 +9,7 @@ const GuildConfig = database.db.define('guildConfig', {
     unique: true,
     primaryKey: true,
   },
+  mutedRole: { type: Sequelize.STRING(20) }, // eslint-disable-line new-cap
   vlogChannel: { type: Sequelize.STRING(20) }, // eslint-disable-line new-cap
   logChannel: { type: Sequelize.STRING(20) }, // eslint-disable-line new-cap
   anChannel: { type: Sequelize.STRING(20) }, // eslint-disable-line new-cap
