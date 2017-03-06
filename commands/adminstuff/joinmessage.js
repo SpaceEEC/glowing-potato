@@ -11,21 +11,20 @@ module.exports = class LogchannelCommand extends Command {
       aliases: ['joinmsg', 'leavemessage', 'leavemsg'],
       group: 'adminstuff',
       memberName: 'joinmessage',
-      description: 'Sets or removes the join or leave message for this guild.\n`help leavemessage`',
+      description: 'Sets or removes the join or leave message for this guild.\nTo set or remove the leave message use the alias.',
       examples: [
         stripIndents`\`joinmessage Welcome to :server:, :member:!\`
         Will look like:
         Welcome to Discordinios, \`@space#0302\`!\n\u200b`,
-        stripIndents`\`joinmessage null\`
+        stripIndents`\`joinmessage remove\`
         Will disable that message.\n\u200b`,
         'Same usage for `leavemessage`.'],
       guildOnly: true,
       args: [
         {
           key: 'message',
-          // it's working here tho
           prompt: stripIndents`what shall that message be?
-          Respond with \`null\` to disable that message.\n`,
+          Respond with \`remove\` to disable that message.\n`,
           type: 'string',
           max: 1800,
           default: 'show',
@@ -41,22 +40,21 @@ module.exports = class LogchannelCommand extends Command {
 
   async run(msg, args) {
     const { id: guildID } = msg.guild;
-
     args.cmd = getUsedAlias(msg, { joinmessage: 'joinMessage', joinmsg: 'joinMessage', leavemessage: 'leaveMessage', leavemsg: 'leaveMessage' });
+
     const config = (await GuildConfig.findOrCreate({ where: { guildID } }))['0'].dataValues;
 
     if (args.message === 'show') {
-      msg.say(stripIndents`${args.type}
-      ${config[args.type] ? config[args.type] : 'No message set.'}`);
+      msg.say(config[args.cmd] ? config[args.cmd] : 'No message set.');
       return;
     }
 
-    config[args.type] = args.message === 'null' ? null : args.message;
+    config[args.cmd] = args.message === 'remove' ? null : args.message;
 
     await GuildConfig.update(config, { where: { guildID } });
 
-    msg.say(stripIndents`The ${args.cmd} is now ${`\`${args.message}\`` || 'disabled'}!
-    ${config.anChannel || config.logChannel ? '' : 'No channel to announce or log set up!'}`);
+    msg.say(stripIndents`The ${args.cmd} is now ${`\`${config[args.cmd] ? args.message : 'disabled'}\``}!
+    ${config.anChannel || config.logChannel ? '' : 'Info: No channel to announce or log set up!'}`);
   }
 
 
