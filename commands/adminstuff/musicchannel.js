@@ -32,8 +32,7 @@ module.exports = class ConfigCommand extends Command {
 
     if (args.channel === 'show') {
       msg.embed(new Embed().setColor(0xFFFF00)
-        .setDescription(stripIndents`${args.type}:
-      ${channels.length ? channels.map(r => `<#${r}>`).join(', ') : '#everywhere'}`));
+        .setDescription(channels.length ? channels.map(r => `<#${r}>`).join(', ') : 'No channel set, so everywhere.'));
       return;
     }
 
