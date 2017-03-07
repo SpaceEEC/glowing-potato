@@ -7,6 +7,7 @@ module.exports = class VolumeCommand extends Command {
       group: 'music',
       memberName: 'volume',
       description: 'Sets the volume.',
+      details: 'Valid volume levels are 1 to 10.',
       examples: [
         '`volume` Will display the current volume',
         '`volume 2` Will set the volume to 2.',
@@ -15,9 +16,16 @@ module.exports = class VolumeCommand extends Command {
         {
           key: 'volume',
           prompt: 'to which level would you like set the volume?\n',
-          type: 'integer',
-          min: 1,
-          max: 10
+          validate: (value) => {
+            const int = Number.parseInt(value);
+            if (!Number.isNaN(int)
+              && (int >= 1)
+              && (int <= 10)) return true;
+            return 'Please specify a volume between 1 and 10.';
+          },
+          parse: (value) => {
+            return Number.parseInt(value);
+          }
         }
       ],
       guildOnly: true,
