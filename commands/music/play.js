@@ -288,7 +288,7 @@ module.exports = class PlayMusicCommand extends Command {
         .setTimestamp());
 
     let streamErrored = false;
-    const stream = ytdl(song.url, { audioonly: true })
+    const stream = ytdl(song.url, { filter: 'audioonly' })
       .on('error', async err => {
         streamErrored = true;
         winston.error('[YTDL]', guildID, err);
