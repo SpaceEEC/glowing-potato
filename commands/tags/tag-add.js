@@ -9,6 +9,11 @@ module.exports = class TagAdd extends Command {
       group: 'tags',
       memberName: 'tag-add',
       description: 'Adds a tag.',
+      examples: [
+        '`tag-add meme Only the finest memes here`',
+        'Adds a tag with the name `meme` and the content `Only the finest memes here`',
+        '\nFor tags with names that contain spaces, omit all arguments. And enter name and content when being prompted to.'
+      ],
       guildOnly: true,
       args: [
         {
@@ -21,7 +26,6 @@ module.exports = class TagAdd extends Command {
         },
         {
           key: 'content',
-          label: 'inhalt',
           prompt: 'what shall the content be?\n',
           type: 'tagcontent',
           max: 1800
@@ -32,8 +36,10 @@ module.exports = class TagAdd extends Command {
 
   async run(msg, args) {
     const { name, content } = args;
+    const { id: guildID } = msg.guild;
+    const { id: userID } = msg.author;
 
-    await tag.create({ name, guildID: msg.guild.id, userID: msg.author.id, content });
+    await tag.create({ name, guildID, userID, content });
 
     msg.say(`Tag **${name}** sucessfully created!`);
   }
