@@ -1,5 +1,6 @@
 const { Command } = require('discord.js-commando');
 const { GuildMember } = require('discord.js');
+const { stripIndents } = require('common-tags');
 
 module.exports = class BlacklistCommand extends Command {
   constructor(client) {
@@ -9,12 +10,18 @@ module.exports = class BlacklistCommand extends Command {
       group: 'modstuff',
       memberName: 'blacklist',
       description: 'Blacklists or unblacklists a member or channel.',
+      examples: [
+        '`blacklist 218348062828003328` Would blacklist or unblacklist the member with that ID.',
+        '`blacklist @owo` Would blacklist or unblacklist the mentioned user owo.',
+        'For channels instead of users just replace the mentions or ids with channel ones.'
+      ],
       guildOnly: true,
       args: [
         {
           key: 'thing',
           label: 'member or channel',
-          prompt: 'which Member or Channel do you wish to blacklist or unblacklist?\n',
+          prompt: stripIndents`which Member or Channel do you wish to blacklist or unblacklist?
+          This command only accepts Mentions or IDs.\n`,
           validate: async (value, msg) => {
             const channel = value.match(/^(?:<#)+([0-9]+)>+$/);
             if (channel) return msg.guild.channels.has(channel[1]);
@@ -25,7 +32,7 @@ module.exports = class BlacklistCommand extends Command {
               } catch (err) { return false; }
             }
             if (msg.guild.channels.has(value) || msg.guild.member(value)) return true;
-            return 'This isn\'t a valid channel or member';
+            return 'This isn\'t a valid channel or member!';
           },
           parse: (value, msg) => {
             const channel = value.match(/^(?:<#)+([0-9]+)>+$/);

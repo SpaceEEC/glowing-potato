@@ -12,8 +12,10 @@ module.exports = class LogchannelCommand extends Command {
       group: 'adminstuff',
       memberName: 'joinmessage',
       description: 'Sets or removes the join or leave message for this guild.\nTo set or remove the leave message use the alias.',
+      details: stripIndents`You can use :guild: as placeholder for the guildname,
+      and :member: as placeholder for the joined member, this won't ping him/her, see the examples down there.`,
       examples: [
-        stripIndents`\`joinmessage Welcome to :server:, :member:!\`
+        stripIndents`\`joinmessage Welcome to :guild:, :member:!\`
         Will look like:
         Welcome to Discordinios, \`@space#0302\`!\n\u200b`,
         stripIndents`\`joinmessage remove\`

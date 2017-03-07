@@ -6,8 +6,22 @@ module.exports = class ShuffleQueueCommand extends Command {
       name: 'loop',
       group: 'music',
       memberName: 'loop',
-      description: 'Songs will be appended to the queue after they finished, rather than just being deleted. ',
+      description: 'Songs will be appended to the queue after they finished, rather than just being deleted.',
+      examples: [
+        '`loop enable` Will enable looping.',
+        '`loop disable` Will disable looping.',
+        'No shit, sherlock.',
+        '`loop` Will display whether looping is enabled or not.',
+      ],
       guildOnly: true,
+      args: [
+        {
+          key: 'state',
+          prompt: 'do you like to enable or disable the loop?\n',
+          type: 'string',
+          default: ''
+        }
+      ]
     });
   }
 
@@ -25,12 +39,12 @@ module.exports = class ShuffleQueueCommand extends Command {
       return msg.say('There is nothing to be looped in this guild. Change that!')
         .then((mes) => mes.delete(5000));
     }
-    if (!args) {
+    if (!args.state) {
       return msg.say(`Looping is at the moment ${queue.loop ? 'enabled' : 'disabled'}.`)
         .then((mes) => mes.delete(5000));
     }
 
-    if (['+', 'y', 'yes', 'enable', 'on', '1', 'true'].includes(args.split(' ')[0])) {
+    if (['+', 'y', 'yes', 'enable', 'on', '1', 'true'].includes(args.state)) {
       if (queue.loop) {
         return msg.say('Looping is already enabled, my friend.')
           .then((mes) => mes.delete(5000));
@@ -38,7 +52,7 @@ module.exports = class ShuffleQueueCommand extends Command {
       queue.loop = true;
       return msg.say('Looping is now enabled!')
         .then((mes) => mes.delete(5000));
-    } else if (['-', 'n', 'no', 'disable', 'off', '0', 'false'].includes(args.split(' ')[0])) {
+    } else if (['-', 'n', 'no', 'disable', 'off', '0', 'false'].includes(args.state)) {
       if (!queue.loop) {
         return msg.say('Looping is already disabled, my friend.')
           .then((mes) => mes.delete(5000));

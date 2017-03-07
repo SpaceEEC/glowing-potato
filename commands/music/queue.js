@@ -11,6 +11,12 @@ module.exports = class QueueCommand extends Command {
       group: 'music',
       memberName: 'queue',
       description: 'Shows the queue.',
+      examples: [
+        '`queue` Shows first page.',
+        '`queue` Shows first page.',
+        '`queue 2` Shows second page',
+        'And so on.'
+      ],
       guildOnly: true,
       args: [
         {

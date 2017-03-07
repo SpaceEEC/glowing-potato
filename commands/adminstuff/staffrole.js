@@ -1,5 +1,5 @@
 const { Command } = require('discord.js-commando');
-const { RichEmbed: Embed } = require('discord.js');
+const { stripIndents } = require('common-tags');
 
 module.exports = class ConfigCommand extends Command {
   constructor(client) {
@@ -8,6 +8,14 @@ module.exports = class ConfigCommand extends Command {
       group: 'adminstuff',
       memberName: 'staffrole',
       description: 'Adds or removes a staffrole (Admin or Mod) in this guild.',
+      details: stripIndents`Provide as type either \`admin\` or \`mod\`.
+      To remove or add a role simply \`@Mention\` it or provide the name or ID.
+      To show all roles in that categorie, omit the parameter.`,
+      examples: [
+        '`staffrole admin @Admins` Adds or removes the role `@Admins` to the admin roles of the bot.',
+        '`staffrole admin` Displays all admin roles.',
+        'For mod roles just replace admin with mod',
+      ],
       guildOnly: true,
       args: [
         {
@@ -41,8 +49,7 @@ module.exports = class ConfigCommand extends Command {
     const roles = msg.guild.settings.get(args.type, []).filter(r => msg.guild.roles.has(r));
 
     if (args.role === 'show') {
-      msg.embed(new Embed().setColor(0xFFFF00)
-        .setDescription(roles.length ? roles.map(r => `<@&${r}>`).join(', ') : `No ${args.type} set.`));
+      msg.say(`${args.type}: ${roles.length ? roles.map(r => `\`@${msg.guild.roles.get(r).name}\``).join(', ') : '@\u200beveryone'}`);
       return;
     }
 
@@ -55,7 +62,6 @@ module.exports = class ConfigCommand extends Command {
 
     msg.guild.settings.set(args.type, roles);
 
-    msg.embed(new Embed().setColor(args.added ? 0x32CD32 : 0xFF0000)
-      .setDescription(`The ${args.role} ${args.added ? `is now one of the` : 'has been removed from the'} ${args.type}!`));
+    msg.say(`\`@${args.role.name}\` ${args.added ? `is now one of the` : 'has been removed from the'} ${args.type}!`);
   }
 };

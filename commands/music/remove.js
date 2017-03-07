@@ -7,7 +7,13 @@ module.exports = class RemoveMusicCommand extends Command {
       aliases: ['splice'],
       group: 'music',
       memberName: 'remove',
-      description: 'Shows the queue.',
+      description: 'Removes a Song from the queue.',
+      examples: [
+        '`remove` Removes the first song in the queue.',
+        '`remove 1` Also removes the first song in the queue.',
+        '`remove 2` Removes the second song in the queue.',
+        'And so on.'
+      ],
       guildOnly: true,
       args: [
         {

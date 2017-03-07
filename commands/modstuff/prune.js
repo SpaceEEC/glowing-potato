@@ -1,4 +1,5 @@
 const { Command } = require('discord.js-commando');
+const { stripIndents } = require('common-tags');
 
 module.exports = class PruneCommand extends Command {
   constructor(client) {
@@ -8,6 +9,15 @@ module.exports = class PruneCommand extends Command {
       group: 'modstuff',
       memberName: 'prune',
       description: 'Deletes messages.',
+      details: stripIndents`Let's you bulk delete messages.
+      You can delete any amount between \`2\` and \`100\`.
+      You can Mention, ID or Name a member to filter, so it will delete only whose messages.`,
+      examples: [
+        '`prune 100 @spacebot` Will delete all messages from spacebot in the last 100 messages.',
+        '`prune 100 242685080693243906` Will delete all messages from the member with that ID in the last 100 messages.',
+        '`prune 100 spacebot` Will search for a member with that name and delete all messages from that member in the last 100 messages.',
+        '`prune 100` Will delete the last 100 messages.'
+      ],
       guildOnly: true,
       args: [
         {
