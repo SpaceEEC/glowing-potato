@@ -10,13 +10,14 @@ module.exports = class ValidTag extends ArgumentType {
 
   async validate(value, msg, args) {
     await Tag.sync();
-    const tag = await Tag.findOne({ where: { name: value, guildID: msg.guild.id } });
+    const name = value.toLowerCase();
+    const tag = await Tag.findOne({ where: { name, guildID: msg.guild.id } });
     if (args.max) return !tag;
     return tag;
   }
 
-  async parse(value, msg, args) {
-    if (args.max) return value.toLowerCase();
-    else return Tag.findOne({ where: { name: value, guildID: msg.guild.id } });
+  async parse(name, msg, args) {
+    if (args.max) return name.toLowerCase();
+    else return Tag.findOne({ where: { name, guildID: msg.guild.id } });
   }
 };
