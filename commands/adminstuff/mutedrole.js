@@ -10,6 +10,14 @@ module.exports = class MutedRoleCommand extends Command {
       group: 'adminstuff',
       memberName: 'mutedrole',
       description: 'Sets, creates or removes a \'Muted\' role for this guild.',
+      details: stripIndents`If you want to create a new role, pass \`create\` as action.
+          If you want to update the channel overwrites for the already linked role, pass \`update\` as action.
+          If you want to specify an already existing role, pass a \`@Mention\` or the \`ID\` as action.
+          If you want to remove the already linked role, pass \`remove\` as action.
+          If you want to display the current one, pass whatever else is left as action, except omitting it.
+          
+          Creating a new role, chosing update or specifying a different one will automatically overwrite all channels.
+          Removing a role will remove it from the config and remove the overwrites from all channels, but will not delete it from the guild.`,
       guildOnly: true,
       args: [
         {
@@ -22,7 +30,7 @@ module.exports = class MutedRoleCommand extends Command {
           If you want to display the current one, respond with whatever you want, **except** \`cancel\`.
           
           Creating a new role, chosing update or specifying a different one will automatically overwrite all channels.
-          Removing a role will not remove it.\n\u200b`,
+          Removing a role will remove it from the config and remove the overwrites from all channels, but will not delete it from the guild.\n\u200b`,
           type: 'string',
         }
       ]

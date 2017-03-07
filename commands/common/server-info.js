@@ -8,9 +8,10 @@ module.exports = class ServerinfoCommand extends Command {
   constructor(client) {
     super(client, {
       name: 'server-info',
+      alises: ['guild-info'],
       group: 'common',
       memberName: 'server-info',
-      description: 'General informations about this server/guild.',
+      description: 'General informations about this guild.',
       guildOnly: true,
     });
   }

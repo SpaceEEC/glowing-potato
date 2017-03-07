@@ -12,8 +12,15 @@ module.exports = class LogchannelCommand extends Command {
       group: 'adminstuff',
       memberName: 'logchannel',
       description: 'Enables or disables logging of different types for this guild.',
-      details: stripIndents`There is either vlogChannel, anChannel or logChannel as the type, use the aliases to set these.
-      To remove a channel, specify just specify that channel.`,
+      details: stripIndents`There is either vlogchannel, anchannel or logchannel as the type, use the aliases to set these.
+      To remove a channel, specify just specify that channel.
+      Mention the same channel again to remove it.
+      Omit the channel parameter to show the current channel.`,
+      examples: [
+        '`vlogchannel #logs`',
+        '`anchannel #logs`',
+        '`logchannel #logs`',
+      ],
       guildOnly: true,
       args: [
         {

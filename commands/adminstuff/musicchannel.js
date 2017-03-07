@@ -1,5 +1,4 @@
 const { Command } = require('discord.js-commando');
-const { RichEmbed: Embed } = require('discord.js');
 const { stripIndents } = require('common-tags');
 
 module.exports = class ConfigCommand extends Command {
@@ -9,8 +8,15 @@ module.exports = class ConfigCommand extends Command {
       aliases: ['djchannel', 'djchannels', 'mchannel', 'mchannels', 'musicchannels'],
       group: 'adminstuff',
       memberName: 'musicchannel',
-      description: stripIndents`Adds or removes a musicchannel (music commands are only allowed in those) for this guild.\nIf no channel is present the commands are allowed anywhere.
+      description: 'Adds or removes a musicchannel.',
+      details: stripIndents`
+      To add or remove a music channel, simply specify it, either with a mention, name or ID.
+      If no channel is present, the commands are allowed everywhere.
       To remove a channel, specify an already linked one, it will be removed then.`,
+      examples: [
+        '`mchannel #music-commands` Adds or removes the `#music.commands` channel from the music channels',
+        '`mchannel` Displays all music channels.'
+      ],
       guildOnly: true,
       args: [
         {

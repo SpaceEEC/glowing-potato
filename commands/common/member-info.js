@@ -11,7 +11,7 @@ module.exports = class MemberinfoCommand extends Command {
       aliases: ['user-info'],
       group: 'common',
       memberName: 'member-info',
-      description: 'General informations about a member.',
+      description: 'General informations about the specified member.',
       guildOnly: true,
       args: [
         {

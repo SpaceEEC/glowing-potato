@@ -9,6 +9,13 @@ module.exports = class BlacklistCommand extends Command {
       group: 'modstuff',
       memberName: 'mute',
       description: 'Mutes or unmutes a member.',
+      details: 'Mutes or unmutes the specified member, be careful with the fuzzy search.',
+      examples: [
+        '`mute @owo` Mutes or unmutes the member owo',
+        '`mute 250381145462538242` Mutes or unmutes the member with that ID.',
+        '`mute owo` Search for a member called owo and mutes or unmutes them',
+        'Be careful with the last option, you might mute or unmute someone you are not intdending to.'
+      ],
       guildOnly: true,
       args: [
         {

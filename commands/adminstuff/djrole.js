@@ -9,7 +9,14 @@ module.exports = class ConfigCommand extends Command {
       aliases: ['dj', 'mrole', 'musicrole', 'djroles', 'mroles', 'musicroles'],
       group: 'adminstuff',
       memberName: 'djrole',
-      description: 'Adds or removes a DjRole (allowed to use music commands) for this guild.\nIf no role is present anyone is allowed to use music commands.',
+      description: 'Adds or removes a DjRole.',
+      details: stripIndents`To add or remove a role, simply specify it, either with a mention, name or ID.
+      If no role is present, @\u200beveryone is allowed to use music commands.
+      To show all set up roles, simply omit the role parameter.`,
+      examples: [
+        '`djrole @DJ` Adds or removes the role `@DJ` to the dj roles.',
+        '`djrole` Displays all dj roles.'
+      ],
       guildOnly: true,
       args: [
         {
@@ -31,9 +38,8 @@ module.exports = class ConfigCommand extends Command {
     const roles = msg.guild.settings.get('djRoles', []).filter(r => msg.guild.roles.has(r));
 
     if (args.role === 'show') {
-      msg.embed(new Embed().setColor(0xFFFF00)
-        .setDescription(stripIndents`DjRoles:
-      ${roles.length ? roles.map(r => `<@&${r}>`).join(', ') : '@everyone'}`));
+      msg.say(`DjRoles:
+      ${roles.length ? roles.map(r => `\`@${msg.guild.roles.get(r).name}\``).join(', ') : '@\u200beveryone'}`);
       return;
     }
 
