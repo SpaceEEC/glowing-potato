@@ -14,11 +14,26 @@ module.exports = class PlayMusicCommand extends Command {
       aliases: ['search', 'serach'],
       group: 'music',
       memberName: 'play',
-      description: 'Plays a song or playlist.',
+      description: 'Plays a song or a playlist.',
+      details: stripIndent`The input parameter accepts:
+      A link to a Youtube video.
+      A link to a Youtube playlist.
+      A search text to search a video on youtube.
+      For search or playlists you can provide a search cap by prepending 
+      \`-n\`, where n is a number.
+      Search is capped at 50, Playlists are capped at 200.`,
+      examples: [
+        '`play Yousei Teikoku Weißflügel` Picks the first result and plays or queues it.',
+        '`play -3 Yousei Teikoku Weißlügel` Will let you pick one of the first the resulst. Is capped at 50.',
+        '`play -50 PLvlw_ICcAI4ermdmmjtr6uxYj0eZ_nKc4` Will queue up the first 50 songs of that playlist. Default is 20, cap is at 200.',
+        'Instead of ID or search text, you can simply use the youtube url.',
+        'If you want to queue up a playlist be sure to add the actual playlist link, rather than a video link with an "attached" playlist.',
+        'Look out for a `playlist?list=` in the url.'
+      ],
       guildOnly: true,
       args: [
         {
-          key: 'url',
+          key: 'input',
           prompt: 'what would you like to add or search?\n',
           type: 'string',
         },
@@ -42,14 +57,14 @@ module.exports = class PlayMusicCommand extends Command {
 
   async run(msg, args) {
     // I need a better way of parsing that.
-    if (args.url.split(' ')[0].match(/^-\d+$/g)) {
-      args.limit = parseInt(args.url.split(' ')[0].replace('-', ''));
+    if (args.input.split(' ')[0].match(/^-\d+$/g)) {
+      args.limit = parseInt(args.input.split(' ')[0].replace('-', ''));
       if (args.limit < 0) {
         args.limit = 1;
       }
-      args.url = args.url.split(' ').slice(1).join(' ');
+      args.input = args.input.split(' ').slice(1).join(' ');
     }
-    args.url = args.url.replace(/<(.+)>/g, '$1');
+    args.input = args.input.replace(/<(.+)>/g, '$1');
     const queue = this.queue.get(msg.guild.id);
     let voiceChannel;
 
@@ -74,10 +89,11 @@ module.exports = class PlayMusicCommand extends Command {
 
     const fetchMessage = await msg.say('Fetching info...');
 
-    return this.youtube.getVideo(args.url).then(video => {
+    return this.youtube.getVideo(args.input).then(video => {
       this.input(video, queue, msg, voiceChannel, fetchMessage);
     }).catch(() => {
-      this.youtube.getPlaylist(args.url).then(playlist => {
+      this.youtube.getPlaylist(args.input).then(playlist => {
+        if (args.limit && args.limit > 200) args.limit = 200;
         playlist.getVideos(args.limit || 20).then(videos => {
           this.input(videos, queue, msg, voiceChannel, fetchMessage);
         }).catch((err) => {
@@ -87,7 +103,7 @@ module.exports = class PlayMusicCommand extends Command {
       }).catch(() => {
         if (!args.limit) args.limit = 1;
         if (args.limit > 50) args.limit = 50;
-        this.youtube.searchVideos(args.url, args.limit).then(async videos => {
+        this.youtube.searchVideos(args.input, args.limit).then(async videos => {
           const video = videos.length === 1 ? videos[0] : await this.chooseSong(msg, videos, 0, fetchMessage);
           if (video === null) return;
           this.input(video, queue, msg, voiceChannel, fetchMessage);
