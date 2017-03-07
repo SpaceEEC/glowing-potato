@@ -9,6 +9,10 @@ module.exports = class TagDel extends Command {
       group: 'tags',
       memberName: 'tag-del',
       description: 'Deletes a tag.',
+      examples: [
+        '`tag-del meme`',
+        'Deletes the tag `meme`.',
+      ],
       guildOnly: true,
       args: [
         {
@@ -22,8 +26,10 @@ module.exports = class TagDel extends Command {
 
   async run(msg, args) {
     const member = await msg.guild.fetchMember(msg.author);
-    const guildID = msg.guild.id;
+
+    const { id: guildID } = msg.guild;
     const { userID, name } = args.tag;
+
     const roles = msg.guild.settings.get('adminRoles', []).concat(msg.guild.settings.get('modRoles', []));
 
     if (userID !== msg.author.id && !member.hasPermission('ADMINISTRATOR') && !this.client.isOwner(member) && !msg.member.roles.some(r => roles.includes(r.id))) {

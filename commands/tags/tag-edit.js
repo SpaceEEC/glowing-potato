@@ -9,6 +9,11 @@ module.exports = class TagEdit extends Command {
       group: 'tags',
       memberName: 'tag-edit',
       description: 'Edits a tag.',
+      examples: [
+        '`tag-edit meme No longer only the finest memes here.`',
+        'Edits the already existing tag with the name `meme` so it responds with `No longer only the finest memes here.`',
+        '\nFor tags with names that contain spaces, omit all arguments. And enter name and content when being prompted to.'
+      ],
       guildOnly: true,
       args: [
         {
@@ -18,7 +23,6 @@ module.exports = class TagEdit extends Command {
         },
         {
           key: 'content',
-          label: 'inhalt',
           prompt: 'how shall the new content look like?\n',
           type: 'tagcontent',
           max: 1800
@@ -29,9 +33,11 @@ module.exports = class TagEdit extends Command {
 
   async run(msg, args) {
     const member = await msg.guild.fetchMember(msg.author);
-    const guildID = msg.guild.id;
-    const { userID, name } = args.tag;
+
+    const { id: guildID } = msg.guild;
     const { content } = args;
+    const { userID, name } = args.tag;
+
     const roles = msg.guild.settings.get('adminRoles', []).concat(msg.guild.settings.get('modRoles', []));
 
     if (userID !== msg.author.id && !member.hasPermission('ADMINISTRATOR') && !this.client.isOwner(member) && !msg.member.roles.some(r => roles.includes(r.id))) {
