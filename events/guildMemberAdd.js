@@ -13,7 +13,7 @@ exports.run = async (client, member) => {
 
   const response = conf.joinMessage
     .split(':member:').join(`\`@${member.user.username}#${member.user.discriminator}\``)
-    .split(':server:').join(member.guild.name); // eslint-disable-line newline-per-chained-call
+    .split(':guild:').join(member.guild.name); // eslint-disable-line newline-per-chained-call
   const botMember = await member.guild.fetchMember(client.user);
 
   if (conf.logChannel) {
