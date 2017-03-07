@@ -1,5 +1,6 @@
 const { Command } = require('discord.js-commando');
 const { stripIndents } = require('common-tags');
+const { getUsedAlias } = require('../../util/util.js');
 
 module.exports = class EvalCommand extends Command {
   constructor(client) {
@@ -29,7 +30,7 @@ module.exports = class EvalCommand extends Command {
     const time = +new Date;
     try {
       let evaled;
-      if (msg.content.slice(msg.guild.commandPrefix.length).split(' ')[0] === 'async') evaled = eval(`(async(msg,args)=>{${args.code}})(msg,args);`);
+      if (getUsedAlias(msg) === 'async') evaled = eval(`(async(msg,args)=>{${args.code}})(msg,args);`);
       else evaled = eval(args.code);
       if (evaled instanceof Promise) evaled = await evaled;
       const response_typeof = typeof evaled;
