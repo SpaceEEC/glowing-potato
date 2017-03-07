@@ -211,7 +211,8 @@ module.exports = class MutedRoleCommand extends Command {
     role = guild.roles.get(role);
     if (!role) throw new FriendlyError('the specified role is invalid!');
     let failed = 0;
-    for (const channel of guild.channels.values()) {
+    const channels = guild.channels.filter(c => c.type === 'text').values();
+    for (const channel of channels) {
       const overwrites = channel.permissionOverwrites.get(role.id);
       if (remove) {
         if (overwrites) await overwrites.delete().catch(() => failed++);
