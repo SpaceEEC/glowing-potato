@@ -10,8 +10,12 @@ module.exports = class PictureCommand extends Command {
       aliases: ['konachan', 'donmai', 'pic'],
       group: 'weebstuff',
       memberName: 'picture',
-      description: 'Displays a picture konachan.net or safebooru.donmai.us .',
+      description: 'Displays a picture konachan.net or safebooru.donmai.us',
       guildOnly: true,
+      examples: [
+        '`konachan polychromatic` Displays a random picture with that tag from konachan.net',
+        '`donmai komeiji_satori` Displays a random picture with that tag from safebooru.donmai.us'
+      ],
       args: [
         {
           key: 'search',
@@ -29,9 +33,11 @@ module.exports = class PictureCommand extends Command {
         .setDescription('Not allowed char in the search!')
         .addField('Allowed chars:', 'A-z 0-9 _ = () ! - : .', true));
     }
+
     msg.cmd = getUsedAlias(msg, { pic: 'picture' });
+    args.search = args.search.split(' ');
+
     if (msg.cmd === 'picture') {
-      args.search = args.search.split(' ');
       if (args.search[2]) msg.cmd = 'konachan';
       else msg.cmd = ['konachan', 'donmai'][Math.floor(Math.random() * 2)];
     }
@@ -41,12 +47,14 @@ module.exports = class PictureCommand extends Command {
   async konachan(msg, search) {
     const res = await request.get(`http://konachan.com/post.json?tags=${`${search}+rating:s&limit=100`}`)
       .send(null).set('Accept', 'application/json');
+
     if (res.body.length === 0) {
       return msg.embed(new Embed().setColor(0xFFFF00)
         .setAuthor('konachan.net', 'http://konachan.net/', 'http://konachan.net/favicon.ico')
         .addField('No results', 'Maybe made a typo?')
         .addField('Search:', `[Link](http://konachan.net/post?tags=${search})`));
     }
+
     const image = res.body[Math.floor(Math.random() * (res.body.length - 0)) + 0];
     return msg.embed(new Embed()
       .setColor(msg.member.displayColor).setImage(`http:${image.sample_url}`)
@@ -56,13 +64,16 @@ module.exports = class PictureCommand extends Command {
   async donmai(msg, search) {
     const res = await request.get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${search}`)
       .send(null).set('Accept', 'application/json');
+
     if (res.body.success === false) return msg.channel.sendMessage(`Der Server meldet:\n\`${res.body.message}\``);
+
     if (res.body.length === 0) {
       return msg.embed(new Embed().setColor(0xFFFF00)
         .setAuthor('safebooru.donmai.us', 'http://safebooru.donmai.us/', 'http://safebooru.donmai.us/favicon.ico')
         .addField('No results', 'Maybe made a typo?')
-        .addField('Suche:', `[Link](http://safebooru.donmai.us/posts/?tags=${search})`));
+        .addField('Search:', `[Link](http://safebooru.donmai.us/posts/?tags=${search})`));
     }
+
     return msg.embed(new Embed().setColor(msg.member.displayColor)
       .setDescription(`[Source](http://safebooru.donmai.us/posts/${res.body[0].id}/)`)
       .setImage(`http://safebooru.donmai.us/${res.body[0].file_url}`));
