@@ -20,12 +20,14 @@ module.exports = class ServerinfoCommand extends Command {
     return msg.embed(new Embed()
       .setColor(0xffa500).setTitle('Informations about this guild.')
       .setThumbnail(msg.guild.iconURL)
-      .addField('❯ Channel:', stripIndents`• \`${msg.guild.channels.filter(c => c.type === 'text').size}\` Textchannel
+      .addField('❯ Channel:', stripIndents`
+      • \`${msg.guild.channels.filter(c => c.type === 'text').size}\` Textchannel
       • \`${msg.guild.channels.filter(c => c.type === 'voice').size}\` Voicechannel`, true)
-      .addField('❯ Member:', `• \`${msg.guild.memberCount}\` Member\n• Owner: ${msg.guild.owner}`, true)
-      .addField('❯ General:', stripIndents`• \`${msg.guild.roles.size}\` Roles
-      • Region: ${this.capitalize(msg.guild.region)}`, true)
-      .addField('\u200b', `• Created: ${moment(msg.guild.createdAt).format('DD.MM.YYYY [\n   Um:] hh:mm:ss')}`, true)
+      .addField('❯ Member:', `• \`${msg.guild.memberCount}\` Member\n• Owner is ${msg.guild.owner}`, true)
+      .addField('❯ General:', stripIndents`
+      • \`${msg.guild.roles.size}\` Roles
+      • In ${this.capitalize(msg.guild.region)}`, true)
+      .addField('\u200b', `• Created ${moment(msg.guild.createdAt).format('DD.MM.YYYY [\n   at:] hh:mm:ss')}`, true)
       .addField('❯ Emojis:', this.getRandomEmojis(msg))
     );
   }
