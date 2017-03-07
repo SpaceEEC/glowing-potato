@@ -18,7 +18,7 @@ module.exports = class ShuffleQueueCommand extends Command {
         {
           key: 'state',
           prompt: 'do you like to enable or disable the loop?\n',
-          type: 'string',
+          type: 'boolean',
           default: ''
         }
       ]
@@ -44,7 +44,7 @@ module.exports = class ShuffleQueueCommand extends Command {
         .then((mes) => mes.delete(5000));
     }
 
-    if (['+', 'y', 'yes', 'enable', 'on', '1', 'true'].includes(args.state)) {
+    if (args.state) {
       if (queue.loop) {
         return msg.say('Looping is already enabled, my friend.')
           .then((mes) => mes.delete(5000));
@@ -52,7 +52,7 @@ module.exports = class ShuffleQueueCommand extends Command {
       queue.loop = true;
       return msg.say('Looping is now enabled!')
         .then((mes) => mes.delete(5000));
-    } else if (['-', 'n', 'no', 'disable', 'off', '0', 'false'].includes(args.state)) {
+    } else {
       if (!queue.loop) {
         return msg.say('Looping is already disabled, my friend.')
           .then((mes) => mes.delete(5000));
@@ -61,9 +61,6 @@ module.exports = class ShuffleQueueCommand extends Command {
       return msg.say('Looping is now disabled!')
         .then((mes) => mes.delete(5000));
     }
-
-    return msg.say(`Looping is at the moment ${queue.loop ? 'enabled' : 'disabled'}.`)
-      .then((mes) => mes.delete(5000));
   }
 
   get queue() {
