@@ -13,6 +13,10 @@ module.exports = class AnimeCommand extends Command {
       group: 'weebstuff',
       memberName: 'anime',
       description: 'Displays informations about the specified anime, manga, or character.',
+      examples: [
+        '`anime Bakemonogatari` Shows a list of shows that match this search and lets you pick one of those for a detailed view.',
+        '`manga Hyouka` Shows a list of mangas that match this search and lets you pick one of those for a detailed view.'
+      ],
       guildOnly: true,
       args: [
         {
@@ -41,22 +45,22 @@ module.exports = class AnimeCommand extends Command {
         .addField(`For which ${msg.cmd} would you like to see the informations?`,
         'This prompt will be canceled on `cancel` or after `30` seconds.'));
     const collected = (await msg.channel.awaitMessages(m => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
-    message.delete();
+    message.delete().catch(() => null);
     if (!collected) {
       throw new FriendlyError('cancel command.');
     } else if (collected.content === 'cancel') {
-      msg.delete();
-      collected.delete();
+      msg.delete().catch(() => null);
+      collected.delete().catch(() => null);
       return null;
     } else if (collected.content % 1 !== 0 || !response[parseInt(collected.content) - 1]) {
-      collected.delete();
+      collected.delete().catch(() => null);
       if (second) {
-        msg.delete();
+        msg.delete().catch(() => null);
         return null;
       }
       return this.select(msg, response, true);
     } else {
-      collected.delete();
+      collected.delete().catch(() => null);
       return response[parseInt(collected.content) - 1];
     }
   }
