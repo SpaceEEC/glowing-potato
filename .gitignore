@@ -6,5 +6,3 @@ node_modules/
 settings.sqlite
 settings.sqlite-journal
 auth.json
-
-commands/league.json
