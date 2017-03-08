@@ -58,7 +58,7 @@ module.exports = class BlacklistCommand extends Command {
 
     if (target.roles.has(mutedRole.id)) {
       target.removeRole(mutedRole);
-      msg.say(`Unmuted \`${target.user.username}#${target.user.discriminator}\`!`);
+      msg.say(`Successfully unmuted \`${target.user.username}#${target.user.discriminator}\`!`);
       return;
     }
 
