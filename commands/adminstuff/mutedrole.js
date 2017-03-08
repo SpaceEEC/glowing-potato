@@ -193,8 +193,8 @@ module.exports = class MutedRoleCommand extends Command {
     msg.say(stripIndents`${failed
       ? stripIndents`Failed removing \`${failed}/${msg.guild.channels.size}\` channel overwrites for \`@${msg.guild.roles.get(config.mutedRole).name}\`!
       You might want to check if that is okay for you, or fix it yourself if not.`
-      : stripIndents`Removed all overwrites for \`@${msg.guild.roles.get(config.mutedRole).name}\` and removed it from config!
-      The role itself remains untouched.`}`);
+      : stripIndents`Removed all overwrites for \`@${msg.guild.roles.get(config.mutedRole).name}\` and removed it from config!`}
+      The role itself remains untouched.`);
 
     config.mutedRole = null;
     return config;
