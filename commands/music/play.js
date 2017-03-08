@@ -137,8 +137,8 @@ module.exports = class PlayMusicCommand extends Command {
 
       try {
         queue.connection = await queue.voiceChannel.join();
-        fetchMessage.delete().catch(() => null);
         await this.play(msg.guild.id, queue.songs[0]);
+        fetchMessage.delete().catch(() => null);
       } catch (err) {
         winston.error('[Join/play]', err);
         this.queue.delete(msg.guild.id);
