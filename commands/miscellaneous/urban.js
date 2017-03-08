@@ -27,7 +27,7 @@ module.exports = class UrbanCommand extends Command {
       args.nummer = parseInt(args.search.split(' ')[0].replace('-', ''));
       args.search = args.search.split(' ').slice(1).join(' ');
     } else { args.nummer = 1; }
-    const res = await request.get(`http://api.urbandictionary.com/v0/define?term=${args.search}`)
+    const res = await request.get(`http://api.urbandictionary.com/v0/define?term=${args.search.split(' ').join('+')}`)
       .send(null).set('Content-Type', 'application/json');
     args.nummer -= 1;
     if (res.body.list.length === 0) {
@@ -39,7 +39,7 @@ module.exports = class UrbanCommand extends Command {
           'http://www.urbandictionary.com/')
           .setThumbnail('http://puu.sh/tiNHS/3ae29d9b91.png')
           .addField('No resulst', 'Maybe made a typo?')
-          .addField('Search:', `[URL](http://www.urbandictionary.com/define.php?term=${args.search})`)
+          .addField('Search:', `[URL](http://www.urbandictionary.com/define.php?term=${args.search.split(' ').join('+')})`)
           .setFooter(msg.content, msg.author.avatarURL)
       );
     } else {
