@@ -30,7 +30,7 @@ module.exports = class EvalCommand extends Command {
     const time = +new Date;
     try {
       let evaled;
-      if (getUsedAlias(msg) === 'async') evaled = eval(`(async(msg,args)=>{${args.code}})(msg,args);`);
+      if (getUsedAlias(msg) === 'async') evaled = eval(`(async()=>{${args.code}})();`);
       else evaled = eval(args.code);
       if (evaled instanceof Promise) evaled = await evaled;
       const response_typeof = typeof evaled;
