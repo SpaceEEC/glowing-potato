@@ -5,7 +5,7 @@ const ytdl = require('ytdl-core');
 const winston = require('winston');
 const Youtube = require('simple-youtube-api');
 const Song = require('../../structures/Song');
-const auth = require('../../auth');
+const { googletoken } = require('../../auth');
 
 module.exports = class PlayMusicCommand extends Command {
   constructor(client) {
@@ -40,7 +40,7 @@ module.exports = class PlayMusicCommand extends Command {
       ]
     });
 
-    this.youtube = new Youtube(auth.googletoken);
+    this.youtube = new Youtube(googletoken);
     // hello crawl (or other curious people)
     this.queue = new Map();
     this.statusMessage = null;
