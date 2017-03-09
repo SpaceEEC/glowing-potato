@@ -40,20 +40,20 @@ module.exports = class LogchannelCommand extends Command {
 
   async run(msg, args) {
     const { id: guildID } = msg.guild;
-    args.cmd = getUsedAlias(msg);
+    args.cmd = getUsedAlias(msg, { vlogchannel: 'vlogChannel', anchannel: 'anChannel', logchannel: 'logChannel' });
 
     const config = (await GuildConfig.findOrCreate({ where: { guildID } }))['0'].dataValues;
 
     if (args.message === 'show' || args.channel === 'show') {
-      msg.say(config[args.type] ? config[args.type] : `No ${args.type} set.`);
+      msg.say(config[args.cmd] ? config[args.cmd] : `No ${args.cmd} set.`);
       return;
     }
 
-    config[args.type] = args.channel === config[args.type] ? null : args.channel.id;
+    config[args.cmd] = args.channel === config[args.cmd] ? null : args.channel.id;
 
     await GuildConfig.update(config, { where: { guildID } });
 
-    msg.say(`The ${args.type} is now ${args.channel || 'disabled'}!`);
+    msg.say(`The ${args.cmd} is now ${args.channel || 'disabled'}!`);
   }
 
 
