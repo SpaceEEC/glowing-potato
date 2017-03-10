@@ -1,15 +1,14 @@
 const { join } = require('path');
 const GuildConfig = require(join(__dirname, '..', 'dataProviders', 'models', 'GuildConfig'));
-const { getValue } = require(join(__dirname, '..', 'util', 'util'));
 const moment = require('moment');
 moment.locale('de');
 
 exports.run = async (client, member) => {
   if (member.user.id === client.user.id) return;
 
-  const conf = await getValue(GuildConfig, { where: { guildID: member.guild.id } });
+  const conf = (await GuildConfig.findOrCreate({ where: { guildID: member.guild.id } }))['0'].dataValues;
 
-  if (!conf || (conf && !conf.joinMessage)) return;
+  if (!conf.joinMessage) return;
 
   const response = conf.joinMessage
     .split(':member:').join(`\`@${member.user.username}#${member.user.discriminator}\``)
@@ -19,8 +18,10 @@ exports.run = async (client, member) => {
   if (conf.logChannel) {
     if (!client.channels.has(conf.logChannel)) {
       conf.logChannel = null;
-      return GuildConfig.update(conf, { where: { guildID: member.guild.id } }); // eslint-disable-line consistent-return
+      GuildConfig.update(conf, { where: { guildID: member.guild.id } });
+      return;
     }
+
     if (!client.channels.get(conf.logChannel)
       .permissionsFor(botMember)
       .hasPermission('SEND_MESSAGES')) return;
@@ -32,8 +33,10 @@ exports.run = async (client, member) => {
   if (conf.anChannel) {
     if (!client.channels.has(conf.anChannel)) {
       conf.anChannel = null;
-      return GuildConfig.update(conf, { where: { guildID: member.guild.id } }); // eslint-disable-line consistent-return
+      GuildConfig.update(conf, { where: { guildID: member.guild.id } });
+      return;
     }
+
     if (!client.channels.get(conf.anChannel)
       .permissionsFor(botMember)
       .hasPermission('SEND_MESSAGES')) return;

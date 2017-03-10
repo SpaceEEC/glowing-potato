@@ -1,18 +1,28 @@
 const { join } = require('path');
 const { RichEmbed: Embed } = require('discord.js');
 const GuildConfig = require(join(__dirname, '..', 'dataProviders', 'models', 'GuildConfig'));
-const { getValue } = require(join(__dirname, '..', 'util', 'util'));
 const moment = require('moment');
 moment.locale('de');
 
 exports.run = async (client, oldMember, newMember) => {
   if (newMember.user.bot) return;
-  const conf = await getValue(GuildConfig, { where: { guildID: newMember.guild.id } });
-  if (!conf || (conf && !conf.vlogChannel)) return;
+
+  const config = (await GuildConfig.findOrCreate({ where: { guildID: newMember.guild.id } }))['0'].dataValues;
+
+  if (!config.vlogChannel) return;
+
   newMember = await newMember.guild.fetchMember(newMember);
-  const vlogChannel = client.channels.get(conf.vlogChannel);
+
+  const vlogChannel = client.channels.get(config.vlogChannel);
+  if (!vlogChannel) {
+    config.vlogChannel = null;
+    await GuildConfig.update(config, { where: { guildID: newMember.guild.id } });
+    return;
+  }
+
   if (!vlogChannel.permissionsFor(newMember.guild.member(client.user))
     .hasPermissions(['SEND_MESSAGES', 'EMBED_LINKS'])) return;
+
   if (oldMember.voiceChannel !== newMember.voiceChannel) {
     let clr;
     let desc;
