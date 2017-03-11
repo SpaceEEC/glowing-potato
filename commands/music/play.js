@@ -6,6 +6,7 @@ const winston = require('winston');
 const Youtube = require('simple-youtube-api');
 const Song = require('../../structures/Song');
 const { googletoken } = require('../../auth');
+const fs = require('fs');
 
 module.exports = class PlayMusicCommand extends Command {
   constructor(client) {
@@ -296,25 +297,28 @@ module.exports = class PlayMusicCommand extends Command {
         this.statusMessage = null;
         queue.songs.shift();
         this.play(guildID, queue.songs[0]);
-      });
-
-    const dispatcher = queue.connection.playStream(stream, { passes: 2 })
-      .on('end', (reason) => {
-        dispatcher.stream.destroy();
-        winston.info(`[Dispatcher] [${guildID}] ${reason && reason !== 'Stream is not generating quickly enough.' ? `[${reason}]` : ''} Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${song.lengthString}`);
-        if (streamErrored) return;
-        const oldSong = queue.songs.shift();
-        if (queue.loop) queue.songs.push(oldSong);
-        this.play(guildID, queue.songs[0], reason === 'stop');
       })
-      .on('error', async err => {
-        winston.error(`[Dispatcher] [${guildID}]`, err);
-        await this.statusMessage.edit(`❌ An internal error occured while playing.`);
-        this.statusMessage = null;
-      });
+      .once('end', () => {
+        const dispatcher = queue.connection.playFile(`./tempmusicfile_${guildID}`, { passes: 2 })
+          .on('end', (reason) => {
+            dispatcher.stream.destroy();
+            winston.info(`[Dispatcher][${guildID}] ${reason && reason !== 'Stream is not generating quickly enough.' ? `[${reason}]` : ''} Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${song.lengthString}`);
+            if (streamErrored) return;
+            const oldSong = queue.songs.shift();
+            if (queue.loop) queue.songs.push(oldSong);
+            fs.unlink(`./tempmusicfile_${guildID}`, e => { if (e) winston.error(`[${guildID}] `, e); });
+            this.play(guildID, queue.songs[0], reason === 'stop');
+          })
+          .on('error', async err => {
+            winston.error(`[Dispatcher][${guildID}]`, err);
+            await this.statusMessage.edit(`❌ An internal error occured while playing.`);
+            this.statusMessage = null;
+          });
 
-    dispatcher.setVolumeLogarithmic(queue.volume / 5);
-    song.dispatcher = dispatcher;
-    song.playing = true;
+        dispatcher.setVolumeLogarithmic(queue.volume / 5);
+        song.dispatcher = dispatcher;
+        song.playing = true;
+      });
+    stream.pipe(fs.createWriteStream(`./tempmusicfile_${guildID}`));
   }
 };
