@@ -1,50 +1,50 @@
 const { Command } = require('discord.js-commando');
 
 module.exports = class SkipMusicCommand extends Command {
-  constructor(client) {
-    super(client, {
-      name: 'skip',
-      aliases: ['next'],
-      group: 'music',
-      memberName: 'skip',
-      description: 'Skips the current song.',
-      guildOnly: true,
-      throttling: {
-        usages: 1,
-        duration: 30
-      }
-    });
-  }
+	constructor(client) {
+		super(client, {
+			name: 'skip',
+			aliases: ['next'],
+			group: 'music',
+			memberName: 'skip',
+			description: 'Skips the current song.',
+			guildOnly: true,
+			throttling: {
+				usages: 1,
+				duration: 30
+			}
+		});
+	}
 
-  hasPermission(msg) {
-    const djRoles = msg.guild.settings.get('djRoles', []);
-    if (!djRoles.length) return true;
-    const roles = msg.guild.settings.get('adminRoles', []).concat(msg.guild.settings.get('modRoles', []), djRoles);
-    return msg.member.roles.some(r => roles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
-  }
+	hasPermission(msg) {
+		const djRoles = msg.guild.settings.get('djRoles', []);
+		if (!djRoles.length) return true;
+		const roles = msg.guild.settings.get('adminRoles', []).concat(msg.guild.settings.get('modRoles', []), djRoles);
+		return msg.member.roles.some(r => roles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
+	}
 
-  async run(msg) {
-    const queue = this.queue.get(msg.guild.id);
+	async run(msg) {
+		const queue = this.queue.get(msg.guild.id);
 
-    if (!queue) {
-      return msg.say('The queue is empty. 👀')
-        .then((mes) => mes.delete(5000));
-    }
-    if (!queue.voiceChannel.members.has(msg.author.id)) {
-      return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so no skipping for you.`)
-        .then((mes) => mes.delete(5000));
-    }
+		if (!queue) {
+			return msg.say('The queue is empty. 👀')
+				.then((mes) => mes.delete(5000));
+		}
+		if (!queue.voiceChannel.members.has(msg.author.id)) {
+			return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so no skipping for you.`)
+				.then((mes) => mes.delete(5000));
+		}
 
-    const song = queue.songs[0];
-    song.dispatcher.end('skip');
+		const song = queue.songs[0];
+		song.dispatcher.end('skip');
 
-    return msg.say(`What a lame decision, you forced me to skipped this wonderful song: \`${song}}\`!`)
-      .then((mes) => mes.delete(5000));
-  }
+		return msg.say(`What a lame decision, you forced me to skipped this wonderful song: \`${song}}\`!`)
+			.then((mes) => mes.delete(5000));
+	}
 
-  get queue() {
-    if (!this._queue) this._queue = this.client.registry.resolveCommand('music:play').queue;
+	get queue() {
+		if (!this._queue) this._queue = this.client.registry.resolveCommand('music:play').queue;
 
-    return this._queue;
-  }
+		return this._queue;
+	}
 };
