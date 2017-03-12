@@ -7,7 +7,7 @@ module.exports = class TestCommand extends Command {
       aliases: ['bakaero'],
       group: 'util',
       memberName: 'test',
-      description: 'A test command usually does nothing.',
+      description: 'A test command, usually does nothing.',
     });
   }
 
