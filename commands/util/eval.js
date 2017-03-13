@@ -10,7 +10,6 @@ module.exports = class EvalCommand extends Command {
 			group: 'util',
 			memberName: 'eval',
 			description: 'Evaluates code in NodeJS.',
-			guildOnly: true,
 			guarded: true,
 			args: [
 				{
