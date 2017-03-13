@@ -25,7 +25,7 @@ exports.run = async (client, member) => {
 		if (!client.channels.get(conf.logChannel)
 			.permissionsFor(botMember)
 			.hasPermission('SEND_MESSAGES')) return;
-		member.guild.channels.get(conf.logChannel).sendMessage(response).catch(e => {
+		member.guild.channels.get(conf.logChannel).send(response).catch(e => {
 			client.emit('error', `Error while writing in the logChannel (${conf.logChannel}) of (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`);
 		});
 	}
@@ -40,7 +40,7 @@ exports.run = async (client, member) => {
 		if (!client.channels.get(conf.anChannel)
 			.permissionsFor(botMember)
 			.hasPermission('SEND_MESSAGES')) return;
-		member.guild.channels.get(conf.anChannel).sendMessage(response).catch(e => {
+		member.guild.channels.get(conf.anChannel).send(response).catch(e => {
 			client.emit('error', `Error while writing in the anChannel (${conf.anChannel}) auf (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`);
 		});
 	}
