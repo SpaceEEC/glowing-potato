@@ -65,7 +65,7 @@ module.exports = class PictureCommand extends Command {
 		const res = await request.get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${search}`)
 			.send(null).set('Accept', 'application/json');
 
-		if (res.body.success === false) return msg.channel.sendMessage(`Der Server meldet:\n\`${res.body.message}\``);
+		if (res.body.success === false) return msg.channel.send(`Der Server meldet:\n\`${res.body.message}\``);
 
 		if (res.body.length === 0) {
 			return msg.embed(new Embed().setColor(0xFFFF00)

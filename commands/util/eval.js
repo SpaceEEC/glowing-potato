@@ -54,7 +54,7 @@ module.exports = class EvalCommand extends Command {
           \`\`\``);
 				});
 		} catch (e) {
-			msg.channel.sendMessage(stripIndents`\`E-ROHR\`
+			msg.say(stripIndents`\`E-ROHR\`
       \`\`\`js
       ${e}${e.response && e.response.res && e.response.res.text ? `\n${e.response.res.text}` : ''}
       \`\`\`\n
