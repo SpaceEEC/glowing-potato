@@ -6,7 +6,7 @@ module.exports = class EvalCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: 'eval',
-			aliases: ['async'],
+			aliases: ['async', 'await'],
 			group: 'util',
 			memberName: 'eval',
 			description: 'Evaluates code in NodeJS.',
@@ -29,9 +29,8 @@ module.exports = class EvalCommand extends Command {
 		const time = +new Date;
 		try {
 			let evaled;
-			if (getUsedAlias(msg) === 'async') evaled = eval(`(async()=>{${args.code}})();`);
-			else evaled = eval(args.code);
-			if (evaled instanceof Promise) evaled = await evaled;
+			if (getUsedAlias(msg) === 'async') args.code = `(async()=>{${args.code}})();`;
+			evaled = await new Promise(resolve => resolve(eval(args.code)));
 			const response_typeof = typeof evaled;
 			if (typeof evaled !== 'string') { evaled = require('util').inspect(evaled, false, 0); }
 			if (evaled.includes(this.client.token)) {
