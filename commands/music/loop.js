@@ -39,7 +39,7 @@ module.exports = class ShuffleQueueCommand extends Command {
 			return msg.say('There is nothing to be looped in this guild. Change that!')
 				.then((mes) => mes.delete(5000));
 		}
-		if (!args.state) {
+		if (args.state === '') {
 			return msg.say(`Looping is at the moment ${queue.loop ? 'enabled' : 'disabled'}.`)
 				.then((mes) => mes.delete(5000));
 		}
