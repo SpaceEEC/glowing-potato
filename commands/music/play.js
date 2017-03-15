@@ -305,7 +305,7 @@ module.exports = class PlayMusicCommand extends Command {
 						winston.info(`[Dispatcher][${guildID}] ${reason && reason !== 'Stream is not generating quickly enough.' ? `[${reason}]` : ''} Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${song.lengthString}`);
 						if (streamErrored) return;
 						const oldSong = queue.songs.shift();
-						if (queue.loop) queue.songs.push(oldSong);
+						if (queue.loop && reason !== 'skip') queue.songs.push(oldSong);
 						fs.unlink(`./tempmusicfile_${guildID}`, e => { if (e) winston.error(`[${guildID}] `, e); });
 						this.play(guildID, queue.songs[0], reason === 'stop');
 					})
