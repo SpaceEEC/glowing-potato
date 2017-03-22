@@ -16,7 +16,7 @@ export default class TagList extends Command {
 	}
 
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
-		const tags: Tag[] = (await Tag.findAll({ where: { guildID: msg.guild.id } })).map((t: any) => t[0].dataValues);
+		const tags: Tag[] = (await Tag.findAll({ where: { guildID: msg.guild.id } })).map((t: any) => t.dataValues);
 		if (!tags.length) throw new FriendlyError(`no tags in this guild yet, be the first one to add one!`);
 
 		let alle: string[] = tags.filter((t: Tag) => t.userID !== msg.author.id).map((t: Tag) => `\`${t.name}\``).sort();
