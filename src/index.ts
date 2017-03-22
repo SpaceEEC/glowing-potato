@@ -8,7 +8,7 @@ import SequelizeProvider from './dataProviders/SequelizeProvider';
 import SQLite from './dataProviders/SQLite';
 import { registerEvents } from './events/events';
 
-const { devtoken, ownerID, defaultPrefix } = require('./auth');
+const { maintoken, ownerID, defaultPrefix } = require('./auth');
 
 const client: CommandoClient = new CommandoClient({
 	owner: ownerID,
@@ -85,8 +85,11 @@ client
 		winston.info(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
 	})
 	.on('disconnect', (event: any) => {
-		winston.error(event);
-		winston.error('Disconnected with code:', event.code, 'Reason:', event.reason);
+		new (winston.Logger)({
+			transports: [new winston.transports.File({ filename: '../disconnects.log', level: 'disconnect', timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')) })],
+			levels: { disconnect: 0 }
+		}).log('disconnect', 'Code:', event.code, ' Reason:', event.reason);
+		winston.error('Disconnected with code:', event.code, ' Reason:', event.reason);
 	})
 	.on('reconnecting', () => winston.warn('Reconnecting...'))
 	.on('commandError', (cmd: Command, err: Error) => {
@@ -122,7 +125,7 @@ client
 
 process.on('unhandledRejection', (err: any) => {
 	if (err) {
-		if (/(Something took too long to do.|getaddrinfo)|ETIMEDOUT/.test(err.message)) process.exit(200);
+		if (/Something took too long to do.|getaddrinfo|ETIMEDOUT/.test(err.message)) process.exit(200);
 		if (err.response && err.response.res && err.response.res.text) winston.error(`Uncaught Promise Error:\n$ ${err.response.res.text}${err.stack ? `\n${err.stack}` : ''}`);
 		else winston.error(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`);
 	} else {
@@ -130,4 +133,4 @@ process.on('unhandledRejection', (err: any) => {
 	}
 });
 
-client.login(devtoken);
+client.login(maintoken);
