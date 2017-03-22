@@ -21,7 +21,6 @@ export async function GuildMemberAdd(client: CommandoClient): Promise<void> {
 				GuildConfig.upsert(conf);
 				return;
 			}
-
 			if (!(client.channels.get(conf.logChannel) as TextChannel)
 				.permissionsFor(clientMember)
 				.hasPermission('SEND_MESSAGES')) return;
