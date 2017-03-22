@@ -8,7 +8,6 @@
     "lint:gulp": "gulp lint",
     "build:gulp": "gulp build",
     "lint": "npm run lint:gulp",
-    "prebuild": "npm run lint:gulp",
     "build": "npm run build:gulp"
   },
   "keywords": [],
@@ -20,15 +19,16 @@
     "discord.js-commando": "github:gawdl3y/discord.js-commando",
     "moment": "^2.17.1",
     "moment-duration-format": "^1.3.0",
+    "node-opus": "^0.2.4",
     "sequelize": "sequelize/sequelize",
     "simple-youtube-api": "^2.1.0",
+    "sqlite": "^2.3.0",
     "winston": "^2.3.1",
     "ytdl-core": "^0.10.0"
   },
   "devDependencies": {
     "@types/common-tags": "^1.2.5",
     "@types/node": "^7.0.8",
-    "@types/request-promise": "^4.1.33",
     "@types/superagent": "^2.0.36",
     "@types/winston": "^2.2.0",
     "del": "^2.2.2",
@@ -38,7 +38,8 @@
     "gulp-typescript": "^3.1.5",
     "tslint": "^4.5.1",
     "tslint-eslint-rules": "^3.4.0",
-    "typescript": "^2.2.1"
+    "typescript": "^2.2.1",
+    "typings": "^2.1.0"
   },
   "engines": {
     "node": ">=7.6.0"
