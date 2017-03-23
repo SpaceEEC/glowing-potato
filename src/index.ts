@@ -8,7 +8,7 @@ import SequelizeProvider from './dataProviders/SequelizeProvider';
 import SQLite from './dataProviders/SQLite';
 import { registerEvents } from './events/events';
 
-const { maintoken, ownerID, defaultPrefix } = require('./auth');
+const { defaultPrefix, logLevel, maintoken, ownerID } = require('./config');
 
 const client: CommandoClient = new CommandoClient({
 	owner: ownerID,
@@ -30,7 +30,7 @@ winston.addColors({
 });
 winston.remove(winston.transports.Console);
 winston.add(winston.transports.Console, {
-	level: 'silly',
+	level: logLevel,
 	prettyPrint: true,
 	colorize: true,
 	silent: false,
