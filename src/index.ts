@@ -88,8 +88,9 @@ client
 		new (winston.Logger)({
 			transports: [new winston.transports.File({ filename: '../disconnects.log', level: 'disconnect', timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')) })],
 			levels: { disconnect: 0 }
-		}).log('disconnect', 'Code:', event.code, ' Reason:', event.reason);
-		winston.error('Disconnected with code:', event.code, ' Reason:', event.reason);
+		}).log('disconnect', '', event.code, ': ', event.reason);
+		winston.error('Disconnected |', event.code, ': ', event.reason);
+		if (event.code === 1000) process.exit(200);
 	})
 	.on('reconnecting', () => winston.warn('Reconnecting...'))
 	.on('commandError', (cmd: Command, err: Error) => {
