@@ -1,7 +1,7 @@
 import { Message, RichEmbed } from 'discord.js';
 import { CommandMessage, CommandoClient } from 'discord.js-commando';
 import * as request from 'superagent';
-const { anilist } = require('../auth.json');
+const { anilist } = require('../config.json');
 
 type clientCredentias = {
 	/**
