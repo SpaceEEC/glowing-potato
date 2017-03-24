@@ -5,6 +5,7 @@ import { GuildConfig } from '../dataProviders/models/GuildConfig';
 
 export async function VoiceStateUpdate(client: CommandoClient): Promise<void> {
 	client.on('voiceStateUpdate', async (oldMember: GuildMember, newMember: GuildMember) => {
+		if (newMember.user.bot) return;
 
 		const config: GuildConfig = (await GuildConfig.findOrCreate({ where: { guildID: newMember.guild.id } }) as any)['0'].dataValues;
 
