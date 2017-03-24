@@ -36,12 +36,9 @@ export default class ShuffleQueueCommand extends Command {
 		const array: song[] = queue.songs.slice(1);
 
 		let currentIndex: number = array.length;
-		let temporaryValue: song;
-		let randomIndex: number;
-		while (currentIndex !== 0) {
-			randomIndex = Math.floor(Math.random() * currentIndex);
-			currentIndex--;
-			temporaryValue = array[currentIndex];
+		while (--currentIndex) {
+			const randomIndex: number = Math.floor(Math.random() * (currentIndex + 1));
+			const temporaryValue: song = array[currentIndex];
 			array[currentIndex] = array[randomIndex];
 			array[randomIndex] = temporaryValue;
 		}
@@ -54,7 +51,7 @@ export default class ShuffleQueueCommand extends Command {
 	}
 
 	get queue(): Map<string, queue> {
-		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play')as any).queue;
+		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
 	}
