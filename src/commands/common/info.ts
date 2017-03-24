@@ -18,7 +18,7 @@ export default class InfoCommand extends Command {
 
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
 		return msg.embed(new RichEmbed()
-			.setColor(0xffa500).setTitle('Infos über den Bot.')
+			.setColor(0xffa500).setTitle('General informations about the bot.')
 			.setDescription('\u200b')
 			.addField('❯ Online for:', `• ${(moment.duration(this.client.uptime) as any).format(' D[d] hh[h] mm[m] ss[s]')}`, true)
 			.addField('❯ Used memory:', `• ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
