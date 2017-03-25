@@ -1,7 +1,5 @@
 const { join } = require('path');
 const GuildConfig = require(join(__dirname, '..', 'dataProviders', 'models', 'GuildConfig'));
-const moment = require('moment');
-moment.locale('de');
 
 exports.run = async (client, member) => {
 	if (member.user.id === client.user.id) return;
