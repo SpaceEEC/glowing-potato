@@ -40,7 +40,7 @@ export default class QueueCommand extends Command {
 		const currentSong: song = queue.songs[0];
 		const currentTime: number = currentSong.dispatcher ? currentSong.dispatcher.time / 1000 : 0;
 
-		let i: number = 0;
+		let i: number = 0 + (args.page - 1) * 11;
 		let page: string | string[] = pages.items.map((song: song) => `\`${i++}.\`[${song.name}](${song.url})`);
 
 		const embed: RichEmbed = new RichEmbed().setColor(0x0800ff)
@@ -54,18 +54,19 @@ export default class QueueCommand extends Command {
       **Queue:**` : ''}`);
 			embed.setThumbnail(currentSong.thumbnail);
 		} else {
-			page[0] = `${queue.loop ? '**Queue is enabled!**\n' : ''}${page[0]}}`;
+			page[0] = `${queue.loop ? '**Queue is enabled!**\n' : ''}${page[0]}`;
 		}
 		page = page.join('\n');
 
-		return msg.embed(embed.setDescription(stripIndents`${page}
+		return msg.embed(embed.setDescription(stripIndents`
+		${page}
 
-    Use ${msg.usage()} to display a specific page`)
+    	Use ${msg.usage()} to display a specific page`)
 		).then((mes: Message) => mes.delete(30000));
 	}
 
 	get queue(): Map<string, queue> {
-		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play')as any).queue;
+		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
 	}
