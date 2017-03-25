@@ -8,7 +8,6 @@ module.exports = class TagContent extends ArgumentType {
 	public validate(value: string, msg: CommandMessage, arg: any): boolean | string {
 		const hasImage: boolean = Boolean(msg.attachments.first() && msg.attachments.first().height);
 		const valideString: boolean = Boolean(value)
-			&& (arg.min === null || typeof arg.min === 'undefined' || value.length >= arg.min)
 			&& (arg.max === null || typeof arg.max === 'undefined' || value.length <= arg.max);
 		if (hasImage && (valideString || !value)) return true;
 		else return valideString;
