@@ -174,13 +174,10 @@ export default class PlayMusicCommand extends Command {
 			this.input(video, queue, msg, voiceChannel, fetchMessage);
 		}).catch(() => {
 			this.youtube.getPlaylist(args.input).then(async (playlist: { id: string }) => {
-				if (args.limit && args.limit > 200) args.limit = 200;
-				const ids: string[] | void = await new Promise<string[]>((resolve: (value: string[]) => void) => this.query(playlist.id, args.limit, null, resolve))
-					.catch((err: Error) => {
-						logger.log('youtubeapi', msg.guild.id, 'Error while fetching playlist', err);
-						fetchMessage.edit('❌ Playlist was found, but an error occured while fetching the songs. Better try again or something different!');
-					});
-				if (!ids) return;
+				if (!args.limit) args.limit = 20;
+				else if (args.limit > 200) args.limit = 200;
+				const ids: string[] | string = await this.query(playlist.id, args.limit, null);
+				if (typeof ids === 'string') return fetchMessage.edit(ids);
 				fetchMessage.edit(`Proccessing \`${ids.length}\` songs, this may take a while...`);
 				const addedSongs: video[] = await new Promise<video[]>((resolve: (value: video[]) => void) => this.getInfo(ids, resolve));
 				if (addedSongs.length) {
@@ -203,22 +200,20 @@ export default class PlayMusicCommand extends Command {
 		});
 	}
 
-	private async query(id: string, finalamount: number, pagetoken: string, resolve: (value: string[]) => void, arr: string[] = []): Promise<void> {
+	private async query(id: string, finalamount: number, pagetoken: string, arr: string[] = []): Promise<string[] | string> {
 		const requestamount: number = finalamount > 50 ? 50 : finalamount;
 		finalamount -= requestamount;
 		try {
-			const body: youtubeResponse = (await get(
+			const { body }: { body: youtubeResponse } = await get(
 				`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${requestamount}&playlistId=${id}&${pagetoken ? `pageToken=${pagetoken}` : ''}&fields=items/snippet/resourceId/videoId,nextPageToken,pageInfo/totalResults&key=${googletoken}`)
-				.send(null).set('Accept', 'application/json')).body;
+				.send(null).set('Accept', 'application/json');
 			arr = arr.concat(body.items.map((s: youtubeVideo) => s.snippet.resourceId.videoId));
 			winston.silly('query', requestamount, finalamount, body.nextPageToken);
-			if (!body.nextPageToken || !finalamount) resolve(arr);
-			else this.query(id, finalamount, body.nextPageToken, resolve, arr);
+			if (!body.nextPageToken || !finalamount) return arr;
+			else return this.query(id, finalamount, body.nextPageToken, arr);
 		} catch (e) {
-			if (e) {
-				logger.log('youtubeapi', 'query', e);
-				throw String('❌ Playlist was found, but an error occured while fetching the songs. Better try again or something different!');
-			}
+			if (e) logger.log('youtubeapi', 'query', e);
+			return '❌ Playlist was found, but an error occured while fetching the songs. Better try again or something different!';
 		}
 	}
 
@@ -294,7 +289,7 @@ export default class PlayMusicCommand extends Command {
 		const song: song = new Song(video, msg.member);
 		queue.songs.push(song);
 		return [true, new RichEmbed()
-			.setAuthor(song.member, song.avatar)
+			.setAuthor(song.username, song.avatar)
 			.setTimestamp()
 			.setImage(queue.songs[queue.songs.length - 1].thumbnail)
 			.setColor(0xFFFF00)
@@ -329,7 +324,7 @@ export default class PlayMusicCommand extends Command {
 
 		if (!lastsong) return [false, 'No song qualifies for adding. Maybe all of them are already queued or too long.'];
 		return [true, new RichEmbed()
-			.setAuthor(lastsong.member, lastsong.avatar)
+			.setAuthor(lastsong.username, lastsong.avatar)
 			.setTimestamp()
 			.setImage(queue.songs[queue.songs.length - 1].thumbnail)
 			.setColor(0xFFFF00)
