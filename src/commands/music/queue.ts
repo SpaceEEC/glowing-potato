@@ -44,7 +44,7 @@ export default class QueueCommand extends Command {
 		let page: string | string[] = pages.items.map((song: song) => `\`${i++}.\`[${song.name}](${song.url})`);
 
 		const embed: RichEmbed = new RichEmbed().setColor(0x0800ff)
-			.setTitle(`Queued up Songs: ${queue.songs.length} | Queue length: ${queue.songs.reduce((a: number, b: song) => a + b.length, 0)} (Blame YT)`)
+			.setTitle(`Queued up Songs: ${queue.songs.length} | Queue length: ${Song.timeString(queue.songs.reduce((a: number, b: song) => a + b.length, 0))} (Blame YT)`)
 			.setFooter(`Page ${args.page} of ${pages.maxPage}.`);
 
 		if (args.page === 1) {
