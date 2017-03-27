@@ -11,7 +11,7 @@ import Song from '../../structures/Song';
 
 const ytdl: any = require('ytdl-core');
 const youtube: any = require('simple-youtube-api');
-const { googletoken }: { googletoken: string } = require('../../config');
+const { googletoken }: { googletoken: string } = require('../../../config');
 
 const options: winston.ConsoleTransportOptions = {
 	colorize: true,
