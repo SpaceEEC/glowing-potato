@@ -8,7 +8,8 @@ import SequelizeProvider from './dataProviders/SequelizeProvider';
 import SQLite from './dataProviders/SQLite';
 import { registerEvents } from './events/events';
 
-const { defaultPrefix, logLevel, maintoken, ownerID } = require('./config');
+const { defaultPrefix, logLevel, maintoken, ownerID } = require('../config');
+const { DMManager } = require('yamdbf-addon-dm-manager');
 
 const client: CommandoClient = new CommandoClient({
 	owner: ownerID,
@@ -19,8 +20,16 @@ const client: CommandoClient = new CommandoClient({
 		'TYPING_START'
 	]
 });
+const disconnect: winston.LoggerInstance = new (winston.Logger)({
+	transports: [
+		new winston.transports.File({ filename: '../disconnects.log', level: 'disconnect', timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')) }),
+		new winston.transports.Console({ colorize: true, level: 'disconnect', prettyPrint: true, timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')) })
+	],
+	levels: { disconnect: 0 }
+});
 
 winston.addColors({
+	disconnect: 'red',
 	silly: 'magenta',
 	debug: 'blue',
 	verbose: 'cyan',
@@ -79,17 +88,14 @@ client
 	.on('error', winston.error)
 	.on('warn', winston.warn)
 	.once('ready', () => {
+		(client as any).dmManager = new DMManager(client, '260850209699921931');
 		client.user.setGame(client.provider.get('global', 'game', null));
 	})
 	.on('ready', () => {
 		winston.info(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
 	})
 	.on('disconnect', (event: any) => {
-		new (winston.Logger)({
-			transports: [new winston.transports.File({ filename: '../disconnects.log', level: 'disconnect', timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')) })],
-			levels: { disconnect: 0 }
-		}).log('disconnect', '', event.code, ': ', event.reason);
-		winston.error('Disconnected |', event.code, ': ', event.reason);
+		disconnect.log('disconnect', '', event.code, ': ', event.reason);
 		if (event.code === 1000) process.exit(200);
 	})
 	.on('reconnecting', () => winston.warn('Reconnecting...'))

@@ -4,7 +4,7 @@ import * as Realize from 'sequelize';
 export default class Database {
 	private dataBase: Sequelize;
 
-	constructor(db = 'settings.sqlite') {
+	constructor(db = '../settings.sqlite') {
 		const sqlite: any = Realize;
 		this.dataBase = new sqlite('database', 'username', 'password', {
 			host: 'localhost',
