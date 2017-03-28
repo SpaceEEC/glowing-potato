@@ -42,7 +42,7 @@ export default class SkipMusicCommand extends Command {
 		const song: song = queue.songs[0];
 		song.dispatcher.end('skip');
 
-		return msg.say(`What a lame decision, you forced me to skipped this wonderful song: \`${song}}\`!`)
+		return msg.say(`What a lame decision, you forced me to skipped this wonderful song here: \`${song.name}\`!`)
 			.then((mes: Message) => mes.delete(5000));
 	}
 
