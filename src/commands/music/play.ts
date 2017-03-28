@@ -237,7 +237,7 @@ export default class PlayMusicCommand extends Command {
 				voiceChannel,
 				connection: null,
 				songs: [],
-				volume: 2,
+				volume: this.client.provider.get(msg.guild, 'volume', 2),
 				loop: false
 			};
 

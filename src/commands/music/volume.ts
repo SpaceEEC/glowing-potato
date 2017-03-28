@@ -60,13 +60,14 @@ export default class VolumeCommand extends Command {
 		}
 
 		queue.volume = volume;
+		this.client.provider.set(msg.guild, 'volume', volume);
 		if (queue.songs[0].dispatcher) queue.songs[0].dispatcher.setVolumeLogarithmic(volume / 5);
 		return msg.say(`Volume is now \`${volume}\`.`)
 			.then((mes: Message) => mes.delete(5000));
 	}
 
 	get queue(): Map<string, queue> {
-		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play')as any).queue;
+		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
 	}
