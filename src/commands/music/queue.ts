@@ -48,7 +48,7 @@ export default class QueueCommand extends Command {
 			.setFooter(`Page ${args.page} of ${pages.maxPage}.`);
 
 		if (args.page === 1) {
-			page.splice(0, 1, stripIndents`${queue.loop ? '**Queue is enabled!**\n' : ''}${currentSong.playing ? '**Currently playing:**' : '**Currently paused**'}: ${Song.timeString(currentTime)}/${currentSong.lengthString}
+			page.splice(0, 1, stripIndents`${queue.loop ? '**Queue is enabled!**\n' : ''}${currentSong.playing ? '**Currently playing:**' : '**Currently paused:**'} ${Song.timeString(currentTime)}/${currentSong.lengthString}
       [${currentSong.name}](${currentSong.url})${page.length !== 1 ? stripIndents`\u200b\n
 
       **Queue:**` : ''}`);
