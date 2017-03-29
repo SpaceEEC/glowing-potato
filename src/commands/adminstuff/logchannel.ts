@@ -17,7 +17,7 @@ export default class LogchannelCommand extends Command {
       To remove a channel, specify just specify that channel.
       Mention the same channel again to remove it.
       Omit the channel parameter to show the current channel.`,
-			examples: ['`logchannel #logs`',],
+			examples: ['`logchannel #logs`'],
 			guildOnly: true,
 			args: [
 				{
