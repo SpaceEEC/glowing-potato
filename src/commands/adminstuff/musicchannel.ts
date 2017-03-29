@@ -2,7 +2,7 @@ import { stripIndents } from 'common-tags';
 import { Message, Role, TextChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
-export default class ConfigCommand extends Command {
+export default class MusicChannel extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'musicchannel',
@@ -38,21 +38,21 @@ export default class ConfigCommand extends Command {
 	public async run(msg: CommandMessage, args: { channel: TextChannel | String, added: boolean }): Promise<Message | Message[]> {
 		const channels: string[] = this.client.provider.get(msg.guild.id, 'djChannel', []);
 
-		if (args.channel === 'show') {
+		if (!(args.channel instanceof TextChannel)) {
 			msg.say(channels.length ? channels.map((c: string) => `<#${c}>`).join(', ') : 'No channel set, so everywhere.');
 			return;
 		}
 
-		if (channels.includes((args.channel as TextChannel).id)) {
-			channels.splice(channels.indexOf((args.channel as TextChannel).id), 1);
+		if (channels.includes(args.channel.id)) {
+			channels.splice(channels.indexOf(args.channel.id), 1);
 		} else {
 			args.added = true;
-			channels.push((args.channel as TextChannel).id);
+			channels.push(args.channel.id);
 		}
 
 		this.client.provider.set(msg.guild.id, 'djChannel', channels);
 
 		msg.say(stripIndents`${args.channel} ${args.added ? `has been added to` : 'has been removed from'} the music channels!
-    ${channels.length ? `Current channels: ${channels.map((c: string) => `<#${c}> `).join(', ')}` : 'No channel set, so everywhere.'}`);
+    	${channels.length ? `Current channels: ${channels.map((c: string) => `<#${c}> `).join(', ')}` : 'No channel set, so everywhere, allowed.'}`);
 	}
 };
