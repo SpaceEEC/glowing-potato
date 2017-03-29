@@ -71,13 +71,13 @@ export default class MutedRoleCommand extends Command {
 		const mutedRole: Role = msg.guild.roles.get(config.mutedRole);
 
 		if (config.mutedRole && !mutedRole) {
-			msg.say('The set up muted role was not found, probably deleted, removing it from config...');
+			msg.say('The set up muted role was not found in this guid, probably deleted, removing it from config...');
 			config.mutedRole = null;
 			await GuildConfig.upsert(config);
 			return;
 		}
 
-		msg.say(config.mutedRole ? `The current muted role is \`@${mutedRole.name}\`` : 'No muted role set up.');
+		msg.say(config.mutedRole ? `The current muted role is: \`@${mutedRole.name}\`` : 'No muted role set up.');
 	}
 
 	/**
@@ -138,7 +138,7 @@ export default class MutedRoleCommand extends Command {
 	}
 
 	/**
-	 * Updates the muted role or sets it.
+	 * Sets the muted role.
 	 * @param {Message} msg The incoming message.
 	 * @param {GuildConfig} config The config to update the role and remove old overwrites from if possible.
 	 * @param {string} role The new role to update the config and overwrites with.
@@ -199,7 +199,7 @@ export default class MutedRoleCommand extends Command {
 	/**
 	 * Overwrites channel permissions or removes them.
 	 * @param {Guild} guild The guild object.
-	 * @param {Role|String} role The role to overwrite with or remove.
+	 * @param {String} role The role to overwrite with or remove.
 	 * @param {Boolean} remove Whether remove or overwrite the channel permissions for that role.
 	 * @returns {Number} The number of failed overwrites.
 	 */

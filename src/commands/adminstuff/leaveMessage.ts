@@ -6,27 +6,27 @@ import { Model } from 'sequelize';
 import { GuildConfig } from '../../dataProviders/models/GuildConfig';
 import { getUsedAlias } from '../../util/util';
 
-export default class JoinMessage extends Command {
+export default class LeaveMessage extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
-			name: 'joinmessage',
-			aliases: ['joinmsg'],
+			name: 'leavemessage',
+			aliases: ['leavemsg'],
 			group: 'adminstuff',
-			memberName: 'joinmessage',
-			description: 'Sets or removes the join message for this guild.',
+			memberName: 'leavemessage',
+			description: 'Sets or removes the leave message for this guild.',
 			details: stripIndents`You can use :guild: as placeholder for the guildname,
-      and :member: as placeholder for the joined member, this won't ping them, see the examples down there.`,
+      and :member: as placeholder for the joined member, this won't ping him/her, see the examples down there.`,
 			examples: [
-				stripIndents`\`joinmessage Welcome to :guild:, :member:!\`
+				stripIndents`\`leavemessage :member: has left us, what a sad day.\`
         Will look like:
-        Welcome to Discordinios, \`@space#0302\`!\n\u200b`,
+       \`@space#0302\` has left us, what a sad day.\n\u200b`,
 				stripIndents`\`joinmessage remove\`
         Will disable that message.\n\u200b`],
 			guildOnly: true,
 			args: [
 				{
 					key: 'message',
-					prompt: stripIndents`what shall that message be?
+					prompt: stripIndents`what shall that leave message be?
           Respond with \`remove\` to disable that message.\n`,
 					type: 'string',
 					max: 1800,
@@ -44,15 +44,15 @@ export default class JoinMessage extends Command {
 	public async run(msg: CommandMessage, args: { message: string }): Promise<Message | Message[]> {
 		const config: GuildConfig = (await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } }) as any)[0].dataValues;
 		if (args.message === 'show') {
-			msg.say(config.joinMessage || 'No message set.');
+			msg.say(config.leaveMessage || 'No message set.');
 			return;
 		}
 
-		config.joinMessage = args.message === 'remove' ? null : args.message;
+		config.leaveMessage = args.message === 'remove' ? null : args.message;
 
 		await GuildConfig.upsert(config);
 
-		return msg.say(stripIndents`The join message is now ${`\`${config.joinMessage || 'disabled'}\``}!
+		return msg.say(stripIndents`The leave message is now ${`\`${config.leaveMessage || 'disabled'}\``}!
 		${config.anChannel || config.logChannel ? '' : 'Info: No channel to announce or log set up!'}`);
 	}
 };

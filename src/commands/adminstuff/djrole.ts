@@ -2,7 +2,7 @@ import { stripIndents } from 'common-tags';
 import { Message, RichEmbed, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
-export default class ConfigCommand extends Command {
+export default class DJRoles extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'djrole',
@@ -37,22 +37,21 @@ export default class ConfigCommand extends Command {
 	public async run(msg: CommandMessage, args: { role: Role | string, added: boolean }): Promise<Message | Message[]> {
 		const roles: string[] = this.client.provider.get(msg.guild.id, 'djRoles', []).filter((r: string) => msg.guild.roles.has(r));
 
-		if (args.role === 'show') {
-			msg.say(`DjRoles:
-      ${roles.length ? roles.map((r: string) => `\`@${msg.guild.roles.get(r).name}\``).join(', ') : '@\u200beveryone'}`);
+		if (!(args.role instanceof Role)) {
+			msg.say(`Dj roles: ${roles.length ? roles.map((r: string) => `\`@${msg.guild.roles.get(r).name}\``).join(', ') : '@\u200beveryone'}`);
 			return;
 		}
 
-		if (roles.includes((args.role as Role).id)) {
-			roles.splice(roles.indexOf((args.role as Role).id), 1);
+		if (roles.includes(args.role.id)) {
+			roles.splice(roles.indexOf(args.role.id), 1);
 		} else {
 			args.added = true;
-			roles.push((args.role as Role).id);
+			roles.push(args.role.id);
 		}
 
 		this.client.provider.set(msg.guild.id, 'djRoles', roles);
 
 		msg.embed(new RichEmbed().setColor(args.added ? 0x32CD32 : 0xFF0000)
-			.setDescription(`${args.role} ${args.added ? `has been added to` : 'has been removed from'} the djRoles!`));
+			.setDescription(`\`@${args.role.name}\` ${args.added ? `has been added to` : 'has been removed from'} the djRoles!`));
 	}
 };
