@@ -38,7 +38,7 @@ export default class UrbanCommand extends Command {
 					'http://www.urbandictionary.com/favicon.ico',
 					'http://www.urbandictionary.com/')
 					.setThumbnail('http://puu.sh/tiNHS/3ae29d9b91.png')
-					.addField('No resulst', 'Maybe made a typo?')
+					.addField('No results', 'Maybe made a typo?')
 					.addField('Search:', `[URL](http://www.urbandictionary.com/define.php?term=${args.search.split(' ').join('+')})`)
 					.setFooter(msg.content, msg.author.avatarURL)
 			);
