@@ -47,7 +47,7 @@ export default class LogchannelCommand extends Command {
 		config.logChannel = args.channel.id === config.logChannel ? null : args.channel.id;
 
 		let permissions: string = '';
-		if (config.anChannel && !args.channel.permissionsFor(msg.guild.member(this.client.user) || await msg.guild.fetchMember(this.client.user)).hasPermission('SEND_MESSAGES')) {
+		if (config.logChannel && !args.channel.permissionsFor(msg.guild.member(this.client.user) || await msg.guild.fetchMember(this.client.user)).hasPermission('SEND_MESSAGES')) {
 			permissions = '**Note:** I don\'t have permissions to send messages to that channel.\n';
 		}
 		await GuildConfig.upsert(config);
