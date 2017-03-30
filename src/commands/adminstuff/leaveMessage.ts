@@ -6,7 +6,7 @@ import { Model } from 'sequelize';
 import { GuildConfig } from '../../dataProviders/models/GuildConfig';
 import { getUsedAlias } from '../../util/util';
 
-export default class LeaveMessage extends Command {
+export default class LeaveMessageCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'leavemessage',

@@ -5,7 +5,7 @@ import { join } from 'path';
 import { GuildConfig } from '../../dataProviders/models/GuildConfig';
 import { getUsedAlias } from '../../util/util';
 
-export default class LogchannelCommand extends Command {
+export default class LogChannelCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'logchannel',

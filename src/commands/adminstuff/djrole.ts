@@ -2,7 +2,7 @@ import { stripIndents } from 'common-tags';
 import { Message, RichEmbed, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
-export default class DJRoles extends Command {
+export default class DJRoleCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'djrole',
