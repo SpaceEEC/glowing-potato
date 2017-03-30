@@ -52,6 +52,6 @@ export default class VoicelogChannelCommand extends Command {
 
 		await GuildConfig.upsert(config);
 
-		msg.say(`${permissions}The announcement channel ${config.vlogChannel ? `The voicelog channel is now: ${msg.guild.channels.get(config.vlogChannel)}!` : 'disabled!'}`);
+		msg.say(`${permissions}The voicelog channel ${config.vlogChannel ? `is now: ${msg.guild.channels.get(config.vlogChannel)}!` : 'has been disabled!'}`);
 	}
 };
