@@ -2,7 +2,7 @@ import { stripIndents } from 'common-tags';
 import { Message, Role, TextChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
-export default class MusicChannel extends Command {
+export default class MusicChannelCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'musicchannel',

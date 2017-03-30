@@ -6,7 +6,7 @@ import { Model } from 'sequelize';
 import { GuildConfig } from '../../dataProviders/models/GuildConfig';
 import { getUsedAlias } from '../../util/util';
 
-export default class JoinMessage extends Command {
+export default class JoinMessageCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'joinmessage',

@@ -2,7 +2,7 @@ import { stripIndents } from 'common-tags';
 import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
-export default class ModRole extends Command {
+export default class ModRoleCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'modrole',

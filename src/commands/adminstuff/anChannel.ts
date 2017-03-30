@@ -5,13 +5,13 @@ import { join } from 'path';
 import { GuildConfig } from '../../dataProviders/models/GuildConfig';
 import { getUsedAlias } from '../../util/util';
 
-export default class AnnouncementChannel extends Command {
+export default class ANChannelCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
-			name: 'announcementchannel',
-			aliases: ['anchannel'],
+			name: 'anchannel',
+			aliases: ['announcementchannel'],
 			group: 'adminstuff',
-			memberName: 'announcementchannel',
+			memberName: 'anchannel',
 			description: 'Enables or disables announcing new or left member, when a message is set up.',
 			details: stripIndents`Sets or removes the channel for that purpose.
 				Mention the same channel again to remove it.
