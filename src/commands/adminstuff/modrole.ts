@@ -37,7 +37,7 @@ export default class ModRoleCommand extends Command {
 		const roles: string[] = this.client.provider.get(msg.guild.id, 'modRoles', []).filter((r: string) => msg.guild.roles.has(r));
 
 		if (!(args.role instanceof Role)) {
-			msg.say(`Mod roles: ${roles.length ? roles.map((r: string) => `\`@${msg.guild.roles.get(r).name}\``).join(', ') : '@\u200beveryone'}`);
+			msg.say(`Mod roles: ${roles.length ? roles.map((r: string) => `\`@${msg.guild.roles.get(r).name}\``).join(', ') : 'No roles set up.'}`);
 			return;
 		}
 
