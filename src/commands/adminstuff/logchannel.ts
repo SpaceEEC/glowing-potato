@@ -52,6 +52,6 @@ export default class LogchannelCommand extends Command {
 		}
 		await GuildConfig.upsert(config);
 
-		msg.say(`${permissions}The announcement channel ${config.logChannel ? `The log channel is now ${msg.guild.channels.get(config.logChannel)!}` : 'disabled'}`);
+		msg.say(`${permissions}The log channel ${config.logChannel ? `is now ${msg.guild.channels.get(config.logChannel)!}` : 'has been disabled'}`);
 	}
 };
