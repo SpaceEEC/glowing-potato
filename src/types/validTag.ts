@@ -14,7 +14,8 @@ module.exports = class ValidTag extends ArgumentType {
 	}
 
 	public parse(value: string, msg: CommandMessage, arg: any): Promise<any> | string {
-		if (arg.max) return value.toLowerCase();
+		value = value.toLowerCase();
+		if (arg.max) return value;
 		else return Tag.findOne({ where: { name: value, guildID: msg.guild.id } }) as any;
 	}
 };
