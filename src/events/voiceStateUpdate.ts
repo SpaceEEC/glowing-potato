@@ -13,7 +13,7 @@ export async function VoiceStateUpdate(client: CommandoClient): Promise<void> {
 
 		const vlogChannel: TextChannel = client.channels.get(config.vlogChannel) as TextChannel;
 
-		if (!vlogChannel) {
+		if ((!vlogChannel) && vlogChannel.type !== 'text') {
 			config.vlogChannel = null;
 			await GuildConfig.upsert(config);
 			return;
