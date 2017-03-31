@@ -36,7 +36,7 @@ export default class MusicChannelCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage, args: { channel: TextChannel | String, added: boolean }): Promise<Message | Message[]> {
-		const channels: string[] = this.client.provider.get(msg.guild.id, 'djChannel', []);
+		const channels: string[] = this.client.provider.get(msg.guild.id, 'djChannels', []);
 
 		if (!(args.channel instanceof TextChannel)) {
 			msg.say(channels.length ? channels.map((c: string) => `<#${c}>`).join(', ') : 'No channel set, so everywhere.');
@@ -50,7 +50,7 @@ export default class MusicChannelCommand extends Command {
 			channels.push(args.channel.id);
 		}
 
-		this.client.provider.set(msg.guild.id, 'djChannel', channels);
+		this.client.provider.set(msg.guild.id, 'djChannels', channels);
 
 		msg.say(stripIndents`${args.channel} ${args.added ? `has been added to` : 'has been removed from'} the music channels!
     	${channels.length ? `Current channels: ${channels.map((c: string) => `<#${c}> `).join(', ')}` : 'No channel set, so everywhere, allowed.'}`);
