@@ -16,7 +16,8 @@ export default class TagShow extends Command {
 					prompt: 'which tag do you like to see?\n',
 					type: 'validtag',
 				},
-			]
+			],
+			argsPromptLimit: 1
 		});
 	}
 
