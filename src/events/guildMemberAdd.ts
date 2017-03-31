@@ -16,7 +16,7 @@ export async function GuildMemberAdd(client: CommandoClient): Promise<void> {
 		const clientMember: GuildMember = await member.guild.fetchMember(client.user);
 
 		if (conf.logChannel) {
-			if (!client.channels.has(conf.logChannel)) {
+			if ((!client.channels.has(conf.logChannel)) && client.channels.get(conf.logChannel).type !== 'text') {
 				conf.logChannel = null;
 				GuildConfig.upsert(conf);
 				return;
@@ -31,7 +31,7 @@ export async function GuildMemberAdd(client: CommandoClient): Promise<void> {
 		}
 
 		if (conf.anChannel) {
-			if (!client.channels.has(conf.anChannel)) {
+			if ((!client.channels.has(conf.anChannel)) && client.channels.get(conf.anChannel).type !== 'text') {
 				conf.anChannel = null;
 				GuildConfig.upsert(conf);
 				return;
