@@ -15,10 +15,11 @@ export default class AnimeCommand extends Command {
 			aliases: ['manga', 'character', 'char'],
 			group: 'weebstuff',
 			memberName: 'anime',
-			description: 'Displays informations about the specified anime, manga, or character.',
+			description: 'Displays informations about the specified anime.\n**manga:** Displays informations about the specified manga.\n**character:** Displays informations about the specified character.',
 			examples: [
 				'`anime Bakemonogatari` Shows a list of shows that match this search and lets you pick one of those for a detailed view.',
-				'`manga Hyouka` Shows a list of mangas that match this search and lets you pick one of those for a detailed view.'
+				'`manga Hyouka` Shows a list of mangas that match this search and lets you pick one of those for a detailed view.',
+				'`char hachiman hikigaya` shows information for him, search can be used the same as for the commands above.'
 			],
 			guildOnly: true,
 			args: [
