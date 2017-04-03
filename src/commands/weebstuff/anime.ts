@@ -3,12 +3,13 @@ import { Message, RichEmbed } from 'discord.js';
 import { Argument, ArgumentCollector, ArgumentCollectorResult, ArgumentInfo, Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
 import * as request from 'superagent';
 import { animeData, aniSettings, charData, formatFuzzy, mangaData, updateToken } from '../../util/anistuff.js';
-import { getUsedAlias, replaceMap } from '../../util/util';
+import Util from '../../util/util';
 
 type args = { search: string, cmd: string };
 type error = { error: { messages: {}[] } };
 
 export default class AnimeCommand extends Command {
+	private util: Util;
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'anime',
@@ -30,11 +31,12 @@ export default class AnimeCommand extends Command {
 				}
 			]
 		});
+		this.util = new Util(client);
 	}
 
 	public async run(msg: CommandMessage, args: args): Promise<Message | Message[]> {
 		if (args.search.includes('?')) throw new FriendlyError('please don\'t use `?` in the search, it would break the request.');
-		args.cmd = getUsedAlias(msg, { char: 'character' });
+		args.cmd = Util.getUsedAlias(msg, { char: 'character' });
 		const aniSettings: aniSettings = await updateToken(this.client, msg, this.client.settings.get('aniSettings', { expires: 0 }));
 		const responses: animeData[] | mangaData[] | charData[] = await this.query(msg, aniSettings, args);
 		if (responses[1]) {
@@ -46,6 +48,20 @@ export default class AnimeCommand extends Command {
 		if (args.cmd === 'anime') return this.sendAnime(msg, (responses[0] as animeData));
 		this.client.emit('error', `[anime.js] Unknown model type: ${args.cmd}`);
 		throw new Error('unknown type.');
+	}
+
+	private async query(msg: CommandMessage, aniSettings: aniSettings, args: args): Promise<animeData[] | mangaData[] | charData[]> {
+		const response: request.Response = await request.get(`https://anilist.co/api/${args.cmd}/search/${args.search}?access_token=${aniSettings.token}`);
+		if ((response.body as error).error) {
+			if ((response.body as error).error.messages[0] === 'No Results.') {
+				throw new FriendlyError(`no ${args.cmd} found.`);
+			} else {
+				this.client.emit('error', `[anime.js]: Error while fetching: ${(response.body as error).error.messages[0]}`);
+				throw new FriendlyError(stripIndents`there was an error while fetching the data from the server:
+        ${(response.body as error).error.messages[0]}`);
+			}
+		}
+		return (response.body as animeData[] | mangaData[] | charData[]);
 	}
 
 	private mapResponses(response: animeData[] | mangaData[] | charData[], type: string): [number, string] {
@@ -65,39 +81,20 @@ export default class AnimeCommand extends Command {
 			.setTitle(`There has been found more than one ${args.cmd}:`)
 			.setDescription(description)) as Message;
 
-		const argument: ArgumentInfo[] = [{
+		const argument: ArgumentInfo = {
 			key: 'entry',
 			prompt: `For which ${args.cmd} would you like to see the informations?`,
 			type: 'integer',
 			min: 1,
 			max: count
-		}];
+		};
 
-		const collector: ArgumentCollector = new ArgumentCollector(this.client, argument, 1);
-		const result: ArgumentCollectorResult = await collector.obtain(msg);
-		const messages: Message[] = result.prompts.concat(result.answers);
-
+		const userInput: number = await this.util.prompt<number>(msg, argument, false);
 		message.delete().catch(() => null);
-		if (messages.length > 1) await msg.channel.bulkDelete(messages).catch(() => null);
-		else if (messages.length === 1) await messages[0].delete().catch(() => null);
 
-		if (result.cancelled) return null;
-		else return response[(result.values as { entry: number }).entry - 1];
+		if (!userInput) return null;
+		else return response[userInput - 1];
 	};
-
-	private async query(msg: CommandMessage, aniSettings: aniSettings, args: args): Promise<animeData[] | mangaData[] | charData[]> {
-		const response: request.Response = await request.get(`https://anilist.co/api/${args.cmd}/search/${args.search}?access_token=${aniSettings.token}`);
-		if ((response.body as error).error) {
-			if ((response.body as error).error.messages[0] === 'No Results.') {
-				throw new FriendlyError(`no ${args.cmd} found.`);
-			} else {
-				this.client.emit('error', `[anime.js]: Error while fetching: ${(response.body as error).error.messages[0]}`);
-				throw new FriendlyError(stripIndents`there was an error while fetching the data from the server:
-        ${(response.body as error).error.messages[0]}`);
-			}
-		}
-		return (response.body as animeData[] | mangaData[] | charData[]);
-	}
 
 	private sendCharacter(msg: CommandMessage, charInfo: charData): Promise<Message | Message[]> {
 		const embed: RichEmbed = new RichEmbed()
@@ -106,7 +103,7 @@ export default class AnimeCommand extends Command {
 			.setTitle(`${charInfo.name_first ? charInfo.name_first : ''} ${charInfo.name_last ? charInfo.name_last : ''}`)
 			.setDescription(`${charInfo.name_japanese}\n\n${charInfo.name_alt ? `Aliases:\n${charInfo.name_alt}` : ''}`);
 
-		charInfo.info = charInfo.info === null ? 'No description' : replaceMap(charInfo.info, { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'", '`': '\'', '<br>': '\n', '<br />': '\n' });
+		charInfo.info = charInfo.info === null ? 'No description' : Util.replaceMap(charInfo.info, { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'", '`': '\'', '<br>': '\n', '<br />': '\n' });
 
 		if (charInfo.info.length < 1025) {
 			embed.addField('Description', charInfo.info);
@@ -143,7 +140,7 @@ export default class AnimeCommand extends Command {
 			embed.addField(title, value, true);
 		}
 
-		mangaInfo.description = mangaInfo.description === null ? 'No description' : replaceMap(mangaInfo.description, { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'", '`': '\'', '<br>': '\n', '<br />': '\n' });
+		mangaInfo.description = mangaInfo.description === null ? 'No description' : Util.replaceMap(mangaInfo.description, { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'", '`': '\'', '<br>': '\n', '<br />': '\n' });
 
 		if (mangaInfo.description.length < 1025) {
 			embed.addField('Description', mangaInfo.description);
@@ -183,7 +180,7 @@ export default class AnimeCommand extends Command {
 			embed.addField(title, value, true);
 		}
 
-		animeInfo.description = animeInfo.description === null ? 'No description' : replaceMap(animeInfo.description, { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'", '`': '\'', '<br>': '\n', '<br />': '\n' });
+		animeInfo.description = animeInfo.description === null ? 'No description' : Util.replaceMap(animeInfo.description, { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'", '`': '\'', '<br>': '\n', '<br />': '\n' });
 
 		if (animeInfo.description.length < 1025) {
 			embed.addField('Description', animeInfo.description);

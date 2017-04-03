@@ -2,7 +2,7 @@ import { stripIndents } from 'common-tags';
 import { Message } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import * as moment from 'moment';
-import { getUsedAlias } from '../../util/util.js';
+import Util from '../../util/util.js';
 
 export default class EvalCommand extends Command {
 	constructor(client: CommandoClient) {
@@ -31,7 +31,7 @@ export default class EvalCommand extends Command {
 		const time: number = new Date().getTime();
 		try {
 			let evaled: any;
-			if (getUsedAlias(msg) === 'async') args.code = `(async()=>{${args.code}})();`;
+			if (Util.getUsedAlias(msg) === 'async') args.code = `(async()=>{${args.code}})();`;
 			evaled = await Promise.resolve(eval(args.code));
 			const responseTypeof: string = typeof evaled;
 			if (typeof evaled !== 'string') { evaled = require('util').inspect(evaled, false, 0); }
