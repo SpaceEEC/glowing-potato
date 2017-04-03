@@ -53,10 +53,10 @@ export default class EvalCommand extends Command {
           			${e.stack ? e.stack : e}
           			\`\`\``);
 				});
-		} catch (e) {
+		} catch (error) {
 			msg.say(stripIndents`\`E-ROHR\`
 			\`\`\`js
-			${e}${e.response && e.response.res && e.response.res.text ? `\n${e.response.res.text}` : ''}
+			${error.url ? `${error.status} ${error.statusText}\n${error.text}` : error}
 			\`\`\`\n
       Took \`${new Date().getTime() - time}\`ms`);
 		}
