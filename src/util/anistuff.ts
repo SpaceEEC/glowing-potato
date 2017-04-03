@@ -3,7 +3,7 @@ import { CommandMessage, CommandoClient } from 'discord.js-commando';
 import * as request from 'superagent';
 const { anilist } = require('../../config.json');
 
-type clientCredentias = {
+type clientCredentials = {
 	/**
 	 * The access token, which is required to use the api
 	 */
@@ -109,7 +109,7 @@ export type charData = {
  * @param {Commandoclient} client - The client.
  * @param {Message} msg - The message to change on update.
  * @param {aniSettings} aniSettings - The settings to compare the timestamp against.
- * @returns {aniSettings} The new aniSettings.
+ * @returns {Promise<aniSettings>} The new aniSettings.
  */
 export async function updateToken(client: CommandoClient, msg: CommandMessage, aniSettings: aniSettings): Promise<aniSettings> {
 	if (aniSettings.expires <= Math.floor(Date.now() / 1000) + 300) {
@@ -117,17 +117,17 @@ export async function updateToken(client: CommandoClient, msg: CommandMessage, a
 			new RichEmbed().setColor(0xffff00)
 				.setDescription('The token expired, a new one will be requested.\nThis may take a while.')
 		) as Message;
-		const res: clientCredentias = (await request.post(`https://anilist.co/api/auth/access_token`)
+		const res: clientCredentials = (await request.post(`https://anilist.co/api/auth/access_token`)
 			.send({
 				grant_type: 'client_credentials',
 				client_id: anilist.client_id,
 				client_secret: anilist.client_secret,
-			})).body as clientCredentias;
+			})).body;
 		aniSettings = {
 			token: res.access_token,
 			expires: res.expires
 		};
-		client.settings.set('aniSettings', aniSettings);
+		client.provider.set<aniSettings>('global', 'aniSettings', aniSettings);
 		await statusMessage.edit({
 			embed: new RichEmbed().setColor(0x00ff08)
 				.setDescription('Successfully requested a new token, proceeding with your request now.'),
