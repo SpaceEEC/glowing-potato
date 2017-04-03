@@ -133,7 +133,7 @@ client
 process.on('unhandledRejection', (err: any) => {
 	if (err) {
 		if (/Something took too long to do.|getaddrinfo|ETIMEDOUT|ECONNRESET/.test(err.message)) process.exit(200);
-		if (err.response && err.response.res && err.response.res.text) winston.error(`Uncaught Promise Error:\n$ ${err.response.res.text}${err.stack ? `\n${err.stack}` : ''}`);
+		if (err.url) winston.error(`Uncaught Promise Error:\n$ ${err.status} ${err.statusText}\n${err.text}`);
 		else winston.error(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`);
 	} else {
 		winston.error('Unhandled Promise Rejection without an error. (No stacktrace, response or message.)');
