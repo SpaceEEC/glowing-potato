@@ -3,7 +3,6 @@ import { Message, Role, TextChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { join } from 'path';
 import { GuildConfig } from '../../dataProviders/models/GuildConfig';
-import { getUsedAlias } from '../../util/util';
 
 export default class VoicelogChannelCommand extends Command {
 	constructor(client: CommandoClient) {
