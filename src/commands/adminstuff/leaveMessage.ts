@@ -4,7 +4,6 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { join } from 'path';
 import { Model } from 'sequelize';
 import { GuildConfig } from '../../dataProviders/models/GuildConfig';
-import { getUsedAlias } from '../../util/util';
 
 export default class LeaveMessageCommand extends Command {
 	constructor(client: CommandoClient) {
