@@ -1,7 +1,7 @@
 import { Message, RichEmbed } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import * as request from 'superagent';
-import { getUsedAlias } from '../../util/util';
+import Util from '../../util/util';
 
 type post = {
 	id: number,
@@ -40,7 +40,7 @@ export default class PictureCommand extends Command {
 				.addField('Allowed chars:', 'A-z 0-9 _ = () ! - : .', true));
 		}
 
-		args.cmd = getUsedAlias(msg, { pic: 'picture' });
+		args.cmd = Util.getUsedAlias(msg, { pic: 'picture' });
 
 		if (args.cmd === 'picture') {
 			if (args.search.split(' ')[2]) args.cmd = 'konachan';
