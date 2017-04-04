@@ -1,13 +1,15 @@
 import { stripIndents } from 'common-tags';
 import { GuildMember, Message, RichEmbed, Role, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
-import { Argument, ArgumentCollector, ArgumentCollectorResult, ArgumentInfo, Command, CommandMessage, CommandoClient } from 'discord.js-commando';
+import { ArgumentInfo, Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { createWriteStream, unlink } from 'fs';
 import * as moment from 'moment';
 import 'moment-duration-format';
 import { Stream } from 'stream';
 import { get, Response } from 'superagent';
 import * as winston from 'winston';
+
 import Song from '../../structures/Song';
+import Util from '../../util/util';
 
 const ytdl: any = require('ytdl-core');
 const youtube: any = require('simple-youtube-api');
@@ -91,6 +93,7 @@ export default class PlayMusicCommand extends Command {
 	private statusMessage: Message;
 	private playlistTimeout: NodeJS.Timer;
 	private emptyTimeout: NodeJS.Timer;
+	private util: Util;
 
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -127,6 +130,7 @@ export default class PlayMusicCommand extends Command {
 		this.youtube = new youtube(googletoken);
 		// hello crawl (or other curious people)
 		this.queue = new Map();
+		this.util = new Util(client);
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
@@ -351,27 +355,21 @@ export default class PlayMusicCommand extends Command {
 			.setImage(`https://img.youtube.com/vi/${videos[index].id}/mqdefault.jpg`)
 			.setFooter(`Result ${index + 1} from ${videos.length} results.`, this.client.user.avatarURL);
 
-		let mes: Message;
-		if (statusmsg) mes = await statusmsg.edit({ embed });
-		else mes = await msg.channel.sendEmbed(embed);
+		if (statusmsg) statusmsg = await statusmsg.edit({ embed });
+		else statusmsg = await msg.channel.sendEmbed(embed);
 
-		const argument: ArgumentInfo[] = [{
+		const argument: ArgumentInfo = {
 			key: 'choice',
 			prompt: '`y` to confirm\n`n` for the next result.',
 			type: 'string',
-		}];
+		};
 
-		const collector: ArgumentCollector = new ArgumentCollector(this.client, argument, 1);
-		const result: ArgumentCollectorResult = await collector.obtain(msg);
-		result.prompts[0].delete().catch(() => null);
+		const choice: string = await this.util.prompt<string>(msg, argument, false);
 
-		if (result.answers[0]) result.answers[0].delete().catch(() => null);
-		else return null;
+		if (!choice) return null;
 
-		const choice: string = (result.values as { choice: string }).choice;
-
-		if (choice.split(' ')[0][0] === 'y') return videos[index];
-		else if (choice.split(' ')[0][0] === 'n') return this.chooseSong(msg, videos, index + 1, mes);
+		if (choice[0] === 'y') return videos[index];
+		else if (choice[0] === 'n') return this.chooseSong(msg, videos, index + 1, statusmsg);
 		else return null;
 	}
 
