@@ -3,7 +3,7 @@ import { CommandoClient } from 'discord.js-commando';
 import { GuildConfig } from '../dataProviders/models/GuildConfig';
 
 export async function GuildMemberRemove(client: CommandoClient): Promise<void> {
-	client.on('guildBanRemove', async (member: GuildMember) => {
+	client.on('guildMemberRemove', async (member: GuildMember) => {
 		if (member.id === client.user.id) return;
 
 		const conf: GuildConfig = (await GuildConfig.findOrCreate({ where: { guildID: member.guild.id } }) as any)['0'].dataValues;
