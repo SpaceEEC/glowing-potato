@@ -12,11 +12,11 @@ export default class TestCommand extends Command {
 		});
 	}
 
-	public async run(msg: CommandMessage, args: {}): Promise<Message | Message[]> { // eslint-disable-line no-unused-vars
+	public async run(msg: CommandMessage, args: {}): Promise<Message | Message[]> {
 		return msg.embed(this.nichts(msg));
 	}
 
-	private nichts(msg: CommandMessage): RichEmbedOptions { // eslint-disable-line no-unused-vars
+	private nichts(msg: CommandMessage): RichEmbedOptions {
 		return {
 			color: 0xFFFF00,
 			author: {
