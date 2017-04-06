@@ -83,7 +83,7 @@ export default class AnimeCommand extends Command {
 
 		const argument: ArgumentInfo = {
 			key: 'entry',
-			prompt: `For which ${args.cmd} would you like to see the informations?`,
+			prompt: `For which ${args.cmd} would you like to see additional output?`,
 			type: 'integer',
 			min: 1,
 			max: count
