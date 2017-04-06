@@ -46,7 +46,7 @@ export default class Util {
 	 * @private
 	 */
 	public async prompt<T>(msg: CommandMessage, arg: ArgumentInfo, exception: boolean = true): Promise<T> {
-		const result: ArgumentCollectorResult = await new ArgumentCollector(this.client, [arg], 1).obtain(msg);
+		const result: ArgumentCollectorResult = await new ArgumentCollector(this.client, [Object.assign(arg, { key: 'key' })], 1).obtain(msg);
 
 		const messages: Message[] = result.prompts.concat(result.answers);
 		if (messages.length > 1) await msg.channel.bulkDelete(messages).catch(() => null);
