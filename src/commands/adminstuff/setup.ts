@@ -24,7 +24,7 @@ export default class SetupCommand extends Command {
 
 	public async run(msg: CommandMessage, args: { role: Role | string, added: boolean }): Promise<Message | Message[]> {
 		let note: string = '**Setup:**\n';
-		if (this.client.provider.get<boolean>(msg.guild.id, 'setup', false)) {
+		if (this.client.provider.get(msg.guild.id, 'setup', false)) {
 			note = '**Note:** The setup already has been run\n\n';
 		}
 
@@ -59,7 +59,7 @@ export default class SetupCommand extends Command {
 			result.push(['DJ role', await this.djRole(msg)]);
 			result.push(['DJ channel', await this.djChannel(msg)]);
 
-			await this.client.provider.set<boolean>(msg.guild.id, 'setup', true);
+			await this.client.provider.set(msg.guild.id, 'setup', true);
 
 			await statusMessage.edit(stripIndents`**Current configuration's status:**
 			${this.map(result)}`).catch(() => {
@@ -90,7 +90,7 @@ export default class SetupCommand extends Command {
 	 * @private
 	 */
 	private async adminRole(msg: CommandMessage): Promise<boolean> {
-		const roles: string[] = this.client.provider.get<string[]>(msg.guild.id, 'adminRoles', []).filter((r: string) => msg.guild.roles.has(r));
+		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).filter((r: string) => msg.guild.roles.has(r));
 
 		let prompt: string = stripIndents`**Admin Roles:**
 
@@ -116,7 +116,7 @@ export default class SetupCommand extends Command {
 	 * @private
 	 */
 	private async modRole(msg: CommandMessage): Promise<boolean> {
-		const roles: string[] = this.client.provider.get<string[]>(msg.guild.id, 'modRoles', []).filter((r: string) => msg.guild.roles.has(r));
+		const roles: string[] = this.client.provider.get(msg.guild.id, 'modRoles', []).filter((r: string) => msg.guild.roles.has(r));
 
 		let prompt: string = stripIndents`**Mod Roles:**
 
@@ -272,7 +272,7 @@ export default class SetupCommand extends Command {
 	 * @private
 	 */
 	private async djRole(msg: CommandMessage): Promise<boolean> {
-		const roles: string[] = this.client.provider.get<string[]>(msg.guild.id, 'djRoles', []).filter((r: string) => msg.guild.roles.has(r));
+		const roles: string[] = this.client.provider.get(msg.guild.id, 'djRoles', []).filter((r: string) => msg.guild.roles.has(r));
 
 		let prompt: string = stripIndents`**DJ Roles:**
 		
@@ -299,7 +299,7 @@ export default class SetupCommand extends Command {
 	 * @private
 	 */
 	private async djChannel(msg: CommandMessage): Promise<boolean> {
-		const channels: string[] = this.client.provider.get<string[]>(msg.guild.id, 'djChannels', []).filter((c: string) => msg.guild.channels.has(c) && msg.guild.channels.get(c).type === 'text');
+		const channels: string[] = this.client.provider.get(msg.guild.id, 'djChannels', []).filter((c: string) => msg.guild.channels.has(c) && msg.guild.channels.get(c).type === 'text');
 
 		let prompt: string = stripIndents`**DJ/Music Channels:**
 		
