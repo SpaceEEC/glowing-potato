@@ -55,7 +55,7 @@ client.registry
 		['util', 'util'],
 		['administration', 'Administration'],
 		['moderation', 'Moderation'],
-		['common', 'Commonstuff'],
+		['info', 'Information'],
 		['tags', 'Tagstuff'],
 		['miscellaneous', 'Miscellaneous'],
 		['weebstuff', 'Weebstuff'],

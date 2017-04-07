@@ -9,7 +9,7 @@ export default class MemberInfoCommand extends Command {
 		super(client, {
 			name: 'member-info',
 			aliases: ['user-info'],
-			group: 'common',
+			group: 'info',
 			memberName: 'member-info',
 			description: 'General informations about the specified member.',
 			guildOnly: true,

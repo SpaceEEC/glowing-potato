@@ -10,7 +10,7 @@ export default class InfoCommand extends Command {
 		super(client, {
 			name: 'info',
 			aliases: ['status'],
-			group: 'common',
+			group: 'info',
 			memberName: 'info',
 			description: 'General informations about the bot.'
 		});
