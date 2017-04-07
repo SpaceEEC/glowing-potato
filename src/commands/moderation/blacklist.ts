@@ -7,7 +7,7 @@ export default class BlacklistCommand extends Command {
 		super(client, {
 			name: 'blacklist',
 			aliases: ['ignore'],
-			group: 'modstuff',
+			group: 'moderation',
 			memberName: 'blacklist',
 			description: 'Blacklists or unblacklists a member or channel.',
 			examples: [

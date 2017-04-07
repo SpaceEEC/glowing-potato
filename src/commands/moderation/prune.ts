@@ -7,7 +7,7 @@ export default class PruneCommand extends Command {
 		super(client, {
 			name: 'prune',
 			aliases: ['purge', 'clean'],
-			group: 'modstuff',
+			group: 'moderation',
 			memberName: 'prune',
 			description: 'Deletes messages.',
 			details: stripIndents`Let's you bulk delete messages.

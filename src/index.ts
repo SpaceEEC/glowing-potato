@@ -54,7 +54,7 @@ client.registry
 	.registerGroups([
 		['util', 'util'],
 		['administration', 'Administration'],
-		['modstuff', 'Modstuff'],
+		['moderation', 'Moderation'],
 		['common', 'Commonstuff'],
 		['tags', 'Tagstuff'],
 		['miscellaneous', 'Miscellaneous'],

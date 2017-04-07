@@ -7,7 +7,7 @@ export default class BlacklistCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'mute',
-			group: 'modstuff',
+			group: 'moderation',
 			memberName: 'mute',
 			description: 'Mutes or unmutes a member.',
 			details: 'Mutes or unmutes the specified member, be careful with the fuzzy search.',
