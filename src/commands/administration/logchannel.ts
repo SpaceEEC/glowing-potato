@@ -9,7 +9,7 @@ export default class LogChannelCommand extends Command {
 		super(client, {
 			name: 'logchannel',
 			aliases: ['loggingchannel'],
-			group: 'adminstuff',
+			group: 'administration',
 			memberName: 'logchannel',
 			description: 'Enables or disables logging new or left member, when a message is set up.',
 			details: stripIndents`There is either vlogchannel, anchannel or logchannel as the type, use the aliases to set these.

@@ -7,7 +7,7 @@ export default class AdminRoleCommand extends Command {
 		super(client, {
 			name: 'adminrole',
 			aliases: ['admin', 'admins', 'adminroles'],
-			group: 'adminstuff',
+			group: 'administration',
 			memberName: 'adminrole',
 			description: 'Adds or removes a admin role in this guild.',
 			details: stripIndents`To remove or add a role simply \`@Mention\` it or provide the name or ID.

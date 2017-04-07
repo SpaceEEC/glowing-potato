@@ -7,7 +7,7 @@ export default class DJRoleCommand extends Command {
 		super(client, {
 			name: 'djrole',
 			aliases: ['dj', 'mrole', 'musicrole', 'djroles', 'mroles', 'musicroles'],
-			group: 'adminstuff',
+			group: 'administration',
 			memberName: 'djrole',
 			description: 'Adds or removes a DjRole.',
 			details: stripIndents`To add or remove a role, simply specify it, either with a mention, name or ID.
