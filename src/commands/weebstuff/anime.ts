@@ -37,7 +37,7 @@ export default class AnimeCommand extends Command {
 	public async run(msg: CommandMessage, args: args): Promise<Message | Message[]> {
 		if (args.search.includes('?')) throw new FriendlyError('please don\'t use `?` in the search, it would break the request.');
 		args.cmd = Util.getUsedAlias(msg, { char: 'character' });
-		const aniSettings: aniSettings = await updateToken(this.client, msg, this.client.settings.get('aniSettings', { expires: 0 }));
+		const aniSettings: aniSettings = await updateToken(this.client, msg, this.client.provider.get('global', 'aniSettings', { expires: 0 }));
 		const responses: animeData[] | mangaData[] | charData[] = await this.query(msg, aniSettings, args);
 		if (responses[1]) {
 			responses[0] = await this.select(msg, responses, args);
