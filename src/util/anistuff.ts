@@ -127,7 +127,7 @@ export async function updateToken(client: CommandoClient, msg: CommandMessage, a
 			token: res.access_token,
 			expires: res.expires
 		};
-		client.provider.set<aniSettings>('global', 'aniSettings', aniSettings);
+		client.provider.set('global', 'aniSettings', aniSettings);
 		await statusMessage.edit({
 			embed: new RichEmbed().setColor(0x00ff08)
 				.setDescription('Successfully requested a new token, proceeding with your request now.'),
