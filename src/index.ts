@@ -53,7 +53,7 @@ client.setProvider(new SequelizeProvider(new SQLite().db));
 client.registry
 	.registerGroups([
 		['util', 'util'],
-		['adminstuff', 'Adminstuff'],
+		['administration', 'Administration'],
 		['modstuff', 'Modstuff'],
 		['common', 'Commonstuff'],
 		['tags', 'Tagstuff'],

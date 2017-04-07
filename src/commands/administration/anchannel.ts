@@ -4,18 +4,18 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { join } from 'path';
 import { GuildConfig } from '../../dataProviders/models/GuildConfig';
 
-export default class VoicelogChannelCommand extends Command {
+export default class ANChannelCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
-			name: 'vlogchannel',
-			aliases: ['vlogchannel', 'voicelogchannel'],
-			group: 'adminstuff',
-			memberName: 'vlogchannel',
-			description: 'Enables or disables logging of member movements in voice channels.',
-			details: stripIndents`Sets or removes the channel for that logging.
+			name: 'anchannel',
+			aliases: ['announcementchannel'],
+			group: 'administration',
+			memberName: 'anchannel',
+			description: 'Enables or disables announcing new or left member, when a message is set up.',
+			details: stripIndents`Sets or removes the channel for that purpose.
 				Mention the same channel again to remove it.
       			Omit the channel parameter to show the current channel.`,
-			examples: ['`vlogchannel #logs`'],
+			examples: ['`anchannel #logs`'],
 			guildOnly: true,
 			args: [
 				{
@@ -37,20 +37,19 @@ export default class VoicelogChannelCommand extends Command {
 		const config: GuildConfig = (await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } }) as any)[0].dataValues;
 
 		if (!(args.channel instanceof TextChannel)) {
-			const vlogChannel: TextChannel = msg.guild.channels.get(config.vlogChannel) as TextChannel;
-			msg.say(vlogChannel ? `The voicelog channel is: ${vlogChannel}.` : `No voicelog channel set.`);
+			msg.say(config.anChannel ? `The announcement channel is ${msg.guild.channels.get(config.anChannel) || 'deleted'}.` : `No announcement channel set.`);
 			return;
 		}
 
-		config.vlogChannel = args.channel.id === config.vlogChannel ? null : args.channel.id;
+		config.anChannel = args.channel.id === config.anChannel ? null : args.channel.id;
 
 		let permissions: string = '';
-		if (config.vlogChannel && !args.channel.permissionsFor(msg.guild.member(this.client.user) || await msg.guild.fetchMember(this.client.user)).hasPermission('SEND_MESSAGES')) {
+		if (config.anChannel && !args.channel.permissionsFor(msg.guild.member(this.client.user) || await msg.guild.fetchMember(this.client.user)).hasPermission('SEND_MESSAGES')) {
 			permissions = '**Note:** I don\'t have permissions to send messages to that channel.\n';
 		}
 
 		await GuildConfig.upsert(config);
 
-		msg.say(`${permissions}The voicelog channel ${config.vlogChannel ? `is now: ${msg.guild.channels.get(config.vlogChannel)}!` : 'has been disabled!'}`);
+		msg.say(`${permissions}The announcement channel ${config.anChannel ? `is now ${msg.guild.channels.get(config.anChannel)}` : 'has been removed'}!`);
 	}
 };

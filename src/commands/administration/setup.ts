@@ -10,7 +10,7 @@ export default class SetupCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'setup',
-			group: 'adminstuff',
+			group: 'administration',
 			memberName: 'setup',
 			description: 'Sets up the configuration for this guild.',
 			guildOnly: true,

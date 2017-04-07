@@ -10,7 +10,7 @@ export default class JoinMessageCommand extends Command {
 		super(client, {
 			name: 'joinmessage',
 			aliases: ['joinmsg'],
-			group: 'adminstuff',
+			group: 'administration',
 			memberName: 'joinmessage',
 			description: 'Sets or removes the join message for this guild.',
 			details: stripIndents`You can use :guild: as placeholder for the guildname,

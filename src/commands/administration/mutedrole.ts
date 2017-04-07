@@ -7,7 +7,7 @@ export default class MutedRoleCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'mutedrole',
-			group: 'adminstuff',
+			group: 'administration',
 			memberName: 'mutedrole',
 			description: 'Sets, creates or removes a \'Muted\' role for this guild.',
 			details: stripIndents`If you want to create a new role, pass \`create\` as action.

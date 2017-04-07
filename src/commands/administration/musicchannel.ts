@@ -7,7 +7,7 @@ export default class MusicChannelCommand extends Command {
 		super(client, {
 			name: 'musicchannel',
 			aliases: ['djchannel', 'djchannels', 'mchannel', 'mchannels', 'musicchannels'],
-			group: 'adminstuff',
+			group: 'administration',
 			memberName: 'musicchannel',
 			description: 'Adds or removes a musicchannel.',
 			details: stripIndents`

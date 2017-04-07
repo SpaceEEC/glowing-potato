@@ -7,7 +7,7 @@ export default class ModRoleCommand extends Command {
 		super(client, {
 			name: 'modrole',
 			aliases: ['mod', 'mods', 'modroles'],
-			group: 'adminstuff',
+			group: 'administration',
 			memberName: 'modrole',
 			description: 'Adds or removes a mod role in this guild.',
 			details: stripIndents`To remove or add a role simply \`@Mention\` it or provide the name or ID.

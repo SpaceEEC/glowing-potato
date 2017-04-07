@@ -10,7 +10,7 @@ export default class LeaveMessageCommand extends Command {
 		super(client, {
 			name: 'leavemessage',
 			aliases: ['leavemsg'],
-			group: 'adminstuff',
+			group: 'administration',
 			memberName: 'leavemessage',
 			description: 'Sets or removes the leave message for this guild.',
 			details: stripIndents`You can use :guild: as placeholder for the guildname,
