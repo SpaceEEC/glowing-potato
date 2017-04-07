@@ -8,8 +8,8 @@ import SequelizeProvider from './dataProviders/SequelizeProvider';
 import SQLite from './dataProviders/SQLite';
 import { registerEvents } from './events/events';
 
-const { defaultPrefix, logLevel, maintoken, ownerID } = require('../config');
-const { DMManager } = require('yamdbf-addon-dm-manager');
+const { defaultPrefix, logLevel, maintoken, ownerID }: { defaultPrefix: string, logLevel: string, maintoken: string, ownerID: string } = require('../config');
+const { DMManager }: { DMManager: any } = require('yamdbf-addon-dm-manager');
 
 const client: CommandoClient = new CommandoClient({
 	owner: ownerID,
