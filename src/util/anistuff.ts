@@ -117,15 +117,15 @@ export async function updateToken(client: CommandoClient, msg: CommandMessage, a
 			new RichEmbed().setColor(0xffff00)
 				.setDescription('The token expired, a new one will be requested.\nThis may take a while.')
 		) as Message;
-		const res: clientCredentials = (await request.post(`https://anilist.co/api/auth/access_token`)
+		const { body }: { body: clientCredentials } = await request.post(`https://anilist.co/api/auth/access_token`)
 			.send({
 				grant_type: 'client_credentials',
 				client_id: anilist.client_id,
 				client_secret: anilist.client_secret,
-			})).body;
+			});
 		aniSettings = {
-			token: res.access_token,
-			expires: res.expires
+			token: body.access_token,
+			expires: body.expires
 		};
 		client.provider.set('global', 'aniSettings', aniSettings);
 		await statusMessage.edit({
@@ -140,8 +140,9 @@ export async function updateToken(client: CommandoClient, msg: CommandMessage, a
 /**
  * Formats the fuzzy dates provided from anilist. (Using timestamps is way overrated.)
  * @param {number} input - The provided number, can be a string.
+ * @returns {string} The formatted output.
  */
-export function formatFuzzy(input: any): string {
+export function formatFuzzy(input: number | string): string {
 	input = input.toString();
 	return `${input.substring(6, 8)}.${input.substring(4, 6)}.${input.substring(0, 4)}`;
 }
