@@ -9,8 +9,9 @@ export default class ModRoleCommand extends Command {
 			aliases: ['mod', 'mods', 'modroles'],
 			group: 'administration',
 			memberName: 'modrole',
-			description: 'Adds or removes a mod role in this guild.',
-			details: stripIndents`To remove or add a role simply \`@Mention\` it or provide the name or ID.
+			description: 'Mod roles configuration.',
+			details: stripIndents`Adds or removes a mod role in this guild.
+			To remove or add a role simply \`@Mention\` it or provide the name or ID.
       		To show all roles in that categorie, omit the parameter.`,
 			examples: [
 				'`modrole @Mods` Adds or removes the role `@Mods` to the mod role of the bot.',

@@ -9,7 +9,7 @@ export default class DJRoleCommand extends Command {
 			aliases: ['dj', 'mrole', 'musicrole', 'djroles', 'mroles', 'musicroles'],
 			group: 'administration',
 			memberName: 'djrole',
-			description: 'Adds or removes a DjRole.',
+			description: 'DJ roles configuration.',
 			details: stripIndents`To add or remove a role, simply specify it, either with a mention, name or ID.
       If no role is present, @\u200beveryone is allowed to use music commands.
       To show all set up roles, simply omit the role parameter.`,

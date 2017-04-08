@@ -12,7 +12,8 @@ export default class SetupCommand extends Command {
 			name: 'setup',
 			group: 'administration',
 			memberName: 'setup',
-			description: 'Sets up the configuration for this guild.',
+			description: 'Guild config setup.',
+			details: 'Sets up the configuration for this guild.',
 			guildOnly: true,
 		});
 		this.util = new Util(client);
@@ -69,6 +70,7 @@ export default class SetupCommand extends Command {
 
 			return await msg.say(stripIndents`**Configuration complete.**
 
+			You can set up a role for the \`mute\` command, see the \`mutedrole\` help for more informations.
 			You can manually blacklist and unblacklist channels and members with \`blacklist <member|channel>\`.`);
 		} catch (err) {
 			timeout = 0;

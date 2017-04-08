@@ -12,8 +12,9 @@ export default class JoinMessageCommand extends Command {
 			aliases: ['joinmsg'],
 			group: 'administration',
 			memberName: 'joinmessage',
-			description: 'Sets or removes the join message for this guild.',
-			details: stripIndents`You can use :guild: as placeholder for the guildname,
+			description: 'Join message configuration.',
+			details: stripIndents`Sets, removes or shows the join message for this guild.
+			You can use :guild: as placeholder for the guildname,
       and :member: as placeholder for the joined member, this won't ping them, see the examples down there.`,
 			examples: [
 				stripIndents`\`joinmessage Welcome to :guild:, :member:!\`

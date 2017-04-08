@@ -9,8 +9,9 @@ export default class MutedRoleCommand extends Command {
 			name: 'mutedrole',
 			group: 'administration',
 			memberName: 'mutedrole',
-			description: 'Sets, creates or removes a \'Muted\' role for this guild.',
-			details: stripIndents`If you want to create a new role, pass \`create\` as action.
+			description: 'Configuration for the mute command.',
+			details: stripIndents`Sets, creates or removes a \'Muted\' role for this guild.
+		  If you want to create a new role, pass \`create\` as action.
           If you want to update the channel overwrites for the already linked role, pass \`update\` as action.
           If you want to specify an already existing role, pass a \`@Mention\` or the \`ID\` as action.
           If you want to remove the already linked role, pass \`remove\` as action.

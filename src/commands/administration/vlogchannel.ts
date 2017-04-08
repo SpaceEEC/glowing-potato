@@ -11,8 +11,9 @@ export default class VoicelogChannelCommand extends Command {
 			aliases: ['vlogchannel', 'voicelogchannel'],
 			group: 'administration',
 			memberName: 'vlogchannel',
-			description: 'Enables or disables logging of member movements in voice channels.',
-			details: stripIndents`Sets or removes the channel for that logging.
+			description: 'Toggles this type of channel.',
+			details: stripIndents`Enables or disables logging of member movements in voice channels.
+		 		Sets or removes the channel for that logging.
 				Mention the same channel again to remove it.
       			Omit the channel parameter to show the current channel.`,
 			examples: ['`vlogchannel #logs`'],
