@@ -9,9 +9,10 @@ export default class BlacklistCommand extends Command {
 			aliases: ['ignore'],
 			group: 'moderation',
 			memberName: 'blacklist',
-			description: 'Blacklists or unblacklists a member or channel.',
+			description: 'Utilizes the guild-wide blacklist.',
+			details: 'Blacklists or unblacklists a member or channel.',
 			examples: [
-				'`blacklist 218348062828003328` Would blacklist or unblacklist the member with that ID.',
+				'`blacklist 218348062828003328` Would blacklist or unblacklist the member or channel with that ID.',
 				'`blacklist @owo` Would blacklist or unblacklist the mentioned user owo.',
 				'For channels instead of users just replace the mentions or ids with channel ones.'
 			],
