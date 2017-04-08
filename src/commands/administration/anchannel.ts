@@ -4,15 +4,16 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { join } from 'path';
 import { GuildConfig } from '../../dataProviders/models/GuildConfig';
 
-export default class ANChannelCommand extends Command {
+export default class AnnouncementChannelCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'anchannel',
 			aliases: ['announcementchannel'],
 			group: 'administration',
 			memberName: 'anchannel',
-			description: 'Enables or disables announcing new or left member, when a message is set up.',
-			details: stripIndents`Sets or removes the channel for that purpose.
+			description: 'Toggles this type of channel.',
+			details: stripIndents`Enables or disables the announcing of new or left member, when a message is set up.
+				Sets or removes the channel for that purpose.
 				Mention the same channel again to remove it.
       			Omit the channel parameter to show the current channel.`,
 			examples: ['`anchannel #logs`'],

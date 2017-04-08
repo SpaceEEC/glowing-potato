@@ -12,8 +12,9 @@ export default class LeaveMessageCommand extends Command {
 			aliases: ['leavemsg'],
 			group: 'administration',
 			memberName: 'leavemessage',
-			description: 'Sets or removes the leave message for this guild.',
-			details: stripIndents`You can use :guild: as placeholder for the guildname,
+			description: 'Leave message configuration.',
+			details: stripIndents`'Sets or removes the leave message for this guild.'
+			You can use :guild: as placeholder for the guildname,
       and :member: as placeholder for the joined member, this won't ping him/her, see the examples down there.`,
 			examples: [
 				stripIndents`\`leavemessage :member: has left us, what a sad day.\`

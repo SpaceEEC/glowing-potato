@@ -9,7 +9,7 @@ export default class MusicChannelCommand extends Command {
 			aliases: ['djchannel', 'djchannels', 'mchannel', 'mchannels', 'musicchannels'],
 			group: 'administration',
 			memberName: 'musicchannel',
-			description: 'Adds or removes a musicchannel.',
+			description: 'Musicchannels configuration.',
 			details: stripIndents`
       To add or remove a music channel, simply specify it, either with a mention, name or ID.
       If no channel is present, the commands are allowed everywhere.

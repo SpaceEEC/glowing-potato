@@ -9,8 +9,9 @@ export default class AdminRoleCommand extends Command {
 			aliases: ['admin', 'admins', 'adminroles'],
 			group: 'administration',
 			memberName: 'adminrole',
-			description: 'Adds or removes a admin role in this guild.',
-			details: stripIndents`To remove or add a role simply \`@Mention\` it or provide the name or ID.
+			description: 'Admin roles configuration.',
+			details: stripIndents`Adds or removes a admin role in this guild.
+				To remove or add a role simply \`@Mention\` it or provide the name or ID.
       			To show all roles in that categorie, omit the parameter.`,
 			examples: [
 				'`adminrole @Admins` Adds or removes the role `@Admins` to the admin roles of the bot.',

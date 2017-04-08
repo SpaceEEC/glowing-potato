@@ -11,8 +11,8 @@ export default class LogChannelCommand extends Command {
 			aliases: ['loggingchannel'],
 			group: 'administration',
 			memberName: 'logchannel',
-			description: 'Enables or disables logging new or left member, when a message is set up.',
-			details: stripIndents`There is either vlogchannel, anchannel or logchannel as the type, use the aliases to set these.
+			description: 'Toggles this type of channel.',
+			details: stripIndents`Enables or disables the logging of new or left member, when a message is set up.
       To remove a channel, specify just specify that channel.
       Mention the same channel again to remove it.
       Omit the channel parameter to show the current channel.`,
