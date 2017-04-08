@@ -10,7 +10,8 @@ export default class BlacklistCommand extends Command {
 			group: 'moderation',
 			memberName: 'mute',
 			description: 'Mutes or unmutes a member.',
-			details: 'Mutes or unmutes the specified member, be careful with the fuzzy search.',
+			details: stripIndents`Mutes or unmutes the specified member, be careful with the fuzzy search, it might mute or unmute the wrong member.
+			Mentions or IDs are the best way to ensure you mute or unmute the correct member.`,
 			examples: [
 				'`mute @owo` Mutes or unmutes the member owo',
 				'`mute 250381145462538242` Mutes or unmutes the member with that ID.',
