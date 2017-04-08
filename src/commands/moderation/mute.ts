@@ -16,7 +16,7 @@ export default class BlacklistCommand extends Command {
 				'`mute @owo` Mutes or unmutes the member owo',
 				'`mute 250381145462538242` Mutes or unmutes the member with that ID.',
 				'`mute owo` Search for a member called owo and mutes or unmutes them',
-				'Be careful with the last option, you might mute or unmute someone you are not intdending to.'
+				'Be careful with the last option, you might mute or unmute someone you are not intending to.'
 			],
 			guildOnly: true,
 			args: [
