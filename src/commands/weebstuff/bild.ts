@@ -1,7 +1,8 @@
 import { Message, RichEmbed } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
-import * as request from 'superagent';
 import Util from '../../util/util';
+
+const snekfetch: any = require('snekfetch');
 
 type post = {
 	id: number,
@@ -51,7 +52,7 @@ export default class PictureCommand extends Command {
 	}
 
 	public async konachan(msg: CommandMessage, search: string): Promise<Message | Message[]> {
-		const posts: post[] = (await request.get(`http://konachan.com/post.json?tags=${`${search}+rating:s&limit=100`}`)).body;
+		const { body: posts }: { body: post[] } = await snekfetch.get(`http://konachan.com/post.json?tags=${`${search}+rating:s&limit=100`}`);
 		if (posts.length === 0) {
 			return msg.embed(new RichEmbed().setColor(0xFFFF00)
 				.setAuthor('konachan.net', 'http://konachan.net/', 'http://konachan.net/favicon.ico')
@@ -66,9 +67,9 @@ export default class PictureCommand extends Command {
 	}
 
 	public async donmai(msg: CommandMessage, search: string): Promise<Message | Message[]> {
-		const res: post[] = (await request.get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${search}`)).body;
+		const { body: posts }: { body: post[] } = await snekfetch.get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${search}`);
 
-		if (res.length === 0) {
+		if (posts.length === 0) {
 			return msg.embed(new RichEmbed().setColor(0xFFFF00)
 				.setAuthor('safebooru.donmai.us', 'http://safebooru.donmai.us/', 'http://safebooru.donmai.us/favicon.ico')
 				.addField('No results', 'Maybe made a typo?')
@@ -76,8 +77,8 @@ export default class PictureCommand extends Command {
 		}
 
 		return msg.embed(new RichEmbed().setColor(msg.member.displayColor)
-			.setDescription(`[Source](http://safebooru.donmai.us/posts/${res[0].id}/)`)
-			.setImage(`http://safebooru.donmai.us/${res[0].file_url}`));
+			.setDescription(`[Source](http://safebooru.donmai.us/posts/${posts[0].id}/)`)
+			.setImage(`http://safebooru.donmai.us/${posts[0].file_url}`));
 	}
 
 };

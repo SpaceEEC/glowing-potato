@@ -5,12 +5,12 @@ import { createWriteStream, unlink } from 'fs';
 import * as moment from 'moment';
 import 'moment-duration-format';
 import { Stream } from 'stream';
-import { get, Response } from 'superagent';
 import * as winston from 'winston';
 
 import Song from '../../structures/Song';
 import Util from '../../util/util';
 
+const { get }: { get: any } = require('snekfetch');
 const ytdl: any = require('ytdl-core');
 const youtube: any = require('simple-youtube-api');
 const { googletoken }: { googletoken: string } = require('../../../config');
