@@ -1,6 +1,7 @@
 import { Message, RichEmbed } from 'discord.js';
 import { CommandMessage, CommandoClient } from 'discord.js-commando';
-import * as request from 'superagent';
+
+const { post }: { post: any } = require('snekfetch');
 const { anilist } = require('../../config.json');
 
 type clientCredentials = {
@@ -117,7 +118,7 @@ export async function updateToken(client: CommandoClient, msg: CommandMessage, a
 			new RichEmbed().setColor(0xffff00)
 				.setDescription('The token expired, a new one will be requested.\nThis may take a while.')
 		) as Message;
-		const { body }: { body: clientCredentials } = await request.post(`https://anilist.co/api/auth/access_token`)
+		const { body }: { body: clientCredentials } = await post(`https://anilist.co/api/auth/access_token`)
 			.send({
 				grant_type: 'client_credentials',
 				client_id: anilist.client_id,

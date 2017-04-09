@@ -1,9 +1,10 @@
 import { stripIndents } from 'common-tags';
 import { Message, RichEmbed } from 'discord.js';
 import { Argument, ArgumentCollector, ArgumentCollectorResult, ArgumentInfo, Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
-import * as request from 'superagent';
 import { animeData, aniSettings, charData, formatFuzzy, mangaData, updateToken } from '../../util/anistuff.js';
 import Util from '../../util/util';
+
+const { get }: { get: any } = require('snekfetch');
 
 type args = { search: string, cmd: string };
 type error = { error: { messages: {}[] } };
@@ -47,7 +48,7 @@ export default class AnimeCommand extends Command {
 		if (responses[1]) {
 			responses[0] = await this.select(msg, responses, args);
 		}
-		if (!responses[0]) return msg.say('Aborting then.');
+		if (!responses[0]) return msg.say('Aborting then.').then((message: Message) => message.delete(3000));
 		if (args.cmd === 'character') return this.sendCharacter(msg, (responses[0] as charData));
 		if (args.cmd === 'manga') return this.sendManga(msg, (responses[0] as mangaData));
 		if (args.cmd === 'anime') return this.sendAnime(msg, (responses[0] as animeData));
@@ -56,17 +57,17 @@ export default class AnimeCommand extends Command {
 	}
 
 	private async query(msg: CommandMessage, aniSettings: aniSettings, args: args): Promise<animeData[] | mangaData[] | charData[]> {
-		const response: request.Response = await request.get(`https://anilist.co/api/${args.cmd}/search/${args.search}?access_token=${aniSettings.token}`);
-		if ((response.body as error).error) {
-			if ((response.body as error).error.messages[0] === 'No Results.') {
+		const { body }: { body: any } = await get(`https://anilist.co/api/${args.cmd}/search/${args.search}?access_token=${aniSettings.token}`);
+		if (body.error) {
+			if (body.error.messages[0] === 'No Results.') {
 				throw new FriendlyError(`no ${args.cmd} found.`);
 			} else {
-				this.client.emit('error', `[anime.js]: Error while fetching: ${(response.body as error).error.messages[0]}`);
+				this.client.emit('error', `[anime.js]: Error while fetching: ${body.error.messages[0]}`);
 				throw new FriendlyError(stripIndents`there was an error while fetching the data from the server:
-        ${(response.body as error).error.messages[0]}`);
+        ${body.error.messages[0]}`);
 			}
 		}
-		return (response.body as animeData[] | mangaData[] | charData[]);
+		return body;
 	}
 
 	private mapResponses(response: animeData[] | mangaData[] | charData[], type: string): [number, string] {
