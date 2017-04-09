@@ -3,7 +3,6 @@ import { GuildMember, Message, RichEmbed, Role, StreamDispatcher, TextChannel, V
 import { ArgumentInfo, Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { createWriteStream, unlink } from 'fs';
 import * as moment from 'moment';
-import 'moment-duration-format';
 import { Stream } from 'stream';
 import * as winston from 'winston';
 
@@ -417,7 +416,7 @@ export default class PlayMusicCommand extends Command {
 			})
 
 			.once('end', () => {
-				logger.log('musicInfo', guildID, 'Piping to file finished after', (moment.duration(moment().diff(startTime)) as any).format('mm:ss', { forceLength: true, trim: false }));
+				logger.log('musicInfo', guildID, 'Piping to file finished after', (Song.timeString(moment().diff(startTime, 'seconds'))));
 				const dispatcher: StreamDispatcher = queue.connection.playFile(`./tempmusicfile_${guildID}`, { passes: 2 })
 
 					.on('error', async (err: Error) => {
