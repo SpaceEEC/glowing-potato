@@ -41,7 +41,7 @@ export default class Util {
 	 * Prompts input from user and automatically cleans up after prompting.
 	 * @param {CommandMessage} msg - CommandMessage to prompt from.
 	 * @param {ArgumentInfo} arg - ArgumentInfo to prompt.
-	 * @param {boolean} [exception=false] exception - Whether a FriendlyError should be thrown or not.
+	 * @param {boolean} [exception=false] exception - Whether a FriendlyError should be thrown, upon cancel or ignore, or not.
 	 * @returns {Promise<T>} - The prompted value, or null when not or invalid responded.
 	 * @private
 	 */
