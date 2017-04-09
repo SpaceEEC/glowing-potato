@@ -13,7 +13,8 @@ export default class NowPlayingCommand extends Command {
 			aliases: ['song', 'playing'],
 			group: 'music',
 			memberName: 'np',
-			description: 'Shows the current song.',
+			description: 'Now Playing.',
+			details: 'Shows the current song.',
 			guildOnly: true,
 		});
 	}
@@ -37,7 +38,7 @@ export default class NowPlayingCommand extends Command {
 	}
 
 	get queue(): Map<string, queue> {
-		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play')as any).queue;
+		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
 	}

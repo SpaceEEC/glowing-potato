@@ -10,7 +10,7 @@ export default class PauseMusicCommand extends Command {
 			name: 'pause',
 			group: 'music',
 			memberName: 'pause',
-			description: 'Pauses the currently song.',
+			description: 'Pauses playback.',
 			guildOnly: true,
 		});
 	}

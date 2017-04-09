@@ -11,7 +11,8 @@ export default class SummonCommand extends Command {
 			aliases: ['overhere'],
 			group: 'music',
 			memberName: 'summon',
-			description: 'Summons the bot to the current channel.',
+			description: 'Summons the bot.',
+			details: 'Summons the bot to the current channel.',
 			guildOnly: true,
 		});
 	}

@@ -12,7 +12,7 @@ export default class RemoveMusicCommand extends Command {
 			aliases: ['splice'],
 			group: 'music',
 			memberName: 'remove',
-			description: 'Removes a Song from the queue.',
+			description: 'Removes a Song\nfrom the queue.',
 			examples: [
 				'`remove` Removes the first song in the queue.',
 				'`remove 1` Also removes the first song in the queue.',
