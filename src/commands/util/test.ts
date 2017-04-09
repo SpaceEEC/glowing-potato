@@ -8,7 +8,7 @@ export default class TestCommand extends Command {
 			aliases: ['bakaero'],
 			group: 'util',
 			memberName: 'test',
-			description: 'A test command, usually does nothing.',
+			description: 'test',
 		});
 	}
 
