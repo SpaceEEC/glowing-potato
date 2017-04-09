@@ -16,7 +16,12 @@ export default class AnimeCommand extends Command {
 			aliases: ['manga', 'character', 'char'],
 			group: 'weebstuff',
 			memberName: 'anime',
-			description: 'Displays informations about the specified anime.\n**manga:** Displays informations about the specified manga.\n**character:** Displays informations about the specified character.',
+			description: stripIndents`Displays informations about the specified anime.
+
+			Subcommands - call with their alias:
+			**manga:** Displays informations about the specified manga.
+			**character:** Displays informations about the specified character.
+			\u200b`,
 			examples: [
 				'`anime Bakemonogatari` Shows a list of shows that match this search and lets you pick one of those for a detailed view.',
 				'`manga Hyouka` Shows a list of mangas that match this search and lets you pick one of those for a detailed view.',
