@@ -11,7 +11,8 @@ export default class StopMusicCommand extends Command {
 			aliases: ['gtfo', 'stfu', 'sile'],
 			group: 'music',
 			memberName: 'stop',
-			description: 'Stops the song, deletes the playlist and disconnects the bot.',
+			description: 'Stops playback.',
+			details: 'Stops the song, deletes the playlist and disconnects the bot.',
 			guildOnly: true,
 		});
 	}
@@ -45,7 +46,7 @@ export default class StopMusicCommand extends Command {
 	}
 
 	get queue(): Map<string, queue> {
-		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play')as any).queue;
+		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
 	}

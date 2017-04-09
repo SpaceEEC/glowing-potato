@@ -43,7 +43,7 @@ export default class ShuffleQueueCommand extends Command {
 			array[randomIndex] = temporaryValue;
 		}
 
-		array.splice(0, 0, queue.songs[0]);
+		array.unshift(queue.songs[0]);
 		queue.songs = array;
 
 		return msg.say('The queue has been shuffled.')

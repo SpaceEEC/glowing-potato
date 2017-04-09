@@ -10,7 +10,8 @@ export default class ShuffleQueueCommand extends Command {
 			name: 'loop',
 			group: 'music',
 			memberName: 'loop',
-			description: 'Songs will be appended to the queue after they finished, rather than just being deleted.',
+			description: 'Toggles queue.',
+			details: 'Songs will be appended to the queue after they finished, rather than just being deleted.',
 			examples: [
 				'`loop enable` Will enable looping.',
 				'`loop disable` Will disable looping.',
@@ -68,7 +69,7 @@ export default class ShuffleQueueCommand extends Command {
 	}
 
 	get queue(): Map<string, queue> {
-		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play')as any).queue;
+		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
 	}

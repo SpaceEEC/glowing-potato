@@ -101,7 +101,7 @@ export default class PlayMusicCommand extends Command {
 			aliases: ['search', 'serach'],
 			group: 'music',
 			memberName: 'play',
-			description: 'Plays a song or a playlist.',
+			description: 'Plays a song or playlist.',
 			details: stripIndents`The input parameter accepts:
       A link to a Youtube video.
       A link to a Youtube playlist.
