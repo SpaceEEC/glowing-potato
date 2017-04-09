@@ -1,4 +1,4 @@
-import { exec } from 'child_process';
+/*import { exec } from 'child_process';
 import { stripIndents } from 'common-tags';
 import { Message } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
@@ -47,3 +47,4 @@ export default class UpdateCommand extends Command {
 	}
 
 };
+*/
