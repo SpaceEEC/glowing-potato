@@ -1,11 +1,11 @@
-import * as sequelize from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import Database from '../SQLite';
 const database: Database = new Database();
 
 /**
  * Represents a tag.
  */
-export class Tag extends sequelize.Model {
+export class Tag extends Model {
 	/**
 	 * The ID of the author of this tag.
 	 */
@@ -26,10 +26,10 @@ export class Tag extends sequelize.Model {
 };
 
 Tag.init({
-	userID: sequelize.DataTypes.STRING(20),
-	guildID: sequelize.DataTypes.STRING(20),
-	name: sequelize.DataTypes.STRING,
-	content: sequelize.DataTypes.STRING(1800),
+	userID: DataTypes.STRING(20),
+	guildID: DataTypes.STRING(20),
+	name: DataTypes.STRING,
+	content: DataTypes.STRING(1800),
 }, { sequelize: database.db });
 
 Tag.sync();
