@@ -1,4 +1,4 @@
-import * as sequelize from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import Database from '../SQLite';
 const database: Database = new Database();
 
@@ -6,7 +6,7 @@ const database: Database = new Database();
  * Represents the Config for each specific guild
  * containing saved ids and messages.
  */
-export class GuildConfig extends sequelize.Model {
+export class GuildConfig extends Model {
 	/**
  	* ID of the guild this config belongs to.
  	*/
@@ -50,17 +50,17 @@ export class GuildConfig extends sequelize.Model {
 
 GuildConfig.init({
 	guildID: {
-		type: sequelize.DataTypes.STRING(20),
+		type: DataTypes.STRING(20),
 		allowNull: false,
 		unique: true,
 		primaryKey: true,
 	},
-	mutedRole: { type: sequelize.DataTypes.STRING(20) },
-	vlogChannel: { type: sequelize.DataTypes.STRING(20) },
-	logChannel: { type: sequelize.DataTypes.STRING(20) },
-	anChannel: { type: sequelize.DataTypes.STRING(20) },
-	joinMessage: { type: sequelize.DataTypes.STRING(1800) },
-	leaveMessage: { type: sequelize.DataTypes.STRING(1800) },
+	mutedRole: { type: DataTypes.STRING(20) },
+	vlogChannel: { type: DataTypes.STRING(20) },
+	logChannel: { type: DataTypes.STRING(20) },
+	anChannel: { type: DataTypes.STRING(20) },
+	joinMessage: { type: DataTypes.STRING(1800) },
+	leaveMessage: { type: DataTypes.STRING(1800) },
 }, { sequelize: database.db });
 
 GuildConfig.sync();
