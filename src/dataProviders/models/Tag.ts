@@ -5,7 +5,7 @@ const database: Database = new Database();
 /**
  * Represents a tag.
  */
-export class Tag extends Model {
+export default class Tag extends Model {
 	/**
 	 * The ID of the author of this tag.
 	 */

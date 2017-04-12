@@ -2,7 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import Database from '../SQLite';
 const database: Database = new Database();
 
-export class Settings extends Model {
+export default class Settings extends Model {
 	public guild: string;
 	public settings: string;
 }

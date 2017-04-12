@@ -6,7 +6,7 @@ const database: Database = new Database();
  * Represents the Config for each specific guild
  * containing saved ids and messages.
  */
-export class GuildConfig extends Model {
+export default class GuildConfig extends Model {
 	/**
  	* ID of the guild this config belongs to.
  	*/

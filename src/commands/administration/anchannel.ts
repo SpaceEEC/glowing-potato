@@ -2,7 +2,7 @@ import { stripIndents } from 'common-tags';
 import { Message, Role, TextChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { join } from 'path';
-import { GuildConfig } from '../../dataProviders/models/GuildConfig';
+import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class AnnouncementChannelCommand extends Command {
 	constructor(client: CommandoClient) {

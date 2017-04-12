@@ -1,6 +1,6 @@
 import { GuildMember, TextChannel } from 'discord.js';
 import { CommandoClient } from 'discord.js-commando';
-import { GuildConfig } from '../dataProviders/models/GuildConfig';
+import GuildConfig from '../dataProviders/models/GuildConfig';
 
 export async function GuildMemberAdd(client: CommandoClient): Promise<void> {
 	client.on('guildMemberAdd', async (member: GuildMember) => {

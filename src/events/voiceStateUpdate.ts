@@ -1,7 +1,7 @@
 import { GuildMember, RichEmbed, TextChannel } from 'discord.js';
 import { CommandoClient } from 'discord.js-commando';
 import * as moment from 'moment';
-import { GuildConfig } from '../dataProviders/models/GuildConfig';
+import GuildConfig from '../dataProviders/models/GuildConfig';
 
 export async function VoiceStateUpdate(client: CommandoClient): Promise<void> {
 	client.on('voiceStateUpdate', async (oldMember: GuildMember, newMember: GuildMember) => {
