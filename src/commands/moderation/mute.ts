@@ -1,7 +1,7 @@
 import { stripIndents } from 'common-tags';
 import { GuildMember, Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
-import { GuildConfig } from '../../dataProviders/models/GuildConfig';
+import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class BlacklistCommand extends Command {
 	constructor(client: CommandoClient) {

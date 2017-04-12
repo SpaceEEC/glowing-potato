@@ -1,7 +1,7 @@
 import { Guild } from 'discord.js';
 import { Command, CommandGroup, CommandMessage, CommandoClient, SettingProvider } from 'discord.js-commando';
 import { DataTypes, Model, Sequelize } from 'sequelize';
-import { Settings } from './models/Settings';
+import Settings from './models/Settings';
 
 export default class SequelizeProvider extends SettingProvider {
 	private db: Sequelize;

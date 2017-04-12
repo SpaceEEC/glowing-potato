@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
-import { Tag } from '../../dataProviders/models/Tag';
+import Tag from '../../dataProviders/models/Tag';
 
 export default class TagShow extends Command {
 	constructor(client: CommandoClient) {

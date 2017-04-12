@@ -1,7 +1,7 @@
 import { stripIndents } from 'common-tags';
 import { Collection, Guild, GuildChannel, Message, PermissionOverwrites, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
-import { GuildConfig } from '../../dataProviders/models/GuildConfig';
+import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class MutedRoleCommand extends Command {
 	constructor(client: CommandoClient) {
