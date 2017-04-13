@@ -1,8 +1,6 @@
 import { oneLine, stripIndents } from 'common-tags';
 import { Collection, Message, RichEmbed } from 'discord.js';
 import { Command, CommandGroup, CommandMessage, CommandoClient, util } from 'discord.js-commando';
-import * as moment from 'moment';
-import Util from '../../util/util.js';
 
 type RichEmbedField = { name: string; value: string; inline?: boolean; };
 
