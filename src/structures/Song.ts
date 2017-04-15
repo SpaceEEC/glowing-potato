@@ -2,7 +2,7 @@
 // https://github.com/WeebDev/Hamakaze/blob/master/src/structures/song.ts
 // pretty awesome thing
 import { oneLineTrim } from 'common-tags';
-import { GuildMember, Util } from 'discord.js';
+import { GuildMember, StreamDispatcher, Util } from 'discord.js';
 
 export default class Song {
 	public static timeString(seconds: number, forceHours = false): string {
@@ -20,7 +20,7 @@ export default class Song {
 	public id: string;
 	public length: number;
 	public member: GuildMember;
-	public dispatcher: any;
+	public dispatcher: StreamDispatcher;
 	public playing: boolean;
 
 	constructor(video: { title: string, id: string, duration?: number, durationSeconds?: number }, member: GuildMember) {
@@ -42,7 +42,7 @@ export default class Song {
 	}
 
 	get username(): string {
-		const name: string = `${this.member.user.username}#${this.member.user.discriminator} (${this.member.user.id})`;
+		const name: string = `${this.member.user.tag} (${this.member.user.id})`;
 		return Util.escapeMarkdown(name);
 	}
 
@@ -52,11 +52,11 @@ export default class Song {
 	}
 
 	get lengthString(): string {
-		return (this.constructor as typeof Song).timeString(this.length);
+		return Song.timeString(this.length);
 	}
 
 	public timeLeft(currentTime: number): string {
-		return (this.constructor as typeof Song).timeString(this.length - currentTime);
+		return Song.timeString(this.length - currentTime);
 	}
 
 	private _toString(): string {
