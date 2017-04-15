@@ -1,4 +1,4 @@
-import { Message, Role, VoiceChannel } from 'discord.js';
+import { Message, Permissions, Role, VoiceChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { logger, queue, song } from './play';
 
@@ -46,11 +46,12 @@ export default class SummonCommand extends Command {
 
 		const voiceChannel: VoiceChannel = msg.member.voiceChannel;
 
-		if (!voiceChannel.joinable) {
+		const permissions: Permissions = voiceChannel.permissionsFor(this.client.user);
+		if (!permissions.has('CONNECT')) {
 			return msg.say('Your voice channel sure looks nice, but I unfortunately don\' have permissions to join it.\nBetter luck next time.')
 				.then((mes: Message) => mes.delete(5000));
 		}
-		if (!voiceChannel.speakable) {
+		if (!permissions.has('SPEAK')) {
 			return msg.say('Your party looks nice, I\'d love to join, but I am unfortunately not allowed to speak there, so I don\'t bother joining.')
 				.then((mes: Message) => mes.delete(5000));
 		}
@@ -60,11 +61,12 @@ export default class SummonCommand extends Command {
 			queue.connection = await voiceChannel.join();
 			queue.voiceChannel = voiceChannel;
 			return joinMessage.edit('Joined your channel, party will now continue here!')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => mes.delete(5000)).catch(() => null);
 		} catch (err) {
 			logger.log('summon', `[${msg.guild.id}]`, err);
+			joinMessage.delete().catch(() => null);
 			return msg.say('An error occurred while joining your channel, such a shame.')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => mes.delete(5000)).catch(() => null);
 		}
 	}
 

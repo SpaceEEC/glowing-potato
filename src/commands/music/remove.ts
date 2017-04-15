@@ -1,11 +1,12 @@
 import { Message, Role } from 'discord.js';
-import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
+import { ArgumentInfo, Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import Song from '../../structures/Song';
+import Util from '../../util/util';
 import { queue, song } from './play';
 
 export default class RemoveMusicCommand extends Command {
 	private _queue: Map<string, queue>;
-
+	private _util: Util;
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'remove',
@@ -29,6 +30,7 @@ export default class RemoveMusicCommand extends Command {
 				}
 			]
 		});
+		this._util = new Util(client);
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
@@ -41,7 +43,7 @@ export default class RemoveMusicCommand extends Command {
 	public async run(msg: CommandMessage, args: { index: number }): Promise<Message | Message[]> {
 		const queue: queue = this.queue.get(msg.guild.id);
 		if (!queue) {
-			return msg.say('There is no queue, why not add some songs yourself?')
+			return msg.say('There is no queue, what do you hope to remove?')
 				.then((mes: Message) => mes.delete(5000));
 		}
 		const song: song = queue.songs[args.index];
@@ -50,10 +52,14 @@ export default class RemoveMusicCommand extends Command {
 				.then((mes: Message) => mes.delete(5000));
 		}
 
-		const requestMessage: Message = await msg.say(`Are you sure you want to skip this wonderful song?\n${song.name}\n\n__y__es/__n__o`) as Message;
-		const response: Message = (await requestMessage.channel.awaitMessages((m: Message) => m.author.id === msg.author.id, { maxMatches: 1, time: 30000 })).first();
-		requestMessage.delete().catch(() => null);
-		if (!response || (response && !['yes', 'y'].includes(response.content))) {
+		const argument: ArgumentInfo = {
+			key: 'choice',
+			prompt: `Are you sure you want to remove this wonderful song from the queue?\n\`${song.name}\´\n\n__y__es/__n__o`,
+			type: 'boolean'
+		};
+		const choice: boolean = await this._util.prompt<boolean>(msg, argument).catch(() => null);
+
+		if (!choice) {
 			return msg.say('Aborting then.')
 				.then((mes: Message) => mes.delete(5000));
 		}
@@ -64,7 +70,7 @@ export default class RemoveMusicCommand extends Command {
 	}
 
 	get queue(): Map<string, queue> {
-		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play')as any).queue;
+		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
 	}

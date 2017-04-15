@@ -37,33 +37,36 @@ export default class ShuffleQueueCommand extends Command {
 		return msg.member.roles.some((r: Role) => roles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
 	}
 
-	public async run(msg: CommandMessage, args: { state: boolean }): Promise<Message | Message[]> {
+	public async run(msg: CommandMessage, args: { state: string | boolean }): Promise<Message | Message[]> {
 		const queue: queue = this.queue.get(msg.guild.id);
 
 		if (!queue) {
-			return msg.say('There is nothing to be looped in this guild. Change that!')
+			return msg.say('Trying to enable the loop while nothing is being played?')
 				.then((mes: Message) => mes.delete(5000));
 		}
-		if (!args.state) {
-			return msg.say(`Looping is at the moment ${queue.loop ? 'enabled' : 'disabled'}.`)
+
+		if (args.state === '') {
+			return msg.say(`The loop is at the moment ${queue.loop ? 'enabled' : 'disabled'}.`)
 				.then((mes: Message) => mes.delete(5000));
 		}
 
 		if (args.state) {
 			if (queue.loop) {
-				return msg.say('Looping is already enabled, my friend.')
+				return msg.say('The loop is already enabled, my friend.')
 					.then((mes: Message) => mes.delete(5000));
 			}
+
 			queue.loop = true;
-			return msg.say('Looping is now enabled!')
+			return msg.say('The loop is now enabled!')
 				.then((mes: Message) => mes.delete(5000));
 		} else {
 			if (!queue.loop) {
-				return msg.say('Looping is already disabled, my friend.')
+				return msg.say('The loop is already disabled, my friend.')
 					.then((mes: Message) => mes.delete(5000));
 			}
+
 			queue.loop = false;
-			return msg.say('Looping is now disabled!')
+			return msg.say('The loop is now disabled!')
 				.then((mes: Message) => mes.delete(5000));
 		}
 	}

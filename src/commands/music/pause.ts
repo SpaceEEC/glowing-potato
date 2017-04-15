@@ -30,7 +30,7 @@ export default class PauseMusicCommand extends Command {
 				.then((mes: Message) => mes.delete(5000));
 		}
 		if (!queue.voiceChannel.members.has(msg.author.id)) {
-			return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so why are you even trying to pause?`)
+			return msg.say(`I am currently playing in ${queue.voiceChannel.name}. You better don't mess with their music bot!`)
 				.then((mes: Message) => mes.delete(5000));
 		}
 		if (!queue.songs[0].dispatcher) {
