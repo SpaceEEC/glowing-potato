@@ -31,9 +31,11 @@ export default class NowPlayingCommand extends Command {
 
 		return msg.embed(new RichEmbed().setColor(0x0800ff).setImage(song.thumbnail)
 			.setAuthor(song.username, song.avatar)
-			.setDescription(stripIndents`${queue.loop ? '**Queue is enabled!**\n' : ''}[${song.name}](${song.url})
-    Currently at \`${Song.timeString(currentTime)}\`/\`${song.lengthString}\`
-    ${song.playing ? '' : 'Currently paused.'}`))
+			.setDescription(stripIndents
+				`${queue.loop ? '**Queue is enabled!**\n' : ''}[${song.name}](${song.url})
+    			Time: \`${song.timeLeft(currentTime)}\` (\`${Song.timeString(currentTime)}\`/\`${song.lengthString}\`)
+
+    			${song.playing ? '' : 'Currently paused.'}`))
 			.then((mes: Message) => mes.delete(30000));
 	}
 

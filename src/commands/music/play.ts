@@ -1,28 +1,26 @@
 import { stripIndents } from 'common-tags';
-import { GuildMember, Message, RichEmbed, Role, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
-import { ArgumentInfo, Command, CommandMessage, CommandoClient } from 'discord.js-commando';
+import { GuildMember, Message, Permissions, RichEmbed, Role, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
+import { ArgumentInfo, Command, CommandMessage, CommandoClient, GuildExtension } from 'discord.js-commando';
 import { createWriteStream, unlink } from 'fs';
 import * as moment from 'moment';
 import { Stream } from 'stream';
-import * as winston from 'winston';
-
+import { addColors, ConsoleTransportOptions, error, Logger, LoggerInstance, silly, transports } from 'winston';
+import { ytdl } from 'ytdl-core';
 import Song from '../../structures/Song';
 import Util from '../../util/util';
+import { video, Youtube } from '../../util/youtube';
 
-const { get }: { get: any } = require('snekfetch');
-const ytdl: any = require('ytdl-core');
-const youtube: any = require('simple-youtube-api');
-const { googletoken }: { googletoken: string } = require('../../../config');
+const yt: typeof ytdl = require('ytdl-core');
 
-const options: winston.ConsoleTransportOptions = {
+const options: ConsoleTransportOptions = {
 	colorize: true,
 	level: 'summon',
 	prettyPrint: true,
 	timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss'))
 };
 
-export const logger: winston.LoggerInstance = new (winston.Logger)({
-	transports: [new winston.transports.Console(options)],
+export const logger: LoggerInstance = new (Logger)({
+	transports: [new transports.Console(options)],
 	levels: {
 		dispatcher: 0,
 		musicInfo: 0,
@@ -32,7 +30,7 @@ export const logger: winston.LoggerInstance = new (winston.Logger)({
 	}
 });
 
-winston.addColors({
+addColors({
 	dispatcher: 'magenta',
 	musicInfo: 'cyan',
 	summon: 'red',
@@ -47,52 +45,15 @@ export type queue = {
 	songs: song[];
 	volume: number;
 	loop: boolean;
+	statusMessage: Message;
+	emptyPlaylistTimeout: NodeJS.Timer;
 };
 
-type video = {
-	id: string;
-	title: string;
-	durationSeconds: number;
-};
-
-export type song = {
-	name: string;
-	id: string;
-	length: number;
-	member: GuildMember;
-	dispatcher: StreamDispatcher;
-	playing: boolean;
-	url: string;
-	thumbnail: string;
-	username: string;
-	avatar: string;
-	lengthString: string;
-	timeLeft: Function;
-};
-
-type youtubeResponse = {
-	items: youtubeVideo[];
-	nextPageToken: string;
-	pageInfo: {
-		totalResults: string;
-	};
-};
-
-type youtubeVideo = {
-	snippet: {
-		resourceId: {
-			videoId: string;
-		}
-	}
-};
+export type song = Song;
 
 export default class PlayMusicCommand extends Command {
 	public queue: Map<string, queue>;
-	public youtube: any;
-	private statusMessage: Message;
-	private playlistTimeout: NodeJS.Timer;
-	private emptyTimeout: NodeJS.Timer;
-	private util: Util;
+	private _util: Util;
 
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -126,10 +87,9 @@ export default class PlayMusicCommand extends Command {
 			]
 		});
 
-		this.youtube = new youtube(googletoken);
 		// hello crawl (or other curious people)
-		this.queue = new Map();
-		this.util = new Util(client);
+		this.queue = new Map<string, queue>();
+		this._util = new Util(client);
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
@@ -158,11 +118,13 @@ export default class PlayMusicCommand extends Command {
 				return msg.say('You are not in a voice channel, I won\'t whisper you the song.\nMove into a voice channel!')
 					.then((mes: Message) => mes.delete(5000));
 			}
-			if (!voiceChannel.joinable) {
+
+			const permissions: Permissions = voiceChannel.permissionsFor(this.client.user);
+			if (!permissions.has('CONNECT')) {
 				return msg.say('Your voice channel sure looks nice, but I unfortunately don\' have permissions to join it.\nBetter luck next time, buddy.')
 					.then((mes: Message) => mes.delete(5000));
 			}
-			if (!voiceChannel.speakable) {
+			if (!permissions.has('SPEAK')) {
 				return msg.say('Your party sure looks nice, I\'d love to join, but I am unfortunately not allowed to speak there, so forget that.')
 					.then((mes: Message) => mes.delete(5000));
 			}
@@ -173,67 +135,43 @@ export default class PlayMusicCommand extends Command {
 
 		const fetchMessage: Message = await msg.say('Fetching info...') as Message;
 
-		return this.youtube.getVideo(args.input).then((video: video) => {
-			this.input(video, queue, msg, voiceChannel, fetchMessage);
-		}).catch(() => {
-			this.youtube.getPlaylist(args.input).then(async (playlist: { id: string }) => {
-				if (!args.limit) args.limit = 20;
-				else if (args.limit > 200) args.limit = 200;
-				const ids: string[] | string = await this.query(playlist.id, args.limit, null);
-				if (typeof ids === 'string') return fetchMessage.edit(ids);
-				fetchMessage.edit(`Proccessing \`${ids.length}\` songs, this may take a while...`);
-				const addedSongs: video[] = await new Promise<video[]>((resolve: (value: video[]) => void) => this.getInfo(ids, resolve));
-				if (addedSongs.length) {
-					return this.input(addedSongs, queue, msg, voiceChannel, fetchMessage);
-				}
-				return fetchMessage.edit(`Nothing added, sure that there are available videos in the playlist?`)
-					.then((del: Message) => del.delete(10000));
-			}).catch(() => {
-				if (!args.limit) args.limit = 1;
-				if (args.limit > 50) args.limit = 50;
-				this.youtube.searchVideos(args.input, args.limit).then(async (videos: video[]) => {
-					const video: video = videos.length === 1 ? videos[0] : await this.chooseSong(msg, videos, 0, fetchMessage);
-					if (!video) return;
-					this.input(video, queue, msg, voiceChannel, fetchMessage);
-				}).catch(() => {
-					fetchMessage.edit('❔ Nothing found. Search better!')
-						.then((mes: Message) => mes.delete(5000));
-				});
-			});
-		});
-	}
+		const video: video = await Youtube.getVideo(args.input);
+		silly('video', video || false);
 
-	private async query(id: string, finalamount: number, pagetoken: string, arr: string[] = []): Promise<string[] | string> {
-		const requestamount: number = finalamount > 50 ? 50 : finalamount;
-		finalamount -= requestamount;
-		try {
-			const { body }: { body: youtubeResponse } = await get(
-				`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${requestamount}&playlistId=${id}&${pagetoken ? `pageToken=${pagetoken}` : ''}&fields=items/snippet/resourceId/videoId,nextPageToken,pageInfo/totalResults&key=${googletoken}`)
-				.send(null).set('Accept', 'application/json');
-			arr = arr.concat(body.items.map((s: youtubeVideo) => s.snippet.resourceId.videoId));
-			winston.silly('query', requestamount, finalamount, body.nextPageToken);
-			if (!body.nextPageToken || !finalamount) return arr;
-			else return this.query(id, finalamount, body.nextPageToken, arr);
-		} catch (e) {
-			if (e) logger.log('youtubeapi', 'query', e);
-			return '❌ Playlist was found, but an error occured while fetching the songs. Better try again or something different!';
+		if (video) return this._handleInput(video, queue, msg, voiceChannel, fetchMessage);
+
+		const playlist: video[] = await Youtube.getPlaylist(args.input, Math.min(args.limit || 20, 200));
+		silly('playlist', playlist && playlist[0] || false);
+
+		if (playlist) return this._handleInput(playlist, queue, msg, voiceChannel, fetchMessage);
+
+		const search: video[] = await Youtube.searchVideos(args.input, Math.min(args.limit || 1, 50));
+		silly('search', search && search[0] || false);
+
+		if (search) {
+			const toAdd: video = search[1] ? await this._chooseSong(msg, search, fetchMessage) : search[0];
+
+			if (!toAdd) return msg.say('Aborting then.')
+				.then((mes: Message) => mes.delete(5000));
+
+			return this._handleInput(toAdd, queue, msg, voiceChannel, fetchMessage);
 		}
+
+		return fetchMessage.edit('❔ Nothing found. Maybe made a typo?')
+			.then((mes: Message) => mes.delete(5000));
 	}
 
-	private async getInfo(ids: string[], resolve: (value: video[]) => void): Promise<void> {
-		const videos: video[] = [];
-		let amount: number = ids.length;
-		for (const vid in ids) {
-			if (!ids[vid]) continue;
-			this.youtube.getVideo(ids[vid]).then((video: video) => {
-				winston.silly(video.title);
-				videos.push(video);
-				if (videos.length === amount) resolve(videos);
-			}).catch(() => (videos.length === --amount) && resolve(videos));
-		}
-	}
-
-	private async input(video: video | video[], queue: queue, msg: CommandMessage, voiceChannel: VoiceChannel, fetchMessage: Message): Promise<void> {
+	/**
+	 * Adds a video or an array of vidoes to the queue and joins the voice channel when necessary.
+	 * @param {video | video[]} video Video or array of videos to add.
+	 * @param {queue} queue The queue to add to.
+	 * @param {CommandMessage} msg Triggering CommandMessage.
+	 * @param {VoiceChannel} voiceChannel The voice channel to join.
+	 * @param {Message} fetchMessage The message to update.
+	 * @returns {Promise<void>}
+	 * @private
+	 */
+	private async _handleInput(video: video | video[], queue: queue, msg: CommandMessage, voiceChannel: VoiceChannel, fetchMessage: Message): Promise<Message> {
 		if (!queue) {
 			queue = {
 				textChannel: msg.channel as TextChannel,
@@ -241,82 +179,90 @@ export default class PlayMusicCommand extends Command {
 				connection: null,
 				songs: [],
 				volume: this.client.provider.get(msg.guild, 'volume', 2),
-				loop: false
+				loop: false,
+				statusMessage: null,
+				emptyPlaylistTimeout: null,
 			};
+			this.queue.set(msg.guild.id, queue);
 
-			await this.queue.set(msg.guild.id, queue);
-
-			const [success, embed] = video instanceof Array ? await this.addPlaylist(msg, video) : await this.add(msg, video);
-			if (!success) {
+			const result: string | RichEmbed = video instanceof Array ? this._addPlaylist(msg, video) : this._add(msg, video);
+			if (typeof result === 'string') {
 				this.queue.delete(msg.guild.id);
-				msg.say(embed)
+				return fetchMessage.edit(result)
 					.then((mes: Message) => mes.delete(30000));
-				return;
 			}
 
 			try {
 				queue.connection = await queue.voiceChannel.join();
-				await this.play(msg.guild.id, queue.songs[0]);
-				fetchMessage.delete().catch(() => null);
+				await this._play(msg.guild.id);
+				return fetchMessage.delete().catch(() => null);
 			} catch (err) {
 				logger.log('summon', msg.guild.id, 'join', err);
 				this.queue.delete(msg.guild.id);
-				fetchMessage.edit('❌ There was an error while joining your channel, such a shame!', { embed: null });
+				return fetchMessage.edit('❌ There was an error while joining your channel, such a shame!', { embed: null });
 			}
 		} else {
-			const [success, embed] = video instanceof Array ? this.addPlaylist(msg, video) : await this.add(msg, video);
-			if (!success) {
-				fetchMessage.edit(embed, { embed: null })
+			const result: string | RichEmbed = video instanceof Array ? this._addPlaylist(msg, video) : this._add(msg, video);
+			if (typeof result === 'string') {
+				return fetchMessage.edit(result, { embed: null })
 					.then((mes: Message) => mes.delete(10000));
-				return;
 			}
 
-			fetchMessage.edit('', { embed })
+			return fetchMessage.edit('', { embed: result })
 				.then((mes: Message) => mes.delete(5000));
 		}
 	}
 
-	private add(msg: CommandMessage, video: video): [boolean, RichEmbed | string] {
+	/**
+	 * Adds a single video to the queue.
+	 * @param {CommandMessage} msg Triggering CommandMessage.
+	 * @param {video} video Video to add.
+	 * @returns {RichEmbed | string} Returns a string on failure, a RichEmbed upon success.
+	 * @private
+	 */
+	private _add(msg: CommandMessage, video: video): RichEmbed | string {
 		const queue: queue = this.queue.get(msg.guild.id);
 
 		if (video.durationSeconds === 0) {
-			return [false, '❌ Live streams are not supported.'];
+			return '❌ Live streams are not supported.';
 		}
 		if (queue.songs.some((song: song) => song.id === video.id)) {
-			return [false, '⚠ That song is already in the queue.'];
+			return '⚠ That song is already in the queue.';
 		}
 		if (video.durationSeconds > 60 * 60) {
-			return [false, 'ℹ That song is too long, max length is one hour.'];
+			return 'ℹ That song is too long, max length is one hour.';
 		}
 
 		const song: song = new Song(video, msg.member);
 		queue.songs.push(song);
-		return [true, new RichEmbed()
+		return new RichEmbed()
 			.setAuthor(song.username, song.avatar)
 			.setTimestamp()
-			.setImage(queue.songs[queue.songs.length - 1].thumbnail)
+			.setImage(song.thumbnail)
 			.setColor(0xFFFF00)
 			.setFooter('has been added.', this.client.user.displayAvatarURL)
 			.setDescription(stripIndents
 				`${queue.loop ? '**Loop is enabled**\n' : ''}**++** [${song.name}](${song.url})
-				Length: ${song.lengthString}`)];
+				Length: ${song.lengthString}`);
 	}
 
-	private addPlaylist(msg: CommandMessage, videos: video[]): [boolean, RichEmbed | String] {
+	/**
+	 * Adds a playlist (array of video objects) to the playlist.
+	 * @param {CommandMessage} msg Triggering CommandMessage.
+	 * @param {video[]} videos Array of video objects to add to the queue.
+	 * @returns {RichEmbed | string} Returns a string on failure, a RichEmbed upon success.
+	 * @private
+	 */
+	private _addPlaylist(msg: CommandMessage, videos: video[]): RichEmbed | string {
 		const queue: queue = this.queue.get(msg.guild.id);
 		let ignored: number = 0;
 		let lastsong: song;
 
 		for (const video of videos) {
-			if (video.durationSeconds === 0) {
-				ignored++;
-				continue;
-			}
-			if (queue.songs.some((song: song) => song.id === video.id)) {
-				ignored++;
-				continue;
-			}
-			if (video.durationSeconds > 60 * 60) {
+			if (video.durationSeconds === 0
+				|| video.durationSeconds > 60 * 60
+				|| queue.songs.some((song: song) => song.id === video.id)
+			) {
 				ignored++;
 				continue;
 			}
@@ -325,22 +271,32 @@ export default class PlayMusicCommand extends Command {
 			queue.songs.push(lastsong);
 		}
 
-		if (!lastsong) return [false, 'No song qualifies for adding. Maybe all of them are already queued or too long.'];
-		return [true, new RichEmbed()
+		if (!lastsong) return 'No song qualifies for adding. Maybe all of them are already queued or too long.';
+		return new RichEmbed()
 			.setAuthor(lastsong.username, lastsong.avatar)
 			.setTimestamp()
 			.setImage(queue.songs[queue.songs.length - 1].thumbnail)
 			.setColor(0xFFFF00)
 			.setFooter('has been added.', this.client.user.displayAvatarURL)
 			.setDescription(stripIndents
-				`${queue.loop ? '**Loop is enabled**\n' : ''}**++** \`${videos.length - ignored}\`/\`${videos.length}\` Songs
+				`${queue.loop ? '**Loop is enabled**\n' : ''}Added \`${videos.length - ignored}\`/\`${videos.length}\` Songs.
 
-      			Last Song of queue:
-      			[${lastsong.name}](${lastsong.url})
-      			Length: ${lastsong.lengthString}`)];
+				Full queue length: ${Song.timeString(queue.songs.reduce((a: number, b: song) => a + b.length, 0))}
+      			Use ${msg.anyUsage('queue', (msg.guild as GuildExtension).commandPrefix, this.client.user)} to see what has been added.`);
 	}
-	private async chooseSong(msg: CommandMessage, videos: video[], index: number, statusmsg: Message): Promise<null | video> {
-		if (!videos[index]) {
+
+	/**
+	 * Let the user pick one of the search results.
+	 * @param {CommandMessage} msg The message to prompt from.
+	 * @param {video[]} videos The video array to let the user pick from.
+	 * @param {Message} statusmsg Optional message to use to display the choices.
+	 * @param {number} [index=0] The index for the current video.
+	 * @returns {video} The picked video.
+	 * @private
+	 */
+	private async _chooseSong(msg: CommandMessage, videos: video[], statusmsg?: Message, index: number = 0): Promise<video> {
+		const video: video = videos[index];
+		if (!video) {
 			if (statusmsg) {
 				statusmsg.delete().catch(() => null);
 				msg.delete().catch(() => null);
@@ -349,41 +305,51 @@ export default class PlayMusicCommand extends Command {
 		}
 
 		const embed: RichEmbed = new RichEmbed()
-			.setColor(0x9370DB)
-			.setTitle(videos[index].title)
-			.setImage(`https://img.youtube.com/vi/${videos[index].id}/mqdefault.jpg`)
+			.setColor(0x9370DB).setTitle(video.title)
+			.setImage(`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`)
+			.setDescription(`Length: ${Song.timeString(video.durationSeconds)}`)
 			.setFooter(`Result ${index + 1} from ${videos.length} results.`, this.client.user.avatarURL);
 
 		if (statusmsg) statusmsg = await statusmsg.edit({ embed });
-		else statusmsg = await msg.channel.sendEmbed(embed);
+		else statusmsg = await msg.embed(embed) as Message;
 
 		const argument: ArgumentInfo = {
 			key: 'choice',
-			prompt: '`y` to confirm\n`n` for the next result.',
-			type: 'string',
+			prompt: 'Respond either with `y` to pick this video, or with `n` for the next result.\n',
+			type: 'boolean'
 		};
 
-		const choice: string = await this.util.prompt<string>(msg, argument, false);
+		const choice: boolean = await this._util.prompt<boolean>(msg, argument).catch(() => null);
 
-		if (!choice) return null;
+		if (choice === null) return statusmsg.delete().then(() => null).catch(() => null);
 
-		if (choice[0] === 'y') return videos[index];
-		else if (choice[0] === 'n') return this.chooseSong(msg, videos, index + 1, statusmsg);
+		if (choice) return video;
+		else if (!choice) return this._chooseSong(msg, videos, statusmsg, index + 1);
 		else return null;
 	}
 
-	private async play(guildID: string, song: song, stopped = false): Promise<void> {
-		if (this.statusMessage) this.statusMessage.delete().catch(() => null);
-		if (this.emptyTimeout) this.client.clearTimeout(this.emptyTimeout);
+	/**
+	 * Method that actually plays the music
+	 * @param {string} guildID ID of the guild to play music in.
+	 * @param {song} song The song to play.
+	 * @param {boolean} [stopped=false] Whether the playing was stopped through a command.
+	 * @returns {Promise<void>}
+	 * @private
+	 */
+	private async _play(guildID: string, stopped: boolean = false): Promise<void> {
 		const queue: queue = this.queue.get(guildID);
+		const song: song = queue.songs[0];
+
+		if (queue.statusMessage) queue.statusMessage.delete().catch(() => null);
+		if (queue.emptyPlaylistTimeout) this.client.clearTimeout(queue.emptyPlaylistTimeout);
 
 		if (!song) {
 			this.queue.delete(guildID);
 			if (!stopped) {
-				this.statusMessage = await queue.textChannel.send('The queue is empty, I\'ll wait another 30 seconds for new songs before leaving.') as Message;
-				if (this.emptyTimeout) this.client.clearTimeout(this.emptyTimeout);
-				this.emptyTimeout = this.client.setTimeout(() => {
-					this.statusMessage.delete().catch(() => null);
+				queue.statusMessage = await queue.textChannel.send('The queue is empty, I\'ll wait another 30 seconds for new songs before leaving.') as Message;
+				if (queue.emptyPlaylistTimeout) this.client.clearTimeout(queue.emptyPlaylistTimeout);
+				queue.emptyPlaylistTimeout = this.client.setTimeout(() => {
+					queue.statusMessage.delete().catch(() => null);
 					queue.voiceChannel.leave();
 				}, 30000);
 				return;
@@ -392,27 +358,28 @@ export default class PlayMusicCommand extends Command {
 			return;
 		}
 
-		this.statusMessage = await queue.textChannel.sendEmbed(
-			new RichEmbed().setColor(0x00ff08).setAuthor(song.username, song.avatar)
+		queue.statusMessage = await queue.textChannel.send({
+			embed: new RichEmbed().setColor(0x00ff08)
+				.setAuthor(song.username, song.avatar)
 				.setDescription(stripIndents
 					`${queue.loop ? '**Loop enabled**\n' : ''}**>>** [${song.name}](${song.url})
         			Length: ${song.lengthString}`)
 				.setImage(song.thumbnail)
 				.setFooter('is now being played.', this.client.user.displayAvatarURL)
-				.setTimestamp());
+				.setTimestamp()
+		}) as Message;
 
 		let streamErrored: boolean = false;
 		const startTime: Date = new Date();
 
-		const stream: Stream = ytdl(song.url, { filter: 'audioonly' })
-
+		const stream: Stream = yt(song.url, { filter: 'audioonly' })
 			.on('error', async (err: Error) => {
 				streamErrored = true;
 				logger.log('ytdl', guildID, err);
-				await this.statusMessage.edit('❌ An error occured while playing the youtube stream.');
-				this.statusMessage = null;
+				await queue.statusMessage.edit('❌ An error occured while playing the YouTube stream.', { embed: null });
+				queue.statusMessage = null;
 				queue.songs.shift();
-				this.play(guildID, queue.songs[0]);
+				this._play(guildID);
 			})
 
 			.once('end', () => {
@@ -421,8 +388,8 @@ export default class PlayMusicCommand extends Command {
 
 					.on('error', async (err: Error) => {
 						logger.log('dispatcher', guildID, err);
-						await this.statusMessage.edit(`❌ An internal error occured while playing.`);
-						this.statusMessage = null;
+						await queue.statusMessage.edit(`❌ An internal error occured while playing.`);
+						queue.statusMessage = null;
 					})
 
 					.on('start', () => {
@@ -430,15 +397,20 @@ export default class PlayMusicCommand extends Command {
 					})
 
 					.on('end', (reason: string) => {
-						(dispatcher.stream as any).destroy();
 						logger.log('musicInfo', guildID, `Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${song.lengthString} ${reason ? `Reason: ${reason}` : ''}`);
+						(dispatcher.stream as any).destroy();
+
 						if (streamErrored) return;
+
 						const oldSong: song = queue.songs.shift();
 						if (queue.loop) queue.songs.push(oldSong);
-						unlink(`./tempmusicfile_${guildID}`, (e: Error) => e && winston.error(guildID, e));
-						this.play(guildID, queue.songs[0], reason === 'stop');
+
+						const stop: boolean = reason === 'stop';
+						if (stop || !queue.songs[0]) this.client.setTimeout(() => (unlink(`./tempmusicfile_${guildID}`, (e: Error) => e && error(guildID, e))), 500);
+						this._play(guildID, stop);
 					});
 
+				(queue.connection.player.opusEncoder as any).setPLP(0.01);
 				dispatcher.setVolumeLogarithmic(queue.volume / 5);
 				song.dispatcher = dispatcher;
 				song.playing = true;

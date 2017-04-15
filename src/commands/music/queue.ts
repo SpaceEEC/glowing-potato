@@ -36,32 +36,40 @@ export default class QueueCommand extends Command {
 		const queue: queue = this.queue.get(msg.guild.id);
 		if (!queue) return msg.say('There is no queue, why not add some songs yourself?').then((mes: Message) => mes.delete(5000));
 
-		const pages: { page: number, items: {}[], maxPage: number } = util.paginate(queue.songs, args.page, 11);
-		const currentSong: song = queue.songs[0];
-		const currentTime: number = currentSong.dispatcher ? currentSong.dispatcher.time / 1000 : 0;
+		if (!queue.songs[1]) return this.client.registry.resolveCommand('music:np').run(msg, {}, false);
+
+		const pages: { page: number, items: song[], maxPage: number } = util.paginate(queue.songs, args.page, 11);
 
 		let i: number = 0 + (args.page - 1) * 11;
 		let page: string | string[] = pages.items.map((song: song) => `\`${i++}.\`[${song.name}](${song.url})`);
 
 		const embed: RichEmbed = new RichEmbed().setColor(0x0800ff)
-			.setTitle(`Queued up Songs: ${queue.songs.length} | Queue length: ${Song.timeString(queue.songs.reduce((a: number, b: song) => a + b.length, 0))} (Blame YT)`)
+			.setTitle(`Queued up Songs: ${queue.songs.length} | Queue length: ${Song.timeString(queue.songs.reduce((a: number, b: song) => a + b.length, 0))}`)
 			.setFooter(`Page ${args.page} of ${pages.maxPage}.`);
 
 		if (args.page === 1) {
-			page.splice(0, 1, stripIndents`${queue.loop ? '**Queue is enabled!**\n' : ''}${currentSong.playing ? '**Currently playing:**' : '**Currently paused:**'} ${Song.timeString(currentTime)}/${currentSong.lengthString}
-      [${currentSong.name}](${currentSong.url})${page.length !== 1 ? stripIndents`\u200b\n
+			const currentSong: song = queue.songs[0];
+			const currentTime: number = currentSong.dispatcher ? currentSong.dispatcher.time / 1000 : 0;
 
-      **Queue:**` : ''}`);
+			// ugly string builder start
+			let pageone: string = '';
+			if (queue.loop) pageone += '**Queue is enabled**\n';
+			if (currentSong.playing) pageone += '**Currently playing:**\n';
+			else pageone += '**Currently paused:**\n';
+			pageone += `[${currentSong.name}](${currentSong.url})\n`
+				+ `**Time:** ${currentSong.timeLeft(currentTime)} (${Song.timeString(currentTime)}/${currentSong.lengthString})`;
+			if (page.length !== 1) pageone += `\u200b\n\n**Queue:**`;
+			// ugly string builder end
+
+			page.splice(0, 1, pageone);
 			embed.setThumbnail(currentSong.thumbnail);
-		} else {
-			page[0] = `${queue.loop ? '**Queue is enabled!**\n' : ''}${page[0]}`;
+		} else if (queue.loop) {
+			page[0] = `**Loop is enabled!**\n${page[0]}`;
 		}
+		if (pages.maxPage > 1) page.push(`\n\nUse ${msg.anyUsage('queue <page>')} to display a specific page`);
+
 		page = page.join('\n');
-
-		return msg.embed(embed.setDescription(stripIndents`
-		${page}
-
-    	Use ${msg.usage()} to display a specific page`)
+		return msg.embed(embed.setDescription(page)
 		).then((mes: Message) => mes.delete(30000));
 	}
 

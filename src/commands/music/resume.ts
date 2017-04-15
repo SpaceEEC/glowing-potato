@@ -35,11 +35,11 @@ export default class ResumeMusicCommand extends Command {
 				.then((mes: Message) => mes.delete(5000));
 		}
 		if (!queue.songs[0].dispatcher) {
-			return msg.say('Resuming a not even yet started song, what a nice idea!')
+			return msg.say('That song has no started yet, it will do that automatically whenever it\'s ready.')
 				.then((mes: Message) => mes.delete(5000));
 		}
 		if (queue.songs[0].playing) {
-			return msg.say('Trying to resume a currently playing song? You are not the smartes one.')
+			return msg.say('Trying to resume a currently playing song? You are not the smartest one.')
 				.then((mes: Message) => mes.delete(5000));
 		}
 
