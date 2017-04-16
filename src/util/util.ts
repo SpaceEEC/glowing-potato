@@ -53,6 +53,7 @@ export default class Util {
 		else if (messages.length === 1) await messages[0].delete().catch(() => null);
 
 		if (exception && result.cancelled && result.cancelled !== 'promptLimit') throw new FriendlyError('cancelled command.');
+		else if (result.cancelled) return null;
 		return (result.values as { key: T }).key;
 	}
 }
