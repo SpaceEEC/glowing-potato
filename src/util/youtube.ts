@@ -224,7 +224,7 @@ export class Youtube {
 			a = [a[0], 0, 0];
 		}
 
-		// a reverse for of loop, but with an incrementing secondary index
+		// a reverse for in loop, but with an incrementing secondary index
 		let duration: number = 0;
 		let i2: number = 0;
 		for (let i: number = a.length; i >= 1; ++i2) {
