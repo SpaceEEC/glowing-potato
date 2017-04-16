@@ -1,11 +1,13 @@
 import { stripIndents } from 'common-tags';
-import { GuildMember, Message, Permissions, RichEmbed, Role, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
+import { Message, Permissions, RichEmbed, Role, StreamDispatcher, TextChannel, VoiceChannel } from 'discord.js';
 import { ArgumentInfo, Command, CommandMessage, CommandoClient, GuildExtension } from 'discord.js-commando';
 import { createWriteStream, unlink } from 'fs';
 import * as moment from 'moment';
 import { Stream } from 'stream';
 import { addColors, ConsoleTransportOptions, error, Logger, LoggerInstance, silly, transports } from 'winston';
 import { ytdl } from 'ytdl-core';
+
+import Queue from '../../structures/Queue';
 import Song from '../../structures/Song';
 import Util from '../../util/util';
 import { video, Youtube } from '../../util/youtube';
@@ -38,21 +40,8 @@ addColors({
 	ytdl: 'red',
 });
 
-export type queue = {
-	textChannel: TextChannel;
-	voiceChannel: VoiceChannel;
-	connection: VoiceConnection;
-	songs: song[];
-	volume: number;
-	loop: boolean;
-	statusMessage: Message;
-	emptyPlaylistTimeout: NodeJS.Timer;
-};
-
-export type song = Song;
-
 export default class PlayMusicCommand extends Command {
-	public queue: Map<string, queue>;
+	public queue: Map<string, Queue>;
 	private _util: Util;
 
 	constructor(client: CommandoClient) {
@@ -88,7 +77,7 @@ export default class PlayMusicCommand extends Command {
 		});
 
 		// hello crawl (or other curious people)
-		this.queue = new Map<string, queue>();
+		this.queue = new Map<string, Queue>();
 		this._util = new Util(client);
 	}
 
@@ -109,7 +98,7 @@ export default class PlayMusicCommand extends Command {
 			args.input = args.input.split(' ').slice(1).join(' ');
 		}
 		args.input = args.input.replace(/<(.+)>/g, '$1');
-		const queue: queue = this.queue.get(msg.guild.id);
+		const queue: Queue = this.queue.get(msg.guild.id);
 		let voiceChannel: VoiceChannel;
 
 		if (!queue) {
@@ -128,7 +117,7 @@ export default class PlayMusicCommand extends Command {
 				return msg.say('Your party sure looks nice, I\'d love to join, but I am unfortunately not allowed to speak there, so forget that.')
 					.then((mes: Message) => mes.delete(5000));
 			}
-		} else if (!queue.voiceChannel.members.has(msg.author.id)) {
+		} else if (!queue.vcMembers.has(msg.author.id)) {
 			return msg.say('The party over here is good, you better join us!')
 				.then((mes: Message) => mes.delete(5000));
 		}
@@ -171,19 +160,12 @@ export default class PlayMusicCommand extends Command {
 	 * @returns {Promise<void>}
 	 * @private
 	 */
-	private async _handleInput(video: video | video[], queue: queue, msg: CommandMessage, voiceChannel: VoiceChannel, fetchMessage: Message): Promise<Message> {
-		if (!queue) {
-			queue = {
-				textChannel: msg.channel as TextChannel,
-				voiceChannel,
-				connection: null,
-				songs: [],
-				volume: this.client.provider.get(msg.guild, 'volume', 2),
-				loop: false,
-				statusMessage: null,
-				emptyPlaylistTimeout: null,
-			};
-			this.queue.set(msg.guild.id, queue);
+	private async _handleInput(video: video | video[], queue: Queue, msg: CommandMessage, voiceChannel: VoiceChannel, fetchMessage: Message): Promise<Message> {
+		if (!queue || !queue.length) {
+			if (!queue) {
+				queue = new Queue(msg.channel as TextChannel, voiceChannel);
+				this.queue.set(msg.guild.id, queue);
+			}
 
 			const result: string | RichEmbed = video instanceof Array ? this._addPlaylist(msg, video) : this._add(msg, video);
 			if (typeof result === 'string') {
@@ -193,7 +175,7 @@ export default class PlayMusicCommand extends Command {
 			}
 
 			try {
-				queue.connection = await queue.voiceChannel.join();
+				await queue.join();
 				await this._play(msg.guild.id);
 				return fetchMessage.delete().catch(() => null);
 			} catch (err) {
@@ -221,20 +203,20 @@ export default class PlayMusicCommand extends Command {
 	 * @private
 	 */
 	private _add(msg: CommandMessage, video: video): RichEmbed | string {
-		const queue: queue = this.queue.get(msg.guild.id);
+		const queue: Queue = this.queue.get(msg.guild.id);
 
 		if (video.durationSeconds === 0) {
 			return '❌ Live streams are not supported.';
 		}
-		if (queue.songs.some((song: song) => song.id === video.id)) {
+		if (queue.isAlreadyQueued(video.id)) {
 			return '⚠ That song is already in the queue.';
 		}
 		if (video.durationSeconds > 60 * 60) {
 			return 'ℹ That song is too long, max length is one hour.';
 		}
 
-		const song: song = new Song(video, msg.member);
-		queue.songs.push(song);
+		const song: Song = new Song(video, msg.member);
+		queue.push(song);
 		return new RichEmbed()
 			.setAuthor(song.username, song.avatar)
 			.setTimestamp()
@@ -254,34 +236,34 @@ export default class PlayMusicCommand extends Command {
 	 * @private
 	 */
 	private _addPlaylist(msg: CommandMessage, videos: video[]): RichEmbed | string {
-		const queue: queue = this.queue.get(msg.guild.id);
+		const queue: Queue = this.queue.get(msg.guild.id);
 		let ignored: number = 0;
-		let lastsong: song;
+		let lastsong: Song;
 
 		for (const video of videos) {
 			if (video.durationSeconds === 0
 				|| video.durationSeconds > 60 * 60
-				|| queue.songs.some((song: song) => song.id === video.id)
+				|| queue.isAlreadyQueued(video.id)
 			) {
 				ignored++;
 				continue;
 			}
 
 			lastsong = new Song(video, msg.member);
-			queue.songs.push(lastsong);
+			queue.push(lastsong);
 		}
 
 		if (!lastsong) return 'No song qualifies for adding. Maybe all of them are already queued or too long.';
 		return new RichEmbed()
 			.setAuthor(lastsong.username, lastsong.avatar)
 			.setTimestamp()
-			.setImage(queue.songs[queue.songs.length - 1].thumbnail)
+			.setImage(lastsong.thumbnail)
 			.setColor(0xFFFF00)
 			.setFooter('has been added.', this.client.user.displayAvatarURL)
 			.setDescription(stripIndents
-				`${queue.loop ? '**Loop is enabled**\n' : ''}Added \`${videos.length - ignored}\`/\`${videos.length}\` Songs.
+				`${queue.loop ? '**Loop is enabled**\n' : ''}Added \`${videos.length - ignored}\`/\`${videos.length}\` of your requested songs.
 
-				Full queue length: ${Song.timeString(queue.songs.reduce((a: number, b: song) => a + b.length, 0))}
+				Full queue length: ${Song.timeString(queue.totalLength)}
       			Use ${msg.anyUsage('queue', (msg.guild as GuildExtension).commandPrefix, this.client.user)} to see what has been added.`);
 	}
 
@@ -337,53 +319,43 @@ export default class PlayMusicCommand extends Command {
 	 * @private
 	 */
 	private async _play(guildID: string, stopped: boolean = false): Promise<void> {
-		const queue: queue = this.queue.get(guildID);
-		const song: song = queue.songs[0];
+		const queue: Queue = this.queue.get(guildID);
+		const { currentSong, loop } = queue;
 
 		if (queue.statusMessage) queue.statusMessage.delete().catch(() => null);
-		if (queue.emptyPlaylistTimeout) this.client.clearTimeout(queue.emptyPlaylistTimeout);
+		queue.clearTimeout();
 
-		if (!song) {
-			this.queue.delete(guildID);
-			if (!stopped) {
-				queue.statusMessage = await queue.textChannel.send('The queue is empty, I\'ll wait another 30 seconds for new songs before leaving.') as Message;
-				if (queue.emptyPlaylistTimeout) this.client.clearTimeout(queue.emptyPlaylistTimeout);
-				queue.emptyPlaylistTimeout = this.client.setTimeout(() => {
-					queue.statusMessage.delete().catch(() => null);
-					queue.voiceChannel.leave();
-				}, 30000);
-				return;
-			}
-			queue.voiceChannel.leave();
+		if (!currentSong) {
+			queue.emptyQueue(stopped, this.queue);
 			return;
 		}
 
-		queue.statusMessage = await queue.textChannel.send({
+		queue.statusMessage = await queue.sendText({
 			embed: new RichEmbed().setColor(0x00ff08)
-				.setAuthor(song.username, song.avatar)
+				.setAuthor(currentSong.username, currentSong.avatar)
 				.setDescription(stripIndents
-					`${queue.loop ? '**Loop enabled**\n' : ''}**>>** [${song.name}](${song.url})
-        			Length: ${song.lengthString}`)
-				.setImage(song.thumbnail)
+					`${loop ? '**Loop enabled**\n' : ''}**>>** [${currentSong.name}](${currentSong.url})
+        			Length: ${currentSong.lengthString}`)
+				.setImage(currentSong.thumbnail)
 				.setFooter('is now being played.', this.client.user.displayAvatarURL)
 				.setTimestamp()
 		}) as Message;
 
 		let streamErrored: boolean = false;
-		const startTime: Date = new Date();
+		const startTime: number = Date.now();
 
-		const stream: Stream = yt(song.url, { filter: 'audioonly' })
+		const stream: Stream = yt(currentSong.url, { filter: 'audioonly' })
 			.on('error', async (err: Error) => {
 				streamErrored = true;
 				logger.log('ytdl', guildID, err);
 				await queue.statusMessage.edit('❌ An error occured while playing the YouTube stream.', { embed: null });
 				queue.statusMessage = null;
-				queue.songs.shift();
+				queue.shift(true);
 				this._play(guildID);
 			})
 
 			.once('end', () => {
-				logger.log('musicInfo', guildID, 'Piping to file finished after', (Song.timeString(moment().diff(startTime, 'seconds'))));
+				logger.log('musicInfo', guildID, 'Piping to file finished after', (Song.timeString((Date.now() - startTime) / 1000)));
 				const dispatcher: StreamDispatcher = queue.connection.playFile(`./tempmusicfile_${guildID}`, { passes: 2 })
 
 					.on('error', async (err: Error) => {
@@ -397,26 +369,25 @@ export default class PlayMusicCommand extends Command {
 					})
 
 					.on('end', (reason: string) => {
-						logger.log('musicInfo', guildID, `Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${song.lengthString} ${reason ? `Reason: ${reason}` : ''}`);
+						logger.log('musicInfo', guildID, `Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${currentSong.lengthString} ${reason ? `Reason: ${reason}` : ''}`);
 						(dispatcher.stream as any).destroy();
 
 						if (streamErrored) return;
 
-						const oldSong: song = queue.songs.shift();
-						if (queue.loop) queue.songs.push(oldSong);
+						queue.shift();
 
 						const stop: boolean = reason === 'stop';
-						if (stop || !queue.songs[0]) this.client.setTimeout(() => (unlink(`./tempmusicfile_${guildID}`, (e: Error) => e && error(guildID, e))), 500);
+						if (stop || !queue.currentSong) this.client.setTimeout(() => (unlink(`./tempmusicfile_${guildID}`, (e: Error) => e && error(guildID, e))), 500);
 						this._play(guildID, stop);
 					});
 
 				(queue.connection.player.opusEncoder as any).setPLP(0.01);
 				dispatcher.setVolumeLogarithmic(queue.volume / 5);
-				song.dispatcher = dispatcher;
-				song.playing = true;
+				currentSong.dispatcher = dispatcher;
+				currentSong.playing = true;
 			});
 
 		stream.pipe(createWriteStream(`./tempmusicfile_${guildID}`));
-		logger.log('musicInfo', guildID, 'Piping to file started for: ', song.name);
+		logger.log('musicInfo', guildID, 'Piping to file started for: ', currentSong.name);
 	}
 };

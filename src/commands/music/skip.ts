@@ -1,9 +1,10 @@
 import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
-import { queue, song } from './play';
+
+import Queue from '../../structures/Queue';
 
 export default class SkipMusicCommand extends Command {
-	private _queue: Map<string, queue>;
+	private _queue: Map<string, Queue>;
 
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -28,26 +29,26 @@ export default class SkipMusicCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
-		const queue: queue = this.queue.get(msg.guild.id);
+		const queue: Queue = this.queue.get(msg.guild.id);
 
 		if (!queue) {
 			return msg.say('The queue is empty. 👀')
 				.then((mes: Message) => mes.delete(5000));
 		}
-		if (!queue.voiceChannel.members.has(msg.author.id)) {
-			return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so no skipping for you.`)
+		if (!queue.vcMembers.has(msg.author.id)) {
+			return msg.say(`I am playing over here in ${queue.vcName}, you are not here, so no skipping for you.`)
 				.then((mes: Message) => mes.delete(5000));
 		}
 
-		const song: song = queue.songs[0];
-		song.dispatcher.end('skip');
+		const { currentSong } = queue;
+		queue.skip();
 
-		return msg.say(`What a lame decision, you forced me to skipped this wonderful song here: \`${song.name}\`!`)
+		return msg.say(`What a lame decision, you forced me to skipped this wonderful song here: \`${currentSong.name}\`!`)
 			.then((mes: Message) => mes.delete(5000));
 	}
 
-	get queue(): Map<string, queue> {
-		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play')as any).queue;
+	get queue(): Map<string, Queue> {
+		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
 	}

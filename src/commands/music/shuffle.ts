@@ -1,9 +1,10 @@
 import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
-import { queue, song } from './play';
+
+import Queue from '../../structures/Queue';
 
 export default class ShuffleQueueCommand extends Command {
-	private _queue: Map<string, queue>;
+	private _queue: Map<string, Queue>;
 
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -27,30 +28,20 @@ export default class ShuffleQueueCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
-		const queue: queue = this.queue.get(msg.guild.id);
+		const queue: Queue = this.queue.get(msg.guild.id);
 
 		if (!queue) {
 			return msg.say('There is nothing to shuffle in this guild. Change that!')
 				.then((mes: Message) => mes.delete(5000));
 		}
-		const array: song[] = queue.songs.slice(1);
 
-		let currentIndex: number = array.length;
-		while (--currentIndex) {
-			const randomIndex: number = Math.floor(Math.random() * (currentIndex + 1));
-			const temporaryValue: song = array[currentIndex];
-			array[currentIndex] = array[randomIndex];
-			array[randomIndex] = temporaryValue;
-		}
-
-		array.unshift(queue.songs[0]);
-		queue.songs = array;
+		queue.shuffle();
 
 		return msg.say('The queue has been shuffled.')
 			.then((mes: Message) => mes.delete(5000));
 	}
 
-	get queue(): Map<string, queue> {
+	get queue(): Map<string, Queue> {
 		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;

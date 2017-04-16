@@ -1,11 +1,12 @@
 import { Message, Role } from 'discord.js';
 import { ArgumentInfo, Command, CommandMessage, CommandoClient } from 'discord.js-commando';
+
+import Queue from '../../structures/Queue';
 import Song from '../../structures/Song';
 import Util from '../../util/util';
-import { queue, song } from './play';
 
 export default class RemoveMusicCommand extends Command {
-	private _queue: Map<string, queue>;
+	private _queue: Map<string, Queue>;
 	private _util: Util;
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -41,12 +42,12 @@ export default class RemoveMusicCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage, args: { index: number }): Promise<Message | Message[]> {
-		const queue: queue = this.queue.get(msg.guild.id);
+		const queue: Queue = this.queue.get(msg.guild.id);
 		if (!queue) {
 			return msg.say('There is no queue, what do you hope to remove?')
 				.then((mes: Message) => mes.delete(5000));
 		}
-		const song: song = queue.songs[args.index];
+		const song: Song = queue.Song(args.index);
 		if (!song) {
 			return msg.say('This entry wasn\'t found!')
 				.then((mes: Message) => mes.delete(5000));
@@ -64,12 +65,12 @@ export default class RemoveMusicCommand extends Command {
 				.then((mes: Message) => mes.delete(5000));
 		}
 
-		queue.songs.splice(queue.songs.indexOf(song), 1);
+		queue.skip(args.index);
 		return msg.say(`What a shame, you forced me to remove this wonderful song from the queue:\`${song.name}\``)
 			.then((mes: Message) => mes.delete(5000));
 	}
 
-	get queue(): Map<string, queue> {
+	get queue(): Map<string, Queue> {
 		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
