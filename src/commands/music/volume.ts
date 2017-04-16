@@ -1,9 +1,10 @@
 import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
-import { queue, song } from './play';
+
+import Queue from '../../structures/Queue';
 
 export default class VolumeCommand extends Command {
-	private _queue: Map<string, queue>;
+	private _queue: Map<string, Queue>;
 
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -44,7 +45,7 @@ export default class VolumeCommand extends Command {
 
 	public async run(msg: CommandMessage, args: { volume: string }): Promise<Message | Message[]> {
 		const volume: number = parseInt(args.volume);
-		const queue: queue = this.queue.get(msg.guild.id);
+		const queue: Queue = this.queue.get(msg.guild.id);
 
 		if (!queue) {
 			return msg.say('The queue is empty, no need to change the volume.')
@@ -54,19 +55,17 @@ export default class VolumeCommand extends Command {
 			return msg.say(`The volume is \`${queue.volume}\`.`)
 				.then((mes: Message) => mes.delete(30000));
 		}
-		if (!queue.voiceChannel.members.has(msg.author.id)) {
-			return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so the current volume will stay.`)
+		if (!queue.vcMembers.has(msg.author.id)) {
+			return msg.say(`I am playing over here in ${queue.vcName}, you are not here, so the current volume will stay.`)
 				.then((mes: Message) => mes.delete(5000));
 		}
 
 		queue.volume = volume;
-		this.client.provider.set(msg.guild, 'volume', volume);
-		if (queue.songs[0].dispatcher) queue.songs[0].dispatcher.setVolumeLogarithmic(volume / 5);
 		return msg.say(`Volume is now \`${volume}\`.`)
 			.then((mes: Message) => mes.delete(5000));
 	}
 
-	get queue(): Map<string, queue> {
+	get queue(): Map<string, Queue> {
 		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;

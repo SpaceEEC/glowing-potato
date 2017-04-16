@@ -1,11 +1,12 @@
 import { stripIndents } from 'common-tags';
 import { Message, RichEmbed } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
+
+import Queue from '../../structures/Queue';
 import Song from '../../structures/Song';
-import { queue, song } from './play';
 
 export default class NowPlayingCommand extends Command {
-	private _queue: Map<string, queue>;
+	private _queue: Map<string, Queue>;
 
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -20,26 +21,25 @@ export default class NowPlayingCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
-		const queue: queue = this.queue.get(msg.guild.id);
+		const queue: Queue = this.queue.get(msg.guild.id);
 		if (!queue) {
 			return msg.say('There is nothing going on in this guild. Add some songs!')
 				.then((mes: Message) => mes.delete(5000));
 		}
 
-		const song: song = queue.songs[0];
-		const currentTime: number = song.dispatcher ? song.dispatcher.time / 1000 : 0;
+		const { currentSong, currentTime } = queue;
 
-		return msg.embed(new RichEmbed().setColor(0x0800ff).setImage(song.thumbnail)
-			.setAuthor(song.username, song.avatar)
+		return msg.embed(new RichEmbed().setColor(0x0800ff).setImage(currentSong.thumbnail)
+			.setAuthor(currentSong.username, currentSong.avatar)
 			.setDescription(stripIndents
-				`${queue.loop ? '**Queue is enabled!**\n' : ''}[${song.name}](${song.url})
-    			Time: \`${song.timeLeft(currentTime)}\` (\`${Song.timeString(currentTime)}\`/\`${song.lengthString}\`)
+				`${queue.loop ? '**Queue is enabled!**\n' : ''}[${currentSong.name}](${currentSong.url})
+    			Time: \`${currentSong.timeLeft(currentTime)}\` (\`${Song.timeString(currentTime)}\`/\`${currentSong.lengthString}\`)
 
-    			${song.playing ? '' : 'Currently paused.'}`))
+    			${currentSong.playing ? '' : 'Currently paused.'}`))
 			.then((mes: Message) => mes.delete(30000));
 	}
 
-	get queue(): Map<string, queue> {
+	get queue(): Map<string, Queue> {
 		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;

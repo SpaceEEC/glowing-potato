@@ -1,9 +1,10 @@
 import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
-import { queue } from './play';
+
+import Queue from '../../structures/Queue';
 
 export default class ShuffleQueueCommand extends Command {
-	private _queue: Map<string, queue>;
+	private _queue: Map<string, Queue>;
 
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -38,9 +39,9 @@ export default class ShuffleQueueCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage, args: { state: string | boolean }): Promise<Message | Message[]> {
-		const queue: queue = this.queue.get(msg.guild.id);
+		const queue: Queue = this.queue.get(msg.guild.id);
 
-		if (!queue) {
+		if (!this.queue.has(msg.guild.id)) {
 			return msg.say('Trying to enable the loop while nothing is being played?')
 				.then((mes: Message) => mes.delete(5000));
 		}
@@ -71,7 +72,7 @@ export default class ShuffleQueueCommand extends Command {
 		}
 	}
 
-	get queue(): Map<string, queue> {
+	get queue(): Map<string, Queue> {
 		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;

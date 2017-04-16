@@ -1,9 +1,10 @@
 import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
-import { queue, song } from './play';
+
+import Queue from '../../structures/Queue';
 
 export default class StopMusicCommand extends Command {
-	private _queue: Map<string, queue>;
+	private _queue: Map<string, Queue>;
 
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -25,27 +26,24 @@ export default class StopMusicCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
-		const queue: queue = this.queue.get(msg.guild.id);
+		const queue: Queue = this.queue.get(msg.guild.id);
 
 		if (!queue) {
 			return msg.say('What do you expect to stop? 👀')
 				.then((mes: Message) => mes.delete(5000));
 		}
-		if (!queue.voiceChannel.members.has(msg.author.id)) {
-			return msg.say(`I am playing over here in ${queue.voiceChannel.name}, you are not here, so I will continue playing.`)
+		if (!queue.vcMembers.has(msg.author.id)) {
+			return msg.say(`I am playing over here in ${queue.vcName}, you are not here, so I will continue playing.`)
 				.then((mes: Message) => mes.delete(5000));
 		}
 
-		const song: song = queue.songs[0];
-		queue.songs = [];
-
-		if (song.dispatcher) song.dispatcher.end('stop');
+		queue.stop();
 
 		return msg.say('Party is over! 🚪 👈')
 			.then((mes: Message) => mes.delete(5000));
 	}
 
-	get queue(): Map<string, queue> {
+	get queue(): Map<string, Queue> {
 		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
