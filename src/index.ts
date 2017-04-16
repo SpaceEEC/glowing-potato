@@ -90,7 +90,6 @@ client
 	.on('error', winston.error)
 	.on('warn', winston.warn)
 	.once('ready', () => {
-		(client as any).dmManager = new DMManager(client, '260850209699921931');
 		client.user.setGame(client.provider.get('global', 'game', null));
 	})
 	.on('ready', () => {
@@ -101,9 +100,10 @@ client
 		if (event.code === 1000) process.exit(200);
 	})
 	.on('reconnecting', () => winston.warn('Reconnecting...'))
-	.on('commandError', (cmd: Command, err: Error) => {
+	.on('commandError', (cmd: Command, err: any) => {
 		if (err instanceof FriendlyError) return;
-		winston.error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err);
+		if (err.url) winston.error(`Uncaught Promise Error:\n$ ${err.status} ${err.statusText}\n${err.text}\n${err.stack || err}`);
+		else winston.error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err);
 	})
 	.on('commandBlocked', (msg: CommandMessage, reason: string) => {
 		winston.info(oneLine`
