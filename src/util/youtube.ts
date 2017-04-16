@@ -30,9 +30,6 @@ type videoItem = {
 type playlistResponse = {
 	items: playlistVideo[];
 	nextPageToken: string;
-	pageInfo: {
-		totalResults: string;
-	};
 };
 
 type playlistVideo = {
@@ -158,7 +155,7 @@ export class Youtube {
 			+ `&maxResults=${requestamount}`
 			+ `&playlistId=${id}`
 			+ `${pagetoken ? `&pageToken=${pagetoken}` : ''}`
-			+ `&fields=items%2Fsnippet%2FresourceId%2FvideoId%2CnextPageToken%2CpageInfo%2FtotalResults`
+			+ `&fields=items%2Fsnippet%2FresourceId%2FvideoId`
 			+ `&key=${googletoken}`);
 		silly('fetchPlaylist', status, statusText, ok);
 
