@@ -1,9 +1,10 @@
 import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
-import { queue, song } from './play';
+
+import Queue from '../../structures/Queue';
 
 export default class ResumeMusicCommand extends Command {
-	private _queue: Map<string, queue>;
+	private _queue: Map<string, Queue>;
 
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -24,34 +25,33 @@ export default class ResumeMusicCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
-		const queue: queue = this.queue.get(msg.guild.id);
+		const queue: Queue = this.queue.get(msg.guild.id);
 
 		if (!queue) {
 			return msg.say('Sorry to disappoint you, but you can\'t resume an empty queue.')
 				.then((mes: Message) => mes.delete(5000));
 		}
-		if (!queue.voiceChannel.members.has(msg.author.id)) {
-			return msg.say(`I am over here in ${queue.voiceChannel.name}, either you come to me, or you summon me to you.`)
+		if (!queue.vcMembers.has(msg.author.id)) {
+			return msg.say(`I am over here in ${queue.vcName}, either you come to me, or you summon me to you.`)
 				.then((mes: Message) => mes.delete(5000));
 		}
-		if (!queue.songs[0].dispatcher) {
+		if (!queue.currentSong.dispatcher) {
 			return msg.say('That song has no started yet, it will do that automatically whenever it\'s ready.')
 				.then((mes: Message) => mes.delete(5000));
 		}
-		if (queue.songs[0].playing) {
+		if (queue.playing) {
 			return msg.say('Trying to resume a currently playing song? You are not the smartest one.')
 				.then((mes: Message) => mes.delete(5000));
 		}
 
-		queue.songs[0].dispatcher.resume();
-		queue.songs[0].playing = true;
+		queue.playing = true;
 
 		return msg.say('Revived the party!')
 			.then((mes: Message) => mes.delete(5000));
 	}
 
 	get queue(): Map<string, queue> {
-		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play')as any).queue;
+		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
 	}
