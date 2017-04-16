@@ -169,7 +169,7 @@ export default class Queue {
 	 * @returns {void}
 	 */
 	public stop(): void {
-		this._songs = [this._songs[this._songs.length - 1]];
+		this._songs = this._songs.slice(0, 1);
 		if (this._songs[0].dispatcher) this._songs[0].dispatcher.end('stop');
 	}
 
