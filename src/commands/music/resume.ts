@@ -50,7 +50,7 @@ export default class ResumeMusicCommand extends Command {
 			.then((mes: Message) => mes.delete(5000));
 	}
 
-	get queue(): Map<string, queue> {
+	get queue(): Map<string, Queue> {
 		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
