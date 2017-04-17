@@ -1,6 +1,6 @@
 import { oneLine, stripIndents } from 'common-tags';
 import { Collection, Message, RichEmbed } from 'discord.js';
-import { Command, CommandGroup, CommandMessage, CommandoClient, util } from 'discord.js-commando';
+import { Command, CommandGroup, CommandMessage, CommandoClient, GuildExtension, util } from 'discord.js-commando';
 
 type RichEmbedField = { name: string; value: string; inline?: boolean; };
 
@@ -33,7 +33,7 @@ export default class HelpCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage, args: { input: string }): Promise<Message | Message[]> {
-		const prefix: string = msg.guild ? msg.guild.commandPrefix : null;
+		const prefix: string = msg.guild ? (msg.guild as GuildExtension).commandPrefix : null;
 
 		if (!args.input || args.input === 'all') return this.displayGroups(msg, args.input.endsWith('all'), prefix);
 		return this.displayGroup(msg, args.input, prefix) || this.displayCommand(msg, args.input, prefix) || msg.say(`Unable to identify command. Use ${msg.usage(null, prefix, prefix ? this.client.user : null)} to view the list of all commands.`);
