@@ -10,6 +10,8 @@ export default class Song {
 	 * Converts a number of seconds to a human readable string.
 	 * @param {number} seconds The amount of total seconds.
 	 * @param {boolean} [forceHours=false] Whether to force the display of hours.
+	 * @returns {string} The final time string.
+	 * @static
 	 */
 	public static timeString(seconds: number, forceHours = false): string {
 		const hours: number = Math.floor(seconds / 3600);
