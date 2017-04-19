@@ -124,7 +124,7 @@ export class Youtube {
 			+ '&type=video'
 			+ '&fields=items%2Fid'
 			+ `&key=${googletoken}`
-		);
+		).catch((response: any) => response);
 		silly('searchVideos', status, statusText, ok);
 
 		if (!search.items[0]) return null;
@@ -156,7 +156,7 @@ export class Youtube {
 			+ `&playlistId=${id}`
 			+ `${pagetoken ? `&pageToken=${pagetoken}` : ''}`
 			+ `&fields=items%2Fsnippet%2FresourceId%2FvideoId`
-			+ `&key=${googletoken}`);
+			+ `&key=${googletoken}`).catch((response: any) => response);
 		silly('fetchPlaylist', status, statusText, ok);
 
 		if (!playlist.items) return arr.length ? arr : null;
@@ -186,7 +186,7 @@ export class Youtube {
 			+ `&id=${encodeURIComponent(ids)}`
 			+ '&fields=items(contentDetails%2Fduration%2Cid%2Csnippet%2Ftitle)'
 			+ `&key=${googletoken}`
-		);
+		).catch((response: any) => response);
 		silly('fetchVideos', status, statusText, ok);
 
 		const videos: video[] = [];
