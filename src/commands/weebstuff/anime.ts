@@ -11,7 +11,8 @@ type args = { search: string, cmd: string };
 type error = { error: { messages: {}[] } };
 
 export default class AnimeCommand extends Command {
-	private util: Util;
+	private _util: Util;
+
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'anime',
@@ -38,26 +39,26 @@ export default class AnimeCommand extends Command {
 				}
 			]
 		});
-		this.util = new Util(client);
+		this._util = new Util(client);
 	}
 
 	public async run(msg: CommandMessage, args: args): Promise<Message | Message[]> {
 		if (args.search.includes('?')) throw new FriendlyError('please don\'t use `?` in the search, it would break the request.');
-		args.cmd = Util.getUsedAlias(msg, { char: 'character' });
+		args.cmd = this._util.getUsedAlias(msg, { char: 'character' });
 		const aniSettings: aniSettings = await updateToken(this.client, msg, this.client.provider.get('global', 'aniSettings', { expires: 0 }));
-		const responses: animeData[] | mangaData[] | charData[] = await this.query(msg, aniSettings, args);
+		const responses: animeData[] | mangaData[] | charData[] = await this._query(msg, aniSettings, args);
 		if (responses[1]) {
-			responses[0] = await this.select(msg, responses, args);
+			responses[0] = await this._select(msg, responses, args);
 		}
 		if (!responses[0]) return msg.say('Aborting then.').then((message: Message) => message.delete(3000));
-		if (args.cmd === 'character') return this.sendCharacter(msg, (responses[0] as charData));
-		if (args.cmd === 'manga') return this.sendManga(msg, (responses[0] as mangaData));
-		if (args.cmd === 'anime') return this.sendAnime(msg, (responses[0] as animeData));
+		if (args.cmd === 'character') return this._sendCharacter(msg, (responses[0] as charData));
+		if (args.cmd === 'manga') return this._sendManga(msg, (responses[0] as mangaData));
+		if (args.cmd === 'anime') return this._sendAnime(msg, (responses[0] as animeData));
 		this.client.emit('error', `[anime.js] Unknown model type: ${args.cmd}`);
 		throw new Error('unknown type.');
 	}
 
-	private async query(msg: CommandMessage, aniSettings: aniSettings, args: args): Promise<animeData[] | mangaData[] | charData[]> {
+	private async _query(msg: CommandMessage, aniSettings: aniSettings, args: args): Promise<animeData[] | mangaData[] | charData[]> {
 		const { body }: { body: any } = await get(`https://anilist.co/api/${args.cmd}/search/${args.search}?access_token=${aniSettings.token}`);
 		if (body.error) {
 			if (body.error.messages[0] === 'No Results.') {
@@ -71,7 +72,7 @@ export default class AnimeCommand extends Command {
 		return body;
 	}
 
-	private mapResponses(response: animeData[] | mangaData[] | charData[], type: string): [number, string] {
+	private _mapResponses(response: animeData[] | mangaData[] | charData[], type: string): [number, string] {
 		let count: number = 1;
 		if (type === 'character') {
 			const mapped: string = (response as charData[]).map((r: charData) => `${count++}\t\t${r.name_first} ${r.name_last ? r.name_last : ''}`).join('\n');
@@ -82,8 +83,8 @@ export default class AnimeCommand extends Command {
 		}
 	}
 
-	private async select(msg: CommandMessage, response: mangaData[] | animeData[] | charData[], args: args, second: boolean = false): Promise<null | mangaData | animeData | charData> {
-		const [count, description]: [number, string] = this.mapResponses(response, args.cmd);
+	private async _select(msg: CommandMessage, response: mangaData[] | animeData[] | charData[], args: args, second: boolean = false): Promise<null | mangaData | animeData | charData> {
+		const [count, description]: [number, string] = this._mapResponses(response, args.cmd);
 		const message: Message = await msg.embed(new RichEmbed().setColor(msg.member.displayColor)
 			.setTitle(`There has been found more than one ${args.cmd}:`)
 			.setDescription(description)) as Message;
@@ -96,14 +97,14 @@ export default class AnimeCommand extends Command {
 			max: count
 		};
 
-		const userInput: number = await this.util.prompt<number>(msg, argument, false);
+		const userInput: number = await this._util.prompt<number>(msg, argument, false);
 		message.delete().catch(() => null);
 
 		if (!userInput) return null;
 		else return response[userInput - 1];
 	};
 
-	private sendCharacter(msg: CommandMessage, charInfo: charData): Promise<Message | Message[]> {
+	private _sendCharacter(msg: CommandMessage, charInfo: charData): Promise<Message | Message[]> {
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x0800ff)
 			.setThumbnail(charInfo.image_url_lge)
@@ -127,7 +128,7 @@ export default class AnimeCommand extends Command {
 		return msg.embed(embed);
 	}
 
-	private sendManga(msg: CommandMessage, mangaInfo: mangaData): Promise<Message | Message[]> {
+	private _sendManga(msg: CommandMessage, mangaInfo: mangaData): Promise<Message | Message[]> {
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x0800ff)
 			.setThumbnail(mangaInfo.image_url_lge)
@@ -165,7 +166,7 @@ export default class AnimeCommand extends Command {
 		return msg.embed(embed);
 	}
 
-	private sendAnime(msg: CommandMessage, animeInfo: animeData): Promise<Message | Message[]> {
+	private _sendAnime(msg: CommandMessage, animeInfo: animeData): Promise<Message | Message[]> {
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x0800ff)
 			.setThumbnail(animeInfo.image_url_lge)

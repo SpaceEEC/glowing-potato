@@ -12,6 +12,8 @@ type post = {
 };
 
 export default class PictureCommand extends Command {
+	private _util: Util;
+
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'picture',
@@ -32,6 +34,7 @@ export default class PictureCommand extends Command {
 				}
 			]
 		});
+		this._util = new Util(client);
 	}
 
 	public async run(msg: CommandMessage, args: { search: string, cmd: string }): Promise<Message | Message[]> {
@@ -42,17 +45,17 @@ export default class PictureCommand extends Command {
 				.addField('Allowed chars:', 'A-z 0-9 _ = () ! - : .', true));
 		}
 
-		args.cmd = Util.getUsedAlias(msg, { pic: 'picture' });
+		args.cmd = this._util.getUsedAlias(msg, { pic: 'picture' });
 
 		if (args.cmd === 'picture') {
 			if (args.search.split(' ')[2]) args.cmd = 'konachan';
 			else args.cmd = ['konachan', 'donmai'][Math.floor(Math.random() * 2)];
 		}
-		if (args.cmd === 'konachan') this.konachan(msg, args.search.split(' ').join('+'));
-		else this.donmai(msg, args.search.split(' ').join('+'));
+		if (args.cmd === 'konachan') this._konachan(msg, args.search.split(' ').join('+'));
+		else this._donmai(msg, args.search.split(' ').join('+'));
 	}
 
-	public async konachan(msg: CommandMessage, search: string): Promise<Message | Message[]> {
+	private async _konachan(msg: CommandMessage, search: string): Promise<Message | Message[]> {
 		const { body: posts }: { body: post[] } = await snekfetch.get(`http://konachan.com/post.json?tags=${`${search}+rating:s&limit=100`}`);
 		if (posts.length === 0) {
 			return msg.embed(new RichEmbed().setColor(0xFFFF00)
@@ -67,7 +70,7 @@ export default class PictureCommand extends Command {
 			.setDescription(`[Source](http://konachan.net/post/show/${post.id})`));
 	}
 
-	public async donmai(msg: CommandMessage, search: string): Promise<Message | Message[]> {
+	private async _donmai(msg: CommandMessage, search: string): Promise<Message | Message[]> {
 		const { body: posts }: { body: post[] } = await snekfetch.get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${search}`);
 
 		if (posts.length === 0) {
