@@ -1,6 +1,8 @@
 import { stripIndents } from 'common-tags';
-import { Collection, Guild, GuildChannel, Message, PermissionOverwrites, Role } from 'discord.js';
+import { Collection, Guild, GuildChannel, Message, PermissionOverwrites, Permissions, Role, TextChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
+import { error } from 'winston';
+
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class MutedRoleCommand extends Command {
@@ -38,6 +40,18 @@ export default class MutedRoleCommand extends Command {
 		});
 	}
 
+	public async newChannel(channel: GuildChannel): Promise<void> {
+		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: channel.guild.id } });
+		if (!config.mutedRole) return;
+		const mutedRole: Role = channel.guild.roles.get(config.mutedRole);
+		if (!mutedRole) {
+			config.setAndSave('mutedRole', null);
+			return;
+		}
+
+		channel.overwritePermissions(mutedRole, { SEND_MESSAGES: false }).catch(error);
+	}
+
 	public hasPermission(msg: CommandMessage): boolean {
 		const adminRoles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []);
 		return msg.member.roles.some((r: Role) => adminRoles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
@@ -47,15 +61,14 @@ export default class MutedRoleCommand extends Command {
 		const { id: guildID } = msg.guild;
 		args.action = args.action.toLowerCase();
 
-		let config: GuildConfig = (await GuildConfig.findOrCreate({ where: { guildID } }) as any)[0].dataValues;
+		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID } });
 
 		// there must be a better way
 		if (['create', 'update', 'remove', 'specify'].includes(args.action)) {
-			if (args.action === 'create') config = await this.create(msg, config);
-			else if (args.action === 'update') config = await this.update(msg, config);
-			else if (args.action === 'remove') config = await this.remove(msg, config);
-			else if (args.action === 'specify') config = await this.specify(msg, config);
-			if (config) await GuildConfig.upsert(config);
+			if (args.action === 'create') await this._create(msg, config);
+			else if (args.action === 'update') await this._update(msg, config);
+			else if (args.action === 'remove') await this._remove(msg, config);
+			else if (args.action === 'specify') await this._specify(msg, config);
 			return;
 		}
 
@@ -63,129 +76,136 @@ export default class MutedRoleCommand extends Command {
 			let mutedRole: string[] | string = args.action.match(/<@&(\d+)>/);
 			mutedRole = mutedRole instanceof Array ? mutedRole[0] : args.action;
 			if (msg.guild.roles.has(mutedRole)) {
-				config = await this.specify(msg, config, mutedRole);
-				if (config) await GuildConfig.upsert(config);
+				await this._specify(msg, config, mutedRole);
 				return;
 			}
 		}
 
-		const mutedRole: Role = msg.guild.roles.get(config.mutedRole);
+		const mutedRoleID: string = config.getDataValue('mutedRole');
+		const mutedRole: Role = msg.guild.roles.get(mutedRoleID);
 
-		if (config.mutedRole && !mutedRole) {
+		if (mutedRoleID && !mutedRole) {
 			msg.say('The set up muted role was not found in this guid, probably deleted, removing it from config...');
-			config.mutedRole = null;
-			await GuildConfig.upsert(config);
+			await config.setAndSave('mutedRole', null);
 			return;
 		}
 
-		msg.say(config.mutedRole ? `The current muted role is: \`@${mutedRole.name}\`` : 'No muted role set up.');
+		msg.say(mutedRoleID ? `The current muted role is: \`@${mutedRole.name}\`` : 'No muted role set up.');
 	}
 
 	/**
 	 * Creates a new role if no one is present
-	 * @param {Message} msg The incoming message.
+	 * @param {CommandMessage} msg The incoming message.
 	 * @param {GuildConfig} config The config to read from and write to.
-	 * @returns {GuildConfig|null} Returns the config if changes where made.
+	 * @returns {Promise<void>} Returns the config if changes where made.
 	 */
-	private async create(msg: CommandMessage, config: GuildConfig): Promise<GuildConfig | null> {
-		if (config.mutedRole && msg.guild.roles.has(config.mutedRole)) {
-			msg.say(stripIndents`There is already a role specified in the config.
+	private async _create(msg: CommandMessage, config: GuildConfig): Promise<void> {
+		if (msg.guild.roles.has(config.mutedRole)) {
+			await msg.say(stripIndents`There is already a role specified in the config.
       If you want to create a new role you have to \`remove\` the old first.
       Doing that only removes the overwrites and the config entry, the role itself wont be touched.
       If you want to specify a different role you can specify that with a \`@Mention\` or via the ID.`);
-			return null;
+			return;
 		}
-		const statusmessage: Message = (await msg.say('Creating role...') as Message);
+		const statusmessage: Message = await msg.say('Creating role...') as Message;
 
-		const roleID: string = (await msg.guild.createRole({ name: 'Muted', permissions: [] })).id;
-		config.mutedRole = roleID;
+		const roleID: string = await msg.guild.createRole({ name: 'Muted', permissions: [] }).then((role: Role) => role.id);
+		await config.setAndSave('mutedRole', roleID);
 
-		await statusmessage.edit('Overwriting channel permissions, this may take a while...');
-		const failed: number = await this.overwrite(msg.guild, roleID);
+		await statusmessage.edit('Overwriting channel permissions, this may take a while...').catch(() => null);
+		const failed: number = await this._overwrite(msg.guild, roleID);
 
 		statusmessage.edit(stripIndents`Role created${failed
 			? stripIndents`, but failed overwriting \`${failed}/${msg.guild.channels.size}\` channels.
       You might want to check if that is okay for you, or fix it yourself if not.`
 			: ' and all overwrites set up!'}
-			Also you maybe want to move the role up, be sure not to move the role higher than my highest role!`);
-		return config;
+			Also you maybe want to move the role up, be sure not to move the role higher than my highest role!`)
+			.catch(() => null);
 	}
 
 	/**
 	 * Updates the current role. Overwrites the permission in all channels.
 	 * Or removes it from the config if no longer present.
-	 * @param {message} msg The incoming message.
+	 * @param {CommandMessage} msg The incoming message.
 	 * @param {GuildConfig} config The config to update the role if necessary.
-	 * @returns {GuildConfig|null} Returns the config if changes where made.
+	 * @returns {Promise<void>} Returns the config if changes where made.
 	 */
-	private async update(msg: CommandMessage, config: GuildConfig): Promise<GuildConfig | null> {
+	private async _update(msg: CommandMessage, config: GuildConfig): Promise<void> {
 		if (!config.mutedRole) {
 			msg.say('There is no muted role set up!');
-			return null;
+			return;
 		}
+
 		if (!msg.guild.roles.has(config.mutedRole)) {
 			msg.say('The role specified in the config could not be found, removing it from config...');
-			config.mutedRole = null;
-			return config;
+			await config.setAndSave('mutedRole', null);
+			return;
 		}
-		const statusMessage: Message = (await msg.say('Overwriting channel permissions, this may take a while...') as Message);
-		const failed: number = await this.overwrite(msg.guild, config.mutedRole, false);
+
+		const statusMessage: Message = await msg.say('Overwriting channel permissions, this may take a while...') as Message;
+		const failed: number = await this._overwrite(msg.guild, config.mutedRole, false);
 
 		statusMessage.edit(stripIndents`${failed
 			? stripIndents`Failed overwriting \`${failed}/${msg.guild.channels.size}\` channels.
       You might want to check if that is okay for you, or fix it yourself if not.`
-			: 'All overwrites set up!'}`);
-		return null;
+			: 'All overwrites set up!'}`)
+			.catch(() => null);
 	}
 
 	/**
 	 * Sets the muted role.
-	 * @param {Message} msg The incoming message.
+	 * @param {CommandMessage} msg The incoming message.
 	 * @param {GuildConfig} config The config to update the role and remove old overwrites from if possible.
 	 * @param {string} role The new role to update the config and overwrites with.
-	 * @returns {GuildConfig|null} Returns the config if changes where made.
+	 * @returns {Promise<void>} Returns the config if changes where made.
+	 * @private
 	 */
-	private async specify(msg: CommandMessage, config: GuildConfig, role: string = ''): Promise<GuildConfig | null> {
+	private async _specify(msg: CommandMessage, config: GuildConfig, role: string = ''): Promise<void> {
 		let statusMessage: Message;
-		if (config.mutedRole && msg.guild.roles.has(config.mutedRole)) {
+
+		if (msg.guild.roles.has(config.mutedRole)) {
 			if (role === config.mutedRole) {
 				msg.say(stripIndents`This is the current muted role.
 				To update the overwrites please use the \`update\` option.`);
-				return null;
+				return;
 			}
-			statusMessage = (await msg.say('Removing old overwrites, this may take a while...') as Message);
-			await this.overwrite(msg.guild, config.mutedRole, true);
+			statusMessage = await msg.say('Removing old overwrites, this may take a while...') as Message;
+			await this._overwrite(msg.guild, config.mutedRole, true);
 		}
 
-		await statusMessage.edit('Overwriting channel permissions for new role, this may take a while...');
-		const failed: number = await this.overwrite(msg.guild, config.mutedRole);
-		config.mutedRole = role;
+		if (statusMessage) statusMessage = await statusMessage.edit('Overwriting channel permissions for new role, this may take a while...').catch(() => null);
+		if (!statusMessage) statusMessage = await msg.say('Overwriting channel permissions for new role, this may take a while...') as Message;
+
+		const failed: number = await this._overwrite(msg.guild, config.mutedRole);
+		await config.setAndSave('mutedRole', role);
 
 		statusMessage.edit(stripIndents`${failed
 			? stripIndents`Failed overwriting \`${failed}/${msg.guild.channels.size}\` channels.
       You might want to check if that is okay for you, or fix it yourself if not.`
-			: `All overwrites set for \`@${msg.guild.roles.get(role).name}\`!`}`);
-		return config;
+			: `All overwrites set for \`@${msg.guild.roles.get(role).name}\`!`}`)
+			.catch(() => null);
 	}
 
 	/**
 	 * Removes the current muted role and removes overwrites if possible.
 	 * The role itself wont be changed, just the overwrites and the entry in the config.
-	 * @param {Message} msg The incoming message.
+	 * @param {CommandMessage} msg The incoming message.
 	 * @param {GuildConfig} config The config to remove the role from.
-	 * @returns {GuildConfig|null} Returns the config if changes where made.
+	 * @returns {Promise<void>} Returns the config if changes where made.
+	 * @private
 	 */
-	private async remove(msg: CommandMessage, config: GuildConfig): Promise<GuildConfig | null> {
+	private async _remove(msg: CommandMessage, config: GuildConfig): Promise<void> {
 		if (!config.mutedRole) {
 			msg.say('There is no muted role set up to remove!');
-			return null;
+			return;
 		}
+
 		if (!msg.guild.roles.has(config.mutedRole)) {
 			msg.say('Removed the deleted muted role from the config.');
-			config.mutedRole = null;
-			return config;
+			await config.setAndSave('mutedRole', null);
+			return;
 		}
-		const failed: number = await this.overwrite(msg.guild, config.mutedRole, true);
+		const failed: number = await this._overwrite(msg.guild, config.mutedRole, true);
 
 		msg.say(stripIndents`${failed
 			? stripIndents`Failed removing \`${failed}/${msg.guild.channels.size}\` channel overwrites for \`@${msg.guild.roles.get(config.mutedRole).name}\`!
@@ -193,29 +213,29 @@ export default class MutedRoleCommand extends Command {
 			: stripIndents`Removed all overwrites for \`@${msg.guild.roles.get(config.mutedRole).name}\` and removed it from config!`}
 				The role itself remains untouched.`);
 
-		config.mutedRole = null;
-		return config;
+		await config.setAndSave('mutedRole', null);
 	}
 
 	/**
 	 * Overwrites channel permissions or removes them.
 	 * @param {Guild} guild The guild object.
-	 * @param {String} role The role to overwrite with or remove.
-	 * @param {Boolean} remove Whether remove or overwrite the channel permissions for that role.
-	 * @returns {Number} The number of failed overwrites.
+	 * @param {string} role The role to overwrite with or remove.
+	 * @param {boolean} remove Whether remove or overwrite the channel permissions for that role.
+	 * @returns {Promise<number>} The number of failed overwrites.
+	 * @private
 	 */
-	private async overwrite(guild: Guild, role: string | Role, remove = false): Promise<number> {
+	private async _overwrite(guild: Guild, role: string | Role, remove: boolean = false): Promise<number> {
 		role = guild.roles.get(role as string);
 		if (!role) throw new FriendlyError('the specified role is invalid!');
 		let failed: number = 0;
-		const channels: Collection<string, GuildChannel> = guild.channels.filter((c: GuildChannel) => c.type === 'text');
-		for (const [, channel] of channels) {
+		const channels: Collection<string, TextChannel> = guild.channels.filter((c: GuildChannel) => c.type === 'text') as Collection<string, TextChannel>;
+		for (const channel of channels.values()) {
 			const overwrites: PermissionOverwrites = channel.permissionOverwrites.get(role.id);
 			if (remove) {
 				if (overwrites) await overwrites.delete().catch(() => failed++);
 				continue;
 			}
-			if (overwrites && overwrites.deny === 2048 && overwrites.allow === 0) continue;
+			if (overwrites && new Permissions(overwrites.deny).has('SEND_MESSAGES')) continue;
 			await channel.overwritePermissions(role, { SEND_MESSAGES: false })
 				.catch(() => failed++);
 		}
