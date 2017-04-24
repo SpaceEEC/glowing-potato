@@ -49,7 +49,7 @@ winston.add(winston.transports.Console, {
 
 registerEvents(client);
 
-client.setProvider();
+client.setProvider(new SequelizeProvider());
 
 client.registry
 	.registerGroups([
