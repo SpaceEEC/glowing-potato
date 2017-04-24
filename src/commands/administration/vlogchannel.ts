@@ -2,6 +2,7 @@ import { stripIndents } from 'common-tags';
 import { Message, Role, TextChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { join } from 'path';
+
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class VoicelogChannelCommand extends Command {
@@ -35,7 +36,7 @@ export default class VoicelogChannelCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage, args: { channel: TextChannel | String }): Promise<Message | Message[]> {
-		const config: GuildConfig = (await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } }) as any)[0].dataValues;
+		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } });
 
 		if (!(args.channel instanceof TextChannel)) {
 			const vlogChannel: TextChannel = msg.guild.channels.get(config.vlogChannel) as TextChannel;
@@ -50,7 +51,7 @@ export default class VoicelogChannelCommand extends Command {
 			permissions = '**Note:** I don\'t have permissions to send messages to that channel.\n';
 		}
 
-		await GuildConfig.upsert(config);
+		await config.save();
 
 		msg.say(`${permissions}The voicelog channel ${config.vlogChannel ? `is now: ${msg.guild.channels.get(config.vlogChannel)}!` : 'has been disabled!'}`);
 	}

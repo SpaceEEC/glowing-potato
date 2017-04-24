@@ -2,6 +2,7 @@ import { stripIndents } from 'common-tags';
 import { Message, Role, TextChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { join } from 'path';
+
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class AnnouncementChannelCommand extends Command {
@@ -35,7 +36,7 @@ export default class AnnouncementChannelCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage, args: { channel: TextChannel | String }): Promise<Message | Message[]> {
-		const config: GuildConfig = (await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } }) as any)[0].dataValues;
+		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } });
 
 		if (!(args.channel instanceof TextChannel)) {
 			msg.say(config.anChannel ? `The announcement channel is ${msg.guild.channels.get(config.anChannel) || 'deleted'}.` : `No announcement channel set.`);
@@ -49,7 +50,7 @@ export default class AnnouncementChannelCommand extends Command {
 			permissions = '**Note:** I don\'t have permissions to send messages to that channel.\n';
 		}
 
-		await GuildConfig.upsert(config);
+		await config.save();
 
 		msg.say(`${permissions}The announcement channel ${config.anChannel ? `is now ${msg.guild.channels.get(config.anChannel)}` : 'has been removed'}!`);
 	}

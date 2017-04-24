@@ -30,7 +30,7 @@ export default class SetupCommand extends Command {
 		}
 
 		const noticeMessage: Message = await msg.say(`${note}You can exit whenever you want by typing \`cancel\`.\nChanged settings will be saved.`) as Message;
-		const config: GuildConfig = (await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } }) as any)[0].dataValues;
+		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } });
 
 		const statusMessage: Message = await msg.say('**Current Configuration:** General - Roles') as Message;
 		let timeout: number = 30000;
@@ -63,9 +63,9 @@ export default class SetupCommand extends Command {
 			await this.client.provider.set(msg.guild.id, 'setup', true);
 
 			await statusMessage.edit(stripIndents`**Current configuration's status:**
-			${this.map(result)}`).catch(() => {
+			${this._map(result)}`).catch(() => {
 				msg.say(stripIndents`**Current configuration's status:**
-			${this.map(result)}`).catch(() => null);
+			${this._map(result)}`).catch(() => null);
 			});
 
 			return await msg.say(stripIndents`**Configuration complete.**
@@ -158,8 +158,9 @@ export default class SetupCommand extends Command {
 
 		if (!joinMessage) return Boolean(config.joinMessage);
 
-		config.joinMessage = joinMessage;
-		return GuildConfig.upsert(config);
+		await config.setAndSave('joinMessage', joinMessage);
+
+		return Boolean(joinMessage);
 	}
 
 	/**
@@ -183,8 +184,9 @@ export default class SetupCommand extends Command {
 
 		if (!leaveMessage) return Boolean(config.leaveMessage);
 
-		config.leaveMessage = leaveMessage;
-		return GuildConfig.upsert(config);
+		await config.setAndSave('leaveMessage', leaveMessage);
+
+		return Boolean(config.leaveMessage);
 	}
 
 	/* Configuration: General - Channels */
@@ -210,8 +212,9 @@ export default class SetupCommand extends Command {
 
 		if (!anChannel || anChannel.type !== 'text') return Boolean(config.anChannel);
 
-		config.anChannel = anChannel.id;
-		return GuildConfig.upsert(config);
+		await config.setAndSave('anChannel', anChannel.id);
+
+		return Boolean(config.anChannel);
 	}
 
 	/**
@@ -235,8 +238,9 @@ export default class SetupCommand extends Command {
 
 		if (!logChannel || logChannel.type !== 'text') return Boolean(config.logChannel);
 
-		config.logChannel = logChannel.id;
-		return GuildConfig.upsert(config);
+		await config.setAndSave('logChannel', logChannel.id);
+
+		return Boolean(config.logChannel);
 	}
 
 	/**
@@ -261,8 +265,9 @@ export default class SetupCommand extends Command {
 
 		if (!vlogChannel || vlogChannel.type !== 'text') return Boolean(config.vlogChannel);
 
-		config.vlogChannel = vlogChannel.id;
-		return GuildConfig.upsert(config);
+		await config.setAndSave('vlogChannel', vlogChannel.id);
+
+		return Boolean(config.vlogChannel);
 	}
 
 	/* Configuration: Music */
@@ -291,7 +296,9 @@ export default class SetupCommand extends Command {
 
 		if (!djRole) return Boolean(roles.length);
 
-		return this.client.provider.set(msg.guild.id, 'djRoles', [djRole.id]);
+		await this.client.provider.set(msg.guild.id, 'djRoles', [djRole.id]);
+
+		return Boolean(djRole);
 	}
 
 	/**
@@ -317,10 +324,13 @@ export default class SetupCommand extends Command {
 		const djChannel: TextChannel = await this.util.prompt<TextChannel>(msg, { key: 'key', prompt: 'which channel do you want to set as DJ channel?\n', type: 'channel' });
 
 		if (djChannel.type !== 'text') return Boolean(channels.length);
-		return this.client.provider.set(msg.guild.id, 'djChannels', [djChannel.id]);
+
+		await this.client.provider.set(msg.guild.id, 'djChannels', [djChannel.id]);
+
+		return Boolean(djChannel);
 	}
 
-	private map(input: [string, boolean][]): string {
+	private _map(input: [string, boolean][]): string {
 		const response: string[] = [];
 		for (const [option, valid] of input) {
 			if (valid === undefined) response.push(option);

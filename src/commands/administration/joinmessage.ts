@@ -3,6 +3,7 @@ import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { join } from 'path';
 import { Model } from 'sequelize';
+
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class JoinMessageCommand extends Command {
@@ -42,7 +43,7 @@ export default class JoinMessageCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage, args: { message: string }): Promise<Message | Message[]> {
-		const config: GuildConfig = (await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } }) as any)[0].dataValues;
+		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } });
 		if (args.message === 'show') {
 			msg.say(config.joinMessage || 'No message set.');
 			return;
@@ -50,7 +51,7 @@ export default class JoinMessageCommand extends Command {
 
 		config.joinMessage = args.message === 'remove' ? null : args.message;
 
-		await GuildConfig.upsert(config);
+		await config.save();
 
 		return msg.say(stripIndents`The join message is now ${`\`${config.joinMessage || 'disabled'}\``}!
 		${config.anChannel || config.logChannel ? '' : 'Info: No channel to announce or log set up!'}`);
