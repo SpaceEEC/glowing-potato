@@ -6,6 +6,7 @@ import { Command, CommandGroup, CommandMessage, CommandoClient, FriendlyError } 
 import * as moment from 'moment';
 import * as path from 'path';
 import * as winston from 'winston';
+
 import SequelizeProvider from './dataProviders/SequelizeProvider';
 import SQLite from './dataProviders/SQLite';
 import { registerEvents } from './events/events';
