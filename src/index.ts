@@ -1,7 +1,7 @@
 // tslint:disable-line:no-reference
 /// <reference path="../typings/index.d.ts" />
 import { oneLine } from 'common-tags';
-import { Guild, Message, Role } from 'discord.js';
+import { Guild, GuildChannel, Message, Role } from 'discord.js';
 import { Command, CommandGroup, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
 import * as moment from 'moment';
 import * as path from 'path';
@@ -49,7 +49,7 @@ winston.add(winston.transports.Console, {
 
 registerEvents(client);
 
-client.setProvider(new SequelizeProvider(new SQLite().db));
+client.setProvider();
 
 client.registry
 	.registerGroups([
@@ -129,6 +129,10 @@ client
 			${enabled ? 'enabled' : 'disabled'}
 			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
 		`);
+	})
+	.on('channelCreate', (channel: GuildChannel) => {
+		if (!channel.guild) return;
+		(client.registry.resolveCommand('administration:mutedrole') as any).newChannel(channel);
 	});
 
 process.on('unhandledRejection', (err: any) => {

@@ -1,24 +1,23 @@
 import { Guild } from 'discord.js';
 import { Command, CommandGroup, CommandMessage, CommandoClient, SettingProvider } from 'discord.js-commando';
 import { DataTypes, Model, Sequelize } from 'sequelize';
+
 import Settings from './models/Settings';
 
 export default class SequelizeProvider extends SettingProvider {
-	private db: Sequelize;
 	private settings: Map<string, string | object | Array<any>>;
 	private listeners: Map<string, Function>;
 	private client: any;
 
-	constructor(db: Sequelize) {
+	constructor() {
 		super();
-		this.db = db;
 		this.settings = new Map();
 		this.listeners = new Map();
 	}
 
 	public async init(client: CommandoClient): Promise<void> {
 		this.client = client;
-		await this.db.sync();
+		await Settings.sync();
 
 		const rows: Settings[] = await Settings.findAll() as Settings[];
 		for (const row of rows) {
