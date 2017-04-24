@@ -1,6 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import Database from '../SQLite';
-const database: Database = new Database();
+import sequelize from '../SQLite';
 
 export default class Settings extends Model {
 	public guild: string;
@@ -15,6 +14,4 @@ Settings.init({
 		primaryKey: true,
 	},
 	settings: { type: DataTypes.STRING }
-}, { sequelize: database.db });
-
-Settings.sync();
+}, { sequelize });
