@@ -1,6 +1,7 @@
 import { stripIndents } from 'common-tags';
 import { Message, RichEmbed } from 'discord.js';
 import { Argument, ArgumentCollector, ArgumentCollectorResult, ArgumentInfo, Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
+
 import { animeData, aniSettings, charData, formatFuzzy, mangaData, updateToken } from '../../util/anistuff.js';
 import Util from '../../util/util';
 

@@ -3,6 +3,7 @@ import { Message } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import * as moment from 'moment';
 import 'moment-duration-format';
+
 const { version }: { version: string } = require('../../../package.json');
 
 export default class InfoCommand extends Command {
