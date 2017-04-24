@@ -1,6 +1,7 @@
 import { GuildMember, Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
 import { join } from 'path';
+
 import Tag from '../../dataProviders/models/Tag';
 
 export default class TagDel extends Command {

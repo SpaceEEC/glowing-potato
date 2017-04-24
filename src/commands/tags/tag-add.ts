@@ -1,6 +1,7 @@
 import { Message } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { join } from 'path';
+
 import Tag from '../../dataProviders/models/Tag';
 
 export default class TagAdd extends Command {

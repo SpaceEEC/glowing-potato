@@ -1,6 +1,7 @@
 import { stripIndents } from 'common-tags';
 import { GuildMember, Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
+
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class BlacklistCommand extends Command {
@@ -35,7 +36,7 @@ export default class BlacklistCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage, args: { member: GuildMember }): Promise<Message | Message[]> {
-		const config: GuildConfig = (await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } }) as any)[0].dataValues;
+		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } });
 		const mutedRole: Role = msg.guild.roles.get(config.mutedRole);
 		const { member: target } = args;
 
@@ -46,8 +47,7 @@ export default class BlacklistCommand extends Command {
 
 		if (!mutedRole) {
 			msg.say('The set up role seems to be deleted, removing it from config then...');
-			config.mutedRole = null;
-			await GuildConfig.upsert(config);
+			await config.setAndSave('mutedRole', null);
 			return;
 		}
 
