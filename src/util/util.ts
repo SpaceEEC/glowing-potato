@@ -24,7 +24,7 @@ export default class Util {
 
 	constructor(client: CommandoClient) {
 		this._client = client;
-		this._prefixMention = new RegExp(`^<@!?${client.user.id}>`);
+		if (client.user) this._prefixMention = new RegExp(`^<@!?${client.user.id}>`);
 	}
 
 	/**
@@ -34,6 +34,8 @@ export default class Util {
 	 * @returns {string}
 	 */
 	public getUsedAlias(msg: any, map: any = {}): string {
+		if (!this._prefixMention) this._prefixMention = new RegExp(`^<@!?${this._client.user.id}>`);
+
 		const prefixLength: number = msg.guild ? this._prefixMention.test(msg.content) ? this._prefixMention.exec(msg.content)[0].length + 1 : msg.guild.commandPrefix.length : 0;
 		const alias: string = msg.content.slice(prefixLength).split(' ')[0].toLowerCase();
 		return map[alias] || alias;
