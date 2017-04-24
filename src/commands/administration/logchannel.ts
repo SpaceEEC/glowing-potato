@@ -2,6 +2,7 @@ import { stripIndents } from 'common-tags';
 import { Message, Role, TextChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { join } from 'path';
+
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class LogChannelCommand extends Command {
@@ -35,7 +36,7 @@ export default class LogChannelCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage, args: { channel: TextChannel | String }): Promise<Message | Message[]> {
-		const config: GuildConfig = (await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } }) as any)[0].dataValues;
+		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } });
 
 		if (!(args.channel instanceof TextChannel)) {
 			const logChannel: TextChannel = msg.guild.channels.get(config.logChannel) as TextChannel;
@@ -49,7 +50,7 @@ export default class LogChannelCommand extends Command {
 		if (config.logChannel && !args.channel.permissionsFor(msg.guild.member(this.client.user) || await msg.guild.fetchMember(this.client.user)).hasPermission('SEND_MESSAGES')) {
 			permissions = '**Note:** I don\'t have permissions to send messages to that channel.\n';
 		}
-		await GuildConfig.upsert(config);
+		await config.save();
 
 		msg.say(`${permissions}The log channel ${config.logChannel ? `is now ${msg.guild.channels.get(config.logChannel)!}` : 'has been disabled'}`);
 	}
