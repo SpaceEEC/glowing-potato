@@ -129,12 +129,15 @@ export default class AnimeCommand extends Command {
 	}
 
 	private _sendManga(msg: CommandMessage, mangaInfo: mangaData): Promise<Message | Message[]> {
+		let genres: string = '';
+		for (const genre of mangaInfo.genres) genres += (mangaInfo.genres.indexOf(genre) % 3) ? `${genre},\n` : `${genre}, `;
+
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x0800ff)
 			.setThumbnail(mangaInfo.image_url_lge)
 			.setTitle(mangaInfo.title_japanese)
 			.setDescription(mangaInfo.title_japanese === mangaInfo.title_english ? mangaInfo.title_english : `${mangaInfo.title_romaji}\n${mangaInfo.title_english}`)
-			.addField('Genres', mangaInfo.genres.join(', '), true)
+			.addField('Genres', genres.slice(0, -1), true)
 			.addField('Rating | Typ', `${mangaInfo.average_score} | ${mangaInfo.type}`, true)
 			.addField('Chapters | Volumes', `${mangaInfo.total_chapters} | ${mangaInfo.total_volumes}`, true);
 
@@ -167,6 +170,8 @@ export default class AnimeCommand extends Command {
 	}
 
 	private _sendAnime(msg: CommandMessage, animeInfo: animeData): Promise<Message | Message[]> {
+		let genres: string = '';
+		for (const genre of animeInfo.genres) genres += ((animeInfo.genres.indexOf(genre) % 3) - 2) ? `${genre}, ` : `${genre},\n`;
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x0800ff)
 			.setThumbnail(animeInfo.image_url_lge)
@@ -174,7 +179,7 @@ export default class AnimeCommand extends Command {
 			.setDescription(animeInfo.title_romaji === animeInfo.title_english
 				? animeInfo.title_english
 				: `${animeInfo.title_romaji}\n${animeInfo.title_english}`)
-			.addField('Genres', animeInfo.genres.join(', '), true)
+			.addField('Genres', genres.slice(0, -1), true)
 			.addField('Rating | Typ', `${animeInfo.average_score} | ${animeInfo.type}`, true)
 			.addField('Episodes', animeInfo.total_episodes, true);
 
