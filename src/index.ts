@@ -4,12 +4,11 @@ import { oneLine } from 'common-tags';
 import { Guild, GuildChannel, Message, Role } from 'discord.js';
 import { Command, CommandGroup, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
 import * as moment from 'moment';
-import * as path from 'path';
-import * as winston from 'winston';
+import { join } from 'path';
+import { add, addColors, error, info, Logger, LoggerInstance, remove, transports, warn } from 'winston';
 
 import SequelizeProvider from './dataProviders/SequelizeProvider';
-import SQLite from './dataProviders/SQLite';
-import { registerEvents } from './events/events';
+import registerEvents from './events/events';
 
 const { defaultPrefix, logLevel, maintoken, ownerID }: { defaultPrefix: string, logLevel: string, maintoken: string, ownerID: string } = require('../config');
 
@@ -22,15 +21,15 @@ const client: CommandoClient = new CommandoClient({
 		'TYPING_START'
 	]
 });
-const disconnect: winston.LoggerInstance = new (winston.Logger)({
+const disconnect: LoggerInstance = new (Logger)({
 	transports: [
-		new winston.transports.File({ filename: '../disconnects.log', level: 'disconnect', timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')) }),
-		new winston.transports.Console({ colorize: true, level: 'disconnect', prettyPrint: true, timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')) })
+		new transports.File({ filename: '../disconnects.log', level: 'disconnect', timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')) }),
+		new transports.Console({ colorize: true, level: 'disconnect', prettyPrint: true, timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')) })
 	],
 	levels: { disconnect: 0 }
 });
 
-winston.addColors({
+addColors({
 	disconnect: 'red',
 	silly: 'magenta',
 	debug: 'blue',
@@ -39,8 +38,8 @@ winston.addColors({
 	warn: 'yellow',
 	error: 'red'
 });
-winston.remove(winston.transports.Console);
-winston.add(winston.transports.Console, {
+remove(transports.Console);
+add(transports.Console, {
 	level: logLevel,
 	prettyPrint: true,
 	colorize: true,
@@ -66,8 +65,8 @@ client.registry
 	.registerDefaultTypes()
 	.registerDefaultGroups()
 	.registerDefaultCommands({ help: false, eval_: false })
-	.registerTypesIn(path.join(__dirname, 'types'))
-	.registerCommandsIn(path.join(__dirname, 'commands'));
+	.registerTypesIn(join(__dirname, 'types'))
+	.registerCommandsIn(join(__dirname, 'commands'));
 
 client.dispatcher.addInhibitor((msg: Message) => {
 	if (!msg.guild) return false;
@@ -87,45 +86,45 @@ client.dispatcher.addInhibitor((msg: Message) => {
 });
 
 client
-	.on('error', winston.error)
-	.on('warn', winston.warn)
+	.on('error', error)
+	.on('warn', warn)
 	.once('ready', () => {
 		client.user.setGame(client.provider.get('global', 'game', null));
 	})
 	.on('ready', () => {
-		winston.info(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
+		info(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
 	})
 	.on('disconnect', (event: any) => {
 		disconnect.log('disconnect', '', event.code, ': ', event.reason);
 		if (event.code === 1000) process.exit(200);
 	})
-	.on('reconnecting', () => winston.warn('Reconnecting...'))
+	.on('reconnecting', () => warn('Reconnecting...'))
 	.on('commandError', (cmd: Command, err: any) => {
 		if (err instanceof FriendlyError) return;
-		if (err.url) winston.error(`Uncaught Promise Error:\n$ ${err.status} ${err.statusText}\n${err.text}\n${err.stack || err}`);
-		else winston.error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err);
+		if (err.url) error(`Uncaught Promise Error:\n$ ${err.status} ${err.statusText}\n${err.text}\n${err.stack || err}`);
+		else error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err);
 	})
 	.on('commandBlocked', (msg: CommandMessage, reason: string) => {
-		winston.info(oneLine`
+		info(oneLine`
 			Command ${msg.command ? `${msg.command.groupID}:${msg.command.memberName}` : ''}
 			blocked; ${reason}
 		`);
 	})
 	.on('commandPrefixChange', (guild: Guild, prefix: string) => {
-		winston.info(oneLine`
+		info(oneLine`
 			Prefix ${prefix === '' ? 'removed' : `changed to ${prefix || 'the default'}`}
 			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
 		`);
 	})
 	.on('commandStatusChange', (guild: Guild, command: Command, enabled: boolean) => {
-		winston.info(oneLine`
+		info(oneLine`
 			Command ${command.groupID}:${command.memberName}
 			${enabled ? 'enabled' : 'disabled'}
 			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
 		`);
 	})
 	.on('groupStatusChange', (guild: Guild, group: CommandGroup, enabled: boolean) => {
-		winston.info(oneLine`
+		info(oneLine`
 			Group ${group.id}
 			${enabled ? 'enabled' : 'disabled'}
 			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
@@ -139,10 +138,10 @@ client
 process.on('unhandledRejection', (err: any) => {
 	if (err) {
 		if (/Something took too long to do.|getaddrinfo|ETIMEDOUT|ECONNRESET/.test(err.message)) process.exit(200);
-		if (err.url) winston.error(`Uncaught Promise Error:\n$ ${err.status} ${err.statusText}\n${err.text}`);
-		else winston.error(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`);
+		if (err.url) error(`Uncaught Promise Error:\n$ ${err.status} ${err.statusText}\n${err.text}`);
+		else error(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`);
 	} else {
-		winston.error('Unhandled Promise Rejection without an error. (No stacktrace, response or message.)');
+		error('Unhandled Promise Rejection without an error. (No stacktrace, response or message.)');
 	}
 });
 
