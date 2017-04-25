@@ -6,7 +6,7 @@ const { anilist } = require('../../config.json');
 
 type clientCredentials = {
 	/**
-	 * The access token, which is required to use the api
+	 * The access token, which is required to use the api.
 	 */
 	access_token: string,
 	/**
@@ -18,7 +18,7 @@ type clientCredentials = {
 	 */
 	expires: number,
 	/**
-	 * The time in ms until the token expires.
+	 * The time in seconds until the token expires.
 	 */
 	expires_in: number
 };
@@ -29,7 +29,7 @@ export type aniSettings = {
 	 */
 	expires: number,
 	/**
- 	* The access token, which is required to use the api
+ 	* The access token, which is required to use the api.
  	*/
 	token: string
 };
@@ -113,7 +113,7 @@ export type charData = {
  * @returns {Promise<aniSettings>} The new aniSettings.
  */
 export async function updateToken(client: CommandoClient, msg: CommandMessage, aniSettings: aniSettings): Promise<aniSettings> {
-	if (aniSettings.expires <= Math.floor(Date.now() / 1000) + 300) {
+	if (aniSettings.expires <= Date.now()) {
 		const statusMessage: Message = await msg.embed(
 			new RichEmbed().setColor(0xffff00)
 				.setDescription('The token expired, a new one will be requested.\nThis may take a while.')
@@ -126,7 +126,7 @@ export async function updateToken(client: CommandoClient, msg: CommandMessage, a
 			});
 		aniSettings = {
 			token: body.access_token,
-			expires: body.expires
+			expires: Date.now() + body.expires_in * 1000
 		};
 		client.provider.set('global', 'aniSettings', aniSettings);
 		await statusMessage.edit({
