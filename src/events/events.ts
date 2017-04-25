@@ -4,7 +4,7 @@ import guildMemberRemoveHandler from './guildMemberRemove';
 import voiceStateUpdateHandler from './voiceStateUpdate';
 
 // quality code right here /s
-export function registerEvents(client: CommandoClient): void {
+export default function registerEvents(client: CommandoClient): void {
 	client.on('guildMemberAdd', guildMemberAddHandler);
 	client.on('guildMemberRemove', guildMemberRemoveHandler);
 	client.on('voiceStateUpdate', voiceStateUpdateHandler);
