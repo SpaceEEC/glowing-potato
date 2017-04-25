@@ -29,6 +29,9 @@ export default class SequelizeProvider extends SettingProvider {
 				continue;
 			}
 			const guild: string = row.guild === '0' ? 'global' : row.guild;
+
+			this.settings.set(guild, settings);
+
 			if (guild !== 'global' && !client.guilds.has(row.guild)) continue;
 			this.setupGuild(guild, settings);
 		}
