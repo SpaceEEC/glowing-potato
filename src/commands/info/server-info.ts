@@ -29,6 +29,7 @@ export default class ServerinfoCommand extends Command {
       • In ${this.capitalize(msg.guild.region)}`, true)
 			.addField('\u200b', `• Created ${moment(msg.guild.createdAt).format('DD.MM.YYYY [\n   at:] hh:mm:ss')}`, true)
 			.addField('❯ Emojis:', this.getRandomEmojis(msg))
+			.setFooter(msg.cleanContent, msg.author.displayAvatarURL)
 		);
 	}
 

@@ -31,6 +31,6 @@ export default class InfoCommand extends Command {
 			.addField('❯ Framework:', '[discord.js-commando](https://github.com/Gawdl3y/discord.js-commando)', true)
 			.setTimestamp()
 			.setThumbnail(this.client.user.displayAvatarURL)
-			.setFooter(msg.content, msg.author.displayAvatarURL));
+			.setFooter(msg.cleanContent, msg.author.displayAvatarURL));
 	}
 };

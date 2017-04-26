@@ -41,7 +41,7 @@ export default class UrbanCommand extends Command {
 					.setThumbnail('http://puu.sh/tiNHS/3ae29d9b91.png')
 					.addField('No results', 'Maybe made a typo?')
 					.addField('Search:', `[URL](http://www.urbandictionary.com/define.php?term=${args.search.split(' ').join('+')})`)
-					.setFooter(msg.content, msg.author.avatarURL)
+					.setFooter(msg.cleanContent, msg.author.displayAvatarURL)
 			);
 		} else {
 			if (!body.list[args.number]) {
@@ -61,7 +61,7 @@ export default class UrbanCommand extends Command {
 			if (example) {
 				for (let i: number = 0; i < example.length; i++) e.addField(i === 0 ? 'Example' : '\u200b', example[i]);
 			} else { e.addField('\u200b', '\u200b'); }
-			e.setFooter(`${msg.content} | Definition ${args.number + 1} from ${body.list.length} Definitions.`, msg.author.avatarURL);
+			e.setFooter(`${msg.cleanContent} | Definition ${args.number + 1} from ${body.list.length} Definitions.`, msg.author.displayAvatarURL);
 			return msg.embed(e);
 		}
 	}
