@@ -77,7 +77,7 @@ export default class HelpCommand extends Command {
 				.setDescription(stripIndents`
 					Use ${msg.anyUsage('help <command>', prefix, this.client.user)}	for more info regarding the specified command.
 
-					${all ? 'Display all commands' : stripIndents`Only dispaly usable commands
+					${all ? 'Display all commands' : stripIndents`Only display usable commands
 						To see all commands append \`all\` to the command.`}`);
 
 			for (const command of group.commands.values()) {
