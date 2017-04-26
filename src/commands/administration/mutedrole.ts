@@ -40,7 +40,12 @@ export default class MutedRoleCommand extends Command {
 		});
 	}
 
-	public async newChannel(channel: GuildChannel): Promise<void> {
+	/**
+	 * Overwrites every new TextChannel if a muted role is set up for that guild.
+	 * @param {TextChannel} channel The new channel
+	 * @returns {Promise<void>}
+	 */
+	public async newChannel(channel: TextChannel): Promise<void> {
 		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: channel.guild.id } });
 		if (!config.mutedRole) return;
 		const mutedRole: Role = channel.guild.roles.get(config.mutedRole);
@@ -97,7 +102,7 @@ export default class MutedRoleCommand extends Command {
 	 * Creates a new role if no one is present
 	 * @param {CommandMessage} msg The incoming message.
 	 * @param {GuildConfig} config The config to read from and write to.
-	 * @returns {Promise<void>} Returns the config if changes where made.
+	 * @returns {Promise<void>}
 	 */
 	private async _create(msg: CommandMessage, config: GuildConfig): Promise<void> {
 		if (msg.guild.roles.has(config.mutedRole)) {
@@ -128,7 +133,7 @@ export default class MutedRoleCommand extends Command {
 	 * Or removes it from the config if no longer present.
 	 * @param {CommandMessage} msg The incoming message.
 	 * @param {GuildConfig} config The config to update the role if necessary.
-	 * @returns {Promise<void>} Returns the config if changes where made.
+	 * @returns {Promise<void>}
 	 */
 	private async _update(msg: CommandMessage, config: GuildConfig): Promise<void> {
 		if (!config.mutedRole) {
@@ -157,7 +162,7 @@ export default class MutedRoleCommand extends Command {
 	 * @param {CommandMessage} msg The incoming message.
 	 * @param {GuildConfig} config The config to update the role and remove old overwrites from if possible.
 	 * @param {string} role The new role to update the config and overwrites with.
-	 * @returns {Promise<void>} Returns the config if changes where made.
+	 * @returns {Promise<void>}
 	 * @private
 	 */
 	private async _specify(msg: CommandMessage, config: GuildConfig, role: string = ''): Promise<void> {
@@ -191,7 +196,7 @@ export default class MutedRoleCommand extends Command {
 	 * The role itself wont be changed, just the overwrites and the entry in the config.
 	 * @param {CommandMessage} msg The incoming message.
 	 * @param {GuildConfig} config The config to remove the role from.
-	 * @returns {Promise<void>} Returns the config if changes where made.
+	 * @returns {Promise<void>}
 	 * @private
 	 */
 	private async _remove(msg: CommandMessage, config: GuildConfig): Promise<void> {
@@ -228,8 +233,8 @@ export default class MutedRoleCommand extends Command {
 		role = guild.roles.get(role as string);
 		if (!role) throw new FriendlyError('the specified role is invalid!');
 		let failed: number = 0;
-		const channels: Collection<string, TextChannel> = guild.channels.filter((c: GuildChannel) => c.type === 'text') as Collection<string, TextChannel>;
-		for (const channel of channels.values()) {
+		for (const channel of guild.channels.values()) {
+			if (channel.type !== 'text') continue;
 			const overwrites: PermissionOverwrites = channel.permissionOverwrites.get(role.id);
 			if (remove) {
 				if (overwrites) await overwrites.delete().catch(() => failed++);
