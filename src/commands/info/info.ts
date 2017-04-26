@@ -26,7 +26,7 @@ export default class InfoCommand extends Command {
 			.addField('❯ Commands:', `• ${this.client.registry.commands.size}`, true)
 			//.addField('❯ spacebot-version:', `• v${version} ([glowing-potato](http://puu.sh/teDYW/d6f9555fbd.png))`, true)
 			.addField('❯ Shitcode repositorie:', '• [GitHub](https://github.com/SpaceEEC/glowing-potato)', true)
-			.addBlankField()
+			.addBlankField(true)
 			.addField('❯ Library:', '[discord.js](https://github.com/hydrabolt/discord.js)', true)
 			.addField('❯ Framework:', '[discord.js-commando](https://github.com/Gawdl3y/discord.js-commando)', true)
 			.setTimestamp()
