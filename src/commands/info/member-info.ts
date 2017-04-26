@@ -35,13 +35,13 @@ export default class MemberInfoCommand extends Command {
 			.addField('❯ User informations', stripIndents`• Avatar: ${user.avatarURL ? `[Link](${user.avatarURL})` : 'No Avatar'}
 		• Created: ${moment(user.createdAt).format('DD.MM.YYYY')}
 		• Status: \`${user.presence.status}\`
-        • Game: \`${user.presence.game ? user.presence.game.name : 'No Game'}\``, true)
+        • Game: \`${user.presence.game ? user.presence.game.name : 'none'}\``, true)
 			.addField('❯ Server informations:', stripIndents`${
 				member.nickname ? `• Nickname: \`${member.nickname}\`` : ''}
 		• Joined: ${moment(member.joinedAt).format('DD.MM.YYYY')}
 		• roles: ${member.roles.filter((r: Role) => r.id !== member.guild.id).map((r: Role) => r.toString()).join(' ')}`, true)
 			.setThumbnail(user.displayAvatarURL)
 			.setTimestamp()
-			.setFooter(msg.content, msg.author.avatarURL));
+			.setFooter(msg.cleanContent, msg.author.displayAvatarURL));
 	}
 };

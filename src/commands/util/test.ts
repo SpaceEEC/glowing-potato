@@ -33,7 +33,7 @@ export default class TestCommand extends Command {
 			timestamp: new Date(),
 			footer: {
 				icon_url: msg.author.avatarURL,
-				text: msg.content,
+				text: msg.cleanContent,
 			},
 		};
 	}
