@@ -53,6 +53,6 @@ export default class VoicelogChannelCommand extends Command {
 
 		await config.save();
 
-		msg.say(`${permissions}The voicelog channel ${config.vlogChannel ? `is now: ${msg.guild.channels.get(config.vlogChannel)}!` : 'has been disabled!'}`);
+		return msg.say(`${permissions}The voicelog channel ${config.vlogChannel ? `is now: ${msg.guild.channels.get(config.vlogChannel)}!` : 'has been disabled!'}`);
 	}
 };

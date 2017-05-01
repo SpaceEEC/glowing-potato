@@ -51,7 +51,7 @@ export default class DJRoleCommand extends Command {
 
 		this.client.provider.set(msg.guild.id, 'djRoles', roles);
 
-		msg.embed(new RichEmbed().setColor(args.added ? 0x32CD32 : 0xFF0000)
+		return msg.embed(new RichEmbed().setColor(args.added ? 0x32CD32 : 0xFF0000)
 			.setDescription(`\`@${args.role.name}\` ${args.added ? `has been added to` : 'has been removed from'} the djRoles!`));
 	}
 };

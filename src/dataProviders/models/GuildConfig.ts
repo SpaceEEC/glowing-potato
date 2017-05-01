@@ -9,13 +9,31 @@ type GuildConfigKey = 'guildID' | 'mutedRole' | 'vlogChannel' | 'logChannel' | '
  * containing saved ids and messages.
  */
 export default class GuildConfig extends Model {
-
 	/** Overrides Models findOrCreate, but only returns the model instance. */
 	public static findOrCreate(options: FindOrInitializeOptions): any {
 		return (super.findOrCreate(options) as any).then((instanceAndBool: [GuildConfig, boolean]) => instanceAndBool[0]);
 	}
 
-	/** ID of the guild this config belongs to. */
+	public getDataValue(key: GuildConfigKey): string {
+		return super.getDataValue(key);
+	}
+
+	public setDataValue(key: GuildConfigKey, value: string): void {
+		return super.setDataValue(key, value);
+	}
+
+	/**
+	 * Calls `setDataValue` and then `save`.
+	 * @param {GuildConfigKey} key The key to set and save
+	 * @param {string} value Their value
+	 * @returns {Promise<this>}
+	 */
+	public setAndSave(key: GuildConfigKey, value: string): Promise<this> {
+		super.setDataValue(key, value);
+		return super.save() as any;
+	}
+
+	/** ID of the guild this config belongs to */
 	public get guildID(): string {
 		return super.getDataValue('guildID');
 	}
@@ -24,7 +42,7 @@ export default class GuildConfig extends Model {
 		super.setDataValue('guildID', value);
 	}
 
-	/** The ID of the muted role. */
+	/** The ID of the muted role */
 	public get mutedRole(): string {
 		return super.getDataValue('mutedRole');
 	}
@@ -35,7 +53,7 @@ export default class GuildConfig extends Model {
 
 	/**
 	 * The ID of the channel for the
-	 * voice channel movements.
+	 * voice channel movements
 	 */
 	public get vlogChannel(): string {
 		return super.getDataValue('vlogChannel');
@@ -47,7 +65,7 @@ export default class GuildConfig extends Model {
 
 	/**
 	 * The ID of the channel
-	 * for regular logging stuff.
+	 * for regular logging stuff
 	 */
 	public get logChannel(): string {
 		return super.getDataValue('logChannel');
@@ -60,7 +78,7 @@ export default class GuildConfig extends Model {
 	/**
 	 * The ID of the channel
 	 * for announcements, like
-	 * a new member or a left member.
+	 * a new member or a left member
 	 */
 	public get anChannel(): string {
 		return super.getDataValue('anChannel');
@@ -74,7 +92,7 @@ export default class GuildConfig extends Model {
 	 * The message for joining
 	 * members to be send to the
 	 * anChannel and logChannel
-	 * if these are specified.
+	 * if these are specified
 	 */
 	public get joinMessage(): string {
 		return super.getDataValue('joinMessage');
@@ -88,7 +106,7 @@ export default class GuildConfig extends Model {
 	 * The message for leaving
 	 * members to be send to the
 	 * anChannel and logChannel
-	 * if these are specified.
+	 * if these are specified
 	 */
 	public get leaveMessage(): string {
 		return super.getDataValue('leaveMessage');
@@ -97,26 +115,6 @@ export default class GuildConfig extends Model {
 	public set leaveMessage(value: string) {
 		super.setDataValue('leaveMessage', value);
 	}
-
-	public getDataValue(key: GuildConfigKey): string {
-		return super.getDataValue(key);
-	}
-
-	public setDataValue(key: GuildConfigKey, value: string): void {
-		return super.setDataValue(key, value);
-	}
-
-	/**
-	 * Calls `setDataValue` and then `save`
-	 * @param {GuildConfigKey} key The key to set and save.
-	 * @param {string} value Their value.
-	 * @returns {Promise<this>}
-	 */
-	public setAndSave(key: GuildConfigKey, value: string): Promise<this> {
-		super.setDataValue(key, value);
-		return super.save() as any;
-	}
-
 };
 
 GuildConfig.init({

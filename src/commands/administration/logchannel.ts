@@ -52,6 +52,6 @@ export default class LogChannelCommand extends Command {
 		}
 		await config.save();
 
-		msg.say(`${permissions}The log channel ${config.logChannel ? `is now ${msg.guild.channels.get(config.logChannel)!}` : 'has been disabled'}`);
+		return msg.say(`${permissions}The log channel ${config.logChannel ? `is now ${msg.guild.channels.get(config.logChannel)!}` : 'has been disabled'}`);
 	}
 };

@@ -13,10 +13,10 @@ export default class TestCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage, args: {}): Promise<Message | Message[]> {
-		return msg.embed(this.nichts(msg));
+		return msg.embed(this._nichts(msg));
 	}
 
-	private nichts(msg: CommandMessage): RichEmbedOptions {
+	private _nichts(msg: CommandMessage): RichEmbedOptions {
 		return {
 			color: 0xFFFF00,
 			author: {

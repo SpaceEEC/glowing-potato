@@ -9,11 +9,11 @@ export type Page = { page: number, items: Song[], maxPage: number };
 
 /** Represents a queue. */
 export default class Queue {
-	/** The current connection of the queue. */
+	/** The current connection of the queue */
 	public connection: VoiceConnection;
-	/** Whether the loop is enabled. */
+	/** Whether the loop is enabled */
 	public loop: boolean;
-	/** Status message that usually display the current song. */
+	/** Status message that usually display the current song */
 	public statusMessage: Message;
 
 	private _emptyPlayListTimeout: NodeJS.Timer;
@@ -27,8 +27,8 @@ export default class Queue {
 
 	/**
 	 * Intializes a queue for that guild.
-	 * @param {TextChannel} textChannel The textchannel to bind the queue to.
-	 * @param {VoiceChannel} voiceChannel To bind the bot to.
+	 * @param {TextChannel} textChannel The textchannel to bind the queue to
+	 * @param {VoiceChannel} voiceChannel To bind the bot to
 	 */
 	constructor(textChannel: TextChannel, voiceChannel: VoiceChannel) {
 		this._client = textChannel.client as CommandoClient;
@@ -47,8 +47,8 @@ export default class Queue {
 
 	/**
 	 * Leaves the queue, after 30 seconds when run out of songs, instantly when stopped.
-	 * @param {boolean} stop Whether the queue has been stopped.
-	 * @param {Map<string, Queue>} queue The queue map to delete this queue from.
+	 * @param {boolean} stop Whether the queue has been stopped
+	 * @param {Map<string, Queue>} queue The queue map to delete this queue from
 	 * @returns {Promise<void>}
 	 */
 	public async emptyQueue(stop: boolean, queue: Map<string, Queue>): Promise<void> {
@@ -84,7 +84,7 @@ export default class Queue {
 
 	/**
 	 * Checks whether a song with that ID is already queued.
-	 * @param {string} id The ID of the song.
+	 * @param {string} id The ID of the song
 	 * @returns {boolean}
 	 */
 	public isAlreadyQueued(id: string): boolean {
@@ -93,7 +93,7 @@ export default class Queue {
 
 	/**
 	 * Joins a voice channel.
-	 * @param {?voiceChannel} voiceChannel The voice channel to join to, defaults to the currents one.
+	 * @param {?voiceChannel} voiceChannel The voice channel to join to, defaults to the currents one
 	 * @returns {Promise<void>}
 	 */
 	public async join(voiceChannel?: VoiceChannel): Promise<void> {
@@ -103,7 +103,7 @@ export default class Queue {
 
 	/**
 	 * Paginates the queue and returns the requested page.
-	 * @param {number} page The page to be requested.
+	 * @param {number} page The page to be requested
 	 */
 	public page(page: number): Page {
 		return util.paginate(this._songs, page, 11);
@@ -111,8 +111,8 @@ export default class Queue {
 
 	/**
 	 * Adds a song to the queue
-	 * @param {Song} song The song to be added.
-	 * @return {number} The new amount of songs.
+	 * @param {Song} song The song to be added
+	 * @return {number} The new amount of songs
 	 */
 	public push(song: Song): number {
 		return this._songs.push(song);
@@ -120,8 +120,8 @@ export default class Queue {
 
 	/**
 	 * Sends a message to the current text channel.
-	 * @param {?any} content Content, can be omitted.
-	 * @param {?any} options Options, can also be omitted.
+	 * @param {?any} content Content, can be omitted
+	 * @param {?any} options Options, can also be omitted
 	 * @returns {Promise<Message | Message[]>}
 	 */
 	public sendText(content?: any, options?: any): Promise<Message | Message[]> {
@@ -159,7 +159,7 @@ export default class Queue {
 
 	/**
 	 * Skips the first or removes the specified song from the queue.
-	 * @param {number} [index=0] The index to remove, if omitted the current song will be skipped.
+	 * @param {number} [index=0] The index to remove, if omitted the current song will be skipped
 	 * @returns {void}
 	 */
 	public skip(index: number = 0): void {
@@ -178,7 +178,7 @@ export default class Queue {
 
 	/**
 	 * Gets a song by index.
-	 * @param {number} index The index of the Song get.
+	 * @param {number} index The index of the Song get
 	 * @returns {Song}
 	 */
 	public Song(index: number): Song {
@@ -187,7 +187,7 @@ export default class Queue {
 
 	// getter and setter //
 
-	/** The current song.
+	/** The current song
 	 *  @readonly
 	 */
 	public get currentSong(): Song {
@@ -195,8 +195,8 @@ export default class Queue {
 	}
 
 	/**
-	 * The time the current dispatcher is playing in seconds.
-	 * Defaults to 0 if dispatcher hasn't started yet.
+	 * The time the current dispatcher is playing in seconds
+	 * Defaults to 0 if dispatcher hasn't started yet
 	 * @readonly
 	 */
 	public get currentTime(): number {
@@ -205,7 +205,7 @@ export default class Queue {
 			: 0;
 	}
 
-	/** gets or sets whether the queue is playing. */
+	/** Whether the queue should or is playing */
 	public get playing(): boolean {
 		return this._songs[0].playing;
 	}
@@ -220,35 +220,35 @@ export default class Queue {
 		}
 	}
 
-	/** The amount of songs in the queue.
+	/** The amount of songs in the queue
 	 *  @readonly
 	 */
 	public get length(): number {
 		return this._songs.length;
 	}
 
-	/** The total length of all songs combined in seconds.
+	/** The total length of all songs combined in seconds
 	 *  @readonly
 	 */
 	public get totalLength(): number {
 		return this._songs.reduce((a: number, b: Song) => a + b.length, 0);
 	}
 
-	/** The members of the current voice channel.
+	/** The members of the current voice channel
 	 * @readonly
 	 */
 	public get vcMembers(): Collection<string, GuildMember> {
 		return this._voiceChannel.members;
 	}
 
-	/** The name of the current voice channel.
+	/** The name of the current voice channel
 	 *  @readonly
 	 */
 	public get vcName(): string {
 		return this._voiceChannel.name;
 	}
 
-	/** The volume of the queue, will be saved when set. */
+	/** The volume of the queue, will be saved when set */
 	public get volume(): number {
 		return this._volume;
 	}

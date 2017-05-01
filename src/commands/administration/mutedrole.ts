@@ -40,23 +40,6 @@ export default class MutedRoleCommand extends Command {
 		});
 	}
 
-	/**
-	 * Overwrites every new TextChannel if a muted role is set up for that guild.
-	 * @param {TextChannel} channel The new channel
-	 * @returns {Promise<void>}
-	 */
-	public async newChannel(channel: TextChannel): Promise<void> {
-		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: channel.guild.id } });
-		if (!config.mutedRole) return;
-		const mutedRole: Role = channel.guild.roles.get(config.mutedRole);
-		if (!mutedRole) {
-			config.setAndSave('mutedRole', null);
-			return;
-		}
-
-		channel.overwritePermissions(mutedRole, { SEND_MESSAGES: false }).catch(error);
-	}
-
 	public hasPermission(msg: CommandMessage): boolean {
 		const adminRoles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []);
 		return msg.member.roles.some((r: Role) => adminRoles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
@@ -95,13 +78,30 @@ export default class MutedRoleCommand extends Command {
 			return;
 		}
 
-		msg.say(mutedRoleID ? `The current muted role is: \`@${mutedRole.name}\`` : 'No muted role set up.');
+		return msg.say(mutedRoleID ? `The current muted role is: \`@${mutedRole.name}\`` : 'No muted role set up.');
+	}
+
+	/**
+	 * Overwrites every new TextChannel if a muted role is set up for that guild.
+	 * @param {TextChannel} channel The new channel
+	 * @returns {Promise<void>}
+	 */
+	public async newChannel(channel: TextChannel): Promise<void> {
+		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: channel.guild.id } });
+		if (!config.mutedRole) return;
+		const mutedRole: Role = channel.guild.roles.get(config.mutedRole);
+		if (!mutedRole) {
+			config.setAndSave('mutedRole', null);
+			return;
+		}
+
+		channel.overwritePermissions(mutedRole, { SEND_MESSAGES: false }).catch(error);
 	}
 
 	/**
 	 * Creates a new role if no one is present
-	 * @param {CommandMessage} msg The incoming message.
-	 * @param {GuildConfig} config The config to read from and write to.
+	 * @param {CommandMessage} msg The incoming message
+	 * @param {GuildConfig} config The config to read from and write to
 	 * @returns {Promise<void>}
 	 */
 	private async _create(msg: CommandMessage, config: GuildConfig): Promise<void> {
@@ -131,8 +131,8 @@ export default class MutedRoleCommand extends Command {
 	/**
 	 * Updates the current role. Overwrites the permission in all channels.
 	 * Or removes it from the config if no longer present.
-	 * @param {CommandMessage} msg The incoming message.
-	 * @param {GuildConfig} config The config to update the role if necessary.
+	 * @param {CommandMessage} msg The incoming message
+	 * @param {GuildConfig} config The config to update the role if necessary
 	 * @returns {Promise<void>}
 	 */
 	private async _update(msg: CommandMessage, config: GuildConfig): Promise<void> {
@@ -160,8 +160,8 @@ export default class MutedRoleCommand extends Command {
 	/**
 	 * Sets the muted role.
 	 * @param {CommandMessage} msg The incoming message.
-	 * @param {GuildConfig} config The config to update the role and remove old overwrites from if possible.
-	 * @param {string} role The new role to update the config and overwrites with.
+	 * @param {GuildConfig} config The config to update the role and remove old overwrites from if possible
+	 * @param {string} role The new role to update the config and overwrites with
 	 * @returns {Promise<void>}
 	 * @private
 	 */
@@ -194,8 +194,8 @@ export default class MutedRoleCommand extends Command {
 	/**
 	 * Removes the current muted role and removes overwrites if possible.
 	 * The role itself wont be changed, just the overwrites and the entry in the config.
-	 * @param {CommandMessage} msg The incoming message.
-	 * @param {GuildConfig} config The config to remove the role from.
+	 * @param {CommandMessage} msg The incoming message
+	 * @param {GuildConfig} config The config to remove the role from
 	 * @returns {Promise<void>}
 	 * @private
 	 */
@@ -223,10 +223,10 @@ export default class MutedRoleCommand extends Command {
 
 	/**
 	 * Overwrites channel permissions or removes them.
-	 * @param {Guild} guild The guild object.
-	 * @param {string} role The role to overwrite with or remove.
-	 * @param {boolean} remove Whether remove or overwrite the channel permissions for that role.
-	 * @returns {Promise<number>} The number of failed overwrites.
+	 * @param {Guild} guild The guild object
+	 * @param {string} role The role to overwrite with or remove
+	 * @param {boolean} remove Whether remove or overwrite the channel permissions for that role
+	 * @returns {Promise<number>} The number of failed overwrites
 	 * @private
 	 */
 	private async _overwrite(guild: Guild, role: string | Role, remove: boolean = false): Promise<number> {
