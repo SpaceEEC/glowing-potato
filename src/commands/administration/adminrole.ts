@@ -51,6 +51,6 @@ export default class AdminRoleCommand extends Command {
 
 		this.client.provider.set(msg.guild.id, 'adminRoles', roles);
 
-		msg.say(`\`@${args.role.name}\` ${args.added ? `is now one of` : 'has been removed from'} the admin roles!`);
+		return msg.say(`\`@${args.role.name}\` ${args.added ? `is now one of` : 'has been removed from'} the admin roles!`);
 	}
 };

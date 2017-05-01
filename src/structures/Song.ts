@@ -8,9 +8,9 @@ import { GuildMember, StreamDispatcher, Util } from 'discord.js';
 export default class Song {
 	/**
 	 * Converts a number of seconds to a human readable string.
-	 * @param {number} seconds The amount of total seconds.
-	 * @param {boolean} [forceHours=false] Whether to force the display of hours.
-	 * @returns {string} The final time string.
+	 * @param {number} seconds The amount of total seconds
+	 * @param {boolean} [forceHours=false] Whether to force the display of hours
+	 * @returns {string} The final time string
 	 * @static
 	 */
 	public static timeString(seconds: number, forceHours = false): string {
@@ -23,23 +23,23 @@ export default class Song {
 			${`0${Math.floor(seconds % 60)}`.slice(-2)}
 		`;
 	}
-	/** The name of this song. */
+	/** The name of this song */
 	public name: string;
-	/** The ID of this song. */
+	/** The ID of this song */
 	public id: string;
-	/** The length in seconds of this song. */
+	/** The length in seconds of this song */
 	public length: number;
-	/** The member that requested this song. */
+	/** The member that requested this song */
 	public member: GuildMember;
-	/** The dispatcher, if this song is being played at the moment. */
+	/** The dispatcher, if this song is being played at the moment */
 	public dispatcher: StreamDispatcher;
-	/** Whether this song is currently paused. */
+	/** Whether this song is currently paused */
 	public playing: boolean;
 
 	/**
 	 * Creates a new song from a video.
-	 * @param {video} video The video.
-	 * @param {GuildMember} member The requesting member.
+	 * @param {video} video The video
+	 * @param {GuildMember} member The requesting member
 	 */
 	constructor(video: { title: string, id: string, durationSeconds?: number }, member: GuildMember) {
 		this.name = Util.escapeMarkdown(video.title);
@@ -50,7 +50,7 @@ export default class Song {
 		this.playing = false;
 	}
 
-	/** The youtube url to this song. */
+	/** The youtube url to this song */
 	get url(): string {
 		return `https://www.youtube.com/watch?v=${this.id}`;
 	}
@@ -65,16 +65,16 @@ export default class Song {
 		return Util.escapeMarkdown(`${this.member.user.tag} (${this.member.user.id})`);
 	}
 
-	/** The avatar url from the requesting member. */
+	/** The avatar url from the requesting member */
 	get avatar(): string {
 		return `${this.member.user.displayAvatarURL}`;
 	}
 
-	/** The length of this song as a human readable string. */
+	/** The length of this song as a human readable string */
 	get lengthString(): string {
 		return Song.timeString(this.length);
 	}
-	/** The remainding time of this song as a human readable string. */
+	/** The remainding time of this song as a human readable string */
 	public timeLeft(currentTime: number): string {
 		return Song.timeString(this.length - currentTime);
 	}

@@ -51,6 +51,6 @@ export default class ModRoleCommand extends Command {
 
 		this.client.provider.set(msg.guild.id, 'modRoles', roles);
 
-		msg.say(`\`@${args.role.name}\` ${args.added ? `is now one of the` : 'has been removed from the'} mod roles!`);
+		return msg.say(`\`@${args.role.name}\` ${args.added ? `is now one of the` : 'has been removed from the'} mod roles!`);
 	}
 };

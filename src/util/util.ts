@@ -6,7 +6,7 @@ export default class Util {
 	/**
 	 * Replaces parts of a string determined by the specified map or object.
 	 * @param {string} input - The string that shall be replaced
-	 * @param {map|object} map - The map or object literal with keys and values to replace against.
+	 * @param {map|object} map - The map or object literal with keys and values to replace against
 	 * @returns {string}
 	 * @static
 	 */
@@ -29,8 +29,8 @@ export default class Util {
 
 	/**
 	 * Gets the used command (including aliases) from the message.
-	 * @param {message} msg The message to get the used command from.
-	 * @param {?object} object The optional object, containing key and value pairs to replace matches.
+	 * @param {message} msg The message to get the used command from
+	 * @param {?object} object The optional object, containing key and value pairs to replace matches
 	 * @returns {string}
 	 */
 	public getUsedAlias(msg: any, map: any = {}): string {
@@ -43,10 +43,10 @@ export default class Util {
 
 	/**
 	 * Prompts input from user and automatically cleans up after prompting.
-	 * @param {CommandMessage} msg - CommandMessage to prompt from.
-	 * @param {ArgumentInfo} arg - ArgumentInfo to prompt.
-	 * @param {boolean} [exception=false] exception - Whether a FriendlyError should be thrown, upon cancel or ignore, or not. Defaults to false.
-	 * @returns {Promise<T>} - The prompted value, or null when not or invalid responded.
+	 * @param {CommandMessage} msg - CommandMessage to prompt from
+	 * @param {ArgumentInfo} arg - ArgumentInfo to prompt
+	 * @param {boolean} [exception=false] exception - Whether a FriendlyError should be thrown, upon cancel or ignore, or not. Defaults to false
+	 * @returns {Promise<T>} - The prompted value, or null when not or invalid responded
 	 * @private
 	 */
 	public async prompt<T>(msg: CommandMessage, arg: ArgumentInfo, exception: boolean = true): Promise<T> {

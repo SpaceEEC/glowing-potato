@@ -6,30 +6,30 @@ const { anilist } = require('../../config.json');
 
 type clientCredentials = {
 	/**
-	 * The access token, which is required to use the api.
+	 * The access token, which is required to use the api
 	 */
 	access_token: string,
 	/**
-	 * The type of the token.
+	 * The type of the token
 	 */
 	token_type: string,
 	/**
-	 * The timestamp indicating when the token expires.
+	 * The timestamp indicating when the token expires
 	 */
 	expires: number,
 	/**
-	 * The time in seconds until the token expires.
+	 * The time in seconds until the token expires
 	 */
 	expires_in: number
 };
 
 export type aniSettings = {
 	/**
-	 * The timestamp indicating when the token expires.
+	 * The timestamp indicating when the token expires
 	 */
 	expires: number,
 	/**
- 	* The access token, which is required to use the api.
+ 	* The access token, which is required to use the api
  	*/
 	token: string
 };
@@ -107,10 +107,10 @@ export type charData = {
 
 /**
  * Updates the access token for the anilist API.
- * @param {Commandoclient} client - The client.
- * @param {Message} msg - The message to change on update.
- * @param {aniSettings} aniSettings - The settings to compare the timestamp against.
- * @returns {Promise<aniSettings>} The new aniSettings.
+ * @param {Commandoclient} client - The client
+ * @param {Message} msg - The message to change on update
+ * @param {aniSettings} aniSettings - The settings to compare the timestamp against
+ * @returns {Promise<aniSettings>} The new aniSettings
  */
 export async function updateToken(client: CommandoClient, msg: CommandMessage, aniSettings: aniSettings): Promise<aniSettings> {
 	if (aniSettings.expires <= Date.now()) {
@@ -140,8 +140,8 @@ export async function updateToken(client: CommandoClient, msg: CommandMessage, a
 
 /**
  * Formats the fuzzy dates provided from anilist. (Using timestamps is way overrated.)
- * @param {number} input - The provided number, can be a string.
- * @returns {string} The formatted output.
+ * @param {number} input - The provided number, can be a string
+ * @returns {string} The formatted output
  */
 export function formatFuzzy(input: number | string): string {
 	input = input.toString();

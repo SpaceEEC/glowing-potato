@@ -37,11 +37,11 @@ export default class HelpCommand extends Command {
 	public async run(msg: CommandMessage, args: { input: string }): Promise<Message | Message[]> {
 		const prefix: string = msg.guild ? (msg.guild as GuildExtension).commandPrefix : null;
 
-		if (!args.input || args.input === 'all') return this.displayGroups(msg, args.input.endsWith('all'), prefix);
-		return this.displayGroup(msg, args.input, prefix) || this.displayCommand(msg, args.input, prefix) || msg.say(`Unable to identify command. Use ${msg.usage(null, prefix, prefix ? this.client.user : null)} to view the list of all commands.`);
+		if (!args.input || args.input === 'all') return this._displayGroups(msg, args.input.endsWith('all'), prefix);
+		return this._displayGroup(msg, args.input, prefix) || this._displayCommand(msg, args.input, prefix) || msg.say(`Unable to identify command. Use ${msg.usage(null, prefix, prefix ? this.client.user : null)} to view the list of all commands.`);
 	}
 
-	private displayGroups(msg: CommandMessage, all: boolean, prefix: string): Promise<Message | Message[]> {
+	private _displayGroups(msg: CommandMessage, all: boolean, prefix: string): Promise<Message | Message[]> {
 		const usableGroups: Collection<string, CommandGroup> = all ? this.client.registry.groups : this.client.registry.groups.filter((group: CommandGroup) => group.commands.some((command: Command) => command.isUsable(msg.message)));
 		const embed: RichEmbed = new RichEmbed()
 			.setColor('RANDOM')
@@ -65,7 +65,7 @@ export default class HelpCommand extends Command {
 		return msg.embed(embed);
 	}
 
-	private displayGroup(msg: CommandMessage, input: string, prefix: string): Promise<Message | Message[]> {
+	private _displayGroup(msg: CommandMessage, input: string, prefix: string): Promise<Message | Message[]> {
 		const all: boolean = input.endsWith('all');
 
 		let groups: CommandGroup[] = this.client.registry.findGroups(input.split(' ')[0], false);
@@ -100,7 +100,7 @@ export default class HelpCommand extends Command {
 		if (groups.length) return msg.say(util.disambiguation(groups, 'groups'));
 	}
 
-	private displayCommand(msg: CommandMessage, input: string, prefix: string): Promise<Message | Message[]> {
+	private _displayCommand(msg: CommandMessage, input: string, prefix: string): Promise<Message | Message[]> {
 		const commands: Command[] = this.client.registry.findCommands(input.split(' ')[0], false);
 
 		if (commands.length === 1) {

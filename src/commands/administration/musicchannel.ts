@@ -52,7 +52,7 @@ export default class MusicChannelCommand extends Command {
 
 		this.client.provider.set(msg.guild.id, 'djChannels', channels);
 
-		msg.say(stripIndents`${args.channel} ${args.added ? `has been added to` : 'has been removed from'} the music channels!
+		return msg.say(stripIndents`${args.channel} ${args.added ? `has been added to` : 'has been removed from'} the music channels!
     	${channels.length ? `Current channels: ${channels.map((c: string) => `<#${c}> `).join(', ')}` : 'No channel set, so everywhere, allowed.'}`);
 	}
 };

@@ -152,11 +152,11 @@ export default class PlayMusicCommand extends Command {
 
 	/**
 	 * Adds a video or an array of vidoes to the queue and joins the voice channel when necessary.
-	 * @param {video | video[]} video Video or array of videos to add.
-	 * @param {queue} queue The queue to add to.
-	 * @param {CommandMessage} msg Triggering CommandMessage.
-	 * @param {VoiceChannel} voiceChannel The voice channel to join.
-	 * @param {Message} fetchMessage The message to update.
+	 * @param {video | video[]} video Video or array of videos to add
+	 * @param {queue} queue The queue to add to
+	 * @param {CommandMessage} msg Triggering CommandMessage
+	 * @param {VoiceChannel} voiceChannel The voice channel to join
+	 * @param {Message} fetchMessage The message to update
 	 * @returns {Promise<void>}
 	 * @private
 	 */
@@ -197,9 +197,9 @@ export default class PlayMusicCommand extends Command {
 
 	/**
 	 * Adds a single video to the queue.
-	 * @param {CommandMessage} msg Triggering CommandMessage.
-	 * @param {video} video Video to add.
-	 * @returns {RichEmbed | string} Returns a string on failure, a RichEmbed upon success.
+	 * @param {CommandMessage} msg Triggering CommandMessage
+	 * @param {video} video Video to add
+	 * @returns {RichEmbed | string} Returns a string on failure, a RichEmbed upon success
 	 * @private
 	 */
 	private _add(msg: CommandMessage, video: video): RichEmbed | string {
@@ -230,9 +230,9 @@ export default class PlayMusicCommand extends Command {
 
 	/**
 	 * Adds a playlist (array of video objects) to the playlist.
-	 * @param {CommandMessage} msg Triggering CommandMessage.
-	 * @param {video[]} videos Array of video objects to add to the queue.
-	 * @returns {RichEmbed | string} Returns a string on failure, a RichEmbed upon success.
+	 * @param {CommandMessage} msg Triggering CommandMessage
+	 * @param {video[]} videos Array of video objects to add to the queue
+	 * @returns {RichEmbed | string} Returns a string on failure, a RichEmbed upon success
 	 * @private
 	 */
 	private _addPlaylist(msg: CommandMessage, videos: video[]): RichEmbed | string {
@@ -269,11 +269,11 @@ export default class PlayMusicCommand extends Command {
 
 	/**
 	 * Let the user pick one of the search results.
-	 * @param {CommandMessage} msg The message to prompt from.
-	 * @param {video[]} videos The video array to let the user pick from.
-	 * @param {Message} statusmsg Optional message to use to display the choices.
-	 * @param {number} [index=0] The index for the current video.
-	 * @returns {video} The picked video.
+	 * @param {CommandMessage} msg The message to prompt from
+	 * @param {video[]} videos The video array to let the user pick from
+	 * @param {Message} statusmsg Optional message to use to display the choices
+	 * @param {number} [index=0] The index for the current video
+	 * @returns {video} The picked video
 	 * @private
 	 */
 	private async _chooseSong(msg: CommandMessage, videos: video[], statusmsg?: Message, index: number = 0): Promise<video> {
@@ -311,10 +311,10 @@ export default class PlayMusicCommand extends Command {
 	}
 
 	/**
-	 * Method that actually plays the music
-	 * @param {string} guildID ID of the guild to play music in.
-	 * @param {song} song The song to play.
-	 * @param {boolean} [stopped=false] Whether the playing was stopped through a command.
+	 * Method that actually plays the music.
+	 * @param {string} guildID ID of the guild to play music in
+	 * @param {song} song The song to play
+	 * @param {boolean} [stopped=false] Whether the playing was stopped through a command
 	 * @returns {Promise<void>}
 	 * @private
 	 */

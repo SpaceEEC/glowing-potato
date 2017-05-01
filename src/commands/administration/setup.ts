@@ -38,27 +38,27 @@ export default class SetupCommand extends Command {
 
 		try {
 			result.push(['**General - Roles**\n', undefined]);
-			result.push(['Admin role', await this.adminRole(msg)]);
-			result.push(['Mod role', await this.modRole(msg)]);
+			result.push(['Admin role', await this._adminRole(msg)]);
+			result.push(['Mod role', await this._modRole(msg)]);
 
 			await statusMessage.edit('**Current Configuration: General - Messages**');
 			result.push(['**General - Messages**\n', undefined]);
 
-			result.push(['Join message', await this.joinMessage(msg, config)]);
-			result.push(['Leave message', await this.leaveMessage(msg, config)]);
+			result.push(['Join message', await this._joinMessage(msg, config)]);
+			result.push(['Leave message', await this._leaveMessage(msg, config)]);
 
 			await statusMessage.edit('**Current Configuration: General - Channels**');
 			result.push(['**General - Channels**\n', undefined]);
 
-			result.push(['Announcement channel', await this.anChannel(msg, config)]);
-			result.push(['Log channel', await this.logChannel(msg, config)]);
-			result.push(['Voicelog channel', await this.vlogChannel(msg, config)]);
+			result.push(['Announcement channel', await this._anChannel(msg, config)]);
+			result.push(['Log channel', await this._logChannel(msg, config)]);
+			result.push(['Voicelog channel', await this._vlogChannel(msg, config)]);
 
 			await statusMessage.edit('**Current Configuration: Music**');
 			result.push(['**Music**\n', undefined]);
 
-			result.push(['DJ role', await this.djRole(msg)]);
-			result.push(['DJ channel', await this.djChannel(msg)]);
+			result.push(['DJ role', await this._djRole(msg)]);
+			result.push(['DJ channel', await this._djChannel(msg)]);
 
 			await this.client.provider.set(msg.guild.id, 'setup', true);
 
@@ -87,11 +87,11 @@ export default class SetupCommand extends Command {
 
 	/**
 	 * Maybe sets a new admin role, depending on user input.
-	 * @param {CommandMessage} msg - CommandMessage to prompt from.
+	 * @param {CommandMessage} msg - CommandMessage to prompt from
 	 * @returns {Promise<void>}
 	 * @private
 	 */
-	private async adminRole(msg: CommandMessage): Promise<boolean> {
+	private async _adminRole(msg: CommandMessage): Promise<boolean> {
 		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).filter((r: string) => msg.guild.roles.has(r));
 
 		let prompt: string = stripIndents`**Admin Roles:**
@@ -113,11 +113,11 @@ export default class SetupCommand extends Command {
 
 	/**
 	 * Maybe sets a new mod role, depending on user input.
-	 * @param {CommandMessage} msg - CommandMessage to prompt from.
+	 * @param {CommandMessage} msg - CommandMessage to prompt from
 	 * @returns {Promise<void>}
 	 * @private
 	 */
-	private async modRole(msg: CommandMessage): Promise<boolean> {
+	private async _modRole(msg: CommandMessage): Promise<boolean> {
 		const roles: string[] = this.client.provider.get(msg.guild.id, 'modRoles', []).filter((r: string) => msg.guild.roles.has(r));
 
 		let prompt: string = stripIndents`**Mod Roles:**
@@ -141,12 +141,12 @@ export default class SetupCommand extends Command {
 
 	/**
 	 * Maybe sets a new join message, depending on user input.
-	 * @param {CommandMessage} msg - CommandMessage to prompt from.
-	 * @param {GuildConfig} config - GuildConfig to update.
+	 * @param {CommandMessage} msg - CommandMessage to prompt from
+	 * @param {GuildConfig} config - GuildConfig to update
 	 * @returns {Promise<void>}
 	 * @private
 	 */
-	private async joinMessage(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
+	private async _joinMessage(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
 		let prompt: string = '**Join Message:**\nThe join message will be sent to the announcement- and logchannel, if these are set up.';
 		prompt += config.joinMessage
 			? `\n\nCurrent join message is: \`${config.joinMessage}\`, do you like to set a new?\n`
@@ -165,12 +165,12 @@ export default class SetupCommand extends Command {
 
 	/**
 	 * Maybe sets a new leave message, depending on user input.
-	 * @param {CommandMessage} msg - CommandMessage to prompt from.
-	 * @param {GuildConfig} config - GuildConfig to update.
+	 * @param {CommandMessage} msg - CommandMessage to prompt from
+	 * @param {GuildConfig} config - GuildConfig to update
 	 * @returns {Promise<void>}
 	 * @private
 	 */
-	private async leaveMessage(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
+	private async _leaveMessage(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
 		let prompt: string = stripIndents`**Leave Message:**
 		
 		The leave message will be sent to the announcement- and logchannel, if these are set up.`;
@@ -193,12 +193,12 @@ export default class SetupCommand extends Command {
 
 	/**
 	 * Maybe sets a new announcement channel, depending on user input.
-	 * @param {CommandMessage} msg - CommandMessage to prompt from.
-	 * @param {GuildConfig} config - GuildConfig to update.
+	 * @param {CommandMessage} msg - CommandMessage to prompt from
+	 * @param {GuildConfig} config - GuildConfig to update
 	 * @returns {Promise<void>}
 	 * @private
 	 */
-	private async anChannel(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
+	private async _anChannel(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
 		let prompt: string = stripIndents`**Announcement Channel:**
 		
 		Join- and leave messages will be sent here.`;
@@ -219,12 +219,12 @@ export default class SetupCommand extends Command {
 
 	/**
 	 * Maybe sets a new log channel, depending on user input.
-	 * @param {CommandMessage} msg - CommandMessage to prompt from.
-	 * @param {GuildConfig} config - GuildConfig to update.
+	 * @param {CommandMessage} msg - CommandMessage to prompt from
+	 * @param {GuildConfig} config - GuildConfig to update
 	 * @returns {Promise<void>}
 	 * @private
 	 */
-	private async logChannel(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
+	private async _logChannel(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
 		let prompt: string = stripIndents`**Log Channel:**
 		
 		All sort of stuff will be logged here.`;
@@ -245,12 +245,12 @@ export default class SetupCommand extends Command {
 
 	/**
 	 * Maybe sets a new voicelog channel, depending on user input.
-	 * @param {CommandMessage} msg - CommandMessage to prompt from.
-	 * @param {GuildConfig} config - GuildConfig to update.
+	 * @param {CommandMessage} msg - CommandMessage to prompt from
+	 * @param {GuildConfig} config - GuildConfig to update
 	 * @returns {Promise<void>}
 	 * @private
 	 */
-	private async vlogChannel(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
+	private async _vlogChannel(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
 		let prompt: string = stripIndents`**Voicelog Channel:**
 		
 		Member movements in the voice channels will be logged here, if set.`;
@@ -274,11 +274,11 @@ export default class SetupCommand extends Command {
 
 	/**
 	 * Maybe sets a new dj role, depending on user input.
-	 * @param {CommandMessage} msg - CommandMessage to prompt from.
+	 * @param {CommandMessage} msg - CommandMessage to prompt from
 	 * @returns {Promise<void>}
 	 * @private
 	 */
-	private async djRole(msg: CommandMessage): Promise<boolean> {
+	private async _djRole(msg: CommandMessage): Promise<boolean> {
 		const roles: string[] = this.client.provider.get(msg.guild.id, 'djRoles', []).filter((r: string) => msg.guild.roles.has(r));
 
 		let prompt: string = stripIndents`**DJ Roles:**
@@ -303,11 +303,11 @@ export default class SetupCommand extends Command {
 
 	/**
 	 * Maybe sets a new dj channel, depending on user input.
-	 * @param {CommandMessage} msg - CommandMessage to prompt from.
+	 * @param {CommandMessage} msg - CommandMessage to prompt from
 	 * @returns {Promise<void>}
 	 * @private
 	 */
-	private async djChannel(msg: CommandMessage): Promise<boolean> {
+	private async _djChannel(msg: CommandMessage): Promise<boolean> {
 		const channels: string[] = this.client.provider.get(msg.guild.id, 'djChannels', []).filter((c: string) => msg.guild.channels.has(c) && msg.guild.channels.get(c).type === 'text');
 
 		let prompt: string = stripIndents`**DJ/Music Channels:**

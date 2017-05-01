@@ -52,6 +52,6 @@ export default class AnnouncementChannelCommand extends Command {
 
 		await config.save();
 
-		msg.say(`${permissions}The announcement channel ${config.anChannel ? `is now ${msg.guild.channels.get(config.anChannel)}` : 'has been removed'}!`);
+		return msg.say(`${permissions}The announcement channel ${config.anChannel ? `is now ${msg.guild.channels.get(config.anChannel)}` : 'has been removed'}!`);
 	}
 };

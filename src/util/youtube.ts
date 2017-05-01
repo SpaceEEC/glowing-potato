@@ -60,11 +60,11 @@ export type video = {
 	 */
 	id: string;
 	/**
-	 * Title of the Video.
+	 * Title of the Video
 	 */
 	title: string;
 	/**
-	 * Length of the Video in seconds.
+	 * Length of the Video in seconds
 	 */
 	durationSeconds: number;
 };
@@ -75,8 +75,8 @@ export type video = {
 export class Youtube {
 	/**
 	 * Fetches a video from a URL or its ID.
-	 * @param {string} input URL or ID to fetch the video from.
-	 * @returns {Promise<video>} The fetched video, ur null when no was found.
+	 * @param {string} input URL or ID to fetch the video from
+	 * @returns {Promise<video>} The fetched video, ur null when no was found
 	 * @static
 	 */
 	public static async getVideo(input: string): Promise<video> {
@@ -93,9 +93,9 @@ export class Youtube {
 
 	/**
 	 * Fetches all videos (up to set limit) from the playlist from its URL or ID.
-	 * @param {string} input The URL or ID to fetch from.
-	 * @param {?number} limit The limit of videos to fetch.
-	 * @returns {Promise<video[]>} The fetched videos.
+	 * @param {string} input The URL or ID to fetch from
+	 * @param {?number} limit The limit of videos to fetch
+	 * @returns {Promise<video[]>} The fetched videos
 	 * @static
 	 */
 	public static async getPlaylist(input: string, limit: number): Promise<video[]> {
@@ -110,9 +110,9 @@ export class Youtube {
 
 	/**
 	 * Fetches videos from youtube by the specified searchquery.
-	 * @param {string} input The search query.
-	 * @param {number} max Max amounts of videos to be listed.
-	 * @returns {Promise<video[]>} The found videos.
+	 * @param {string} input The search query
+	 * @param {number} max Max amounts of videos to be listed
+	 * @returns {Promise<video[]>} The found videos
 	 * @static
 	 */
 	public static async searchVideos(input: string, max: number): Promise<video[]> {
@@ -137,11 +137,11 @@ export class Youtube {
 
 	/**
 	 * Fetches all videos from that Playlist up to the specified limit.
-	 * @param {string} id ID of the playlist to fetch from.
-	 * @param {number} finalamount Amount of videos to fetch at max.
-	 * @param {?string} [pagetoken=null] Token of the page to query.
-	 * @param {?string[]} [arr=[]] Array of already fetched videos.
-	 * @returns {Promise<video[]>} Array of fetched video IDs.
+	 * @param {string} id ID of the playlist to fetch from
+	 * @param {number} finalamount Amount of videos to fetch at max
+	 * @param {?string} [pagetoken=null] Token of the page to query
+	 * @param {?string[]} [arr=[]] Array of already fetched videos
+	 * @returns {Promise<video[]>} Array of fetched video IDs
 	 * @static
 	 * @private
 	 */
@@ -174,8 +174,8 @@ export class Youtube {
 
 	/**
 	 * Fetches all necessary data from the specified video IDs.
-	 * @param {string} ids IDs, sperated by spaces, to fetch data from.
-	 * @returns {video[]} The fetched videos.
+	 * @param {string} ids IDs, sperated by spaces, to fetch data from
+	 * @returns {video[]} The fetched videos
 	 * @static
 	 * @private
 	 */
@@ -205,8 +205,8 @@ export class Youtube {
 
 	/**
 	 * Converts an ISO 8601 string to seconds.
-	 * @param {string} input The ISO 8601 string.
-	 * @returns {number} Converted seconds.
+	 * @param {string} input The ISO 8601 string
+	 * @returns {number} Converted seconds
 	 * @static
 	 * @private
 	 */

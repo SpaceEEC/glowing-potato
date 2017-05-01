@@ -26,28 +26,24 @@ export default class ServerinfoCommand extends Command {
 			.addField('❯ Member:', `• \`${msg.guild.memberCount}\` Member\n• Owner is ${msg.guild.owner}`, true)
 			.addField('❯ General:', stripIndents`
       • \`${msg.guild.roles.size}\` Roles
-      • In ${this.capitalize(msg.guild.region)}`, true)
+      • In ${this._capitalize(msg.guild.region)}`, true)
 			.addField('\u200b', `• Created ${moment(msg.guild.createdAt).format('DD.MM.YYYY [\n   at:] hh:mm:ss')}`, true)
-			.addField('❯ Emojis:', this.getRandomEmojis(msg))
+			.addField('❯ Emojis:', this._getRandomEmojis(msg))
 			.setFooter(msg.cleanContent, msg.author.displayAvatarURL)
 		);
 	}
 
-	private capitalize(name: string): string {
+	private _capitalize(name: string): string {
 		return name[0].toUpperCase() + name.slice(1);
 	}
 
-	private getRandomEmojis(msg: CommandMessage): string {
+	private _getRandomEmojis(msg: CommandMessage): string {
 		const emojis: string[] = msg.guild.emojis.map((e: Emoji) => e.toString());
-		let currentIndex: number = emojis.length;
-		let temporaryValue: string;
-		let randomIndex: number;
-		while (currentIndex !== 0) {
-			randomIndex = Math.floor(Math.random() * currentIndex);
-			currentIndex--;
-			temporaryValue = emojis[currentIndex];
-			emojis[currentIndex] = emojis[randomIndex];
-			emojis[randomIndex] = temporaryValue;
+		for (let i: number = emojis.length - 1; i > 0; i--) {
+			const randomIndex: number = Math.floor(Math.random() * (i + 1));
+			const temp: string = emojis[i];
+			emojis[i] = emojis[randomIndex];
+			emojis[randomIndex] = temp;
 		}
 		let response: string = '';
 		for (const emoji of emojis) {
