@@ -1,6 +1,9 @@
 import { Collection, GuildMember, Message, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
-import { CommandoClient, util } from 'discord.js-commando';
+import { CommandoClient } from 'discord.js-commando';
+
 import Song from './Song';
+
+const { util }: { util: any } = require('discord.js-commando');
 
 export type Page = { page: number, items: Song[], maxPage: number };
 

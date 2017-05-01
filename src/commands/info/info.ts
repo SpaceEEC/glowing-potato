@@ -21,7 +21,7 @@ export default class InfoCommand extends Command {
 		return msg.embed(new RichEmbed()
 			.setColor(0xffa500).setTitle('General informations about the bot.')
 			.setDescription('\u200b')
-			.addField('❯ Uptime:', `• ${moment.duration(this.client.uptime).format('d[ days], h[ hours], m[ minutes and ]s[ seconds]')}`)
+			.addField('❯ Uptime:', `• ${(moment.duration(this.client.uptime) as any).format('d[ days], h[ hours], m[ minutes and ]s[ seconds]')}`)
 			.addField('❯ Used memory:', `• ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
 			.addField('❯ Commands:', `• ${this.client.registry.commands.size}`, true)
 			//.addField('❯ spacebot-version:', `• v${version} ([glowing-potato](http://puu.sh/teDYW/d6f9555fbd.png))`, true)

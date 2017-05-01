@@ -82,7 +82,8 @@ client.dispatcher.addInhibitor((msg: Message) => {
 	const ignoredChannels: string[] = client.provider.get(msg.guild.id, 'ignoredChannels', []);
 	if (ignoredChannels.includes(msg.channel.id)) return [`Channel(${msg.channel.id}) is ignored in this guild(${msg.guild.id})`, null];
 
-	return false;
+	// false as any, why
+	return false as any;
 });
 
 client
