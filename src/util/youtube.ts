@@ -13,11 +13,11 @@ const multiplicator: number[] = [1, 60, 3600];
 const parser: RegExp = /\d+/g;
 
 // very consistent api responses
-type videoResponse = {
-	items: videoItem[];
+type VideoResponse = {
+	items: VideoItem[];
 };
 
-type videoItem = {
+type VideoItem = {
 	snippet: {
 		title: string;
 	};
@@ -27,12 +27,12 @@ type videoItem = {
 	id?: string;
 };
 
-type playlistResponse = {
-	items: playlistVideo[];
+type PlaylistResponse = {
+	items: PlaylistVideo[];
 	nextPageToken: string;
 };
 
-type playlistVideo = {
+type PlaylistVideo = {
 	snippet: {
 		resourceId: {
 			videoId: string;
@@ -40,11 +40,11 @@ type playlistVideo = {
 	}
 };
 
-type searchResponse = {
-	items: searchVideo[];
+type SearchResponse = {
+	items: SearchVideo[];
 };
 
-type searchVideo = {
+type SearchVideo = {
 	id: {
 		kind: string;
 		videoId: string;
@@ -54,7 +54,7 @@ type searchVideo = {
 /**
  * Represents a video from youtube as a consistent type.
  */
-export type video = {
+export type Video = {
 	/**
 	 * Video ID
 	 */
@@ -76,10 +76,10 @@ export class Youtube {
 	/**
 	 * Fetches a video from a URL or its ID.
 	 * @param {string} input URL or ID to fetch the video from
-	 * @returns {Promise<video>} The fetched video, ur null when no was found
+	 * @returns {Promise<Video>} The fetched video, ur null when no was found
 	 * @static
 	 */
-	public static async getVideo(input: string): Promise<video> {
+	public static async getVideo(input: string): Promise<Video> {
 		const { pathname, query, hostname }: { pathname?: string, hostname?: string, query?: { v: string } } = parse(input, true);
 		let id: string;
 
@@ -88,17 +88,17 @@ export class Youtube {
 
 		if (!id) return null;
 
-		return Youtube._fetchVideos(id).then((videos: video[]) => videos[0]);
+		return Youtube._fetchVideos(id).then((videos: Video[]) => videos[0]);
 	}
 
 	/**
 	 * Fetches all videos (up to set limit) from the playlist from its URL or ID.
 	 * @param {string} input The URL or ID to fetch from
 	 * @param {?number} limit The limit of videos to fetch
-	 * @returns {Promise<video[]>} The fetched videos
+	 * @returns {Promise<Video[]>} The fetched videos
 	 * @static
 	 */
-	public static async getPlaylist(input: string, limit: number): Promise<video[]> {
+	public static async getPlaylist(input: string, limit: number): Promise<Video[]> {
 		let id: string;
 		const { pathname, query }: { pathname?: string, query?: { list: string } } = parse(input, true);
 		if (query.list) id = query.list;
@@ -112,11 +112,11 @@ export class Youtube {
 	 * Fetches videos from youtube by the specified searchquery.
 	 * @param {string} input The search query
 	 * @param {number} max Max amounts of videos to be listed
-	 * @returns {Promise<video[]>} The found videos
+	 * @returns {Promise<Video[]>} The found videos
 	 * @static
 	 */
-	public static async searchVideos(input: string, max: number): Promise<video[]> {
-		const { body: search, status, statusText, ok }: { body: searchResponse, status: number, statusText: string, ok: boolean } = await get(
+	public static async searchVideos(input: string, max: number): Promise<Video[]> {
+		const { body: search, status, statusText, ok }: { body: SearchResponse, status: number, statusText: string, ok: boolean } = await get(
 			'https://www.googleapis.com/youtube/v3/search'
 			+ '?part=snippet'
 			+ `&maxResults=${max}`
@@ -141,22 +141,22 @@ export class Youtube {
 	 * @param {number} finalamount Amount of videos to fetch at max
 	 * @param {?string} [pagetoken=null] Token of the page to query
 	 * @param {?string[]} [arr=[]] Array of already fetched videos
-	 * @returns {Promise<video[]>} Array of fetched video IDs
+	 * @returns {Promise<Video[]>} Array of fetched video IDs
 	 * @static
 	 * @private
 	 */
-	private static async _fetchPlaylist(id: string, finalamount: number, pagetoken: string = null, arr: video[] = []): Promise<video[]> {
+	private static async _fetchPlaylist(id: string, finalamount: number, pagetoken: string = null, arr: Video[] = []): Promise<Video[]> {
 		const requestamount: number = Math.min(finalamount, 50);
 		finalamount -= requestamount;
 
-		const { body: playlist, status, statusText, ok }: { body: playlistResponse, status: number, statusText: string, ok: boolean } = await get(
+		const { body: playlist, status, statusText, ok }: { body: PlaylistResponse, status: number, statusText: string, ok: boolean } = await get(
 			'https://www.googleapis.com/youtube/v3/playlistItems'
-			+ '?part=snippet'
-			+ `&maxResults=${requestamount}`
-			+ `&playlistId=${id}`
-			+ `${pagetoken ? `&pageToken=${pagetoken}` : ''}`
-			+ `&fields=items%2Fsnippet%2FresourceId%2FvideoId`
-			+ `&key=${googletoken}`).catch((response: any) => response);
+				+ '?part=snippet'
+				+ `&maxResults=${requestamount}`
+				+ `&playlistId=${id}`
+				+ pagetoken ? `&pageToken=${pagetoken}` : ''
+				+ `&fields=items%2Fsnippet%2FresourceId%2FvideoId`
+				+ `&key=${googletoken}`).catch((response: any) => response);
 		silly('fetchPlaylist', status, statusText, ok);
 
 		if (!playlist.items) return arr.length ? arr : null;
@@ -164,7 +164,7 @@ export class Youtube {
 		const ids: string[] = [];
 		for (const video of playlist.items) ids.push(video.snippet.resourceId.videoId);
 
-		const tempArray: video[] = await Youtube._fetchVideos(ids.join());
+		const tempArray: Video[] = await Youtube._fetchVideos(ids.join());
 
 		arr = arr.concat(tempArray);
 
@@ -175,12 +175,12 @@ export class Youtube {
 	/**
 	 * Fetches all necessary data from the specified video IDs.
 	 * @param {string} ids IDs, sperated by spaces, to fetch data from
-	 * @returns {video[]} The fetched videos
+	 * @returns {Video[]} The fetched videos
 	 * @static
 	 * @private
 	 */
-	private static async _fetchVideos(ids: string): Promise<video[]> {
-		const { body: videoResponse, status, statusText, ok }: { body: videoResponse, status: number, statusText: string, ok: boolean } = await get(
+	private static async _fetchVideos(ids: string): Promise<Video[]> {
+		const { body: videoResponse, status, statusText, ok }: { body: VideoResponse, status: number, statusText: string, ok: boolean } = await get(
 			'https://www.googleapis.com/youtube/v3/videos'
 			+ '?part=snippet%2CcontentDetails'
 			+ `&id=${encodeURIComponent(ids)}`
@@ -189,7 +189,7 @@ export class Youtube {
 		).catch((response: any) => response);
 		silly('fetchVideos', status, statusText, ok);
 
-		const videos: video[] = [];
+		const videos: Video[] = [];
 		for (const video of videoResponse.items) {
 			videos.push(
 				{
