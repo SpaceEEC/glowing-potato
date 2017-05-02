@@ -42,7 +42,6 @@ addColors({
 
 export default class PlayMusicCommand extends Command {
 	public queue: Map<string, Queue>;
-	private _util: Util;
 
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -78,7 +77,6 @@ export default class PlayMusicCommand extends Command {
 
 		// hello crawl (or other curious people)
 		this.queue = new Map<string, Queue>();
-		this._util = new Util(client);
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
@@ -301,7 +299,7 @@ export default class PlayMusicCommand extends Command {
 			type: 'boolean'
 		};
 
-		const choice: boolean = await this._util.prompt<boolean>(msg, argument).catch(() => null);
+		const choice: boolean = await Util.prompt<boolean>(msg, argument).catch(() => null);
 
 		if (choice === null) return statusmsg.delete().then(() => null).catch(() => null);
 

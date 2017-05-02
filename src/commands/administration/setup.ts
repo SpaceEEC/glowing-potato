@@ -6,7 +6,6 @@ import GuildConfig from '../../dataProviders/models/GuildConfig';
 import Util from '../../util/util';
 
 export default class SetupCommand extends Command {
-	private util: Util;
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'setup',
@@ -16,7 +15,6 @@ export default class SetupCommand extends Command {
 			details: 'Sets up the configuration for this guild.',
 			guildOnly: true,
 		});
-		this.util = new Util(client);
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
@@ -103,9 +101,9 @@ export default class SetupCommand extends Command {
 			Do you want to overwrite it/them with a new one?\n`
 			: '\n\nDo you want to set an admin role now? You can always add or remove them later on manually.\n';
 
-		if (!(await this.util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(roles.length);
+		if (!(await Util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(roles.length);
 
-		const adminRole: Role = await this.util.prompt<Role>(msg, { key: 'key', prompt: 'which role shall it be?', type: 'role' });
+		const adminRole: Role = await Util.prompt<Role>(msg, { key: 'key', prompt: 'which role shall it be?', type: 'role' });
 
 		if (!adminRole) return Boolean(roles.length);
 		return this.client.provider.set(msg.guild.id, 'adminRoles', [adminRole.id]);
@@ -129,9 +127,9 @@ export default class SetupCommand extends Command {
 			Do you want to overwrite it/them with a new one?\n`
 			: '\n\nDo you want to set a mod role now? You can always add or remove them later on manually.\n';
 
-		if (!(await this.util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(roles.length);
+		if (!(await Util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(roles.length);
 
-		const modRole: Role = await this.util.prompt<Role>(msg, { key: 'key', prompt: 'which role shall it be?', type: 'role' });
+		const modRole: Role = await Util.prompt<Role>(msg, { key: 'key', prompt: 'which role shall it be?', type: 'role' });
 
 		if (!modRole) return Boolean(roles.length);
 		return this.client.provider.set(msg.guild.id, 'modRoles', [modRole.id]);
@@ -152,9 +150,9 @@ export default class SetupCommand extends Command {
 			? `\n\nCurrent join message is: \`${config.joinMessage}\`, do you like to set a new?\n`
 			: '\n\nDo you want to set a join message now? You can always do that later on manually.\n';
 
-		if (!(await this.util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(config.joinMessage);
+		if (!(await Util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(config.joinMessage);
 
-		const joinMessage: string = await this.util.prompt<string>(msg, { key: 'key', prompt: 'which message shall be sent whenever a new member joins this guild?\nYou can use `:member:` and :guild` as placeholder.', type: 'string' });
+		const joinMessage: string = await Util.prompt<string>(msg, { key: 'key', prompt: 'which message shall be sent whenever a new member joins this guild?\nYou can use `:member:` and :guild` as placeholder.', type: 'string' });
 
 		if (!joinMessage) return Boolean(config.joinMessage);
 
@@ -178,9 +176,9 @@ export default class SetupCommand extends Command {
 			? `\n\nCurrent leave message is: \`${config.leaveMessage}\`, do you like to set a new?\n`
 			: '\n\nDo you want to set a leave message now? You can always do that later on manually.\n';
 
-		if (!(await this.util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(config.leaveMessage);
+		if (!(await Util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(config.leaveMessage);
 
-		const leaveMessage: string = await this.util.prompt<string>(msg, { key: 'key', prompt: 'which message shall be sent whenever a new member joins this guild?\nYou can use `:member:` and :guild` as placeholder.', type: 'string' });
+		const leaveMessage: string = await Util.prompt<string>(msg, { key: 'key', prompt: 'which message shall be sent whenever a new member joins this guild?\nYou can use `:member:` and :guild` as placeholder.', type: 'string' });
 
 		if (!leaveMessage) return Boolean(config.leaveMessage);
 
@@ -206,9 +204,9 @@ export default class SetupCommand extends Command {
 			? `\n\nThe current announcement channel is: <#${config.anChannel}>\n`
 			: '\n\nWould you like to set up an announcement channel now? You can always do that later on manually.\n';
 
-		if (!(await this.util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(config.anChannel);
+		if (!(await Util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(config.anChannel);
 
-		const anChannel: TextChannel = await this.util.prompt<TextChannel>(msg, { key: 'key', prompt: 'which channel would you like to set as announcement channel?\n', type: 'channel' });
+		const anChannel: TextChannel = await Util.prompt<TextChannel>(msg, { key: 'key', prompt: 'which channel would you like to set as announcement channel?\n', type: 'channel' });
 
 		if (!anChannel || anChannel.type !== 'text') return Boolean(config.anChannel);
 
@@ -232,9 +230,9 @@ export default class SetupCommand extends Command {
 			? `\n\nThe current log channel is: <#${config.logChannel}>\n`
 			: '\n\nWould you like to set up an log channel now? You can always do that later on manually.\n';
 
-		if (!(await this.util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(config.logChannel);
+		if (!(await Util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(config.logChannel);
 
-		const logChannel: TextChannel = await this.util.prompt<TextChannel>(msg, { key: 'key', prompt: 'which channel would you like to set as log channel?\n', type: 'channel' });
+		const logChannel: TextChannel = await Util.prompt<TextChannel>(msg, { key: 'key', prompt: 'which channel would you like to set as log channel?\n', type: 'channel' });
 
 		if (!logChannel || logChannel.type !== 'text') return Boolean(config.logChannel);
 
@@ -259,9 +257,9 @@ export default class SetupCommand extends Command {
 			Would you like to set a new one?\n`
 			: '\n\nWould you like to set up a voicelog channel now? You can always do that later on manually.\n';
 
-		if (!(await this.util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(config.vlogChannel);
+		if (!(await Util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(config.vlogChannel);
 
-		const vlogChannel: TextChannel = await this.util.prompt<TextChannel>(msg, { key: 'key', prompt: 'which channel would you like to set as voicelog channel?\n', type: 'channel' });
+		const vlogChannel: TextChannel = await Util.prompt<TextChannel>(msg, { key: 'key', prompt: 'which channel would you like to set as voicelog channel?\n', type: 'channel' });
 
 		if (!vlogChannel || vlogChannel.type !== 'text') return Boolean(config.vlogChannel);
 
@@ -290,9 +288,9 @@ export default class SetupCommand extends Command {
 			Would you like to overwrite them with a new role?\n`
 			: '\n\nDo you want to set a role now? You can always add or remove roles later on.\n';
 
-		if (!(await this.util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(roles.length);
+		if (!(await Util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(roles.length);
 
-		const djRole: Role = await this.util.prompt<Role>(msg, { key: 'key', prompt: 'which role do you want to set as DJ role?\n', type: 'role' });
+		const djRole: Role = await Util.prompt<Role>(msg, { key: 'key', prompt: 'which role do you want to set as DJ role?\n', type: 'role' });
 
 		if (!djRole) return Boolean(roles.length);
 
@@ -319,9 +317,9 @@ export default class SetupCommand extends Command {
 			Would you like to overwrite them with a new channel?\n`
 			: '\n\nDo you want to specify a channel now? You can always add or remove channels later on.\n';
 
-		if (!(await this.util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(channels.length);
+		if (!(await Util.prompt<boolean>(msg, { key: 'key', prompt, type: 'boolean' }))) return Boolean(channels.length);
 
-		const djChannel: TextChannel = await this.util.prompt<TextChannel>(msg, { key: 'key', prompt: 'which channel do you want to set as DJ channel?\n', type: 'channel' });
+		const djChannel: TextChannel = await Util.prompt<TextChannel>(msg, { key: 'key', prompt: 'which channel do you want to set as DJ channel?\n', type: 'channel' });
 
 		if (djChannel.type !== 'text') return Boolean(channels.length);
 
