@@ -10,7 +10,7 @@ import { ytdl } from 'ytdl-core';
 import Queue from '../../structures/Queue';
 import Song from '../../structures/Song';
 import Util from '../../util/util';
-import { video, Youtube } from '../../util/youtube';
+import { Video, Youtube } from '../../util/youtube';
 
 const yt: typeof ytdl = require('ytdl-core');
 
@@ -124,21 +124,21 @@ export default class PlayMusicCommand extends Command {
 
 		const fetchMessage: Message = await msg.say('Fetching info...') as Message;
 
-		const video: video = await Youtube.getVideo(args.input);
+		const video: Video = await Youtube.getVideo(args.input);
 		silly('video', video || false);
 
 		if (video) return this._handleInput(video, queue, msg, voiceChannel, fetchMessage);
 
-		const playlist: video[] = await Youtube.getPlaylist(args.input, Math.min(args.limit || 20, 200));
+		const playlist: Video[] = await Youtube.getPlaylist(args.input, Math.min(args.limit || 20, 200));
 		silly('playlist', playlist && playlist[0] || false);
 
 		if (playlist) return this._handleInput(playlist, queue, msg, voiceChannel, fetchMessage);
 
-		const search: video[] = await Youtube.searchVideos(args.input, Math.min(args.limit || 1, 50));
+		const search: Video[] = await Youtube.searchVideos(args.input, Math.min(args.limit || 1, 50));
 		silly('search', search && search[0] || false);
 
 		if (search) {
-			const toAdd: video = search[1] ? await this._chooseSong(msg, search, fetchMessage) : search[0];
+			const toAdd: Video = search[1] ? await this._chooseSong(msg, search, fetchMessage) : search[0];
 
 			if (!toAdd) return msg.say('Aborting then.')
 				.then((mes: Message) => mes.delete(5000));
@@ -160,7 +160,7 @@ export default class PlayMusicCommand extends Command {
 	 * @returns {Promise<void>}
 	 * @private
 	 */
-	private async _handleInput(video: video | video[], queue: Queue, msg: CommandMessage, voiceChannel: VoiceChannel, fetchMessage: Message): Promise<Message> {
+	private async _handleInput(video: Video | Video[], queue: Queue, msg: CommandMessage, voiceChannel: VoiceChannel, fetchMessage: Message): Promise<Message> {
 		if (!queue || !queue.length) {
 			if (!queue) {
 				queue = new Queue(msg.channel as TextChannel, voiceChannel);
@@ -202,7 +202,7 @@ export default class PlayMusicCommand extends Command {
 	 * @returns {RichEmbed | string} Returns a string on failure, a RichEmbed upon success
 	 * @private
 	 */
-	private _add(msg: CommandMessage, video: video): RichEmbed | string {
+	private _add(msg: CommandMessage, video: Video): RichEmbed | string {
 		const queue: Queue = this.queue.get(msg.guild.id);
 
 		if (video.durationSeconds === 0) {
@@ -235,7 +235,7 @@ export default class PlayMusicCommand extends Command {
 	 * @returns {RichEmbed | string} Returns a string on failure, a RichEmbed upon success
 	 * @private
 	 */
-	private _addPlaylist(msg: CommandMessage, videos: video[]): RichEmbed | string {
+	private _addPlaylist(msg: CommandMessage, videos: Video[]): RichEmbed | string {
 		const queue: Queue = this.queue.get(msg.guild.id);
 		let ignored: number = 0;
 		let lastsong: Song;
@@ -276,8 +276,8 @@ export default class PlayMusicCommand extends Command {
 	 * @returns {video} The picked video
 	 * @private
 	 */
-	private async _chooseSong(msg: CommandMessage, videos: video[], statusmsg?: Message, index: number = 0): Promise<video> {
-		const video: video = videos[index];
+	private async _chooseSong(msg: CommandMessage, videos: Video[], statusmsg?: Message, index: number = 0): Promise<Video> {
+		const video: Video = videos[index];
 		if (!video) {
 			if (statusmsg) {
 				statusmsg.delete().catch(() => null);
