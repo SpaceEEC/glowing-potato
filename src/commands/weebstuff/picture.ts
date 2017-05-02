@@ -12,8 +12,6 @@ type post = {
 };
 
 export default class PictureCommand extends Command {
-	private _util: Util;
-
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'picture',
@@ -34,7 +32,6 @@ export default class PictureCommand extends Command {
 				}
 			]
 		});
-		this._util = new Util(client);
 	}
 
 	public async run(msg: CommandMessage, args: { search: string, cmd: string }): Promise<Message | Message[]> {
@@ -45,7 +42,7 @@ export default class PictureCommand extends Command {
 				.addField('Allowed chars:', 'A-z 0-9 _ = () ! - : .', true));
 		}
 
-		args.cmd = this._util.getUsedAlias(msg, { pic: 'picture' });
+		args.cmd = Util.getUsedAlias(msg, { pic: 'picture' });
 
 		if (args.cmd === 'picture') {
 			if (args.search.split(' ')[2]) args.cmd = 'konachan';

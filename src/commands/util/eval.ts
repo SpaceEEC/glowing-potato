@@ -6,7 +6,6 @@ import * as moment from 'moment';
 import Util from '../../util/util.js';
 
 export default class EvalCommand extends Command {
-	private _util: Util;
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'eval',
@@ -23,7 +22,6 @@ export default class EvalCommand extends Command {
 				}
 			]
 		});
-		this._util = new Util(client);
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
@@ -34,7 +32,7 @@ export default class EvalCommand extends Command {
 		const time: number = new Date().getTime();
 		try {
 			let evaled: any;
-			if (this._util.getUsedAlias(msg) === 'async') args.code = `(async()=>{${args.code}})();`;
+			if (Util.getUsedAlias(msg) === 'async') args.code = `(async()=>{${args.code}})();`;
 			evaled = await Promise.resolve(eval(args.code));
 			const responseTypeof: string = typeof evaled;
 			if (typeof evaled !== 'string') { evaled = require('util').inspect(evaled, false, 0); }

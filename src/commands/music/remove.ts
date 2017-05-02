@@ -7,7 +7,7 @@ import Util from '../../util/util';
 
 export default class RemoveMusicCommand extends Command {
 	private _queue: Map<string, Queue>;
-	private _util: Util;
+
 	constructor(client: CommandoClient) {
 		super(client, {
 			name: 'remove',
@@ -31,7 +31,6 @@ export default class RemoveMusicCommand extends Command {
 				}
 			]
 		});
-		this._util = new Util(client);
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
@@ -58,7 +57,7 @@ export default class RemoveMusicCommand extends Command {
 			prompt: `Are you sure you want to remove this wonderful song from the queue?\n\`${song.name}\´\n\n__y__es/__n__o`,
 			type: 'boolean'
 		};
-		const choice: boolean = await this._util.prompt<boolean>(msg, argument).catch(() => null);
+		const choice: boolean = await Util.prompt<boolean>(msg, argument).catch(() => null);
 
 		if (!choice) {
 			return msg.say('Aborting then.')

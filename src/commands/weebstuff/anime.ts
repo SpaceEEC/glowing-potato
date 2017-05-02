@@ -11,7 +11,6 @@ type args = { search: string, cmd: string };
 type error = { error: { messages: {}[] } };
 
 export default class AnimeCommand extends Command {
-	private _util: Util;
 
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -39,12 +38,11 @@ export default class AnimeCommand extends Command {
 				}
 			]
 		});
-		this._util = new Util(client);
 	}
 
 	public async run(msg: CommandMessage, args: args): Promise<Message | Message[]> {
 		if (args.search.includes('?')) throw new FriendlyError('please don\'t use `?` in the search, it would break the request.');
-		args.cmd = this._util.getUsedAlias(msg, { char: 'character' });
+		args.cmd = Util.getUsedAlias(msg, { char: 'character' });
 		const aniSettings: aniSettings = await updateToken(this.client, msg, this.client.provider.get('global', 'aniSettings', { expires: 0 }));
 		const responses: animeData[] | mangaData[] | charData[] = await this._query(msg, aniSettings, args);
 		if (responses[1]) {
@@ -97,7 +95,7 @@ export default class AnimeCommand extends Command {
 			max: count
 		};
 
-		const userInput: number = await this._util.prompt<number>(msg, argument, false);
+		const userInput: number = await Util.prompt<number>(msg, argument, false);
 		message.delete().catch(() => null);
 
 		if (!userInput) return null;

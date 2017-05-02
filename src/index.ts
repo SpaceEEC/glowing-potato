@@ -9,6 +9,7 @@ import { add, addColors, error, info, Logger, LoggerInstance, remove, transports
 
 import SequelizeProvider from './dataProviders/SequelizeProvider';
 import registerEvents from './events/events';
+import Util from './util/util';
 
 const { defaultPrefix, logLevel, maintoken, ownerID }: { defaultPrefix: string, logLevel: string, maintoken: string, ownerID: string } = require('../config');
 
@@ -91,13 +92,16 @@ client
 	.on('warn', warn)
 	.once('ready', () => {
 		client.user.setGame(client.provider.get('global', 'game', null));
+		Util.init(client);
+		(client as any).ws.connection.on('close', (event: any) => {
+			disconnect.log('disconnect', '', event.code, ': ', event.reason);
+		});
 	})
 	.on('ready', () => {
 		info(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
 	})
 	.on('disconnect', (event: any) => {
-		disconnect.log('disconnect', '', event.code, ': ', event.reason);
-		if (event.code === 1000) process.exit(200);
+		process.exit(200);
 	})
 	.on('reconnecting', () => warn('Reconnecting...'))
 	.on('commandError', (cmd: Command, err: any) => {
