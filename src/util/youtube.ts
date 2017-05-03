@@ -153,10 +153,11 @@ export class Youtube {
 			'https://www.googleapis.com/youtube/v3/playlistItems'
 				+ '?part=snippet'
 				+ `&maxResults=${requestamount}`
-				+ `&playlistId=${id}`
+				+ `&playlistId=${encodeURIComponent(id)}`
 				+ pagetoken ? `&pageToken=${pagetoken}` : ''
 				+ `&fields=items%2Fsnippet%2FresourceId%2FvideoId`
-				+ `&key=${googletoken}`).catch((response: any) => response);
+				+ `&key=${googletoken}`
+		).catch((response: any) => response);
 		silly('fetchPlaylist', status, statusText, ok);
 
 		if (!playlist.items) return arr.length ? arr : null;
