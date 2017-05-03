@@ -19,7 +19,7 @@ export default async function voiceStateUpdate(oldMember: GuildMember, newMember
 	}
 
 	if (!vlogChannel.permissionsFor(newMember.guild.member(client.user))
-		.hasPermissions(['SEND_MESSAGES', 'EMBED_LINKS'])) return;
+		.has(['SEND_MESSAGES', 'EMBED_LINKS'])) return;
 
 	if (oldMember.voiceChannel !== newMember.voiceChannel) {
 		let clr: number;
@@ -37,7 +37,9 @@ export default async function voiceStateUpdate(oldMember: GuildMember, newMember
 			clr = 3447003;
 			desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} went from ${oldMember.voiceChannel.name} to ${newMember.voiceChannel.name}.`;
 		}
-		vlogChannel.sendEmbed(new RichEmbed().setColor(clr).setDescription(desc)
-			.setAuthor(newMember.displayName, newMember.user.displayAvatarURL, newMember.user.displayAvatarURL));
+		vlogChannel.send({
+			embed: new RichEmbed().setColor(clr).setDescription(desc)
+				.setAuthor(newMember.displayName, newMember.user.displayAvatarURL, newMember.user.displayAvatarURL)
+		});
 	}
 };
