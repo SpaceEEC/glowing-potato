@@ -124,7 +124,10 @@ export class Youtube {
 			+ '&type=video'
 			+ '&fields=items%2Fid'
 			+ `&key=${googletoken}`
-		).catch((response: any) => response);
+		).catch((response: any) => {
+			if (!response.status && response instanceof Error) throw response;
+			else return response;
+		});
 		silly('searchVideos', status, statusText, ok);
 
 		if (!search.items[0]) return null;
@@ -151,13 +154,16 @@ export class Youtube {
 
 		const { body: playlist, status, statusText, ok }: { body: PlaylistResponse, status: number, statusText: string, ok: boolean } = await get(
 			'https://www.googleapis.com/youtube/v3/playlistItems'
-				+ '?part=snippet'
-				+ `&maxResults=${requestamount}`
-				+ `&playlistId=${encodeURIComponent(id)}`
-				+ pagetoken ? `&pageToken=${pagetoken}` : ''
-				+ `&fields=items%2Fsnippet%2FresourceId%2FvideoId`
-				+ `&key=${googletoken}`
-		).catch((response: any) => response);
+			+ '?part=snippet'
+			+ `&maxResults=${requestamount}`
+			+ `&playlistId=${encodeURIComponent(id)}`
+			+ (pagetoken ? `&pageToken=${pagetoken}` : '')
+			+ `&fields=items%2Fsnippet%2FresourceId%2FvideoId`
+			+ `&key=${googletoken}`
+		).catch((response: any) => {
+			if (!response.status && response instanceof Error) throw response;
+			else return response;
+		});
 		silly('fetchPlaylist', status, statusText, ok);
 
 		if (!playlist.items) return arr.length ? arr : null;
@@ -187,7 +193,10 @@ export class Youtube {
 			+ `&id=${encodeURIComponent(ids)}`
 			+ '&fields=items(contentDetails%2Fduration%2Cid%2Csnippet%2Ftitle)'
 			+ `&key=${googletoken}`
-		).catch((response: any) => response);
+		).catch((response: any) => {
+			if (!response.status && response instanceof Error) throw response;
+			else return response;
+		});
 		silly('fetchVideos', status, statusText, ok);
 
 		const videos: Video[] = [];
