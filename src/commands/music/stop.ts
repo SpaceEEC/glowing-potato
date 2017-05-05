@@ -32,6 +32,10 @@ export default class StopMusicCommand extends Command {
 			return msg.say('What do you expect to stop? 👀')
 				.then((mes: Message) => mes.delete(5000));
 		}
+		if (!queue.playing) {
+			return msg.say('Can not stop before the song started.')
+				.then((mes: Message) => mes.delete(5000));
+		}
 		if (!queue.vcMembers.has(msg.author.id)) {
 			return msg.say(`I am playing over here in ${queue.vcName}, you are not here, so I will continue playing.`)
 				.then((mes: Message) => mes.delete(5000));
