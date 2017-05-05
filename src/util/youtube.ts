@@ -81,8 +81,9 @@ export class Youtube {
 	 */
 	public static async getVideo(input: string): Promise<Video> {
 		const { pathname, query, hostname }: { pathname?: string, hostname?: string, query?: { v: string } } = parse(input, true);
-		let id: string;
+		if (!pathname) return null;
 
+		let id: string;
 		if (query.v) id = query.v;
 		else if (hostname === 'youtu.be' || !id) id = pathname.split('/').pop();
 
@@ -99,10 +100,13 @@ export class Youtube {
 	 * @static
 	 */
 	public static async getPlaylist(input: string, limit: number): Promise<Video[]> {
-		let id: string;
 		const { pathname, query }: { pathname?: string, query?: { list: string } } = parse(input, true);
+		if (!pathname) return null;
+
+		let id: string;
 		if (query.list) id = query.list;
 		else id = pathname.split('/').pop();
+
 		if (!id) return null;
 
 		return Youtube._fetchPlaylist(id, limit);
