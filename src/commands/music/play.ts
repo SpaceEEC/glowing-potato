@@ -343,7 +343,7 @@ export default class PlayMusicCommand extends Command {
 		const startTime: number = Date.now();
 
 		const stream: Stream = yt(currentSong.url, { filter: 'audioonly' })
-			.on('error', async (err: Error) => {
+			.once('error', async (err: Error) => {
 				streamErrored = true;
 				logger.log('ytdl', guildID, err);
 				await queue.statusMessage.edit('❌ An error occured while playing the YouTube stream.', { embed: null });
@@ -356,17 +356,17 @@ export default class PlayMusicCommand extends Command {
 				logger.log('musicInfo', guildID, 'Piping to file finished after', (Song.timeString((Date.now() - startTime) / 1000)));
 				const dispatcher: StreamDispatcher = queue.connection.playFile(`./tempmusicfile_${guildID}`, { passes: 2 })
 
-					.on('error', async (err: Error) => {
+					.once('error', async (err: Error) => {
 						logger.log('dispatcher', guildID, err);
 						await queue.statusMessage.edit(`❌ An internal error occured while playing.`);
 						queue.statusMessage = null;
 					})
 
-					.on('start', () => {
+					.once('start', () => {
 						logger.log('musicInfo', guildID, 'Dispatcher started.');
 					})
 
-					.on('end', (reason: string) => {
+					.once('end', (reason: string) => {
 						logger.log('musicInfo', guildID, `Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${currentSong.lengthString} ${reason ? `Reason: ${reason}` : ''}`);
 						(dispatcher.stream as any).destroy();
 
