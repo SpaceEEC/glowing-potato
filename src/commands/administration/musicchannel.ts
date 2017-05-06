@@ -39,8 +39,7 @@ export default class MusicChannelCommand extends Command {
 		const channels: string[] = this.client.provider.get(msg.guild.id, 'djChannels', []);
 
 		if (!(args.channel instanceof TextChannel)) {
-			msg.say(channels.length ? channels.map((c: string) => `<#${c}>`).join(', ') : 'No channel set, so everywhere.');
-			return;
+			return msg.say(channels.length ? channels.map((c: string) => `<#${c}>`).join(', ') : 'No channel set, so everywhere.');
 		}
 
 		if (channels.includes(args.channel.id)) {

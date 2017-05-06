@@ -40,39 +40,31 @@ export default class BlacklistCommand extends Command {
 		const mutedRole: Role = msg.guild.roles.get(config.mutedRole);
 		const { member: target } = args;
 
-		if (!config.mutedRole) {
-			msg.say('No muted role set up!');
-			return;
-		}
+		if (!config.mutedRole) return msg.say('No muted role set up!');
 
 		if (!mutedRole) {
-			msg.say('The set up role seems to be deleted, removing it from config then...');
 			await config.setAndSave('mutedRole', null);
-			return;
+			return msg.say('The set up role seems to be deleted, removing it from config then...');
 		}
 
 		if (mutedRole.position >= msg.guild.member(this.client.user).highestRole.position) {
-			msg.say(stripIndents`I can not mute or unmute someone while  \`@${mutedRole.name}\` is higher than my highest role.
+			return msg.say(stripIndents`I can not mute or unmute someone while  \`@${mutedRole.name}\` is higher than my highest role.
       		You should change that, or yell at someone who can.`);
-			return;
 		}
 
 		if (target.roles.has(mutedRole.id)) {
 			target.removeRole(mutedRole);
-			msg.say(`Successfully unmuted \`${target.user.username}#${target.user.discriminator}\`!`);
-			return;
+			return msg.say(`Successfully unmuted \`${target.user.username}#${target.user.discriminator}\`!`);
 		}
 
 		if (target.id === msg.author.id) {
-			msg.say(stripIndents`Muting yourself, what a wonderful idea!
+			return msg.say(stripIndents`Muting yourself, what a wonderful idea!
       		Wait... actually not.`);
-			return;
 		}
 
 		const staffRoles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).concat(this.client.provider.get(msg.guild.id, 'modRoles', []));
 		if (target.roles.some((r: Role) => staffRoles.includes(r.id)) || target.hasPermission('ADMINISTRATOR') || this.client.isOwner(target)) {
-			msg.say('You can not mute that person!');
-			return;
+			return msg.say('You can not mute that person!');
 		}
 
 		await target.addRole(mutedRole);

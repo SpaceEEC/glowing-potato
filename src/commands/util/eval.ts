@@ -37,10 +37,9 @@ export default class EvalCommand extends Command {
 			const responseTypeof: string = typeof evaled;
 			if (typeof evaled !== 'string') { evaled = require('util').inspect(evaled, false, 0); }
 			if (evaled.includes(this.client.token)) {
-				msg.say('The token doesn\'t belong in here. 👀');
-				return;
+				return msg.say('The token does not belong in here. 👀');
 			}
-			msg.say(stripIndents`\`code:\`
+			return msg.say(stripIndents`\`code:\`
       		\`\`\`js\n${args.code ? args.code.split(`\``).join(`´`) : 'falsy'}\`\`\`
       		\`evaled\\returned:\`
       		\`\`\`js\n${evaled ? evaled.split(`\``).join(`´`) : 'falsy'}\`\`\`
@@ -48,14 +47,14 @@ export default class EvalCommand extends Command {
       		\`\`\`js\n${responseTypeof}
       		\`\`\`\n
       		Took \`${new Date().getTime() - time}\`ms`)
-				.catch((e: Error) => {
+				.catch((e: Error) =>
 					msg.say(`Fehler beim Senden der Antwort:\n
           			\`\`\`js
           			${e.stack ? e.stack : e}
-          			\`\`\``);
-				});
+          			\`\`\``)
+				);
 		} catch (error) {
-			msg.say(stripIndents`\`E-ROHR\`
+			return msg.say(stripIndents`\`E-ROHR\`
 			\`\`\`js
 			${error.url ? `${error.status} ${error.statusText}\n${error.text}` : error}
 			\`\`\`\n

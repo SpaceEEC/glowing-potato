@@ -38,8 +38,7 @@ export default class AdminRoleCommand extends Command {
 		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).filter((r: string) => msg.guild.roles.has(r));
 
 		if (!(args.role instanceof Role)) {
-			msg.say(`Admin roles: ${roles.length ? roles.map((r: string) => `\`@${msg.guild.roles.get(r).name}\``).join(', ') : 'No role set up.'}`);
-			return;
+			return msg.say(`Admin roles: ${roles.length ? roles.map((r: string) => `\`@${msg.guild.roles.get(r).name}\``).join(', ') : 'No role set up.'}`);
 		}
 
 		if (roles.includes(args.role.id)) {

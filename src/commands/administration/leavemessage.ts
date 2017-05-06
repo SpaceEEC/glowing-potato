@@ -45,8 +45,7 @@ export default class LeaveMessageCommand extends Command {
 	public async run(msg: CommandMessage, args: { message: string }): Promise<Message | Message[]> {
 		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } });
 		if (args.message === 'show') {
-			msg.say(config.leaveMessage || 'No message set.');
-			return;
+			return msg.say(config.leaveMessage || 'No message set.');
 		}
 
 		config.leaveMessage = args.message === 'remove' ? null : args.message;

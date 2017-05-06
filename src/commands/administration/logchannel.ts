@@ -40,8 +40,7 @@ export default class LogChannelCommand extends Command {
 
 		if (!(args.channel instanceof TextChannel)) {
 			const logChannel: TextChannel = msg.guild.channels.get(config.logChannel) as TextChannel;
-			msg.say(logChannel ? `The log channel is ${logChannel}.` : `No log channel set.`);
-			return;
+			return msg.say(logChannel ? `The log channel is ${logChannel}.` : `No log channel set.`);
 		}
 
 		config.logChannel = args.channel.id === config.logChannel ? null : args.channel.id;

@@ -50,7 +50,7 @@ export default class PruneCommand extends Command {
 		let messages: Collection<string, Message> = await msg.channel.fetchMessages({ limit: args.amount });
 		if (args.member) messages = messages.filter((m: Message) => m.author.id === args.member.id);
 		if (!messages.size) return undefined;
-		if (messages.size === 1) await messages.first().delete();
+		if (messages.size === 1) return messages.first().delete();
 		else await msg.channel.bulkDelete(messages, true);
 	}
 };

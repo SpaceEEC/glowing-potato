@@ -40,8 +40,7 @@ export default class VoicelogChannelCommand extends Command {
 
 		if (!(args.channel instanceof TextChannel)) {
 			const vlogChannel: TextChannel = msg.guild.channels.get(config.vlogChannel) as TextChannel;
-			msg.say(vlogChannel ? `The voicelog channel is: ${vlogChannel}.` : `No voicelog channel set.`);
-			return;
+			return msg.say(vlogChannel ? `The voicelog channel is: ${vlogChannel}.` : `No voicelog channel set.`);
 		}
 
 		config.vlogChannel = args.channel.id === config.vlogChannel ? null : args.channel.id;
