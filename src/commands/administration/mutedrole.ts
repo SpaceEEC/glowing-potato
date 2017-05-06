@@ -73,9 +73,8 @@ export default class MutedRoleCommand extends Command {
 		const mutedRole: Role = msg.guild.roles.get(mutedRoleID);
 
 		if (mutedRoleID && !mutedRole) {
-			msg.say('The set up muted role was not found in this guid, probably deleted, removing it from config...');
 			await config.setAndSave('mutedRole', null);
-			return;
+			return msg.say('The set up muted role was not found in this guid, probably deleted, removing it from config...');
 		}
 
 		return msg.say(mutedRoleID ? `The current muted role is: \`@${mutedRole.name}\`` : 'No muted role set up.');

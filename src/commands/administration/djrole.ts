@@ -38,8 +38,7 @@ export default class DJRoleCommand extends Command {
 		const roles: string[] = this.client.provider.get(msg.guild.id, 'djRoles', []).filter((r: string) => msg.guild.roles.has(r));
 
 		if (!(args.role instanceof Role)) {
-			msg.say(`Dj roles: ${roles.length ? roles.map((r: string) => `\`@${msg.guild.roles.get(r).name}\``).join(', ') : '@\u200beveryone'}`);
-			return;
+			return msg.say(`Dj roles: ${roles.length ? roles.map((r: string) => `\`@${msg.guild.roles.get(r).name}\``).join(', ') : '@\u200beveryone'}`);
 		}
 
 		if (roles.includes(args.role.id)) {

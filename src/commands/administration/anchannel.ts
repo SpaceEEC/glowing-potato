@@ -39,8 +39,7 @@ export default class AnnouncementChannelCommand extends Command {
 		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } });
 
 		if (!(args.channel instanceof TextChannel)) {
-			msg.say(config.anChannel ? `The announcement channel is ${msg.guild.channels.get(config.anChannel) || 'deleted'}.` : `No announcement channel set.`);
-			return;
+			return msg.say(config.anChannel ? `The announcement channel is ${msg.guild.channels.get(config.anChannel) || 'deleted'}.` : `No announcement channel set.`);
 		}
 
 		config.anChannel = args.channel.id === config.anChannel ? null : args.channel.id;

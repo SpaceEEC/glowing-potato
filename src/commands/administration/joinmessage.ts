@@ -45,8 +45,7 @@ export default class JoinMessageCommand extends Command {
 	public async run(msg: CommandMessage, args: { message: string }): Promise<Message | Message[]> {
 		const config: GuildConfig = await GuildConfig.findOrCreate({ where: { guildID: msg.guild.id } });
 		if (args.message === 'show') {
-			msg.say(config.joinMessage || 'No message set.');
-			return;
+			return msg.say(config.joinMessage || 'No message set.');
 		}
 
 		config.joinMessage = args.message === 'remove' ? null : args.message;
