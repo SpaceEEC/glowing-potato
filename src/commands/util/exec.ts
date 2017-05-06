@@ -8,7 +8,8 @@ type Execution = {
 	error: any;
 	stdout: string;
 	stderr: string;
-}
+};
+
 export default class ExecuteCommand extends Command {
 	constructor(client: CommandoClient) {
 		super(client, {
@@ -35,7 +36,6 @@ export default class ExecuteCommand extends Command {
 
 	public async run(msg: CommandMessage, args: { code: string }): Promise<Message | Message[]> {
 		const statusMessage: Message = await msg.say('Executing...') as Message;
-
 
 		const { error, stdout, stderr }: Execution = await new Promise<Execution>(
 			(resolve: (value: Execution) => void) => {
