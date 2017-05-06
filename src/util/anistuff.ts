@@ -4,6 +4,8 @@ import { CommandMessage, CommandoClient } from 'discord.js-commando';
 const { post }: { post: any } = require('snekfetch');
 const { anilist } = require('../../config.json');
 
+export const replaceChars: { [char: string]: string } = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'", '`': '\'', '<br>': '\n', '<br />': '\n' };
+
 type clientCredentials = {
 	/**
 	 * The access token, which is required to use the api
@@ -144,6 +146,7 @@ export async function updateToken(client: CommandoClient, msg: CommandMessage, a
  * @returns {string} The formatted output
  */
 export function formatFuzzy(input: number | string): string {
+	if (!input) return '';
 	input = input.toString();
 	return `${input.substring(6, 8)}.${input.substring(4, 6)}.${input.substring(0, 4)}`;
 }
