@@ -11,14 +11,14 @@ export default class ServerinfoCommand extends Command {
 			aliases: ['guild-info'],
 			group: 'info',
 			memberName: 'server-info',
-			description: 'General informations about this guild.',
+			description: 'General information about this guild.',
 			guildOnly: true,
 		});
 	}
 
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
 		return msg.embed(new RichEmbed()
-			.setColor(0xffa500).setTitle('Informations about this guild.')
+			.setColor(0xffa500).setTitle('Information about this guild.')
 			.setThumbnail(msg.guild.iconURL)
 			.addField('❯ Channel:', stripIndents`
       • \`${msg.guild.channels.filter((c: GuildChannel) => c.type === 'text').size}\` Textchannel

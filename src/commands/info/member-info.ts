@@ -11,13 +11,13 @@ export default class MemberInfoCommand extends Command {
 			aliases: ['user-info'],
 			group: 'info',
 			memberName: 'member-info',
-			description: 'General informations about the specified member.',
+			description: 'General information about the specified member.',
 			guildOnly: true,
 			args: [
 				{
 					key: 'member',
 					label: 'Member',
-					prompt: 'which members informations would you like to see?\n',
+					prompt: 'which members information would you like to see?\n',
 					type: 'member',
 					default: ''
 				}
@@ -32,11 +32,11 @@ export default class MemberInfoCommand extends Command {
 		return msg.embed(new RichEmbed()
 			.setColor(0xffa500).setAuthor('Stats', user.displayAvatarURL, user.displayAvatarURL)
 			.setDescription(member.toString())
-			.addField('❯ User informations', stripIndents`• Avatar: ${user.avatarURL ? `[Link](${user.avatarURL})` : 'No Avatar'}
+			.addField('❯ User information', stripIndents`• Avatar: ${user.avatarURL ? `[Link](${user.avatarURL})` : 'No Avatar'}
 		• Created: ${moment(user.createdAt).format('DD.MM.YYYY')}
 		• Status: \`${user.presence.status}\`
         • Game: \`${user.presence.game ? user.presence.game.name : 'none'}\``, true)
-			.addField('❯ Server informations:', stripIndents`${
+			.addField('❯ Server information:', stripIndents`${
 				member.nickname ? `• Nickname: \`${member.nickname}\`` : ''}
 		• Joined: ${moment(member.joinedAt).format('DD.MM.YYYY')}
 		• roles: ${member.roles.filter((r: Role) => r.id !== member.guild.id).map((r: Role) => r.toString()).join(' ')}`, true)

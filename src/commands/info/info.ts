@@ -13,13 +13,13 @@ export default class InfoCommand extends Command {
 			aliases: ['status'],
 			group: 'info',
 			memberName: 'info',
-			description: 'General informations about the bot.'
+			description: 'General information about the bot.'
 		});
 	}
 
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
 		return msg.embed(new RichEmbed()
-			.setColor(0xffa500).setTitle('General informations about the bot.')
+			.setColor(0xffa500).setTitle('General information about the bot.')
 			.setDescription('\u200b')
 			.addField('❯ Uptime:', `• ${(moment.duration(this.client.uptime) as any).format('d[ days], h[ hours], m[ minutes and ]s[ seconds]')}`)
 			.addField('❯ Used memory:', `• ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
