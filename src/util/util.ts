@@ -19,6 +19,7 @@ export default class Util {
 	 * @param {message} msg The message to get the used command or alias from
 	 * @param {?object} map The optional object, containing key and value pairs to replace matches
 	 * @returns {string}
+	 * @static
 	 */
 	public static getUsedAlias(msg: CommandMessage, map: { [key: string]: string } = {}): string {
 		if (!Util._client) throw new Error('Util class has not been intialized!');
@@ -38,7 +39,7 @@ export default class Util {
 	 * @param {ArgumentInfo} arg - ArgumentInfo to prompt
 	 * @param {boolean} [exception=false] exception - Whether a FriendlyError should be thrown, upon cancel or ignore, defaults to false
 	 * @returns {Promise<T>} - The prompted value, or null when not or invalid responded
-	 * @private
+	 * @static
 	 */
 	public static async prompt<T>(msg: CommandMessage, arg: ArgumentInfo, exception: boolean = true): Promise<T> {
 		if (!Util._client) throw new Error('Util class has not been intialized!');
