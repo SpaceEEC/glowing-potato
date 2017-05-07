@@ -29,7 +29,7 @@ export default class EvalCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage, args: { code: string }): Promise<Message | Message[]> {
-		const time: number = new Date().getTime();
+		const time: number = Date.now();
 		try {
 			let evaled: any;
 			if (Util.getUsedAlias(msg) === 'async') args.code = `(async()=>{${args.code}})();`;
@@ -46,7 +46,7 @@ export default class EvalCommand extends Command {
       		\`typeof:\`
       		\`\`\`js\n${responseTypeof}
       		\`\`\`\n
-      		Took \`${new Date().getTime() - time}\`ms`)
+      		Took \`${Date.now() - time}\`ms`)
 				.catch((e: Error) =>
 					msg.say(`Fehler beim Senden der Antwort:\n
           			\`\`\`js
@@ -58,7 +58,7 @@ export default class EvalCommand extends Command {
 			\`\`\`js
 			${error.url ? `${error.status} ${error.statusText}\n${error.text}` : error}
 			\`\`\`\n
-      Took \`${new Date().getTime() - time}\`ms`);
+      Took \`${Date.now() - time}\`ms`);
 		}
 	}
 
