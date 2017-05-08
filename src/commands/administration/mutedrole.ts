@@ -1,5 +1,5 @@
 import { stripIndents } from 'common-tags';
-import { Collection, Guild, GuildChannel, Message, PermissionOverwrites, Permissions, Role, TextChannel } from 'discord.js';
+import { Guild, Message, PermissionOverwrites, Permissions, Role, TextChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
 import { error } from 'winston';
 

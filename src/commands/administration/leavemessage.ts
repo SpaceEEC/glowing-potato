@@ -1,8 +1,6 @@
 import { stripIndents } from 'common-tags';
 import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
-import { join } from 'path';
-import { Model } from 'sequelize';
 
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 

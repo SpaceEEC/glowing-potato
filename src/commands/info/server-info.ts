@@ -1,5 +1,5 @@
 import { stripIndents } from 'common-tags';
-import { Emoji, GuildChannel, GuildMember, Message, RichEmbed, Role, User } from 'discord.js';
+import { Emoji, GuildChannel, Message, RichEmbed } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import * as moment from 'moment';
 moment.locale('de');

@@ -1,5 +1,5 @@
 import { GuildMember, TextChannel } from 'discord.js';
-import { CommandoClient } from 'discord.js-commando';
+
 import GuildConfig from '../dataProviders/models/GuildConfig';
 
 export default async function guildMemberAdd(member: GuildMember): Promise<void> {
