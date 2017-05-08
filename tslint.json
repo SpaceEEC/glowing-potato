@@ -17,6 +17,7 @@
 		"no-construct": true,
 		"no-unused-new": true,
 		"no-unused-expression": true,
+		"no-unused-variable": true,
 		"no-shadowed-variable": true,
 		"handle-callback-err": [true, "error"],
 		"block-spacing": [true,	"always"],

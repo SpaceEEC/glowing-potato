@@ -1,6 +1,6 @@
 import { stripIndents } from 'common-tags';
-import { Collection, Message, Role, TextChannel } from 'discord.js';
-import { ArgumentCollector, ArgumentCollectorResult, ArgumentInfo, Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
+import { Message, Role, TextChannel } from 'discord.js';
+import { Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
 
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 import Util from '../../util/util';
@@ -60,10 +60,14 @@ export default class SetupCommand extends Command {
 
 			await this.client.provider.set(msg.guild.id, 'setup', true);
 
-			await statusMessage.edit(stripIndents`**Current configuration's status:**
-			${this._map(result)}`).catch(() => {
-				msg.say(stripIndents`**Current configuration's status:**
-			${this._map(result)}`).catch(() => null);
+			await statusMessage.edit(
+				stripIndents`**Current configuration's status:**
+							${this._map(result)}`
+			).catch(() => {
+				msg.say(
+					stripIndents`**Current configuration's status:**
+								${this._map(result)}`
+				).catch(() => null);
 			});
 
 			return await msg.say(stripIndents`**Configuration complete.**

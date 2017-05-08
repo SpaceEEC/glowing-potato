@@ -1,6 +1,5 @@
 import { Message, RichEmbed } from 'discord.js';
 import { Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
-import { join } from 'path';
 
 import Tag from '../../dataProviders/models/Tag';
 

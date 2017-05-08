@@ -80,7 +80,7 @@ export default class Song {
 	}
 
 	/** The song as: name (lengthString) */
-	private _toString(): string {
+	public toString(): string {
 		return `${this.name} (${this.lengthString})`;
 	}
 }
