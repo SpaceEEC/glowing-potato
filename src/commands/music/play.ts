@@ -5,14 +5,12 @@ import { createWriteStream, unlink } from 'fs';
 import * as moment from 'moment';
 import { Stream } from 'stream';
 import { addColors, ConsoleTransportOptions, error, Logger, LoggerInstance, silly, transports } from 'winston';
-import { ytdl } from 'ytdl-core';
+import * as ytdl from 'ytdl-core';
 
 import Queue from '../../structures/Queue';
 import Song from '../../structures/Song';
 import Util from '../../util/util';
 import { Video, Youtube } from '../../util/youtube';
-
-const yt: typeof ytdl = require('ytdl-core');
 
 const options: ConsoleTransportOptions = {
 	colorize: true,
@@ -342,7 +340,7 @@ export default class PlayMusicCommand extends Command {
 		let streamErrored: boolean = false;
 		const startTime: number = Date.now();
 
-		const stream: Stream = yt(currentSong.url, { filter: 'audioonly' })
+		const stream: Stream = ytdl(currentSong.url, { filter: 'audioonly' })
 			.once('error', async (err: Error) => {
 				streamErrored = true;
 				logger.log('ytdl', guildID, err);
