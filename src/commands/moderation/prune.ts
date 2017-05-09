@@ -44,7 +44,7 @@ export default class PruneCommand extends Command {
 	}
 
 	public async run(msg: CommandMessage, args: { amount: number, member: GuildMember }): Promise<Message | Message[]> {
-		if (!(msg.channel as GuildChannel).permissionsFor(await msg.guild.fetchMember(this.client.user)).hasPermission('MANAGE_MESSAGES')) {
+		if (!(msg.channel as GuildChannel).permissionsFor(await msg.guild.fetchMember(this.client.user)).has('MANAGE_MESSAGES')) {
 			return msg.say('I do not have permissions to delete messages here, so no deleting.');
 		}
 		let messages: Collection<string, Message> = await msg.channel.fetchMessages({ limit: args.amount });
