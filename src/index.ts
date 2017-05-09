@@ -1,5 +1,3 @@
-// tslint:disable-line:no-reference
-/// <reference path="../typings/index.d.ts" />
 import { oneLine } from 'common-tags';
 import { Guild, GuildChannel, Message, Role } from 'discord.js';
 import { Command, CommandGroup, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
