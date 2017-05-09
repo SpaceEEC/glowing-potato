@@ -26,7 +26,7 @@ gulp.task('build', () => {
 	gulp.src('./src/**/*.json')
 		.pipe(gulp.dest('build/'));
 
-	const tsCompile = gulp.src('./src/**/*.ts')
+	const tsCompile = gulp.src(['./src/**/*.ts', './typings/index.d.ts'])
 		.pipe(sourcemaps.init())
 		.pipe(project());
 
