@@ -1,8 +1,7 @@
 import { stripIndents } from 'common-tags';
 import { Message, RichEmbed } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
-
-const { get }: { get: any } = require('snekfetch');
+import { get, Result } from 'snekfetch';
 
 type UrbanResponse = {
 	tags: string[];
@@ -49,7 +48,8 @@ export default class UrbanCommand extends Command {
 		} else { args.number = 0; }
 
 		const body: UrbanResponse = await get(`http://api.urbandictionary.com/v0/define?term=${encodeURIComponent(args.search.replace(/ /g, '+'))}`)
-			.then((response: any) => response.body);
+			// not a buffer
+			.then<UrbanResponse>((response: Result) => response.body as any);
 
 		if (body.list.length === 0) {
 			return msg.embed(

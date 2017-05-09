@@ -3,10 +3,10 @@
  * Mainly wrote this class to not install request and actually getting video duration rather than NaN/null/-1.
  */
 
+import { get } from 'snekfetch';
 import { parse } from 'url';
 import { silly } from 'winston';
 
-const { get }: { get: any } = require('snekfetch');
 const { googletoken }: { googletoken: string } = require('../../config.json');
 
 const multiplicator: number[] = [1, 60, 3600];
@@ -131,7 +131,8 @@ export class Youtube {
 		).catch((response: any) => {
 			if (!response.status && response instanceof Error) throw response;
 			else return response;
-		});
+		}) as any;
+
 		silly('searchVideos', status, statusText, ok);
 
 		if (!search.items[0]) return null;
@@ -167,7 +168,8 @@ export class Youtube {
 		).catch((response: any) => {
 			if (!response.status && response instanceof Error) throw response;
 			else return response;
-		});
+		}) as any;
+
 		silly('fetchPlaylist', status, statusText, ok);
 
 		if (!playlist.items) return arr.length ? arr : null;
@@ -200,7 +202,8 @@ export class Youtube {
 		).catch((response: any) => {
 			if (!response.status && response instanceof Error) throw response;
 			else return response;
-		});
+		}) as any;
+
 		silly('fetchVideos', status, statusText, ok);
 
 		const videos: Video[] = [];

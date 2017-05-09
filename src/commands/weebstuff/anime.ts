@@ -1,11 +1,10 @@
 import { stripIndents } from 'common-tags';
 import { Message, RichEmbed } from 'discord.js';
 import { ArgumentInfo, Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
+import { get } from 'snekfetch';
 
-import { animeData, aniSettings, charData, formatFuzzy, mangaData, replaceChars, updateToken, } from '../../util/anistuff.js';
+import { AnimeData, AniSettings, CharData, formatFuzzy, MangaData, replaceChars, updateToken, } from '../../util/anistuff.js';
 import Util from '../../util/util';
-
-const { get }: { get: any } = require('snekfetch');
 
 type args = { search: string, cmd: string };
 type error = { error: { messages: {}[] } };
@@ -43,37 +42,37 @@ export default class AnimeCommand extends Command {
 
 	public async run(msg: CommandMessage, args: args): Promise<Message | Message[]> {
 		args.cmd = Util.getUsedAlias(msg, { char: 'character' });
-		const aniSettings: aniSettings = await updateToken(this.client, msg, this.client.provider.get('global', 'aniSettings', { expires: 0 }));
-		const responses: animeData[] | mangaData[] | charData[] = await this._query(msg, aniSettings, args);
+		const aniSettings: AniSettings = await updateToken(this.client, msg, this.client.provider.get('global', 'aniSettings', { expires: 0 }));
+		const responses: AnimeData[] | MangaData[] | CharData[] = await this._query(msg, aniSettings, args);
 
 		if (responses[1]) responses[0] = await this._select(msg, responses, args);
 		if (!responses[0]) return msg.say('Aborting then.').then((message: Message) => message.delete(3000));
 
-		if (args.cmd === 'character') return this._sendCharacter(msg, (responses[0] as charData));
-		if (args.cmd === 'manga') return this._sendManga(msg, (responses[0] as mangaData));
-		if (args.cmd === 'anime') return this._sendAnime(msg, (responses[0] as animeData));
+		if (args.cmd === 'character') return this._sendCharacter(msg, (responses[0] as CharData));
+		if (args.cmd === 'manga') return this._sendManga(msg, (responses[0] as MangaData));
+		if (args.cmd === 'anime') return this._sendAnime(msg, (responses[0] as AnimeData));
 		throw new Error(`Unknown model type: ${args.cmd}`);
 	}
 
-	private async _query(msg: CommandMessage, aniSettings: aniSettings, args: args): Promise<animeData[] | mangaData[] | charData[]> {
+	private async _query(msg: CommandMessage, aniSettings: AniSettings, args: args): Promise<AnimeData[] | MangaData[] | CharData[]> {
 		const { body }: { body: any } = await get(`https://anilist.co/api/${args.cmd}/search/${args.search}?access_token=${aniSettings.token}`);
-		if (!body.error) return body as animeData[] | mangaData[] | charData[];
+		if (!body.error) return body as AnimeData[] | MangaData[] | CharData[];
 
 		if (body.error.messages[0] === 'No Results.') throw new FriendlyError(`no ${args.cmd} found.`);
 		else throw new Error(`there was an error while fetching the data from the server:\n${body.error.messages[0]}`);
 
 	}
 
-	private _mapResponses(response: animeData[] | mangaData[] | charData[], type: string): [string, number] {
+	private _mapResponses(response: AnimeData[] | MangaData[] | CharData[], type: string): [string, number] {
 		let count: number = 1;
 		if (type === 'character') {
-			return [(response as charData[]).map((r: charData) => `${count++}\t\t${r.name_first} ${r.name_last ? r.name_last : ''}`).join('\n'), count];
+			return [(response as CharData[]).map((r: CharData) => `${count++}\t\t${r.name_first} ${r.name_last ? r.name_last : ''}`).join('\n'), count];
 		} else {
-			return [(response as animeData[]).map((r: animeData) => `${count++}\t\t${r.title_english}`).join('\n'), count];
+			return [(response as AnimeData[]).map((r: AnimeData) => `${count++}\t\t${r.title_english}`).join('\n'), count];
 		}
 	}
 
-	private async _select(msg: CommandMessage, response: mangaData[] | animeData[] | charData[], args: args, second: boolean = false): Promise<null | mangaData | animeData | charData> {
+	private async _select(msg: CommandMessage, response: MangaData[] | AnimeData[] | CharData[], args: args, second: boolean = false): Promise<MangaData | AnimeData | CharData> {
 		const [description, count]: [string, number] = this._mapResponses(response, args.cmd);
 		const message: Message = await msg.embed(new RichEmbed().setColor(msg.member.displayColor)
 			.setTitle(`There has been found more than one ${args.cmd}:`)
@@ -94,7 +93,7 @@ export default class AnimeCommand extends Command {
 		else return response[userInput - 1];
 	};
 
-	private _sendCharacter(msg: CommandMessage, charInfo: charData): Promise<Message | Message[]> {
+	private _sendCharacter(msg: CommandMessage, charInfo: CharData): Promise<Message | Message[]> {
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x0800ff)
 			.setThumbnail(charInfo.image_url_lge)
@@ -118,7 +117,7 @@ export default class AnimeCommand extends Command {
 		return msg.embed(embed);
 	}
 
-	private _sendManga(msg: CommandMessage, mangaInfo: mangaData): Promise<Message | Message[]> {
+	private _sendManga(msg: CommandMessage, mangaInfo: MangaData): Promise<Message | Message[]> {
 		let genres: string = '';
 		for (const genre of mangaInfo.genres) genres += ((mangaInfo.genres.indexOf(genre) % 3) - 2) ? `${genre},\n` : `${genre}, `;
 
@@ -159,7 +158,7 @@ export default class AnimeCommand extends Command {
 		return msg.embed(embed);
 	}
 
-	private _sendAnime(msg: CommandMessage, animeInfo: animeData): Promise<Message | Message[]> {
+	private _sendAnime(msg: CommandMessage, animeInfo: AnimeData): Promise<Message | Message[]> {
 		let genres: string = '';
 		for (const genre of animeInfo.genres) genres += ((animeInfo.genres.indexOf(genre) % 3) - 2) ? `${genre}, ` : `${genre},\n`;
 		const embed: RichEmbed = new RichEmbed()

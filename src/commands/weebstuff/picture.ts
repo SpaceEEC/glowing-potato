@@ -1,11 +1,10 @@
 import { Message, RichEmbed } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
+import { get, Result } from 'snekfetch';
 
 import Util from '../../util/util';
 
-const { get }: { get: any } = require('snekfetch');
-
-type post = {
+type Post = {
 	id: number,
 	sample_url: string,
 	file_url: string
@@ -57,7 +56,8 @@ export default class PictureCommand extends Command {
 	}
 
 	private async _konachan(msg: CommandMessage, search: string): Promise<Message | Message[]> {
-		const { body: posts }: { body: post[] } = await get(`http://konachan.com/post.json?tags=${search}+rating:s&limit=100`);
+		const posts: Post[] = await get(`http://konachan.com/post.json?tags=${search}+rating:s&limit=100`)
+			.then<Post[]>((result: Result) => result.body as any);
 
 		if (posts.length === 0) {
 			return msg.embed(new RichEmbed().setColor(0xFFFF00)
@@ -66,14 +66,15 @@ export default class PictureCommand extends Command {
 				.addField('Search:', `[Link](http://konachan.net/post?tags=${search})`));
 		}
 
-		const post: post = posts[Math.floor(Math.random() * posts.length)];
+		const post: Post = posts[Math.floor(Math.random() * posts.length)];
 		return msg.embed(new RichEmbed()
 			.setColor(msg.member.displayColor).setImage(`http:${post.sample_url}`)
 			.setDescription(`[Source](http://konachan.net/post/show/${post.id})`));
 	}
 
 	private async _donmai(msg: CommandMessage, search: string): Promise<Message | Message[]> {
-		const { body: posts }: { body: post[] } = await get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${search}`);
+		const posts: Post[] = await get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${search}`)
+			.then<Post[]>((result: Result) => result.body as any);
 
 		if (posts.length === 0) {
 			return msg.embed(new RichEmbed().setColor(0xFFFF00)

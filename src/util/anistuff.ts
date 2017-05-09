@@ -1,12 +1,12 @@
 import { Message, RichEmbed } from 'discord.js';
 import { CommandMessage, CommandoClient } from 'discord.js-commando';
+import { post, Result } from 'snekfetch';
 
-const { post }: { post: any } = require('snekfetch');
 const { anilist } = require('../../config.json');
 
 export const replaceChars: { [char: string]: string } = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'", '`': '\'', '<br>': '\n', '<br />': '\n' };
 
-type clientCredentials = {
+type ClientCredentials = {
 	/**
 	 * The access token, which is required to use the api
 	 */
@@ -25,7 +25,7 @@ type clientCredentials = {
 	expires_in: number
 };
 
-export type aniSettings = {
+export type AniSettings = {
 	/**
 	 * The timestamp indicating when the token expires
 	 */
@@ -36,7 +36,7 @@ export type aniSettings = {
 	token: string
 };
 
-export type animeData = {
+export type AnimeData = {
 	id: number;
 	series_type: string;
 	title_romaji: string;
@@ -67,7 +67,7 @@ export type animeData = {
 	source: string;
 };
 
-export type mangaData = {
+export type MangaData = {
 	id: number;
 	series_type: string;
 	title_romaji: string;
@@ -95,7 +95,7 @@ export type mangaData = {
 	publishing_status: string;
 };
 
-export type charData = {
+export type CharData = {
 	name_alt: string,
 	info: string,
 	id: number,
@@ -114,18 +114,19 @@ export type charData = {
  * @param {aniSettings} aniSettings - The settings to compare the timestamp against
  * @returns {Promise<aniSettings>} The new aniSettings
  */
-export async function updateToken(client: CommandoClient, msg: CommandMessage, aniSettings: aniSettings): Promise<aniSettings> {
+export async function updateToken(client: CommandoClient, msg: CommandMessage, aniSettings: AniSettings): Promise<AniSettings> {
 	if (aniSettings.expires <= Date.now()) {
 		const statusMessage: Message = await msg.embed(
 			new RichEmbed().setColor(0xffff00)
 				.setDescription('The token expired, a new one will be requested.\nThis may take a while.')
 		) as Message;
-		const { body }: { body: clientCredentials } = await post(`https://anilist.co/api/auth/access_token`)
+		const body: ClientCredentials = await post(`https://anilist.co/api/auth/access_token`)
 			.send({
 				grant_type: 'client_credentials',
 				client_id: anilist.client_id,
 				client_secret: anilist.client_secret,
-			});
+			})
+			.then<ClientCredentials>((result: Result) => result.body as any);
 		aniSettings = {
 			token: body.access_token,
 			expires: Date.now() + body.expires_in * 1000
