@@ -1,6 +1,5 @@
 import { Guild } from 'discord.js';
-import { Command, CommandGroup, CommandMessage, CommandoClient, GuildExtension, SettingProvider } from 'discord.js-commando';
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import { Command, CommandGroup, CommandoClient, GuildExtension, SettingProvider } from 'discord.js-commando';
 
 import Settings from './models/Settings';
 
