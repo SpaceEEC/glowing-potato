@@ -1,5 +1,4 @@
 import { GuildMember, RichEmbed, TextChannel } from 'discord.js';
-import * as moment from 'moment';
 
 import GuildConfig from '../dataProviders/models/GuildConfig';
 
@@ -27,19 +26,20 @@ export default async function voiceStateUpdate(oldMember: GuildMember, newMember
 		// leave
 		if (!newMember.voiceChannel) {
 			clr = 0xFF4500;
-			desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} disconnected from ${oldMember.voiceChannel.name}.`;
+			desc = `${newMember.toString()} disconnected from ${oldMember.voiceChannel.name}.`;
 		} else if (!oldMember.voiceChannel) {
 			// join
 			clr = 0x7CFC00;
-			desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} connected to ${newMember.voiceChannel.name}.`;
+			desc = `${newMember.toString()} connected to ${newMember.voiceChannel.name}.`;
 		} else {
 			// move
 			clr = 3447003;
-			desc = `[${moment().format('DD.MM.YYYY HH:mm:ss')}]: ${newMember.toString()} went from ${oldMember.voiceChannel.name} to ${newMember.voiceChannel.name}.`;
+			desc = `${newMember.toString()} went from ${oldMember.voiceChannel.name} to ${newMember.voiceChannel.name}.`;
 		}
 		vlogChannel.send({
 			embed: new RichEmbed().setColor(clr).setDescription(desc)
 				.setAuthor(newMember.displayName, newMember.user.displayAvatarURL, newMember.user.displayAvatarURL)
+				.setTimestamp()
 		});
 	}
 };
