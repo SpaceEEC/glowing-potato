@@ -4,7 +4,7 @@ import { Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.
 import Tag from '../../dataProviders/models/Tag';
 
 export default class TagEdit extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'tag-edit',
 			group: 'tags',
@@ -47,4 +47,4 @@ export default class TagEdit extends Command {
 
 		return msg.say(`The tag **${name}** has been updated.`);
 	}
-};
+}

@@ -5,7 +5,7 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import Util from '../../util/util.js';
 
 export default class EvalCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'eval',
 			aliases: ['async', 'await'],
@@ -38,27 +38,30 @@ export default class EvalCommand extends Command {
 			if (evaled.includes(this.client.token)) {
 				return msg.say('The token does not belong in here. 👀');
 			}
-			return msg.say(stripIndents`\`code:\`
-      		\`\`\`js\n${args.code ? args.code.split(`\``).join(`´`) : 'falsy'}\`\`\`
-      		\`evaled\\returned:\`
-      		\`\`\`js\n${evaled ? evaled.split(`\``).join(`´`) : 'falsy'}\`\`\`
-      		\`typeof:\`
-      		\`\`\`js\n${responseTypeof}
-      		\`\`\`\n
-      		Took \`${Date.now() - time}\`ms`)
-				.catch((e: Error) =>
-					msg.say(`Fehler beim Senden der Antwort:\n
+			return msg.say(stripIndents`
+				\`code:\`
+      			\`\`\`js\n${args.code ? args.code.split(`\``).join(`´`) : 'falsy'}\`\`\`
+      			\`evaled\\returned:\`
+      			\`\`\`js\n${evaled ? evaled.split(`\``).join(`´`) : 'falsy'}\`\`\`
+      			\`typeof:\`
+      			\`\`\`js\n${responseTypeof}
+      			\`\`\`\n
+      			Took \`${Date.now() - time}\`ms`
+			).catch((e: Error) =>
+				msg.say(stripIndents`
+					Fehler beim Senden der Antwort:\n
           			\`\`\`js
           			${e.stack ? e.stack : e}
-          			\`\`\``)
-				);
+          			\`\`\``
+				)
+			);
 		} catch (error) {
 			return msg.say(stripIndents`\`E-ROHR\`
 			\`\`\`js
 			${error.url ? `${error.status} ${error.statusText}\n${error.text}` : error}
 			\`\`\`\n
-      Took \`${Date.now() - time}\`ms`);
+      Took \`${Date.now() - time}\`ms`
+			);
 		}
 	}
-
-};
+}

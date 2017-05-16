@@ -3,7 +3,7 @@ import { Message, Role, TextChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
 export default class MusicChannelCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'musicchannel',
 			aliases: ['djchannel', 'djchannels', 'mchannel', 'mchannels', 'musicchannels'],
@@ -11,9 +11,9 @@ export default class MusicChannelCommand extends Command {
 			memberName: 'musicchannel',
 			description: 'Musicchannels configuration.',
 			details: stripIndents`
-      To add or remove a music channel, simply specify it, either with a mention, name or ID.
-      If no channel is present, the commands are allowed everywhere.
-      To remove a channel, specify an already linked one, it will be removed then.`,
+      			To add or remove a music channel, simply specify it, either with a mention, name or ID.
+      			If no channel is present, the commands are allowed everywhere.
+      			To remove a channel, specify an already linked one, it will be removed then.`,
 			examples: [
 				'`mchannel #music-commands` Adds or removes the `#music.commands` channel from the music channels',
 				'`mchannel` Displays all music channels.'
@@ -51,7 +51,9 @@ export default class MusicChannelCommand extends Command {
 
 		this.client.provider.set(msg.guild.id, 'djChannels', channels);
 
-		return msg.say(stripIndents`${args.channel} ${args.added ? `has been added to` : 'has been removed from'} the music channels!
-    	${channels.length ? `Current channels: ${channels.map((c: string) => `<#${c}> `).join(', ')}` : 'No channel set, so everywhere, allowed.'}`);
+		return msg.say(stripIndents`
+			${args.channel} ${args.added ? `has been added to` : 'has been removed from'} the music channels!
+    		${channels.length ? `Current channels: ${channels.map((c: string) => `<#${c}> `).join(', ')}` : 'No channel set, so everywhere, allowed.'}`
+		);
 	}
-};
+}

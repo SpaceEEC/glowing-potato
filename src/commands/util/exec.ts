@@ -11,7 +11,7 @@ type Execution = {
 };
 
 export default class ExecuteCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'exec',
 			aliases: ['doshit'],
@@ -44,19 +44,18 @@ export default class ExecuteCommand extends Command {
 					resolve({ error, stdout, stderr }));
 			});
 		if (error) {
-			return statusMessage.edit(stripIndents
-				`\`EXEC\` ${error.code ? `\`Error Code: ${error.code}\`` : ''}\n
+			return statusMessage.edit(stripIndents`
+				\`EXEC\` ${error.code ? `\`Error Code: ${error.code}\`` : ''}\n
 				\`\`\`xl\n${args.code}\n\`\`\`
           		${stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`` : ''}
 				${error.stack ? `\`E-ROHR\`\n\`\`\`js\n${error.stack}\n\`\`\`` : ''}
 				${error.signal ? `Signal received: ${error.signal}` : ''}`);
 		} else {
-			return statusMessage.edit(stripIndents
-				`\`EXEC\`
+			return statusMessage.edit(stripIndents`
+				\`EXEC\`
 				\`\`\`xl\n${args.code}\n\`\`\`
          		${stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`` : ''}
 				${stderr ? `\`STERR\`\n\`\`\`xl\n${stderr}\`\`\`` : ''}`);
 		}
 	}
-
-};
+}

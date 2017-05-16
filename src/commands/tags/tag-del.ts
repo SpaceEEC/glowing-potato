@@ -4,9 +4,10 @@ import { Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.
 import Tag from '../../dataProviders/models/Tag';
 
 export default class TagDel extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'tag-del',
+			aliases: ['deltag'],
 			group: 'tags',
 			memberName: 'tag-del',
 			description: 'Deletes a tag.',
@@ -39,5 +40,4 @@ export default class TagDel extends Command {
 
 		return msg.say(`The tag **${name}** was deleted!`);
 	}
-
-};
+}

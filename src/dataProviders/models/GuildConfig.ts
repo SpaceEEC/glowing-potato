@@ -115,7 +115,7 @@ export default class GuildConfig extends Model {
 	public set leaveMessage(value: string) {
 		super.setDataValue('leaveMessage', value);
 	}
-};
+}
 
 GuildConfig.init({
 	guildID: {

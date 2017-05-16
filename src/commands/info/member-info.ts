@@ -5,7 +5,7 @@ import * as moment from 'moment';
 moment.locale('de');
 
 export default class MemberInfoCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'member-info',
 			aliases: ['user-info'],
@@ -44,4 +44,4 @@ export default class MemberInfoCommand extends Command {
 			.setTimestamp()
 			.setFooter(msg.cleanContent, msg.author.displayAvatarURL));
 	}
-};
+}

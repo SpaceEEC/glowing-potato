@@ -7,11 +7,9 @@ import { AnimeData, AniSettings, CharData, formatFuzzy, MangaData, replaceChars,
 import Util from '../../util/util';
 
 type args = { search: string, cmd: string };
-type error = { error: { messages: {}[] } };
 
 export default class AnimeCommand extends Command {
-
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'anime',
 			aliases: ['manga', 'character', 'char'],
@@ -91,7 +89,7 @@ export default class AnimeCommand extends Command {
 
 		if (!userInput) return null;
 		else return response[userInput - 1];
-	};
+	}
 
 	private _sendCharacter(msg: CommandMessage, charInfo: CharData): Promise<Message | Message[]> {
 		const embed: RichEmbed = new RichEmbed()
@@ -99,7 +97,7 @@ export default class AnimeCommand extends Command {
 			.setThumbnail(charInfo.image_url_lge)
 			.setTitle(`${charInfo.name_first || ''}\u200b ${charInfo.name_last || ''}`)
 			.setDescription(stripIndents`${charInfo.name_japanese || ''}}\u200b
-			
+
 			${charInfo.name_alt ? `Aliases:\n${charInfo.name_alt}` : ''}`);
 
 		charInfo.info = Util.replaceMap(charInfo.info, replaceChars) || 'No description';
@@ -198,4 +196,4 @@ export default class AnimeCommand extends Command {
 
 		return msg.embed(embed);
 	}
-};
+}

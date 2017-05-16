@@ -5,7 +5,7 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class VoicelogChannelCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'vlogchannel',
 			aliases: ['vlogchannel', 'voicelogchannel'],
@@ -45,7 +45,7 @@ export default class VoicelogChannelCommand extends Command {
 		config.vlogChannel = args.channel.id === config.vlogChannel ? null : args.channel.id;
 
 		let permissions: string = '';
-		if (config.vlogChannel && !args.channel.permissionsFor(msg.guild.member(this.client.user) || await msg.guild.fetchMember(this.client.user)).hasPermission('SEND_MESSAGES')) {
+		if (config.vlogChannel && !args.channel.permissionsFor(msg.guild.member(this.client.user) || await msg.guild.fetchMember(this.client.user)).has('SEND_MESSAGES')) {
 			permissions = '**Note:** I don\'t have permissions to send messages to that channel.\n';
 		}
 
@@ -53,4 +53,4 @@ export default class VoicelogChannelCommand extends Command {
 
 		return msg.say(`${permissions}The voicelog channel ${config.vlogChannel ? `is now: ${msg.guild.channels.get(config.vlogChannel)}!` : 'has been disabled!'}`);
 	}
-};
+}

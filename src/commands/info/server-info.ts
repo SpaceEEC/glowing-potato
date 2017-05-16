@@ -5,7 +5,7 @@ import * as moment from 'moment';
 moment.locale('de');
 
 export default class ServerinfoCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'server-info',
 			aliases: ['guild-info'],
@@ -21,12 +21,12 @@ export default class ServerinfoCommand extends Command {
 			.setColor(0xffa500).setTitle('Information about this guild.')
 			.setThumbnail(msg.guild.iconURL)
 			.addField('❯ Channel:', stripIndents`
-      • \`${msg.guild.channels.filter((c: GuildChannel) => c.type === 'text').size}\` Textchannel
-      • \`${msg.guild.channels.filter((c: GuildChannel) => c.type === 'voice').size}\` Voicechannel`, true)
+      			• \`${msg.guild.channels.filter((c: GuildChannel) => c.type === 'text').size}\` Textchannel
+      			• \`${msg.guild.channels.filter((c: GuildChannel) => c.type === 'voice').size}\` Voicechannel`, true)
 			.addField('❯ Member:', `• \`${msg.guild.memberCount}\` Member\n• Owner is ${msg.guild.owner}`, true)
 			.addField('❯ General:', stripIndents`
-      • \`${msg.guild.roles.size}\` Roles
-      • In ${this._capitalize(msg.guild.region)}`, true)
+      			• \`${msg.guild.roles.size}\` Roles
+     			• In ${this._capitalize(msg.guild.region)}`, true)
 			.addField('\u200b', `• Created ${moment(msg.guild.createdAt).format('DD.MM.YYYY [\n   at:] hh:mm:ss')}`, true)
 			.addField('❯ Emojis:', this._getRandomEmojis(msg))
 			.setFooter(msg.cleanContent, msg.author.displayAvatarURL)
@@ -54,4 +54,4 @@ export default class ServerinfoCommand extends Command {
 		}
 		return response;
 	}
-};
+}

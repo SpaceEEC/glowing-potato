@@ -44,4 +44,4 @@ export default async function guileMemberRemove(member: GuildMember): Promise<vo
 			client.emit('error', `Error while writing in the anChannel (${conf.logChannel}) of (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`);
 		});
 	}
-};
+}

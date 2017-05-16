@@ -4,7 +4,7 @@ import { Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.
 import Tag from '../../dataProviders/models/Tag';
 
 export default class TagList extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'tag-list',
 			aliases: ['tags'],
@@ -32,4 +32,4 @@ export default class TagList extends Command {
 			.setThumbnail(this.client.user.avatarURL)
 		);
 	}
-};
+}

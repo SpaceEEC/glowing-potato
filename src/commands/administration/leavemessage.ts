@@ -5,28 +5,32 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class LeaveMessageCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'leavemessage',
 			aliases: ['leavemsg'],
 			group: 'administration',
 			memberName: 'leavemessage',
 			description: 'Leave message configuration.',
-			details: stripIndents`'Sets or removes the leave message for this guild.'
-			You can use :guild: as placeholder for the guildname,
-      and :member: as placeholder for the joined member, this won't ping him/her, see the examples down there.`,
+			details: stripIndents`
+				'Sets or removes the leave message for this guild.'
+				You can use :guild: as placeholder for the guildname,
+      			and :member: as placeholder for the joined member, this won't ping him/her, see the examples down there.`,
 			examples: [
-				stripIndents`\`leavemessage :member: has left us, what a sad day.\`
-        Will look like:
-       \`@space#0302\` has left us, what a sad day.\n\u200b`,
-				stripIndents`\`joinmessage remove\`
-        Will disable that message.\n\u200b`],
+				stripIndents`
+					\`leavemessage :member: has left us, what a sad day.\`
+        			Will look like:
+       				\`@space#0302\` has left us, what a sad day.\n\u200b`,
+				stripIndents`
+					\`joinmessage remove\`
+        			Will disable that message.\n\u200b`],
 			guildOnly: true,
 			args: [
 				{
 					key: 'message',
-					prompt: stripIndents`what shall that leave message be?
-          Respond with \`remove\` to disable that message.\n`,
+					prompt: stripIndents`
+						what shall that leave message be?
+          				Respond with \`remove\` to disable that message.\n`,
 					type: 'string',
 					max: 1800,
 					default: 'show',
@@ -50,7 +54,9 @@ export default class LeaveMessageCommand extends Command {
 
 		await config.save();
 
-		return msg.say(stripIndents`The leave message is now ${`\`${config.leaveMessage || 'disabled'}\``}!
-		${config.anChannel || config.logChannel ? '' : 'Info: No channel to announce or log set up!'}`);
+		return msg.say(stripIndents`
+		The leave message is now ${`\`${config.leaveMessage || 'disabled'}\``}!
+		${config.anChannel || config.logChannel ? '' : 'Info: No channel to announce or log set up!'}`
+		);
 	}
-};
+}

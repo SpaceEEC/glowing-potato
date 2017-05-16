@@ -4,9 +4,10 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import Tag from '../../dataProviders/models/Tag';
 
 export default class TagShow extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'tag',
+			aliases: ['ahh'],
 			group: 'tags',
 			memberName: 'tag',
 			description: 'Shows a tag.',
@@ -18,11 +19,11 @@ export default class TagShow extends Command {
 					type: 'validtag',
 				},
 			],
-			argsPromptLimit: 1
+			argsPromptLimit: 0
 		});
 	}
 
 	public async run(msg: CommandMessage, args: { tag: Tag }): Promise<Message | Message[]> {
 		return msg.say(args.tag.content);
 	}
-};
+}

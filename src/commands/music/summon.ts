@@ -7,7 +7,7 @@ import { logger } from './play';
 export default class SummonCommand extends Command {
 	private _queue: Map<string, Queue>;
 
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'summon',
 			aliases: ['overhere'],
@@ -71,9 +71,9 @@ export default class SummonCommand extends Command {
 		}
 	}
 
-	get queue(): Map<string, Queue> {
+	private get queue(): Map<string, Queue> {
 		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
 	}
-};
+}

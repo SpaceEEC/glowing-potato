@@ -2,7 +2,7 @@ import { Message, RichEmbedOptions } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
 export default class TestCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'test',
 			aliases: ['bakaero'],
@@ -20,7 +20,7 @@ export default class TestCommand extends Command {
 		return {
 			color: 0xFFFF00,
 			author: {
-				icon_url: this.client.user.avatarURL,
+				icon_url: this.client.user.displayAvatarURL,
 				name: this.client.user.username,
 			},
 			fields: [
@@ -29,7 +29,7 @@ export default class TestCommand extends Command {
 					value: 'This command does nothing.\nBetter luck next time.',
 				},
 			],
-			thumbnail: { url: this.client.user.avatarURL },
+			thumbnail: { url: this.client.user.displayAvatarURL },
 			timestamp: new Date(),
 			footer: {
 				icon_url: msg.author.avatarURL,
@@ -37,5 +37,4 @@ export default class TestCommand extends Command {
 			},
 		};
 	}
-
-};
+}

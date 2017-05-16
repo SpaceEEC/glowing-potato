@@ -7,7 +7,7 @@ const { util }: { util: any } = require('discord.js-commando');
 type RichEmbedField = { name: string; value: string; inline?: boolean; };
 
 export default class HelpCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'help',
 			group: 'util',
@@ -107,7 +107,7 @@ export default class HelpCommand extends Command {
 			const command: Command = commands[0];
 			const embed: RichEmbed = new RichEmbed()
 				.setColor('RANDOM').setTitle(oneLine`
-			__**${command.name[0].toUpperCase() + command.name.slice(1)}**__ command: 
+			__**${command.name[0].toUpperCase() + command.name.slice(1)}**__ command:
 			${command.description} ${command.guildOnly ? ' (Usable only in servers)' : ''}`)
 				.setDescription(stripIndents`
 			**Format:** ${msg.anyUsage(`${command.name}${command.format ? ` ${command.format}` : ''}`)}
@@ -121,4 +121,4 @@ export default class HelpCommand extends Command {
 
 		if (commands.length) return msg.say(util.disambiguation(commands, 'commands'));
 	}
-};
+}

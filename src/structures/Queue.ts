@@ -30,7 +30,7 @@ export default class Queue {
 	 * @param {TextChannel} textChannel The textchannel to bind the queue to
 	 * @param {VoiceChannel} voiceChannel To bind the bot to
 	 */
-	constructor(textChannel: TextChannel, voiceChannel: VoiceChannel) {
+	public constructor(textChannel: TextChannel, voiceChannel: VoiceChannel) {
 		this._client = textChannel.client as CommandoClient;
 		this._guildID = textChannel.guild.id;
 
@@ -258,4 +258,4 @@ export default class Queue {
 		if (this._songs[0].dispatcher) this._songs[0].dispatcher.setVolumeLogarithmic(volume / 5);
 		this._volume = volume;
 	}
-};
+}

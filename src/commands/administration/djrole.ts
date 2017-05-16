@@ -3,16 +3,17 @@ import { Message, RichEmbed, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
 export default class DJRoleCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'djrole',
 			aliases: ['dj', 'mrole', 'musicrole', 'djroles', 'mroles', 'musicroles'],
 			group: 'administration',
 			memberName: 'djrole',
 			description: 'DJ roles configuration.',
-			details: stripIndents`To add or remove a role, simply specify it, either with a mention, name or ID.
-      If no role is present, @\u200beveryone is allowed to use music commands.
-      To show all set up roles, simply omit the role parameter.`,
+			details: stripIndents`
+				To add or remove a role, simply specify it, either with a mention, name or ID.
+      			If no role is present, @\u200beveryone is allowed to use music commands.
+     			To show all set up roles, simply omit the role parameter.`,
 			examples: [
 				'`djrole @DJ` Adds or removes the role `@DJ` to the dj roles.',
 				'`djrole` Displays all dj roles.'
@@ -53,4 +54,4 @@ export default class DJRoleCommand extends Command {
 		return msg.embed(new RichEmbed().setColor(args.added ? 0x32CD32 : 0xFF0000)
 			.setDescription(`\`@${args.role.name}\` ${args.added ? `has been added to` : 'has been removed from'} the djRoles!`));
 	}
-};
+}

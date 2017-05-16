@@ -5,17 +5,18 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class LogChannelCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'logchannel',
 			aliases: ['loggingchannel'],
 			group: 'administration',
 			memberName: 'logchannel',
 			description: 'Toggles this type of channel.',
-			details: stripIndents`Enables or disables the logging of new or left member, when a message is set up.
-      To remove a channel, specify just specify that channel.
-      Mention the same channel again to remove it.
-      Omit the channel parameter to show the current channel.`,
+			details: stripIndents`
+				Enables or disables the logging of new or left member, when a message is set up.
+      			To remove a channel, specify just specify that channel.
+      			Mention the same channel again to remove it.
+      			Omit the channel parameter to show the current channel.`,
 			examples: ['`logchannel #logs`'],
 			guildOnly: true,
 			args: [
@@ -45,11 +46,11 @@ export default class LogChannelCommand extends Command {
 		config.logChannel = args.channel.id === config.logChannel ? null : args.channel.id;
 
 		let permissions: string = '';
-		if (config.logChannel && !args.channel.permissionsFor(msg.guild.member(this.client.user) || await msg.guild.fetchMember(this.client.user)).hasPermission('SEND_MESSAGES')) {
+		if (config.logChannel && !args.channel.permissionsFor(msg.guild.member(this.client.user) || await msg.guild.fetchMember(this.client.user)).has('SEND_MESSAGES')) {
 			permissions = '**Note:** I don\'t have permissions to send messages to that channel.\n';
 		}
 		await config.save();
 
 		return msg.say(`${permissions}The log channel ${config.logChannel ? `is now ${msg.guild.channels.get(config.logChannel)!}` : 'has been disabled'}`);
 	}
-};
+}

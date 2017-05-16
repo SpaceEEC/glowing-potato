@@ -6,7 +6,7 @@ import { error } from 'winston';
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class MutedRoleCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'mutedrole',
 			group: 'administration',
@@ -245,4 +245,4 @@ export default class MutedRoleCommand extends Command {
 		}
 		return failed;
 	}
-};
+}

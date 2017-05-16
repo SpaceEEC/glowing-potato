@@ -5,14 +5,15 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class BlacklistCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'mute',
 			group: 'moderation',
 			memberName: 'mute',
 			description: 'Mutes or unmutes a member.',
-			details: stripIndents`Mutes or unmutes the specified member, be careful with the fuzzy search, it might mute or unmute the wrong member.
-			Mentions or IDs are the best way to ensure you mute or unmute the correct member.`,
+			details: stripIndents`
+				Mutes or unmutes the specified member, be careful with the fuzzy search, it might mute or unmute the wrong member.
+				Mentions or IDs are the best way to ensure you mute or unmute the correct member.`,
 			examples: [
 				'`mute @owo` Mutes or unmutes the member owo',
 				'`mute 250381145462538242` Mutes or unmutes the member with that ID.',
@@ -48,8 +49,10 @@ export default class BlacklistCommand extends Command {
 		}
 
 		if (mutedRole.position >= msg.guild.member(this.client.user).highestRole.position) {
-			return msg.say(stripIndents`I can not mute or unmute someone while  \`@${mutedRole.name}\` is higher than my highest role.
-      		You should change that, or yell at someone who can.`);
+			return msg.say(stripIndents`
+				I can not mute or unmute someone while  \`@${mutedRole.name}\` is higher than my highest role.
+      			You should change that, or yell at someone who can.`
+			);
 		}
 
 		if (target.roles.has(mutedRole.id)) {
@@ -58,8 +61,10 @@ export default class BlacklistCommand extends Command {
 		}
 
 		if (target.id === msg.author.id) {
-			return msg.say(stripIndents`Muting yourself, what a wonderful idea!
-      		Wait... actually not.`);
+			return msg.say(stripIndents`
+				Muting yourself, what a wonderful idea!
+      			Wait... actually not.`
+			);
 		}
 
 		const staffRoles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).concat(this.client.provider.get(msg.guild.id, 'modRoles', []));
@@ -68,7 +73,6 @@ export default class BlacklistCommand extends Command {
 		}
 
 		await target.addRole(mutedRole);
-		return msg.say(`Successfully muted \`${target.user.username}#${target.user.discriminator}\``);
+		return msg.say(`Successfully muted \`${target.user.tag}\``);
 	}
-
-};
+}
