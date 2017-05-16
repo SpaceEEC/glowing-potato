@@ -4,9 +4,10 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import Tag from '../../dataProviders/models/Tag';
 
 export default class TagAdd extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'tag-add',
+			aliases: ['addtag'],
 			group: 'tags',
 			memberName: 'tag-add',
 			description: 'Adds a tag.',
@@ -29,7 +30,7 @@ export default class TagAdd extends Command {
 					key: 'content',
 					prompt: 'what shall the content be?\n',
 					type: 'tagcontent',
-					max: 1800
+					max: 1800,
 				}
 			]
 		});
@@ -42,4 +43,4 @@ export default class TagAdd extends Command {
 
 		return msg.say(`Tag **${name}** sucessfully created!`);
 	}
-};
+}

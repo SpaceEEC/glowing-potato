@@ -4,10 +4,8 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import * as moment from 'moment';
 import 'moment-duration-format';
 
-const { version }: { version: string } = require('../../../package.json');
-
 export default class InfoCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'info',
 			aliases: ['status'],
@@ -24,7 +22,7 @@ export default class InfoCommand extends Command {
 			.addField('❯ Uptime:', `• ${(moment.duration(this.client.uptime) as any).format('d[ days], h[ hours], m[ minutes and ]s[ seconds]')}`)
 			.addField('❯ Memory in use:', `• ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
 			.addField('❯ Commands:', `• ${this.client.registry.commands.size}`, true)
-			//.addField('❯ spacebot-version:', `• v${version} ([glowing-potato](http://puu.sh/teDYW/d6f9555fbd.png))`, true)
+			// .addField('❯ spacebot-version:', `• v${version} ([glowing-potato](http://puu.sh/teDYW/d6f9555fbd.png))`, true)
 			.addField('❯ Shitcode repositorie:', '• [GitHub](https://github.com/SpaceEEC/glowing-potato)', true)
 			.addField('❯ Responsible:', '• `space#0302`', true)
 			.addField('❯ Library:', '• [discord.js](https://github.com/hydrabolt/discord.js)', true)
@@ -33,4 +31,4 @@ export default class InfoCommand extends Command {
 			.setThumbnail(this.client.user.displayAvatarURL)
 			.setFooter(msg.cleanContent, msg.author.displayAvatarURL));
 	}
-};
+}

@@ -23,7 +23,7 @@ type UrbanDefinition = {
 };
 
 export default class UrbanCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'urban',
 			group: 'miscellaneous',
@@ -33,8 +33,9 @@ export default class UrbanCommand extends Command {
 			args: [
 				{
 					key: 'search',
-					prompt: stripIndents`what would you like to look up?
-          You can specify \`-2\` at the beginning to look up a specific definition.\n`,
+					prompt: stripIndents`
+						what would you like to look up?
+          				You can specify \`-n\` (n as a number) at the beginning to look up a specific definition.\n`,
 					type: 'string',
 				}
 			]
@@ -88,4 +89,4 @@ export default class UrbanCommand extends Command {
 			return msg.embed(e);
 		}
 	}
-};
+}

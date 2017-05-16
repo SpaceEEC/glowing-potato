@@ -41,7 +41,7 @@ export default class Song {
 	 * @param {video} video The video
 	 * @param {GuildMember} member The requesting member
 	 */
-	constructor(video: { title: string, id: string, durationSeconds?: number }, member: GuildMember) {
+	public constructor(video: { title: string, id: string, durationSeconds?: number }, member: GuildMember) {
 		this.name = Util.escapeMarkdown(video.title);
 		this.id = video.id;
 		this.length = video.durationSeconds;
@@ -51,27 +51,27 @@ export default class Song {
 	}
 
 	/** The youtube url to this song */
-	get url(): string {
+	public get url(): string {
 		return `https://www.youtube.com/watch?v=${this.id}`;
 	}
 
 	/** The thumbnail */
-	get thumbnail(): string {
+	public get thumbnail(): string {
 		return `https://img.youtube.com/vi/${this.id}/mqdefault.jpg`;
 	}
 
 	/** The username of the reqeusting member formatted as username#discrim (id) */
-	get username(): string {
+	public get username(): string {
 		return Util.escapeMarkdown(`${this.member.user.tag} (${this.member.user.id})`);
 	}
 
 	/** The avatar url from the requesting member */
-	get avatar(): string {
+	public get avatar(): string {
 		return `${this.member.user.displayAvatarURL}`;
 	}
 
 	/** The length of this song as a human readable string */
-	get lengthString(): string {
+	public get lengthString(): string {
 		return Song.timeString(this.length);
 	}
 	/** The remainding time of this song as a human readable string */

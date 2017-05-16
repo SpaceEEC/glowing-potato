@@ -1,7 +1,7 @@
 import { ArgumentType, CommandMessage, CommandoClient } from 'discord.js-commando';
 
 module.exports = class TagContent extends ArgumentType {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, 'tagcontent');
 	}
 

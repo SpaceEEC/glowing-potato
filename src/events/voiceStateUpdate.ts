@@ -42,4 +42,4 @@ export default async function voiceStateUpdate(oldMember: GuildMember, newMember
 				.setTimestamp()
 		});
 	}
-};
+}

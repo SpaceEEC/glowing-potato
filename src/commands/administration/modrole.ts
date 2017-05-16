@@ -3,16 +3,17 @@ import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
 export default class ModRoleCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'modrole',
 			aliases: ['mod', 'mods', 'modroles'],
 			group: 'administration',
 			memberName: 'modrole',
 			description: 'Mod roles configuration.',
-			details: stripIndents`Adds or removes a mod role in this guild.
-			To remove or add a role simply \`@Mention\` it or provide the name or ID.
-      		To show all roles in that categorie, omit the parameter.`,
+			details: stripIndents`
+				Adds or removes a mod role in this guild.
+				To remove or add a role simply \`@Mention\` it or provide the name or ID.
+      			To show all roles in that categorie, omit the parameter.`,
 			examples: [
 				'`modrole @Mods` Adds or removes the role `@Mods` to the mod role of the bot.',
 				'Emitting a role displays all mod roles.'
@@ -52,4 +53,4 @@ export default class ModRoleCommand extends Command {
 
 		return msg.say(`\`@${args.role.name}\` ${args.added ? `is now one of the` : 'has been removed from the'} mod roles!`);
 	}
-};
+}

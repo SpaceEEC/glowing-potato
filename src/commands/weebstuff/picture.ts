@@ -11,7 +11,7 @@ type Post = {
 };
 
 export default class PictureCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'picture',
 			aliases: ['konachan', 'donmai', 'pic'],
@@ -87,4 +87,4 @@ export default class PictureCommand extends Command {
 			.setDescription(`[Source](http://safebooru.donmai.us/posts/${posts[0].id}/)`)
 			.setImage(`http://safebooru.donmai.us/${posts[0].file_url}`));
 	}
-};
+}

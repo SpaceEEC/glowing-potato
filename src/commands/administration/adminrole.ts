@@ -3,14 +3,15 @@ import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
 export default class AdminRoleCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'adminrole',
 			aliases: ['admin', 'admins', 'adminroles'],
 			group: 'administration',
 			memberName: 'adminrole',
 			description: 'Admin roles configuration.',
-			details: stripIndents`Adds or removes a admin role in this guild.
+			details: stripIndents`
+				Adds or removes a admin role in this guild.
 				To remove or add a role simply \`@Mention\` it or provide the name or ID.
       			To show all roles in that categorie, omit the parameter.`,
 			examples: [
@@ -52,4 +53,4 @@ export default class AdminRoleCommand extends Command {
 
 		return msg.say(`\`@${args.role.name}\` ${args.added ? `is now one of` : 'has been removed from'} the admin roles!`);
 	}
-};
+}

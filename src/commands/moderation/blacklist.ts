@@ -3,7 +3,7 @@ import { GuildChannel, GuildMember, Message, Role, TextChannel } from 'discord.j
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
 export default class BlacklistCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'blacklist',
 			aliases: ['ignore'],
@@ -21,8 +21,9 @@ export default class BlacklistCommand extends Command {
 				{
 					key: 'thing',
 					label: 'member or channel',
-					prompt: stripIndents`which Member or Channel do you wish to blacklist or unblacklist?
-          This command only accepts Mentions or IDs.\n`,
+					prompt: stripIndents`
+						which Member or Channel do you wish to blacklist or unblacklist?
+          				This command only accepts Mentions or IDs.\n`,
 					validate: async (value: string, msg: CommandMessage) => {
 						const channels: string[] = value.match(/^(?:<#)+([0-9]+)>+$/);
 						if (channels) return msg.guild.channels.filter((c: GuildChannel) => c.type === 'text').has(channels[1]);
@@ -54,8 +55,9 @@ export default class BlacklistCommand extends Command {
 
 	public async run(msg: CommandMessage, args: { thing: GuildMember | TextChannel }): Promise<Message | Message[]> {
 		const type: { state: string, config: string, response: string } = args.thing instanceof GuildMember
-			? { config: 'ingoredUsers', response: `\`${args.thing.user.username}#${args.thing.user.discriminator}\``, state: '' }
+			? { config: 'ingoredUsers', response: `\`${args.thing.user.tag}\``, state: '' }
 			: { config: 'ignoredChannels', response: args.thing.toString(), state: '' };
+
 		const ignoredArray: string[] = this.client.provider.get(msg.guild.id, type.config, []);
 		if (ignoredArray.includes(args.thing.id)) {
 			type.state = 'no longer';
@@ -64,7 +66,9 @@ export default class BlacklistCommand extends Command {
 			type.state = 'now';
 			ignoredArray.push(args.thing.id);
 		}
+
 		this.client.provider.set(msg.guild.id, type.config, ignoredArray);
+
 		return msg.say(`${type.response} is ${type.state} being ingored`);
 	}
-};
+}

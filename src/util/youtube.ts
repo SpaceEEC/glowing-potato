@@ -120,7 +120,7 @@ export class Youtube {
 	 * @static
 	 */
 	public static async searchVideos(input: string, max: number): Promise<Video[]> {
-		const { body: search, status, statusText, ok }: { body: SearchResponse, status: number, statusText: string, ok: boolean } = await get(
+		const { body, status, statusText, ok }: { body: SearchResponse, status: number, statusText: string, ok: boolean } = await get(
 			'https://www.googleapis.com/youtube/v3/search'
 			+ '?part=snippet'
 			+ `&maxResults=${max}`
@@ -135,10 +135,10 @@ export class Youtube {
 
 		silly('searchVideos', status, statusText, ok);
 
-		if (!search.items[0]) return null;
+		if (!body.items[0]) return null;
 
 		const ids: string[] = [];
-		for (const video of search.items) ids.push(video.id.videoId);
+		for (const video of body.items) ids.push(video.id.videoId);
 
 		return Youtube._fetchVideos(ids.join());
 	}
@@ -157,7 +157,7 @@ export class Youtube {
 		const requestamount: number = Math.min(finalamount, 50);
 		finalamount -= requestamount;
 
-		const { body: playlist, status, statusText, ok }: { body: PlaylistResponse, status: number, statusText: string, ok: boolean } = await get(
+		const { body, status, statusText, ok }: { body: PlaylistResponse, status: number, statusText: string, ok: boolean } = await get(
 			'https://www.googleapis.com/youtube/v3/playlistItems'
 			+ '?part=snippet'
 			+ `&maxResults=${requestamount}`
@@ -172,17 +172,17 @@ export class Youtube {
 
 		silly('fetchPlaylist', status, statusText, ok);
 
-		if (!playlist.items) return arr.length ? arr : null;
+		if (!body.items) return arr.length ? arr : null;
 
 		const ids: string[] = [];
-		for (const video of playlist.items) ids.push(video.snippet.resourceId.videoId);
+		for (const video of body.items) ids.push(video.snippet.resourceId.videoId);
 
 		const tempArray: Video[] = await Youtube._fetchVideos(ids.join());
 
 		arr = arr.concat(tempArray);
 
-		if (!playlist.nextPageToken || !finalamount) return arr;
-		else return Youtube._fetchPlaylist(id, finalamount, playlist.nextPageToken, arr);
+		if (!body.nextPageToken || !finalamount) return arr;
+		else return Youtube._fetchPlaylist(id, finalamount, body.nextPageToken, arr);
 	}
 
 	/**
@@ -193,7 +193,7 @@ export class Youtube {
 	 * @private
 	 */
 	private static async _fetchVideos(ids: string): Promise<Video[]> {
-		const { body: videoResponse, status, statusText, ok }: { body: VideoResponse, status: number, statusText: string, ok: boolean } = await get(
+		const { body, status, statusText, ok }: { body: VideoResponse, status: number, statusText: string, ok: boolean } = await get(
 			'https://www.googleapis.com/youtube/v3/videos'
 			+ '?part=snippet%2CcontentDetails'
 			+ `&id=${encodeURIComponent(ids)}`
@@ -207,7 +207,7 @@ export class Youtube {
 		silly('fetchVideos', status, statusText, ok);
 
 		const videos: Video[] = [];
-		for (const video of videoResponse.items) {
+		for (const video of body.items) {
 			videos.push(
 				{
 					id: video.id,
@@ -247,4 +247,4 @@ export class Youtube {
 
 		return duration;
 	}
-};
+}

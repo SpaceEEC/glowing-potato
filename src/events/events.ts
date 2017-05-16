@@ -8,4 +8,4 @@ export default function registerEvents(client: CommandoClient): void {
 	client.on('guildMemberAdd', guildMemberAddHandler);
 	client.on('guildMemberRemove', guildMemberRemoveHandler);
 	client.on('voiceStateUpdate', voiceStateUpdateHandler);
-};
+}

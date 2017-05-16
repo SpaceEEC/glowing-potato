@@ -7,7 +7,7 @@ import Song from '../../structures/Song';
 export default class QueueCommand extends Command {
 	private _queue: Map<string, Queue>;
 
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'queue',
 			aliases: ['songs', 'playlist', 'que', 'q'],
@@ -72,9 +72,9 @@ export default class QueueCommand extends Command {
 		).then((mes: Message) => mes.delete(30000));
 	}
 
-	get queue(): Map<string, Queue> {
+	private get queue(): Map<string, Queue> {
 		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
 	}
-};
+}

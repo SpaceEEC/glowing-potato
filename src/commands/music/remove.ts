@@ -8,7 +8,7 @@ import Util from '../../util/util';
 export default class RemoveMusicCommand extends Command {
 	private _queue: Map<string, Queue>;
 
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'remove',
 			aliases: ['splice'],
@@ -69,9 +69,9 @@ export default class RemoveMusicCommand extends Command {
 			.then((mes: Message) => mes.delete(5000));
 	}
 
-	get queue(): Map<string, Queue> {
+	private get queue(): Map<string, Queue> {
 		if (!this._queue) this._queue = (this.client.registry.resolveCommand('music:play') as any).queue;
 
 		return this._queue;
 	}
-};
+}

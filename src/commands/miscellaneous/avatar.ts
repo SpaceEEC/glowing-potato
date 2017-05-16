@@ -2,7 +2,7 @@ import { Message, User } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
 export default class AvatarCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'avatarbyid',
 			aliases: ['avatar'],
@@ -23,6 +23,6 @@ export default class AvatarCommand extends Command {
 	public async run(msg: CommandMessage, args: { id: string }): Promise<Message | Message[]> {
 		const user: User = this.client.users.get(args.id) || await this.client.fetchUser(args.id).catch(() => null);
 		if (!user) return msg.say('No user found by that ID.');
-		return msg.channel.send({ files: [{ attachment: user.displayAvatarURL, name: user.avatar && user.avatar.startsWith('a_') ? 'avatar.gif' : 'avatar.png' }] });
+		return msg.say({ files: [{ attachment: user.displayAvatarURL, name: user.avatar && user.avatar.startsWith('a_') ? 'avatar.gif' : 'avatar.png' }] });
 	}
 }

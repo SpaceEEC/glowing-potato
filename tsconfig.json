@@ -9,13 +9,12 @@
 		],
 		"declaration": false,
 		"noImplicitAny": true,
+		"noUnusedLocals": true,
 		"removeComments": true,
-		"sourceMap": true,
-		"allowJs": true
+		"sourceMap": false
 	},
 	"exclude": [
 		"node_modules",
-		"build",
 		"bin"
 	]
 }

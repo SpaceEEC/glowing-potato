@@ -10,7 +10,7 @@ export default class SequelizeProvider extends SettingProvider {
 	private listeners: Map<string, Function>;
 	private client: CommandoClient;
 
-	constructor() {
+	public constructor() {
 		super();
 		this.settings = new Map();
 		this.listeners = new Map();
@@ -149,4 +149,4 @@ export default class SequelizeProvider extends SettingProvider {
 			}
 		`);
 	}
-};
+}

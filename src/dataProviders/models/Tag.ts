@@ -63,7 +63,7 @@ export default class Tag extends Model {
 	public set content(value: string) {
 		super.setDataValue('content', value);
 	}
-};
+}
 
 Tag.init({
 	userID: DataTypes.STRING(20),

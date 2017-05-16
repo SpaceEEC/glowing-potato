@@ -6,7 +6,7 @@ import GuildConfig from '../../dataProviders/models/GuildConfig';
 import Util from '../../util/util';
 
 export default class SetupCommand extends Command {
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'setup',
 			group: 'administration',
@@ -174,7 +174,7 @@ export default class SetupCommand extends Command {
 	 */
 	private async _leaveMessage(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
 		let prompt: string = stripIndents`**Leave Message:**
-		
+
 		The leave message will be sent to the announcement- and logchannel, if these are set up.`;
 		prompt += config.leaveMessage
 			? `\n\nCurrent leave message is: \`${config.leaveMessage}\`, do you like to set a new?\n`
@@ -202,7 +202,7 @@ export default class SetupCommand extends Command {
 	 */
 	private async _anChannel(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
 		let prompt: string = stripIndents`**Announcement Channel:**
-		
+
 		Join- and leave messages will be sent here.`;
 		prompt += config.anChannel && msg.guild.channels.has(config.anChannel)
 			? `\n\nThe current announcement channel is: <#${config.anChannel}>\n`
@@ -228,7 +228,7 @@ export default class SetupCommand extends Command {
 	 */
 	private async _logChannel(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
 		let prompt: string = stripIndents`**Log Channel:**
-		
+
 		All sort of stuff will be logged here.`;
 		prompt += config.logChannel && msg.guild.channels.has(config.logChannel)
 			? `\n\nThe current log channel is: <#${config.logChannel}>\n`
@@ -254,7 +254,7 @@ export default class SetupCommand extends Command {
 	 */
 	private async _vlogChannel(msg: CommandMessage, config: GuildConfig): Promise<boolean> {
 		let prompt: string = stripIndents`**Voicelog Channel:**
-		
+
 		Member movements in the voice channels will be logged here, if set.`;
 		prompt += config.vlogChannel && msg.guild.channels.has(config.vlogChannel)
 			? stripIndents`\n\nThe current voicelog channel is: <#${config.vlogChannel}>
@@ -284,7 +284,7 @@ export default class SetupCommand extends Command {
 		const roles: string[] = this.client.provider.get(msg.guild.id, 'djRoles', []).filter((r: string) => msg.guild.roles.has(r));
 
 		let prompt: string = stripIndents`**DJ Roles:**
-		
+
 		When set, only member of a DJ role can use commands to control music.
 		Note that mods and higher bypass this.`;
 		prompt += roles.length
@@ -313,7 +313,7 @@ export default class SetupCommand extends Command {
 		const channels: string[] = this.client.provider.get(msg.guild.id, 'djChannels', []).filter((c: string) => msg.guild.channels.has(c) && msg.guild.channels.get(c).type === 'text');
 
 		let prompt: string = stripIndents`**DJ/Music Channels:**
-		
+
 		When set, member of one of the DJ roles will only be able to use music controlling commands in this channels.
 		Note that mods and higher bypass this.`;
 		prompt += channels.length
@@ -340,4 +340,4 @@ export default class SetupCommand extends Command {
 		}
 		return response.join('\n');
 	}
-};
+}

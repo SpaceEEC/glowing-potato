@@ -43,4 +43,4 @@ export default async function guildMemberAdd(member: GuildMember): Promise<void>
 			client.emit('error', `Error while writing in the anChannel (${conf.logChannel}) of (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`);
 		});
 	}
-};
+}

@@ -41,20 +41,21 @@ addColors({
 export default class PlayMusicCommand extends Command {
 	public queue: Map<string, Queue>;
 
-	constructor(client: CommandoClient) {
+	public constructor(client: CommandoClient) {
 		super(client, {
 			name: 'play',
 			aliases: ['search', 'serach'],
 			group: 'music',
 			memberName: 'play',
 			description: 'Plays a song or playlist.',
-			details: stripIndents`The input parameter accepts:
-      A link to a Youtube video.
-      A link to a Youtube playlist.
-      A search text to search a video on youtube.
-      For search or playlists you can provide a search cap by prepending 
-      \`-n\`, where n is a number.
-      Search is capped at 50, Playlists are capped at 200.`,
+			details: stripIndents`
+				The input parameter accepts:
+      			A link to a Youtube video.
+      			A link to a Youtube playlist.
+      			A search text to search a video on youtube.
+      			For search or playlists you can provide a search cap by prepending
+      			\`-n\`, where n is a number.
+      			Search is capped at 50, Playlists are capped at 200.`,
 			examples: [
 				'`play Yousei Teikoku Weißflügel` Picks the first result and plays or queues it.',
 				'`play -3 Yousei Teikoku Weißlügel` Will let you pick one of the first the resulst. Is capped at 50.',
@@ -386,4 +387,4 @@ export default class PlayMusicCommand extends Command {
 		stream.pipe(createWriteStream(`./tempmusicfile_${guildID}`));
 		logger.log('musicInfo', guildID, 'Piping to file started for: ', currentSong.name);
 	}
-};
+}
