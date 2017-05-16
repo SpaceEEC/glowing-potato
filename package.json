@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build:gulp && cd build && node index.js",
+    "start": "npm run build:gulp && cd bin && node index.js",
     "test": "npm run build -s",
     "lint:gulp": "gulp lint",
     "build:gulp": "gulp build",
     "lint": "npm run lint:gulp",
+    "prebuild": "npm run lint",
     "build": "npm run build:gulp"
   },
   "keywords": [],
