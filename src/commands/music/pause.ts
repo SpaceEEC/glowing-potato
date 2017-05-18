@@ -26,7 +26,7 @@ export default class PauseMusicCommand extends Command {
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
 		const queue: Queue = this.queue.get(msg.guild.id);
 
-		if (!queue) {
+		if (!queue || !queue.currentSong) {
 			return msg.say('Trying to pause without anything playing is certainly a smart move.')
 				.then((mes: Message) => mes.delete(5000));
 		}

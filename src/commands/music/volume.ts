@@ -47,7 +47,7 @@ export default class VolumeCommand extends Command {
 		const volume: number = parseInt(args.volume);
 		const queue: Queue = this.queue.get(msg.guild.id);
 
-		if (!queue) {
+		if (!queue || !queue.currentSong) {
 			return msg.say('The queue is empty, no need to change the volume.')
 				.then((mes: Message) => mes.delete(5000));
 		}

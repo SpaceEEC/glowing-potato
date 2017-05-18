@@ -31,8 +31,12 @@ export default class SkipMusicCommand extends Command {
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
 		const queue: Queue = this.queue.get(msg.guild.id);
 
-		if (!queue) {
+		if (!queue || !queue.currentSong) {
 			return msg.say('The queue is empty. 👀')
+				.then((mes: Message) => mes.delete(5000));
+		}
+		if (!queue.playing) {
+			return msg.say('I am not yet playing, skipping is duo technical limitations only after the song started available.')
 				.then((mes: Message) => mes.delete(5000));
 		}
 		if (!queue.vcMembers.has(msg.author.id)) {

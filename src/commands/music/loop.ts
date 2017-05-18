@@ -41,7 +41,7 @@ export default class ShuffleQueueCommand extends Command {
 	public async run(msg: CommandMessage, args: { state: string | boolean }): Promise<Message | Message[]> {
 		const queue: Queue = this.queue.get(msg.guild.id);
 
-		if (!this.queue.has(msg.guild.id)) {
+		if (!queue) {
 			return msg.say('Trying to enable the loop while nothing is being played?')
 				.then((mes: Message) => mes.delete(5000));
 		}

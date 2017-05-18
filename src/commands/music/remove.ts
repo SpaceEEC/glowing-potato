@@ -42,7 +42,7 @@ export default class RemoveMusicCommand extends Command {
 
 	public async run(msg: CommandMessage, args: { index: number }): Promise<Message | Message[]> {
 		const queue: Queue = this.queue.get(msg.guild.id);
-		if (!queue) {
+		if (!queue || !queue.currentSong) {
 			return msg.say('There is no queue, what do you hope to remove?')
 				.then((mes: Message) => mes.delete(5000));
 		}
