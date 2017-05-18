@@ -32,14 +32,15 @@ export default class MemberInfoCommand extends Command {
 		return msg.embed(new RichEmbed()
 			.setColor(0xffa500).setAuthor('Stats', user.displayAvatarURL, user.displayAvatarURL)
 			.setDescription(member.toString())
-			.addField('❯ User information', stripIndents`• Avatar: ${user.avatarURL ? `[Link](${user.avatarURL})` : 'No Avatar'}
-		• Created: ${moment(user.createdAt).format('DD.MM.YYYY')}
-		• Status: \`${user.presence.status}\`
-        • Game: \`${user.presence.game ? user.presence.game.name : 'none'}\``, true)
+			.addField('❯ User information', stripIndents`
+				• Avatar: ${user.avatarURL ? `[Link](${user.avatarURL})` : 'No Avatar'}
+				• Created: ${moment(user.createdAt).format('DD.MM.YYYY')}
+				• Status: \`${user.presence.status}\`
+        		• Game: \`${user.presence.game ? user.presence.game.name : 'none'}\``, true)
 			.addField('❯ Server information:', stripIndents`${
 				member.nickname ? `• Nickname: \`${member.nickname}\`` : ''}
-		• Joined: ${moment(member.joinedAt).format('DD.MM.YYYY')}
-		• roles: ${member.roles.filter((r: Role) => r.id !== member.guild.id).map((r: Role) => r.toString()).join(' ')}`, true)
+				• Joined: ${moment(member.joinedAt).format('DD.MM.YYYY')}
+				• roles: ${member.roles.filter((r: Role) => r.id !== member.guild.id).map((r: Role) => r.toString()).join(' ')}`, true)
 			.setThumbnail(user.displayAvatarURL)
 			.setTimestamp()
 			.setFooter(msg.cleanContent, msg.author.displayAvatarURL));
