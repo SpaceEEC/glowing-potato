@@ -34,7 +34,9 @@ export default class QueueCommand extends Command {
 
 	public async run(msg: CommandMessage, args: { page: number }): Promise<Message | Message[]> {
 		const queue: Queue = this.queue.get(msg.guild.id);
-		if (!queue) return msg.say('There is no queue, why not add some songs yourself?').then((mes: Message) => mes.delete(5000));
+		if (!queue || !queue.currentSong) {
+			return msg.say('There is no queue, why not add some songs yourself?').then((mes: Message) => mes.delete(5000));
+		}
 
 		if (queue.length <= 1) return this.client.registry.resolveCommand('music:np').run(msg, {}, false);
 

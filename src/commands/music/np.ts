@@ -22,7 +22,7 @@ export default class NowPlayingCommand extends Command {
 
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
 		const queue: Queue = this.queue.get(msg.guild.id);
-		if (!queue) {
+		if (!queue || !queue.currentSong) {
 			return msg.say('There is nothing going on in this guild. Add some songs!')
 				.then((mes: Message) => mes.delete(5000));
 		}

@@ -27,7 +27,7 @@ export default class ResumeMusicCommand extends Command {
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
 		const queue: Queue = this.queue.get(msg.guild.id);
 
-		if (!queue) {
+		if (!queue || !queue.currentSong) {
 			return msg.say('Sorry to disappoint you, but you can\'t resume an empty queue.')
 				.then((mes: Message) => mes.delete(5000));
 		}

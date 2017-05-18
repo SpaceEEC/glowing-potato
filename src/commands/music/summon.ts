@@ -29,7 +29,7 @@ export default class SummonCommand extends Command {
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
 		const queue: Queue = this.queue.get(msg.guild.id);
 
-		if (!queue) {
+		if (!queue || !queue.currentSong) {
 			return msg.say('I am not playing, queue something up and I\'ll come automatically to you.')
 				.then((mes: Message) => mes.delete(5000));
 		}
