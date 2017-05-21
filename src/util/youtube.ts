@@ -148,7 +148,7 @@ export class Youtube {
 	 * @param {string} id ID of the playlist to fetch from
 	 * @param {number} finalamount Amount of videos to fetch at max
 	 * @param {?string} [pagetoken=null] Token of the page to query
-	 * @param {?string[]} [arr=[]] Array of already fetched videos
+	 * @param {?Video[]} [arr=[]] Array of already fetched videos
 	 * @returns {Promise<Video[]>} Array of fetched video IDs
 	 * @static
 	 * @private
