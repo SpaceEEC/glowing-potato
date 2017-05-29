@@ -1,4 +1,6 @@
+import { stripIndents } from 'common-tags';
 import { GuildMember, TextChannel } from 'discord.js';
+import { error } from 'winston';
 
 import GuildConfig from '../dataProviders/models/GuildConfig';
 
@@ -26,7 +28,9 @@ export default async function guileMemberRemove(member: GuildMember): Promise<vo
 			.has('SEND_MESSAGES')) return;
 
 		(member.guild.channels.get(conf.logChannel) as TextChannel).send(response).catch((e: Error) => {
-			client.emit('error', `Error while writing in the logChannel (${conf.logChannel}) of (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`);
+			error(stripIndents`
+				Error while writing in the logChannel (${conf.logChannel}) of (${member.guild.id}): ${member.guild.name}
+				${e.stack ? e.stack : e}`);
 		});
 	}
 
@@ -41,7 +45,9 @@ export default async function guileMemberRemove(member: GuildMember): Promise<vo
 			.has('SEND_MESSAGES')) return;
 
 		(member.guild.channels.get(conf.anChannel) as TextChannel).send(response).catch((e: Error) => {
-			client.emit('error', `Error while writing in the anChannel (${conf.logChannel}) of (${member.guild.id}): ${member.guild.name}\n${e.stack ? e.stack : e}`);
+			error(stripIndents`
+				Error while writing in the anChannel (${conf.logChannel}) of (${member.guild.id}): ${member.guild.name}
+				${e.stack ? e.stack : e}`);
 		});
 	}
 }

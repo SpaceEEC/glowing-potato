@@ -3,11 +3,11 @@ import { Command, CommandGroup, CommandoClient, GuildExtension, SettingProvider 
 
 import Settings from './models/Settings';
 
-type Setting = string | object | Array<any>;
+type Setting = string | object | any[];
 
 export default class SequelizeProvider extends SettingProvider {
 	private settings: Map<string, Setting>;
-	private listeners: Map<string, Function>;
+	private listeners: Map<string, (...params: any[]) => any>;
 	private client: CommandoClient;
 
 	public constructor() {
@@ -39,25 +39,33 @@ export default class SequelizeProvider extends SettingProvider {
 
 		this.listeners
 			.set('commandPrefixChange', (guild: Guild, prefix: string) => this.set(guild, 'prefix', prefix))
-			.set('commandStatusChange', (guild: Guild, command: Command, enabled: boolean) => this.set(guild, `cmd-${command.name}`, enabled))
-			.set('groupStatusChange', (guild: Guild, group: CommandGroup, enabled: boolean) => this.set(guild, `grp-${group.name}`, enabled))
+
+			.set('commandStatusChange', (guild: Guild, command: Command, enabled: boolean) =>
+				this.set(guild, `cmd-${command.name}`, enabled))
+
+			.set('groupStatusChange', (guild: Guild, group: CommandGroup, enabled: boolean) =>
+				this.set(guild, `grp-${group.name}`, enabled))
+
 			.set('guildCreate', (guild: Guild) => {
 				const settings: Setting = this.settings.get(guild.id);
 				if (!settings) return;
 				this.setupGuild(guild.id, settings);
 			})
+
 			.set('commandRegister', (command: Command) => {
 				for (const [guild, settings] of this.settings) {
 					if (guild !== 'global' && !client.guilds.has(guild)) continue;
 					this.setupGuildCommand(client.guilds.get(guild) as GuildExtension, command, settings);
 				}
 			})
+
 			.set('groupRegister', (group: CommandGroup) => {
 				for (const [guild, settings] of this.settings) {
 					if (guild !== 'global' && !client.guilds.has(guild)) continue;
 					this.setupGuildGroup(client.guilds.get(guild) as GuildExtension, group, settings);
 				}
 			});
+
 		for (const [event, listener] of this.listeners) client.on(event, listener);
 	}
 
@@ -82,6 +90,7 @@ export default class SequelizeProvider extends SettingProvider {
 
 		settings[key] = val;
 		await Settings.upsert({ guild: guild !== 'global' ? guild : '0', settings: JSON.stringify(settings) });
+
 		if (guild === 'global') this.updateOtherShards(key, val);
 		return val;
 	}
@@ -94,6 +103,7 @@ export default class SequelizeProvider extends SettingProvider {
 		const val: any = settings[key];
 		settings[key] = undefined;
 		await Settings.upsert({ guild: guild !== 'global' ? guild : '0', settings: JSON.stringify(settings) });
+
 		if (guild === 'global') this.updateOtherShards(key, undefined);
 		return val;
 	}
@@ -101,6 +111,7 @@ export default class SequelizeProvider extends SettingProvider {
 	public async clear(guild: string | Guild): Promise<void> {
 		guild = (SettingProvider as any).getGuildID(guild) as string;
 		if (!this.settings.has(guild)) return;
+
 		this.settings.delete(guild);
 		await Settings.destroy({ where: { guild: guild !== 'global' ? guild : '0' } });
 	}
@@ -115,12 +126,18 @@ export default class SequelizeProvider extends SettingProvider {
 		}
 
 		// load all command/group statuses
-		for (const command of this.client.registry.commands.values()) this.setupGuildCommand(guild as GuildExtension, command, settings);
-		for (const group of this.client.registry.groups.values()) this.setupGuildGroup(guild as GuildExtension, group, settings);
+		for (const command of this.client.registry.commands.values()) {
+			this.setupGuildCommand(guild as GuildExtension, command, settings);
+		}
+
+		for (const group of this.client.registry.groups.values()) {
+			this.setupGuildGroup(guild as GuildExtension, group, settings);
+		}
 	}
 
 	private setupGuildCommand(guild: GuildExtension, command: Command, settings: Setting): void {
 		if (typeof (settings as any)[`cmd-${command.name}`] === 'undefined') return;
+
 		if (guild) {
 			if (!(guild as any)._commandsEnabled) (guild as any)._commandsEnabled = {};
 			(guild as any)._commandsEnabled[command.name] = (settings as any)[`cmd-${command.name}`];
@@ -131,6 +148,7 @@ export default class SequelizeProvider extends SettingProvider {
 
 	private setupGuildGroup(guild: GuildExtension, group: CommandGroup, settings: Setting): void {
 		if (typeof (settings as any)[`grp-${group.name}`] === 'undefined') return;
+
 		if (guild) {
 			if (!(guild as any)._groupsEnabled) (guild as any)._groupsEnabled = {};
 			(guild as any)._groupsEnabled[group.name] = (settings as any)[`grp-${group.name}`];

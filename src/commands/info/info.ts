@@ -7,11 +7,11 @@ import 'moment-duration-format';
 export default class InfoCommand extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'info',
 			aliases: ['status'],
+			description: 'General information about the bot.',
 			group: 'info',
 			memberName: 'info',
-			description: 'General information about the bot.'
+			name: 'info',
 		});
 	}
 
@@ -19,7 +19,8 @@ export default class InfoCommand extends Command {
 		return msg.embed(new RichEmbed()
 			.setColor(0xffa500).setTitle('General information about the bot.')
 			.setDescription('\u200b')
-			.addField('❯ Uptime:', `• ${(moment.duration(this.client.uptime) as any).format('d[ days], h[ hours], m[ minutes and ]s[ seconds]')}`)
+			.addField('❯ Uptime:', `• ${(moment.duration(this.client.uptime) as any)
+				.format('d[ days], h[ hours], m[ minutes and ]s[ seconds]')}`)
 			.addField('❯ Memory in use:', `• ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
 			.addField('❯ Commands:', `• ${this.client.registry.commands.size}`, true)
 			// .addField('❯ spacebot-version:', `• v${version} ([glowing-potato](http://puu.sh/teDYW/d6f9555fbd.png))`, true)

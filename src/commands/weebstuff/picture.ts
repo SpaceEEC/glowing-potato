@@ -5,33 +5,33 @@ import { get, Result } from 'snekfetch';
 import Util from '../../util/util';
 
 type Post = {
-	id: number,
-	sample_url: string,
-	file_url: string
+	id: number;
+	sample_url: string;
+	file_url: string;
 };
 
 export default class PictureCommand extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'picture',
 			aliases: ['konachan', 'donmai', 'pic'],
-			group: 'weebstuff',
-			memberName: 'picture',
+			args: [
+				{
+					default: '',
+					key: 'search',
+					parse: (value: string) => encodeURIComponent(value).replace(/%20/g, '+'),
+					prompt: 'which tags shall be specified?\n',
+					type: 'string',
+				},
+			],
 			description: 'Displays a picture konachan.net or safebooru.donmai.us',
-			guildOnly: true,
 			examples: [
 				'`konachan polychromatic` Displays a random picture with that tag from konachan.net',
 				'`donmai komeiji_satori` Displays a random picture with that tag from safebooru.donmai.us',
 			],
-			args: [
-				{
-					key: 'search',
-					prompt: 'which tags shall be specified?\n',
-					type: 'string',
-					default: '',
-					parse: (value: string) => encodeURIComponent(value).replace(/%20/g, '+'),
-				}
-			],
+			group: 'weebstuff',
+			guildOnly: true,
+			memberName: 'picture',
+			name: 'picture',
 		});
 	}
 

@@ -7,21 +7,21 @@ moment.locale('de');
 export default class MemberInfoCommand extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'member-info',
 			aliases: ['user-info'],
-			group: 'info',
-			memberName: 'member-info',
-			description: 'General information about the specified member.',
-			guildOnly: true,
 			args: [
 				{
+					default: '',
 					key: 'member',
 					label: 'Member',
 					prompt: 'which members information would you like to see?\n',
 					type: 'member',
-					default: ''
-				}
-			]
+				},
+			],
+			description: 'General information about the specified member.',
+			group: 'info',
+			guildOnly: true,
+			memberName: 'member-info',
+			name: 'member-info',
 		});
 	}
 
@@ -40,7 +40,8 @@ export default class MemberInfoCommand extends Command {
 			.addField('❯ Server information:', stripIndents`${
 				member.nickname ? `• Nickname: \`${member.nickname}\`` : ''}
 				• Joined: ${moment(member.joinedAt).format('DD.MM.YYYY')}
-				• roles: ${member.roles.filter((r: Role) => r.id !== member.guild.id).map((r: Role) => r.toString()).join(' ')}`, true)
+				• roles: ${member.roles.filter((r: Role) => r.id !== member.guild.id)
+					.map((r: Role) => r.toString()).join(' ')}`, true)
 			.setThumbnail(user.displayAvatarURL)
 			.setTimestamp()
 			.setFooter(msg.cleanContent, msg.author.displayAvatarURL));

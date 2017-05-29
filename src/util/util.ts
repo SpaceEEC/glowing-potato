@@ -1,5 +1,13 @@
 import { Message } from 'discord.js';
-import { ArgumentCollector, ArgumentCollectorResult, ArgumentInfo, CommandMessage, CommandoClient, FriendlyError, GuildExtension } from 'discord.js-commando';
+import {
+	ArgumentCollector,
+	ArgumentCollectorResult,
+	ArgumentInfo,
+	CommandMessage,
+	CommandoClient,
+	FriendlyError,
+	GuildExtension,
+} from 'discord.js-commando';
 
 export default class Util {
 
@@ -37,20 +45,23 @@ export default class Util {
 	 * Prompts input from user and automatically cleans up after prompting.
 	 * @param {CommandMessage} msg - CommandMessage to prompt from
 	 * @param {ArgumentInfo} arg - ArgumentInfo to prompt
-	 * @param {boolean} [exception=false] exception - Whether a FriendlyError should be thrown, upon cancel or ignore, defaults to false
+	 * @param {boolean} [exception=false] exception - Whether a FriendlyError should be thrown, upon cancel or ignore
 	 * @returns {Promise<T>} - The prompted value, or null when not or invalid responded
 	 * @static
 	 */
 	public static async prompt<T>(msg: CommandMessage, arg: ArgumentInfo, exception: boolean = true): Promise<T> {
 		if (!Util._client) throw new Error('Util class has not been intialized!');
 
-		const result: ArgumentCollectorResult = await new ArgumentCollector(Util._client, [Object.assign(arg, { key: 'key' })], 1).obtain(msg);
+		const result: ArgumentCollectorResult = await new ArgumentCollector(
+			Util._client,
+			[Object.assign(arg, { key: 'key' })],
+			1).obtain(msg);
 
 		const messages: Message[] = result.prompts.concat(result.answers);
 		if (messages.length > 1) await msg.channel.bulkDelete(messages).catch(() => null);
 		else if (messages.length === 1) await messages[0].delete().catch(() => null);
 
-		if (exception && result.cancelled && result.cancelled !== 'promptLimit') throw new FriendlyError('cancelled command.');
+		if (exception && result.cancelled !== 'promptLimit') throw new FriendlyError('cancelled command.');
 		else if (result.cancelled) return null;
 		return (result.values as { key: T }).key;
 	}

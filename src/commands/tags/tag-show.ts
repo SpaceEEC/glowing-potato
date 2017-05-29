@@ -6,12 +6,7 @@ import Tag from '../../dataProviders/models/Tag';
 export default class TagShow extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'tag',
 			aliases: ['ahh'],
-			group: 'tags',
-			memberName: 'tag',
-			description: 'Shows a tag.',
-			guildOnly: true,
 			args: [
 				{
 					key: 'tag',
@@ -20,6 +15,11 @@ export default class TagShow extends Command {
 					validate: () => true,
 				},
 			],
+			description: 'Shows a tag.',
+			group: 'tags',
+			guildOnly: true,
+			memberName: 'tag',
+			name: 'tag',
 		});
 	}
 

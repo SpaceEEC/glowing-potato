@@ -16,18 +16,18 @@ const options: ConsoleTransportOptions = {
 	colorize: true,
 	level: 'summon',
 	prettyPrint: true,
-	timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss'))
+	timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')),
 };
 
 export const logger: LoggerInstance = new (Logger)({
-	transports: [new transports.Console(options)],
 	levels: {
 		dispatcher: 0,
 		musicInfo: 0,
 		summon: 0,
 		youtubeapi: 0,
 		ytdl: 0,
-	}
+	},
+	transports: [new transports.Console(options)],
 });
 
 addColors({
@@ -42,37 +42,39 @@ export default class PlayMusicCommand extends Command {
 	public queue: Map<string, Queue>;
 
 	public constructor(client: CommandoClient) {
+		// tslint:disable:max-line-length
 		super(client, {
-			name: 'play',
 			aliases: ['search', 'serach'],
-			group: 'music',
-			memberName: 'play',
-			description: 'Plays a song or playlist.',
-			details: stripIndents`
-				The input parameter accepts:
-      			A link to a Youtube video.
-      			A link to a Youtube playlist.
-      			A search text to search a video on youtube.
-      			For search or playlists you can provide a search cap by prepending
-      			\`-n\`, where n is a number.
-      			Search is capped at 50, Playlists are capped at 200.`,
-			examples: [
-				'`play Yousei Teikoku Weißflügel` Picks the first result and plays or queues it.',
-				'`play -3 Yousei Teikoku Weißlügel` Will let you pick one of the first the resulst. Is capped at 50.',
-				'`play -50 PLvlw_ICcAI4ermdmmjtr6uxYj0eZ_nKc4` Will queue up the first 50 songs of that playlist. Default is 20, cap is at 200.',
-				'Instead of ID or search text, you can simply use the youtube url.',
-				'If you want to queue up a playlist be sure to add the actual playlist link, rather than a video link with an "attached" playlist.',
-				'Look out for a `playlist?list=` in the url.'
-			],
-			guildOnly: true,
 			args: [
 				{
 					key: 'input',
 					prompt: 'what would you like to add or search?\n',
 					type: 'string',
 				},
-			]
+			],
+			description: 'Plays a song or playlist.',
+			details: stripIndents`
+				The input parameter accepts:
+				A link to a Youtube video.
+				A link to a Youtube playlist.
+				A search text to search a video on youtube.
+				For search or playlists you can provide a search cap by prepending
+				\`-n\`, where n is a number.
+				Search is capped at 50, Playlists are capped at 200.`,
+			examples: [
+				'`play Yousei Teikoku Weißflügel` Picks the first result and plays or queues it.',
+				'`play -3 Yousei Teikoku Weißlügel` Will let you pick one of the first the resulst. Is capped at 50.',
+				'`play -50 PLvlw_ICcAI4ermdmmjtr6uxYj0eZ_nKc4` Will queue up the first 50 songs of that playlist. Default is 20, cap is at 200.',
+				'Instead of ID or search text, you can simply use the youtube url.',
+				'If you want to queue up a playlist be sure to add the actual playlist link, rather than a video link with an "attached" playlist.',
+				'Look out for a `playlist?list=` in the url.',
+			],
+			group: 'music',
+			guildOnly: true,
+			memberName: 'play',
+			name: 'play',
 		});
+		// tslint:enable:max-line-length
 
 		// hello crawl (or other curious people)
 		this.queue = new Map<string, Queue>();
@@ -81,8 +83,13 @@ export default class PlayMusicCommand extends Command {
 	public hasPermission(msg: CommandMessage): boolean {
 		const djRoles: string[] = this.client.provider.get(msg.guild.id, 'djRoles', []);
 		if (!djRoles.length) return true;
-		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).concat(this.client.provider.get(msg.guild.id, 'modRoles', []), djRoles);
-		return msg.member.roles.some((r: Role) => roles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
+
+		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', [])
+			.concat(this.client.provider.get(msg.guild.id, 'modRoles', []), djRoles);
+
+		return msg.member.roles.some((r: Role) => roles.includes(r.id))
+			|| msg.member.hasPermission('ADMINISTRATOR')
+			|| this.client.isOwner(msg.author);
 	}
 
 	public async run(msg: CommandMessage, args: { input: string, limit: number }): Promise<Message | Message[]> {
@@ -107,10 +114,12 @@ export default class PlayMusicCommand extends Command {
 
 			const permissions: Permissions = voiceChannel.permissionsFor(this.client.user);
 			if (!permissions.has('CONNECT')) {
+				// tslint:disable-next-line:max-line-length
 				return msg.say('Your voice channel sure looks nice, but I unfortunately don\' have permissions to join it.\nBetter luck next time, buddy.')
 					.then((mes: Message) => mes.delete(5000));
 			}
 			if (!permissions.has('SPEAK')) {
+				// tslint:disable-next-line:max-line-length
 				return msg.say('Your party sure looks nice, I\'d love to join, but I am unfortunately not allowed to speak there, so forget that.')
 					.then((mes: Message) => mes.delete(5000));
 			}
@@ -137,8 +146,7 @@ export default class PlayMusicCommand extends Command {
 		if (search) {
 			const toAdd: Video = search[1] ? await this._chooseSong(msg, search, fetchMessage) : search[0];
 
-			if (!toAdd) return msg.say('Aborting then.')
-				.then((mes: Message) => mes.delete(5000));
+			if (!toAdd) return msg.say('Aborting then.').then((mes: Message) => mes.delete(5000));
 
 			return this._handleInput(toAdd, queue, msg, voiceChannel, fetchMessage);
 		}
@@ -157,6 +165,7 @@ export default class PlayMusicCommand extends Command {
 	 * @returns {Promise<void>}
 	 * @private
 	 */
+	// tslint:disable-next-line:max-line-length
 	private async _handleInput(video: Video | Video[], queue: Queue, msg: CommandMessage, voiceChannel: VoiceChannel, fetchMessage: Message): Promise<Message> {
 		if (!queue || !queue.length) {
 			if (!queue) {
@@ -258,10 +267,12 @@ export default class PlayMusicCommand extends Command {
 			.setColor(0xFFFF00)
 			.setFooter('has been added.', this.client.user.displayAvatarURL)
 			.setDescription(stripIndents
-				`${queue.loop ? '**Loop is enabled**\n' : ''}Added \`${videos.length - ignored}\`/\`${videos.length}\` of your requested songs.
+				`${queue.loop ? '**Loop is enabled**\n' : ''}Added \`${
+				videos.length - ignored}\`/\`${videos.length}\` of your requested songs.
 
 				Full queue length: ${Song.timeString(queue.totalLength)}
-      			Use ${msg.anyUsage('queue', (msg.guild as GuildExtension).commandPrefix, this.client.user)} to see what has been added.`);
+				Use ${msg.anyUsage('queue', (msg.guild as GuildExtension)
+					.commandPrefix, this.client.user)} to see what has been added.`);
 	}
 
 	/**
@@ -273,6 +284,7 @@ export default class PlayMusicCommand extends Command {
 	 * @returns {video} The picked video
 	 * @private
 	 */
+	// tslint:disable-next-line:max-line-length
 	private async _chooseSong(msg: CommandMessage, videos: Video[], statusmsg?: Message, index: number = 0): Promise<Video> {
 		const video: Video = videos[index];
 		if (!video) {
@@ -295,7 +307,7 @@ export default class PlayMusicCommand extends Command {
 		const argument: ArgumentInfo = {
 			key: 'choice',
 			prompt: 'Respond either with `y` to pick this video, or with `n` for the next result.\n',
-			type: 'boolean'
+			type: 'boolean',
 		};
 
 		const choice: boolean = await Util.prompt<boolean>(msg, argument).catch(() => null);
@@ -332,10 +344,10 @@ export default class PlayMusicCommand extends Command {
 				.setAuthor(currentSong.username, currentSong.avatar)
 				.setDescription(stripIndents
 					`${loop ? '**Loop enabled**\n' : ''}**>>** [${currentSong.name}](${currentSong.url})
-        			Length: ${currentSong.lengthString}`)
+					Length: ${currentSong.lengthString}`)
 				.setImage(currentSong.thumbnail)
 				.setFooter('is now being played.', this.client.user.displayAvatarURL)
-				.setTimestamp()
+				.setTimestamp(),
 		}) as Message;
 
 		let streamErrored: boolean = false;
@@ -359,7 +371,11 @@ export default class PlayMusicCommand extends Command {
 			})
 
 			.once('end', () => {
-				logger.log('musicInfo', guildID, 'Piping to file finished after', (Song.timeString((Date.now() - startTime) / 1000)));
+				logger.log('musicInfo',
+					guildID,
+					'Piping to file finished after',
+					Song.timeString((Date.now() - startTime) / 1000),
+				);
 				const dispatcher: StreamDispatcher = queue.connection.playFile(`./tempmusicfile_${guildID}`, { passes: 2 })
 
 					.once('error', async (err: Error) => {
@@ -373,7 +389,12 @@ export default class PlayMusicCommand extends Command {
 					})
 
 					.once('end', (reason: string) => {
-						logger.log('musicInfo', guildID, `Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${currentSong.lengthString} ${reason ? `Reason: ${reason}` : ''}`);
+						logger.log('musicInfo',
+							guildID,
+							// tslint:disable-next-line:max-line-length
+							`Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${currentSong.lengthString} ${reason
+								? `Reason: ${reason}`
+								: ''}`);
 						(dispatcher.stream as any).destroy();
 
 						if (streamErrored) return;
@@ -381,7 +402,9 @@ export default class PlayMusicCommand extends Command {
 						queue.shift();
 
 						const stop: boolean = reason === 'stop';
-						if (stop || !queue.currentSong) this.client.setTimeout(() => (unlink(`./tempmusicfile_${guildID}`, (e: Error) => e && error(guildID, e))), 500);
+						if (stop || !queue.currentSong) {
+							this.client.setTimeout(() => (unlink(`./tempmusicfile_${guildID}`, (e: Error) => e && error(guildID, e))), 500);
+						}
 						this._play(guildID, stop).catch((err: Error) => {
 							error('PlayMusicCommand#_play', guildID, err);
 							queue.sendText(stripIndents`

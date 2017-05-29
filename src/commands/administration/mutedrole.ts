@@ -7,44 +7,48 @@ import GuildConfig from '../../dataProviders/models/GuildConfig';
 
 export default class MutedRoleCommand extends Command {
 	public constructor(client: CommandoClient) {
+		// tslint:disable:max-line-length
 		super(client, {
-			name: 'mutedrole',
-			group: 'administration',
-			memberName: 'mutedrole',
-			description: 'Configuration for the mute command.',
-			details: stripIndents`
-			Sets, creates or removes a \'Muted\' role for this guild.
-		  	If you want to create a new role, pass \`create\` as action.
-          	If you want to update the channel overwrites for the already linked role, pass \`update\` as action.
-          	If you want to specify an already existing role, pass a \`@Mention\` or the \`ID\` as action.
-          	If you want to remove the already linked role, pass \`remove\` as action.
-          	If you want to display the current one, pass whatever else is left as action, except omitting it.
-
-          	Creating a new role, chosing update or specifying a different one will automatically overwrite all channels.
-          	Removing a role will remove it from the config and remove the overwrites from all channels, but will not delete it from the guild.`,
-			guildOnly: true,
 			args: [
 				{
 					key: 'action',
 					prompt: stripIndents`
 					You did not specify any option:
-          			If you want to create a new role, respond with \`create\`.
-          			If you want to update the channel overwrites for the already linked role, respond with \`update\`.
-          			If you want to specify an already existing role, respond with a \`@Mention\` or the \`ID\`.
-          			If you want to remove the currently linked role, response with \`remove\`.
-          			If you want to display the current one, respond with something else.
+					If you want to create a new role, respond with \`create\`.
+					If you want to update the channel overwrites for the already linked role, respond with \`update\`.
+					If you want to specify an already existing role, respond with a \`@Mention\` or the \`ID\`.
+					If you want to remove the currently linked role, response with \`remove\`.
+					If you want to display the current one, respond with something else.
 
-          			Creating a new role, chosing update or specifying a different one will automatically overwrite all channels.
-          			Removing a role will remove it from the config and remove the overwrites from all channels, but will not delete it from the guild.\n\u200b`,
+					Creating a new role, chosing update or specifying a different one will automatically overwrite all channels.
+					Removing a role will remove it from the config and remove the overwrites from all channels, but will not delete it from the guild.\n\u200b`,
 					type: 'string',
-				}
-			]
+				},
+			],
+			description: 'Configuration for the mute command.',
+			details: stripIndents`
+			Sets, creates or removes a \'Muted\' role for this guild.
+			If you want to create a new role, pass \`create\` as action.
+			If you want to update the channel overwrites for the already linked role, pass \`update\` as action.
+			If you want to specify an already existing role, pass a \`@Mention\` or the \`ID\` as action.
+			If you want to remove the already linked role, pass \`remove\` as action.
+			If you want to display the current one, pass whatever else is left as action, except omitting it.
+
+			Creating a new role, chosing update or specifying a different one will automatically overwrite all channels.
+			Removing a role will remove it from the config and remove the overwrites from all channels, but will not delete it from the guild.`,
+			group: 'administration',
+			guildOnly: true,
+			memberName: 'mutedrole',
+			name: 'mutedrole',
 		});
+		// tslint:enable:max-line-length
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
 		const adminRoles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []);
-		return msg.member.roles.some((r: Role) => adminRoles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
+		return msg.member.roles.some((r: Role) => adminRoles.includes(r.id))
+			|| msg.member.hasPermission('ADMINISTRATOR')
+			|| this.client.isOwner(msg.author);
 	}
 
 	public async run(msg: CommandMessage, args: { action: string }): Promise<Message | Message[]> {
@@ -119,7 +123,7 @@ export default class MutedRoleCommand extends Command {
 					, but failed overwriting \`${failed}/${msg.guild.channels.size}\` channels.
       				You might want to check if that is okay for you, or fix it yourself if not.`
 				: ' and all overwrites set up!'}
-			Also you maybe want to move the role up, be sure to not move the role higher than my highest role!`
+			Also you maybe want to move the role up, be sure to not move the role higher than my highest role!`,
 		).catch(() => null);
 	}
 
@@ -148,7 +152,7 @@ export default class MutedRoleCommand extends Command {
 				? stripIndents`
 					Failed overwriting \`${failed}/${msg.guild.channels.size}\` channels.
       				You might want to check if that is okay for you, or fix it yourself if not.`
-				: 'All overwrites set up!'
+				: 'All overwrites set up!',
 		).catch(() => null);
 	}
 
@@ -172,8 +176,11 @@ export default class MutedRoleCommand extends Command {
 			await this._overwrite(msg.guild, config.mutedRole, true);
 		}
 
-		if (statusMessage) statusMessage = await statusMessage.edit('Overwriting channel permissions for new role, this may take a while...').catch(() => null);
-		if (!statusMessage) statusMessage = await msg.say('Overwriting channel permissions for new role, this may take a while...') as Message;
+		if (statusMessage) {
+			statusMessage = await statusMessage
+				.edit('Overwriting channel permissions for new role, this may take a while...')
+				.catch(() => msg.say('Overwriting channel permissions for new role, this may take a while...')) as Message;
+		}
 
 		const failed: number = await this._overwrite(msg.guild, config.mutedRole);
 		await config.setAndSave('mutedRole', role);
@@ -183,7 +190,7 @@ export default class MutedRoleCommand extends Command {
 				? stripIndents`
 					Failed overwriting \`${failed}/${msg.guild.channels.size}\` channels.
       				You might want to check if that is okay for you, or fix it yourself if not.`
-				: `All overwrites set for \`@${msg.guild.roles.get(role).name}\`!`
+				: `All overwrites set for \`@${msg.guild.roles.get(role).name}\`!`,
 		).catch(() => null);
 	}
 
@@ -210,13 +217,13 @@ export default class MutedRoleCommand extends Command {
 		await config.setAndSave('mutedRole', null);
 
 		return msg.say(
-			failed
+			failed	// tslint:disable-next-line:max-line-length
 				? stripIndents`
 					Failed removing \`${failed}/${msg.guild.channels.size}\` channel overwrites for \`@${msg.guild.roles.get(config.mutedRole).name}\`!
       				You might want to check if that is okay for you, or fix it yourself if not.`
 				: stripIndents`
 					Removed all overwrites for \`@${msg.guild.roles.get(config.mutedRole).name}\` and removed it from config!
-					The role itself remains untouched.`
+					The role itself remains untouched.`,
 		).catch(() => null);
 	}
 

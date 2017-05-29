@@ -7,12 +7,12 @@ moment.locale('de');
 export default class ServerinfoCommand extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'server-info',
 			aliases: ['guild-info'],
-			group: 'info',
-			memberName: 'server-info',
 			description: 'General information about this guild.',
+			group: 'info',
 			guildOnly: true,
+			memberName: 'server-info',
+			name: 'server-info',
 		});
 	}
 
@@ -29,7 +29,7 @@ export default class ServerinfoCommand extends Command {
      			• In ${this._capitalize(msg.guild.region)}`, true)
 			.addField('\u200b', `• Created ${moment(msg.guild.createdAt).format('DD.MM.YYYY [\n   at:] hh:mm:ss')}`, true)
 			.addField('❯ Emojis:', this._getRandomEmojis(msg))
-			.setFooter(msg.cleanContent, msg.author.displayAvatarURL)
+			.setFooter(msg.cleanContent, msg.author.displayAvatarURL),
 		);
 	}
 

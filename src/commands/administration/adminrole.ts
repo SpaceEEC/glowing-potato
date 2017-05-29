@@ -5,41 +5,48 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 export default class AdminRoleCommand extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'adminrole',
 			aliases: ['admin', 'admins', 'adminroles'],
-			group: 'administration',
-			memberName: 'adminrole',
+			args: [
+				{
+					default: 'show',
+					key: 'role',
+					prompt: 'which role do you like to use?\n',
+					type: 'role',
+				},
+			],
 			description: 'Admin roles configuration.',
 			details: stripIndents`
 				Adds or removes a admin role in this guild.
 				To remove or add a role simply \`@Mention\` it or provide the name or ID.
-      			To show all roles in that categorie, omit the parameter.`,
+			To show all roles in that categorie, omit the parameter.`,
 			examples: [
 				'`adminrole @Admins` Adds or removes the role `@Admins` to the admin roles of the bot.',
-				'`adminrole` Displays all admin roles.'
+				'`adminrole` Displays all admin roles.',
 			],
+			group: 'administration',
 			guildOnly: true,
-			args: [
-				{
-					key: 'role',
-					prompt: 'which role do you like to use?\n',
-					type: 'role',
-					default: 'show',
-				}
-			]
+			memberName: 'adminrole',
+			name: 'adminrole',
 		});
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
 		const adminRoles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []);
-		return msg.member.roles.some((r: Role) => adminRoles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
+		return msg.member.roles.some((r: Role) => adminRoles.includes(r.id))
+			|| msg.member.hasPermission('ADMINISTRATOR')
+			|| this.client.isOwner(msg.author);
 	}
 
 	public async run(msg: CommandMessage, args: { role: Role | string, added: boolean }): Promise<Message | Message[]> {
-		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).filter((r: string) => msg.guild.roles.has(r));
+		const roles: string[] = this.client.provider
+			.get(msg.guild.id, 'adminRoles', [])
+			.filter((r: string) => msg.guild.roles.has(r));
 
 		if (!(args.role instanceof Role)) {
-			return msg.say(`Admin roles: ${roles.length ? roles.map((r: string) => `\`@${msg.guild.roles.get(r).name}\``).join(', ') : 'No role set up.'}`);
+			return msg.say(`Admin roles: ${roles.length ?
+				roles.map((r: string) => `\`@${msg.guild.roles.get(r).name}\``).join(', ')
+				: 'No role(s) set up.'}`,
+			);
 		}
 
 		if (roles.includes(args.role.id)) {
@@ -51,6 +58,10 @@ export default class AdminRoleCommand extends Command {
 
 		this.client.provider.set(msg.guild.id, 'adminRoles', roles);
 
-		return msg.say(`\`@${args.role.name}\` ${args.added ? `is now one of` : 'has been removed from'} the admin roles!`);
+		return msg.say(`\`@${args.role.name}\` ${args.added
+			? `is now one of`
+			: 'has been removed from'
+			} the admin roles!`,
+		);
 	}
 }

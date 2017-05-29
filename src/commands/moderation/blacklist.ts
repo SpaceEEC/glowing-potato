@@ -5,25 +5,21 @@ import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 export default class BlacklistCommand extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'blacklist',
 			aliases: ['ignore'],
-			group: 'moderation',
-			memberName: 'blacklist',
-			description: 'Utilizes the guild-wide blacklist.',
-			details: 'Blacklists or unblacklists a member or channel.',
-			examples: [
-				'`blacklist 218348062828003328` Would blacklist or unblacklist the member or channel with that ID.',
-				'`blacklist @owo` Would blacklist or unblacklist the mentioned user owo.',
-				'For channels instead of users just replace the mentions or ids with channel ones.'
-			],
-			guildOnly: true,
 			args: [
 				{
 					key: 'thing',
 					label: 'member or channel',
+					parse: (value: string, msg: CommandMessage) => {
+						const channels: string[] = value.match(/^(?:<#)+([0-9]+)>+$/);
+						if (channels) return msg.guild.channels.get(channels[1]);
+						const members: string[] = value.match(/^(?:<@!?)+([0-9]+)>+$/);
+						if (members) return msg.guild.member(members[1]);
+						return msg.guild.member(value) || msg.guild.channels.get(value);
+					},
 					prompt: stripIndents`
 						which Member or Channel do you wish to blacklist or unblacklist?
-          				This command only accepts Mentions or IDs.\n`,
+						This command only accepts Mentions or IDs.\n`,
 					validate: async (value: string, msg: CommandMessage) => {
 						const channels: string[] = value.match(/^(?:<#)+([0-9]+)>+$/);
 						if (channels) return msg.guild.channels.filter((c: GuildChannel) => c.type === 'text').has(channels[1]);
@@ -33,24 +29,33 @@ export default class BlacklistCommand extends Command {
 								return msg.guild.fetchMember(await msg.client.fetchUser(members[1]));
 							} catch (err) { return false; }
 						}
-						if (msg.guild.channels.filter((c: GuildChannel) => c.type === 'text').has(value) || msg.guild.member(value)) return true;
-						return 'This isn\'t a valid channel or member!';
+						return (msg.guild.channels.filter((c: GuildChannel) => c.type === 'text').has(value)
+							|| msg.guild.member(value))
+							|| 'This isn\'t a valid channel or member!';
 					},
-					parse: (value: string, msg: CommandMessage) => {
-						const channels: string[] = value.match(/^(?:<#)+([0-9]+)>+$/);
-						if (channels) return msg.guild.channels.get(channels[1]);
-						const members: string[] = value.match(/^(?:<@!?)+([0-9]+)>+$/);
-						if (members) return msg.guild.member(members[1]);
-						return msg.guild.member(value) || msg.guild.channels.get(value);
-					}
-				}
-			]
+				},
+			],
+			description: 'Utilizes the guild-wide blacklist.',
+			details: 'Blacklists or unblacklists a member or channel.',
+			examples: [
+				'`blacklist 218348062828003328` Would blacklist or unblacklist the member or channel with that ID.',
+				'`blacklist @owo` Would blacklist or unblacklist the mentioned user owo.',
+				'For channels instead of users just replace the mentions or ids with channel ones.',
+			],
+			group: 'moderation',
+			guildOnly: true,
+			memberName: 'blacklist',
+			name: 'blacklist',
 		});
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
-		const staffRoles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).concat(this.client.provider.get(msg.guild.id, 'modRoles', []));
-		return msg.member.roles.some((r: Role) => staffRoles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
+		const staffRoles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', [])
+			.concat(this.client.provider.get(msg.guild.id, 'modRoles', []));
+
+		return msg.member.roles.some((r: Role) => staffRoles.includes(r.id))
+			|| msg.member.hasPermission('ADMINISTRATOR')
+			|| this.client.isOwner(msg.author);
 	}
 
 	public async run(msg: CommandMessage, args: { thing: GuildMember | TextChannel }): Promise<Message | Message[]> {

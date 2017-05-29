@@ -8,9 +8,14 @@ export default class ShuffleQueueCommand extends Command {
 
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'loop',
-			group: 'music',
-			memberName: 'loop',
+			args: [
+				{
+					default: '',
+					key: 'state',
+					prompt: 'do you like to enable or disable the loop?\n',
+					type: 'boolean',
+				},
+			],
 			description: 'Toggles queue.',
 			details: 'Songs will be appended to the queue after they finished, rather than just being deleted.',
 			examples: [
@@ -19,23 +24,23 @@ export default class ShuffleQueueCommand extends Command {
 				'No shit, sherlock.',
 				'`loop` Will display whether looping is enabled or not.',
 			],
+			group: 'music',
 			guildOnly: true,
-			args: [
-				{
-					key: 'state',
-					prompt: 'do you like to enable or disable the loop?\n',
-					type: 'boolean',
-					default: ''
-				}
-			]
+			memberName: 'loop',
+			name: 'loop',
 		});
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
 		const djRoles: string[] = this.client.provider.get(msg.guild.id, 'djRoles', []);
 		if (!djRoles.length) return true;
-		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).concat(this.client.provider.get(msg.guild.id, 'modRoles', []), djRoles);
-		return msg.member.roles.some((r: Role) => roles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
+
+		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', [])
+			.concat(this.client.provider.get(msg.guild.id, 'modRoles', []), djRoles);
+
+		return msg.member.roles.some((r: Role) => roles.includes(r.id))
+			|| msg.member.hasPermission('ADMINISTRATOR')
+			|| this.client.isOwner(msg.author);
 	}
 
 	public async run(msg: CommandMessage, args: { state: string | boolean }): Promise<Message | Message[]> {

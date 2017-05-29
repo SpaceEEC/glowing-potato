@@ -9,26 +9,26 @@ export default class QueueCommand extends Command {
 
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'queue',
 			aliases: ['songs', 'playlist', 'que', 'q'],
-			group: 'music',
-			memberName: 'queue',
+			args: [
+				{
+					default: 1,
+					key: 'page',
+					prompt: 'which page do you like to see?\n',
+					type: 'integer',
+				},
+			],
 			description: 'Shows the queue.',
 			examples: [
 				'`queue` Shows first page.',
 				'`queue` Shows first page.',
 				'`queue 2` Shows second page',
-				'And so on.'
+				'And so on.',
 			],
+			group: 'music',
 			guildOnly: true,
-			args: [
-				{
-					key: 'page',
-					prompt: 'which page do you like to see?\n',
-					type: 'integer',
-					default: 1,
-				}
-			]
+			memberName: 'queue',
+			name: 'queue',
 		});
 	}
 
@@ -43,7 +43,8 @@ export default class QueueCommand extends Command {
 		const pages: { page: number, items: Song[], maxPage: number } = queue.page(args.page);
 
 		let i: number = 0 + (args.page - 1) * 11;
-		let page: string | string[] = pages.items.map((song: Song) => `\`${i++}.\` ${song.lengthString} - [${song.name}](${song.url})`);
+		let page: string | string[] = pages.items
+			.map((song: Song) => `\`${i++}.\` ${song.lengthString} - [${song.name}](${song.url})`);
 
 		const embed: RichEmbed = new RichEmbed().setColor(0x0800ff)
 			.setTitle(`Queued up Songs: ${queue.length} | Queue length: ${Song.timeString(queue.totalLength)}`)
@@ -70,7 +71,7 @@ export default class QueueCommand extends Command {
 		if (pages.maxPage > 1) page.push(`\n\nUse ${msg.anyUsage('queue <page>')} to display a specific page`);
 
 		page = page.join('\n');
-		return msg.embed(embed.setDescription(page)
+		return msg.embed(embed.setDescription(page),
 		).then((mes: Message) => mes.delete(30000));
 	}
 

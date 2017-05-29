@@ -36,8 +36,8 @@ type PlaylistVideo = {
 	snippet: {
 		resourceId: {
 			videoId: string;
-		}
-	}
+		};
+	};
 };
 
 type SearchResponse = {
@@ -80,7 +80,13 @@ export class Youtube {
 	 * @static
 	 */
 	public static async getVideo(input: string): Promise<Video> {
-		const { pathname, query: { v }, hostname }: { pathname?: string, hostname?: string, query?: { v: string } } = parse(input, true);
+		const { pathname, query: { v }, hostname }: {
+			pathname?: string,
+			hostname?: string,
+			query?: {
+				v: string,
+			},
+		} = parse(input, true);
 		if (!pathname) return null;
 
 		const id: string = (!v || hostname === 'youtu.be') ? pathname.split('/').pop() : v;
@@ -116,14 +122,19 @@ export class Youtube {
 	 * @static
 	 */
 	public static async searchVideos(input: string, max: number): Promise<Video[]> {
-		const { body, status, statusText, ok }: { body: SearchResponse, status: number, statusText: string, ok: boolean } = await get(
+		const { body, status, statusText, ok }: {
+			body: SearchResponse,
+			status: number,
+			statusText: string,
+			ok: boolean,
+		} = await get(
 			'https://www.googleapis.com/youtube/v3/search'
 			+ '?part=snippet'
 			+ `&maxResults=${max}`
 			+ `&q=${encodeURIComponent(input)}`
 			+ '&type=video'
 			+ '&fields=items%2Fid'
-			+ `&key=${googletoken}`
+			+ `&key=${googletoken}`,
 		).catch((response: any) => {
 			if (!response.status && response instanceof Error) throw response;
 			else return response;
@@ -149,18 +160,24 @@ export class Youtube {
 	 * @static
 	 * @private
 	 */
+	// tslint:disable-next-line:max-line-length
 	private static async _fetchPlaylist(id: string, finalamount: number, pagetoken: string = null, arr: Video[] = []): Promise<Video[]> {
 		const requestamount: number = Math.min(finalamount, 50);
 		finalamount -= requestamount;
 
-		const { body, status, statusText, ok }: { body: PlaylistResponse, status: number, statusText: string, ok: boolean } = await get(
+		const { body, status, statusText, ok }: {
+			body: PlaylistResponse,
+			status: number,
+			statusText: string,
+			ok: boolean,
+		} = await get(
 			'https://www.googleapis.com/youtube/v3/playlistItems'
 			+ '?part=snippet'
 			+ `&maxResults=${requestamount}`
 			+ `&playlistId=${encodeURIComponent(id)}`
 			+ (pagetoken ? `&pageToken=${pagetoken}` : '')
 			+ `&fields=items%2Fsnippet%2FresourceId%2FvideoId`
-			+ `&key=${googletoken}`
+			+ `&key=${googletoken}`,
 		).catch((response: any) => {
 			if (!response.status && response instanceof Error) throw response;
 			else return response;
@@ -189,12 +206,17 @@ export class Youtube {
 	 * @private
 	 */
 	private static async _fetchVideos(ids: string): Promise<Video[]> {
-		const { body, status, statusText, ok }: { body: VideoResponse, status: number, statusText: string, ok: boolean } = await get(
+		const { body, status, statusText, ok }: {
+			body: VideoResponse,
+			status: number,
+			statusText: string,
+			ok: boolean,
+		} = await get(
 			'https://www.googleapis.com/youtube/v3/videos'
 			+ '?part=snippet%2CcontentDetails'
 			+ `&id=${encodeURIComponent(ids)}`
 			+ '&fields=items(contentDetails%2Fduration%2Cid%2Csnippet%2Ftitle)'
-			+ `&key=${googletoken}`
+			+ `&key=${googletoken}`,
 		).catch((response: any) => {
 			if (!response.status && response instanceof Error) throw response;
 			else return response;
@@ -206,10 +228,10 @@ export class Youtube {
 		for (const video of body.items) {
 			videos.push(
 				{
+					durationSeconds: Youtube._toSeconds(video.contentDetails.duration),
 					id: video.id,
 					title: video.snippet.title,
-					durationSeconds: Youtube._toSeconds(video.contentDetails.duration)
-				}
+				},
 			);
 		}
 

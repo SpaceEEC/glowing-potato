@@ -10,13 +10,13 @@ export default class NowPlayingCommand extends Command {
 
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'np',
 			aliases: ['song', 'playing'],
-			group: 'music',
-			memberName: 'np',
 			description: 'Now Playing.',
 			details: 'Shows the current song.',
+			group: 'music',
 			guildOnly: true,
+			memberName: 'np',
+			name: 'np',
 		});
 	}
 
@@ -32,10 +32,11 @@ export default class NowPlayingCommand extends Command {
 		return msg.embed(new RichEmbed().setColor(0x0800ff).setImage(currentSong.thumbnail)
 			.setAuthor(currentSong.username, currentSong.avatar)
 			.setDescription(stripIndents
+				// tslint:disable-next-line:max-line-length
 				`${queue.loop ? '**Queue is enabled!**\n' : ''}[${currentSong.name}](${currentSong.url})
-    			Time: \`${currentSong.timeLeft(currentTime)}\` (\`${Song.timeString(currentTime)}\`/\`${currentSong.lengthString}\`)
+				Time: \`${currentSong.timeLeft(currentTime)}\` (\`${Song.timeString(currentTime)}\`/\`${currentSong.lengthString}\`)
 
-    			${currentSong.playing ? '' : 'Currently paused.'}`))
+				${currentSong.playing ? '' : 'Currently paused.'}`))
 			.then((mes: Message) => mes.delete(30000));
 	}
 

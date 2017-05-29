@@ -8,18 +8,11 @@ export default class VolumeCommand extends Command {
 
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'volume',
-			group: 'music',
-			memberName: 'volume',
-			description: 'Sets the volume.',
-			details: 'Valid volume levels are 1 to 10.',
-			examples: [
-				'`volume` Will display the current volume',
-				'`volume 2` Will set the volume to 2.',
-			],
 			args: [
 				{
+					default: '',
 					key: 'volume',
+					parse: (value: string) => value,
 					prompt: 'to which level would you like set the volume?\n',
 					validate: (value: string) => {
 						const int: number = Number.parseInt(value);
@@ -28,19 +21,31 @@ export default class VolumeCommand extends Command {
 							&& (int <= 10)) return true;
 						return 'Please specify a volume between 1 and 10.';
 					},
-					parse: (value: string) => value,
-					default: ''
-				}
+				},
 			],
+			description: 'Sets the volume.',
+			details: 'Valid volume levels are 1 to 10.',
+			examples: [
+				'`volume` Will display the current volume',
+				'`volume 2` Will set the volume to 2.',
+			],
+			group: 'music',
 			guildOnly: true,
+			memberName: 'volume',
+			name: 'volume',
 		});
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
 		const djRoles: string[] = this.client.provider.get(msg.guild.id, 'djRoles', []);
 		if (!djRoles.length) return true;
-		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).concat(this.client.provider.get(msg.guild.id, 'modRoles', []), djRoles);
-		return msg.member.roles.some((r: Role) => roles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
+
+		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', [])
+		.concat(this.client.provider.get(msg.guild.id, 'modRoles', []), djRoles);
+
+		return msg.member.roles.some((r: Role) => roles.includes(r.id))
+			|| msg.member.hasPermission('ADMINISTRATOR')
+			|| this.client.isOwner(msg.author);
 	}
 
 	public async run(msg: CommandMessage, args: { volume: string }): Promise<Message | Message[]> {

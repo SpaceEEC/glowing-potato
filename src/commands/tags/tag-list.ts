@@ -6,12 +6,12 @@ import Tag from '../../dataProviders/models/Tag';
 export default class TagList extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'tag-list',
 			aliases: ['tags'],
-			group: 'tags',
-			memberName: 'tags-list',
 			description: 'Lists all tags.',
+			group: 'tags',
 			guildOnly: true,
+			memberName: 'tags-list',
+			name: 'tag-list',
 		});
 	}
 
@@ -29,7 +29,7 @@ export default class TagList extends Command {
 			.setFooter(`${msg.author.username}: ${msg.content}`, this.client.user.avatarURL)
 			.addField(`${msg.author.username} tags:`, user.join(' '))
 			.addField('Other tags:', alle.join(' '))
-			.setThumbnail(this.client.user.avatarURL)
+			.setThumbnail(this.client.user.avatarURL),
 		);
 	}
 }

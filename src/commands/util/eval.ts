@@ -7,19 +7,19 @@ import Util from '../../util/util.js';
 export default class EvalCommand extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'eval',
 			aliases: ['async', 'await'],
-			group: 'util',
-			memberName: 'eval',
-			description: 'Evaluates code in NodeJS.',
-			guarded: true,
 			args: [
 				{
 					key: 'code',
 					prompt: 'what shall I evaluate?\n',
-					type: 'string'
-				}
-			]
+					type: 'string',
+				},
+			],
+			description: 'Evaluates code in NodeJS.',
+			group: 'util',
+			guarded: true,
+			memberName: 'eval',
+			name: 'eval',
 		});
 	}
 
@@ -32,6 +32,7 @@ export default class EvalCommand extends Command {
 		try {
 			let evaled: any;
 			if (Util.getUsedAlias(msg) === 'async') args.code = `(async()=>{${args.code}})();`;
+			// tslint:disable-next-line:no-eval
 			evaled = await Promise.resolve(eval(args.code));
 			const responseTypeof: string = typeof evaled;
 			if (typeof evaled !== 'string') { evaled = require('util').inspect(evaled, false, 0); }
@@ -40,27 +41,27 @@ export default class EvalCommand extends Command {
 			}
 			return msg.say(stripIndents`
 				\`code:\`
-      			\`\`\`js\n${args.code ? args.code.split(`\``).join(`´`) : 'falsy'}\`\`\`
-      			\`evaled\\returned:\`
-      			\`\`\`js\n${evaled ? evaled.split(`\``).join(`´`) : 'falsy'}\`\`\`
-      			\`typeof:\`
-      			\`\`\`js\n${responseTypeof}
-      			\`\`\`\n
-      			Took \`${Date.now() - time}\`ms`
+				\`\`\`js\n${args.code ? args.code.split(`\``).join(`´`) : 'falsy'}\`\`\`
+				\`evaled\\returned:\`
+				\`\`\`js\n${evaled ? evaled.split(`\``).join(`´`) : 'falsy'}\`\`\`
+				\`typeof:\`
+				\`\`\`js\n${responseTypeof}
+				\`\`\`\n
+				Took \`${Date.now() - time}\`ms`,
 			).catch((e: Error) =>
 				msg.say(stripIndents`
 					Fehler beim Senden der Antwort:\n
-          			\`\`\`js
-          			${e.stack ? e.stack : e}
-          			\`\`\``
-				)
+					\`\`\`js
+					${e.stack ? e.stack : e}
+					\`\`\``,
+				),
 			);
 		} catch (error) {
 			return msg.say(stripIndents`\`E-ROHR\`
 			\`\`\`js
 			${error.url ? `${error.status} ${error.statusText}\n${error.text}` : error}
 			\`\`\`\n
-      Took \`${Date.now() - time}\`ms`
+			Took \`${Date.now() - time}\`ms`,
 			);
 		}
 	}

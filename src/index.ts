@@ -9,24 +9,41 @@ import SequelizeProvider from './dataProviders/SequelizeProvider';
 import registerEvents from './events/events';
 import Util from './util/util';
 
-const { defaultPrefix, logLevel, maintoken, ownerID }: { defaultPrefix: string, logLevel: string, maintoken: string, ownerID: string } = require('../config');
+const { defaultPrefix, logLevel, maintoken, ownerID }: {
+	defaultPrefix: string;
+	logLevel: string;
+	maintoken: string;
+	ownerID: string;
+} = require('../config');
 
 const client: CommandoClient = new CommandoClient({
-	owner: ownerID,
 	commandPrefix: defaultPrefix,
-	unknownCommandResponse: false,
 	disableEveryone: true,
 	disabledEvents: [
-		'TYPING_START'
-	]
-});
-const disconnect: LoggerInstance = new (Logger)({
-	transports: [
-		new transports.File({ filename: '../disconnects.log', level: 'disconnect', timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')) }),
-		new transports.Console({ colorize: true, level: 'disconnect', prettyPrint: true, timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')) })
+		'TYPING_START',
 	],
-	levels: { disconnect: 0 }
+	owner: ownerID,
+	unknownCommandResponse: false,
 });
+
+const disconnect: LoggerInstance = new (Logger)({
+	levels: { disconnect: 0 },
+	transports: [
+		new transports.File({
+			filename: '../disconnects.log',
+			level: 'disconnect',
+			timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')),
+		}),
+		new transports.Console({
+			colorize: true,
+			level: 'disconnect',
+			prettyPrint: true,
+			timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')),
+		}),
+	],
+});
+
+// tslint:disable:object-literal-sort-keys
 
 addColors({
 	disconnect: 'red',
@@ -35,15 +52,18 @@ addColors({
 	verbose: 'cyan',
 	info: 'green',
 	warn: 'yellow',
-	error: 'red'
+	error: 'red',
 });
+
+// tslint:enable:object-literal-sort-keys
 remove(transports.Console);
+
 add(transports.Console, {
+	colorize: true,
 	level: logLevel,
 	prettyPrint: true,
-	colorize: true,
 	silent: false,
-	timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss'))
+	timestamp: (() => moment().format('DD.MM.YYYY HH:mm:ss')),
 });
 
 registerEvents(client);
@@ -72,22 +92,29 @@ client.dispatcher.addInhibitor((msg: Message) => {
 
 	if (msg.author.id === msg.guild.ownerID || client.isOwner(msg.author)) return false;
 
-	const staffRoles: string[] = client.provider.get(msg.guild.id, 'adminRoles', []).concat(client.provider.get(msg.guild.id, 'modRoles', []));
+	const staffRoles: string[] = client.provider.get(msg.guild.id, 'adminRoles', [])
+		.concat(client.provider.get(msg.guild.id, 'modRoles', []));
 	if (msg.member.roles.some((r: Role) => staffRoles.includes(r.id))) return false;
 
 	const ignoredUsers: string[] = client.provider.get(msg.guild.id, 'ignoredUsers', []);
-	if (ignoredUsers.includes(msg.author.id)) return [`User(${msg.author.id}) is ignored in this guild(${msg.guild.id})`, null];
+	if (ignoredUsers.includes(msg.author.id)) {
+		return [`User(${msg.author.id}) is ignored in this guild(${msg.guild.id})`, null];
+	}
 
 	const ignoredChannels: string[] = client.provider.get(msg.guild.id, 'ignoredChannels', []);
-	if (ignoredChannels.includes(msg.channel.id)) return [`Channel(${msg.channel.id}) is ignored in this guild(${msg.guild.id})`, null];
+	if (ignoredChannels.includes(msg.channel.id)) {
+		return [`Channel(${msg.channel.id}) is ignored in this guild(${msg.guild.id})`, null];
+	}
 
-	// false as any, why
+	// false as any, because reasons
 	return false as any;
 });
 
 client
 	.on('error', error)
+
 	.on('warn', warn)
+
 	.once('ready', () => {
 		client.user.setGame(client.provider.get('global', 'game', null));
 		Util.init(client);
@@ -95,18 +122,23 @@ client
 			disconnect.log('disconnect', '', event.code, ': ', event.reason);
 		});
 	})
+
 	.on('ready', () => {
 		info(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
 	})
+
 	.on('disconnect', (event: any) => {
 		process.exit(200);
 	})
+
 	.on('reconnecting', () => warn('Reconnecting...'))
+
 	.on('commandError', (cmd: Command, err: any) => {
 		if (err instanceof FriendlyError) return;
 		if (err.url) error(`Uncaught Promise Error:\n$ ${err.status} ${err.statusText}\n${err.text}\n${err.stack || err}`);
 		else error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err);
 	})
+
 	.on('commandBlocked', (msg: CommandMessage, reason: string) => {
 		info(oneLine`
 			Command ${msg.command ? `${msg.command.groupID}:${msg.command.memberName}` : ''}
@@ -119,6 +151,7 @@ client
 			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
 		`);
 	})
+
 	.on('commandStatusChange', (guild: Guild, command: Command, enabled: boolean) => {
 		info(oneLine`
 			Command ${command.groupID}:${command.memberName}
@@ -126,6 +159,7 @@ client
 			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
 		`);
 	})
+
 	.on('groupStatusChange', (guild: Guild, group: CommandGroup, enabled: boolean) => {
 		info(oneLine`
 			Group ${group.id}
@@ -133,6 +167,7 @@ client
 			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
 		`);
 	})
+
 	.on('channelCreate', (channel: GuildChannel) => {
 		if (!channel.guild) return;
 		(client.registry.resolveCommand('administration:mutedrole') as any).newChannel(channel);
@@ -141,11 +176,8 @@ client
 process.on('unhandledRejection', (err: any) => {
 	if (err) {
 		if (/Something took too long to do.|getaddrinfo|ETIMEDOUT|ECONNRESET/.test(err.message)) process.exit(200);
-		if (err.url) error(`Uncaught Promise Error:\n$ ${err.status} ${err.statusText}\n${err.text}`);
-		else error(`Uncaught Promise Error:\n${err.stack ? err.stack : err}`);
-	} else {
-		error('Unhandled Promise Rejection without an error. (No stacktrace, response or message.)');
-	}
+		else error('Unhandled promise rejection:', err);
+	} else { error('Unhandled Promise Rejection without an error. (No stacktrace, response or message.)'); }
 });
 
 client.login(maintoken);

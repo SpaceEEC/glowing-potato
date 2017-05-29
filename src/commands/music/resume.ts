@@ -8,20 +8,25 @@ export default class ResumeMusicCommand extends Command {
 
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'resume',
 			aliases: ['continue'],
-			group: 'music',
-			memberName: 'resume',
 			description: 'Resumes the song.',
+			group: 'music',
 			guildOnly: true,
+			memberName: 'resume',
+			name: 'resume',
 		});
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
 		const djRoles: string[] = this.client.provider.get(msg.guild.id, 'djRoles', []);
 		if (!djRoles.length) return true;
-		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).concat(this.client.provider.get(msg.guild.id, 'modRoles', []), djRoles);
-		return msg.member.roles.some((r: Role) => roles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
+
+		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', [])
+			.concat(this.client.provider.get(msg.guild.id, 'modRoles', []), djRoles);
+
+		return msg.member.roles.some((r: Role) => roles.includes(r.id))
+			|| msg.member.hasPermission('ADMINISTRATOR')
+			|| this.client.isOwner(msg.author);
 	}
 
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {

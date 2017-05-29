@@ -2,7 +2,13 @@ import { DataTypes, FindOrInitializeOptions, Model } from 'sequelize';
 
 import sequelize from '../SQLite';
 
-type GuildConfigKey = 'guildID' | 'mutedRole' | 'vlogChannel' | 'logChannel' | 'anChannel' | 'joinMessage' | 'leaveMessage';
+type GuildConfigKey = 'guildID'
+	| 'mutedRole'
+	| 'vlogChannel'
+	| 'logChannel'
+	| 'anChannel'
+	| 'joinMessage'
+	| 'leaveMessage';
 
 /**
  * Represents the Config for each specific guild
@@ -119,17 +125,18 @@ export default class GuildConfig extends Model {
 
 GuildConfig.init({
 	guildID: {
-		type: DataTypes.STRING(20),
 		allowNull: false,
-		unique: true,
 		primaryKey: true,
+		type: DataTypes.STRING(20),
+		unique: true,
 	},
-	mutedRole: { type: DataTypes.STRING(20) },
-	vlogChannel: { type: DataTypes.STRING(20) },
-	logChannel: { type: DataTypes.STRING(20) },
+	// tslint:disable-next-line:object-literal-sort-keys
 	anChannel: { type: DataTypes.STRING(20) },
 	joinMessage: { type: DataTypes.STRING(1800) },
 	leaveMessage: { type: DataTypes.STRING(1800) },
+	logChannel: { type: DataTypes.STRING(20) },
+	mutedRole: { type: DataTypes.STRING(20) },
+	vlogChannel: { type: DataTypes.STRING(20) },
 }, { sequelize });
 
 GuildConfig.sync();
