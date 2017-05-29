@@ -1,5 +1,6 @@
 import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
+import { warn } from 'winston';
 
 import Queue from '../../structures/Queue';
 
@@ -25,7 +26,7 @@ export default class StopMusicCommand extends Command {
 		return msg.member.roles.some((r: Role) => roles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
 	}
 
-	public async run(msg: CommandMessage): Promise<Message | Message[]> {
+	public async run(msg: CommandMessage, args: string): Promise<Message | Message[]> {
 		const queue: Queue = this.queue.get(msg.guild.id);
 
 		if (!queue || !queue.currentSong) {
@@ -41,7 +42,17 @@ export default class StopMusicCommand extends Command {
 				.then((mes: Message) => mes.delete(5000));
 		}
 
-		queue.stop();
+		// this whole thing should be unnecessary
+		try {
+			queue.stop();
+		} catch (e) {
+			if (args === 'force') {
+				await queue.emptyQueue(true, this.queue);
+				warn(`Force Stop: ${msg.author.tag} deleted the queue in ${msg.guild.name} (${msg.guild.id})`);
+				return msg.say('Forced the deletion of the queue, this might have unexpected side effects.\nError thrown at StopMusicCommand#run - Queue#stop:', e);
+			}
+			throw e;
+		}
 
 		return msg.say('Party is over! 🚪 👈')
 			.then((mes: Message) => mes.delete(5000));
