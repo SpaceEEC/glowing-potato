@@ -17,13 +17,14 @@ export default class TagShow extends Command {
 					key: 'tag',
 					prompt: 'which tag do you like to see?\n',
 					type: 'validtag',
+					validate: () => true,
 				},
 			],
-			argsPromptLimit: 0
 		});
 	}
 
 	public async run(msg: CommandMessage, args: { tag: Tag }): Promise<Message | Message[]> {
+		if (!args.tag) return null;
 		return msg.say(args.tag.content);
 	}
 }
