@@ -7,9 +7,13 @@ import GuildConfig from '../../dataProviders/models/GuildConfig';
 export default class BlacklistCommand extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'mute',
-			group: 'moderation',
-			memberName: 'mute',
+			args: [
+				{
+					key: 'member',
+					prompt: 'which Member do you like to mute or unmute?\n',
+					type: 'member',
+				},
+			],
 			description: 'Mutes or unmutes a member.',
 			details: stripIndents`
 				Mutes or unmutes the specified member, be careful with the fuzzy search, it might mute or unmute the wrong member.
@@ -18,22 +22,22 @@ export default class BlacklistCommand extends Command {
 				'`mute @owo` Mutes or unmutes the member owo',
 				'`mute 250381145462538242` Mutes or unmutes the member with that ID.',
 				'`mute owo` Search for a member called owo and mutes or unmutes them',
-				'Be careful with the last option, you might mute or unmute someone you are not intending to.'
+				'Be careful with the last option, you might mute or unmute someone you are not intending to.',
 			],
+			group: 'moderation',
 			guildOnly: true,
-			args: [
-				{
-					key: 'member',
-					prompt: 'which Member do you like to mute or unmute?\n',
-					type: 'member'
-				}
-			]
+			memberName: 'mute',
+			name: 'mute',
 		});
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
-		const staffRoles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).concat(this.client.provider.get(msg.guild.id, 'modRoles', []));
-		return msg.member.roles.some((r: Role) => staffRoles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
+		const staffRoles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', [])
+			.concat(this.client.provider.get(msg.guild.id, 'modRoles', []));
+
+		return msg.member.roles.some((r: Role) => staffRoles.includes(r.id))
+			|| msg.member.hasPermission('ADMINISTRATOR')
+			|| this.client.isOwner(msg.author);
 	}
 
 	public async run(msg: CommandMessage, args: { member: GuildMember }): Promise<Message | Message[]> {
@@ -51,7 +55,7 @@ export default class BlacklistCommand extends Command {
 		if (mutedRole.position >= msg.guild.member(this.client.user).highestRole.position) {
 			return msg.say(stripIndents`
 				I can not mute or unmute someone while  \`@${mutedRole.name}\` is higher than my highest role.
-      			You should change that, or yell at someone who can.`
+      			You should change that, or yell at someone who can.`,
 			);
 		}
 
@@ -63,12 +67,16 @@ export default class BlacklistCommand extends Command {
 		if (target.id === msg.author.id) {
 			return msg.say(stripIndents`
 				Muting yourself, what a wonderful idea!
-      			Wait... actually not.`
+      			Wait... actually not.`,
 			);
 		}
 
-		const staffRoles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).concat(this.client.provider.get(msg.guild.id, 'modRoles', []));
-		if (target.roles.some((r: Role) => staffRoles.includes(r.id)) || target.hasPermission('ADMINISTRATOR') || this.client.isOwner(target)) {
+		const staffRoles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', [])
+			.concat(this.client.provider.get(msg.guild.id, 'modRoles', []));
+		if (target.roles.some((r: Role) => staffRoles.includes(r.id))
+			|| target.hasPermission('ADMINISTRATOR')
+			|| this.client.isOwner(target)
+		) {
 			return msg.say('You can not mute that person!');
 		}
 

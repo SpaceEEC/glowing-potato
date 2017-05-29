@@ -39,7 +39,7 @@ export default async function voiceStateUpdate(oldMember: GuildMember, newMember
 		vlogChannel.send({
 			embed: new RichEmbed().setColor(clr).setDescription(desc)
 				.setAuthor(newMember.displayName, newMember.user.displayAvatarURL, newMember.user.displayAvatarURL)
-				.setTimestamp()
+				.setTimestamp(),
 		});
 	}
 }

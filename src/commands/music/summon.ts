@@ -9,21 +9,26 @@ export default class SummonCommand extends Command {
 
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'summon',
 			aliases: ['overhere'],
-			group: 'music',
-			memberName: 'summon',
 			description: 'Summons the bot.',
 			details: 'Summons the bot to the current channel.',
+			group: 'music',
 			guildOnly: true,
+			memberName: 'summon',
+			name: 'summon',
 		});
 	}
 
 	public hasPermission(msg: CommandMessage): boolean {
 		const djRoles: string[] = this.client.provider.get(msg.guild.id, 'djRoles', []);
 		if (!djRoles.length) return true;
-		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', []).concat(this.client.provider.get(msg.guild.id, 'modRoles', []), djRoles);
-		return msg.member.roles.some((r: Role) => roles.includes(r.id)) || msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
+
+		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', [])
+			.concat(this.client.provider.get(msg.guild.id, 'modRoles', []), djRoles);
+
+		return msg.member.roles.some((r: Role) => roles.includes(r.id))
+			|| msg.member.hasPermission('ADMINISTRATOR')
+			|| this.client.isOwner(msg.author);
 	}
 
 	public async run(msg: CommandMessage): Promise<Message | Message[]> {
@@ -50,10 +55,12 @@ export default class SummonCommand extends Command {
 
 		const permissions: Permissions = voiceChannel.permissionsFor(this.client.user);
 		if (!permissions.has('CONNECT')) {
+			// tslint:disable-next-line:max-line-length
 			return msg.say('Your voice channel sure looks nice, but I unfortunately don\' have permissions to join it.\nBetter luck next time.')
 				.then((mes: Message) => mes.delete(5000));
 		}
 		if (!permissions.has('SPEAK')) {
+			// tslint:disable-next-line:max-line-length
 			return msg.say('Your party looks nice, I\'d love to join, but I am unfortunately not allowed to speak there, so I don\'t bother joining.')
 				.then((mes: Message) => mes.delete(5000));
 		}

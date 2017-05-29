@@ -25,20 +25,20 @@ type UrbanDefinition = {
 export default class UrbanCommand extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'urban',
-			group: 'miscellaneous',
-			memberName: 'urban',
-			description: 'Displays a definition from urbandictionary.com .',
-			guildOnly: true,
 			args: [
 				{
 					key: 'search',
 					prompt: stripIndents`
 						what would you like to look up?
-          				You can specify \`-n\` (n as a number) at the beginning to look up a specific definition.\n`,
+						You can specify \`-n\` (n as a number) at the beginning to look up a specific definition.\n`,
 					type: 'string',
-				}
-			]
+				},
+			],
+			description: 'Displays a definition from urbandictionary.com .',
+			group: 'miscellaneous',
+			guildOnly: true,
+			memberName: 'urban',
+			name: 'urban',
 		});
 	}
 
@@ -48,9 +48,10 @@ export default class UrbanCommand extends Command {
 			args.search = args.search.split(' ').slice(1).join(' ');
 		} else { args.number = 0; }
 
-		const body: UrbanResponse = await get(`http://api.urbandictionary.com/v0/define?term=${encodeURIComponent(args.search.replace(/ /g, '+'))}`)
-			// not a buffer
-			.then<UrbanResponse>((response: Result) => response.body as any);
+		const body: UrbanResponse = await
+			get(`http://api.urbandictionary.com/v0/define?term=${encodeURIComponent(args.search.replace(/ /g, '+'))}`)
+				// not a buffer
+				.then<UrbanResponse>((response: Result) => response.body as any);
 
 		if (body.list.length === 0) {
 			return msg.embed(
@@ -59,10 +60,11 @@ export default class UrbanCommand extends Command {
 					.setAuthor('Urbandictionary',
 					'http://www.urbandictionary.com/favicon.ico',
 					'http://www.urbandictionary.com/')
+					// tslint:disable-next-line:max-line-length
 					.setThumbnail('https://cdn.discordapp.com/attachments/242641288397062145/308943250465751041/eyJ1cmwiOiJodHRwOi8vaS5pbWd1ci5jb20vQ2NJWlpzYS5wbmcifQ.png')
 					.addField('No results', 'Maybe made a typo?')
 					.addField('Search:', `[URL](http://www.urbandictionary.com/define.php?term=${args.search.split(' ').join('+')})`)
-					.setFooter(msg.cleanContent, msg.author.displayAvatarURL)
+					.setFooter(msg.cleanContent, msg.author.displayAvatarURL),
 			);
 
 		} else {
@@ -73,6 +75,7 @@ export default class UrbanCommand extends Command {
 				.setAuthor('Urbandictionary',
 				'http://www.urbandictionary.com/favicon.ico',
 				'http://www.urbandictionary.com/')
+				// tslint:disable-next-line:max-line-length
 				.setThumbnail('https://cdn.discordapp.com/attachments/242641288397062145/308943250465751041/eyJ1cmwiOiJodHRwOi8vaS5pbWd1ci5jb20vQ2NJWlpzYS5wbmcifQ.png')
 				.setTitle(`${args.search} [${args.number + 1}/${body.list.length}]`)
 				.setDescription('\u200b');
@@ -84,6 +87,7 @@ export default class UrbanCommand extends Command {
 			if (example) for (let i: number = 0; i < example.length; i++) e.addField(i === 0 ? 'Example' : '\u200b', example[i]);
 			else e.addField('\u200b', '\u200b');
 
+			// tslint:disable-next-line:max-line-length
 			e.setFooter(`${msg.cleanContent} | Definition ${args.number + 1} from ${body.list.length} Definitions.`, msg.author.displayAvatarURL);
 
 			return msg.embed(e);

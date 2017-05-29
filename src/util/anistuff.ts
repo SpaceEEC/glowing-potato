@@ -4,36 +4,45 @@ import { post, Result } from 'snekfetch';
 
 const { anilist } = require('../../config.json');
 
-export const replaceChars: { [char: string]: string } = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#039;': "'", '`': '\'', '<br>': '\n', '<br />': '\n' };
+export const replaceChars: { [char: string]: string } = {
+	'&#039;': '\'',
+	'&amp;': '&',
+	'&gt;': '>',
+	'&lt;': '<',
+	'&quot;': '"',
+	'<br />': '\n',
+	'<br>': '\n',
+	'`': '\'',
+};
 
 type ClientCredentials = {
 	/**
 	 * The access token, which is required to use the api
 	 */
-	access_token: string,
+	access_token: string;
 	/**
 	 * The type of the token
 	 */
-	token_type: string,
+	token_type: string;
 	/**
 	 * The timestamp indicating when the token expires
 	 */
-	expires: number,
+	expires: number;
 	/**
 	 * The time in seconds until the token expires
 	 */
-	expires_in: number
+	expires_in: number;
 };
 
 export type AniSettings = {
 	/**
 	 * The timestamp indicating when the token expires
 	 */
-	expires: number,
+	expires: number;
 	/**
  	* The access token, which is required to use the api
  	*/
-	token: string
+	token: string;
 };
 
 export type AnimeData = {
@@ -57,8 +66,25 @@ export type AnimeData = {
 	image_url_lge: string;
 	image_url_banner: string;
 	updated_at: number;
-	score_distribution: { '10': number, '20': number, '30': number, '40': number, '50': number, '60': number, '70': number, '80': number, '90': number, '100': number };
-	list_stats: { 'completed': number, 'on_hold': number, 'dropped': number, 'plan_to_watch': number, 'watching': number };
+	score_distribution: {
+		10: number;
+		20: number;
+		30: number;
+		40: number;
+		50: number;
+		60: number;
+		70: number;
+		80: number;
+		90: number;
+		100: number;
+	};
+	list_stats: {
+		completed: number;
+		on_hold: number;
+		dropped: number;
+		plan_to_watch: number;
+		watching: number;
+	};
 	total_episodes: number;
 	duration: number;
 	airing_status: string;
@@ -88,23 +114,40 @@ export type MangaData = {
 	image_url_lge: string;
 	image_url_banner: string;
 	updated_at: number;
-	score_distribution: { '10': number, '20': number, '30': number, '40': number, '50': number, '60': number, '70': number, '80': number, '90': number, '100': number };
-	list_stats: { 'completed': number, 'on_hold': number, 'dropped': number, 'plan_to_watch': number, 'watching': number };
+	score_distribution: {
+		10: number;
+		20: number;
+		30: number;
+		40: number;
+		50: number;
+		60: number;
+		70: number;
+		80: number;
+		90: number;
+		100: number;
+	};
+	list_stats: {
+		completed: number;
+		on_hold: number;
+		dropped: number;
+		plan_to_watch: number;
+		watching: number;
+	};
 	total_chapters: number;
 	total_volumes: number;
 	publishing_status: string;
 };
 
 export type CharData = {
-	name_alt: string,
-	info: string,
-	id: number,
-	name_first: string,
-	name_last: string,
-	name_japanese: string,
-	image_url_lge: string,
-	image_url_med: string,
-	role: string
+	name_alt: string;
+	info: string;
+	id: number;
+	name_first: string;
+	name_last: string;
+	name_japanese: string;
+	image_url_lge: string;
+	image_url_med: string;
+	role: string;
 };
 
 /**
@@ -114,22 +157,23 @@ export type CharData = {
  * @param {aniSettings} aniSettings - The settings to compare the timestamp against
  * @returns {Promise<aniSettings>} The new aniSettings
  */
+// tslint:disable-next-line:max-line-length
 export async function updateToken(client: CommandoClient, msg: CommandMessage, aniSettings: AniSettings): Promise<AniSettings> {
 	if (aniSettings.expires <= Date.now()) {
 		const statusMessage: Message = await msg.embed(
 			new RichEmbed().setColor(0xffff00)
-				.setDescription('The token expired, a new one will be requested.\nThis may take a while.')
+				.setDescription('The token expired, a new one will be requested.\nThis may take a while.'),
 		) as Message;
 		const body: ClientCredentials = await post(`https://anilist.co/api/auth/access_token`)
 			.send({
-				grant_type: 'client_credentials',
 				client_id: anilist.client_id,
 				client_secret: anilist.client_secret,
+				grant_type: 'client_credentials',
 			})
 			.then<ClientCredentials>((result: Result) => result.body as any);
 		aniSettings = {
+			expires: Date.now() + body.expires_in * 1000,
 			token: body.access_token,
-			expires: Date.now() + body.expires_in * 1000
 		};
 		client.provider.set('global', 'aniSettings', aniSettings);
 		await statusMessage.edit({

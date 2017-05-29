@@ -66,10 +66,11 @@ export default class Tag extends Model {
 }
 
 Tag.init({
-	userID: DataTypes.STRING(20),
 	guildID: DataTypes.STRING(20),
-	name: DataTypes.STRING,
+	// tslint:disable-next-line:object-literal-sort-keys
 	content: DataTypes.STRING(1800),
+	name: DataTypes.STRING,
+	userID: DataTypes.STRING(20),
 }, { sequelize });
 
 Tag.sync();

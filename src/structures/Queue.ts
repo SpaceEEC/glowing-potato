@@ -5,7 +5,11 @@ import Song from './Song';
 
 const { util }: { util: any } = require('discord.js-commando');
 
-export type Page = { page: number, items: Song[], maxPage: number };
+export type Page = {
+	page: number;
+	items: Song[];
+	maxPage: number;
+};
 
 /** Represents a queue. */
 export default class Queue {
@@ -62,7 +66,8 @@ export default class Queue {
 			return this._voiceChannel.leave();
 		}
 
-		this.statusMessage = await this._textChannel.send('The queue is empty, I\'ll wait another 30 seconds for new songs before leaving.') as Message;
+		this.statusMessage = await this._textChannel
+			.send('The queue is empty, I\'ll wait another 30 seconds for new songs before leaving.') as Message;
 
 		this._emptyPlayListTimeout = this._client.setTimeout(() => {
 			this.statusMessage.delete().catch(() => null);

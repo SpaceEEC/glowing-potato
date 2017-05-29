@@ -8,10 +8,10 @@ export default class Settings extends Model {
 
 Settings.init({
 	guild: {
-		type: DataTypes.STRING(20),
 		allowNull: false,
-		unique: true,
 		primaryKey: true,
+		type: DataTypes.STRING(20),
+		unique: true,
 	},
-	settings: { type: DataTypes.STRING }
+	settings: { type: DataTypes.STRING },
 }, { sequelize });

@@ -13,20 +13,19 @@ type Execution = {
 export default class ExecuteCommand extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'exec',
 			aliases: ['doshit'],
-			group: 'util',
-			memberName: 'exec',
-			description: 'Executes commands in bash.',
-			guildOnly: true,
-			guarded: true,
 			args: [
 				{
 					key: 'code',
 					prompt: 'what shall be executed?\n',
-					type: 'string'
-				}
-			]
+					type: 'string',
+				},
+			],
+			description: 'Executes commands in bash.',
+			group: 'util',
+			guarded: true,
+			memberName: 'exec',
+			name: 'exec',
 		});
 	}
 
@@ -47,14 +46,14 @@ export default class ExecuteCommand extends Command {
 			return statusMessage.edit(stripIndents`
 				\`EXEC\` ${error.code ? `\`Error Code: ${error.code}\`` : ''}\n
 				\`\`\`xl\n${args.code}\n\`\`\`
-          		${stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`` : ''}
+				${stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`` : ''}
 				${error.stack ? `\`E-ROHR\`\n\`\`\`js\n${error.stack}\n\`\`\`` : ''}
 				${error.signal ? `Signal received: ${error.signal}` : ''}`);
 		} else {
 			return statusMessage.edit(stripIndents`
 				\`EXEC\`
 				\`\`\`xl\n${args.code}\n\`\`\`
-         		${stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`` : ''}
+				${stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`` : ''}
 				${stderr ? `\`STERR\`\n\`\`\`xl\n${stderr}\`\`\`` : ''}`);
 		}
 	}

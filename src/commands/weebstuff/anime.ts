@@ -3,20 +3,33 @@ import { Message, RichEmbed } from 'discord.js';
 import { ArgumentInfo, Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
 import { get } from 'snekfetch';
 
-import { AnimeData, AniSettings, CharData, formatFuzzy, MangaData, replaceChars, updateToken, } from '../../util/anistuff.js';
+import {
+	AnimeData,
+	AniSettings,
+	CharData,
+	formatFuzzy,
+	MangaData,
+	replaceChars,
+	updateToken,
+} from '../../util/anistuff.js';
 import Util from '../../util/util';
 
 type args = { search: string, cmd: string };
 
 export default class AnimeCommand extends Command {
 	public constructor(client: CommandoClient) {
+		// tslint:disable:max-line-length
 		super(client, {
-			name: 'anime',
 			aliases: ['manga', 'character', 'char'],
-			group: 'weebstuff',
-			memberName: 'anime',
+			args: [
+				{
+					key: 'search',
+					parse: (value: string) => encodeURIComponent(value),
+					prompt: 'what or who would you like to lookup?\n',
+					type: 'string',
+				},
+			],
 			description: stripIndents`Displays information about the specified anime.
-
 			Subcommands - call with their alias:
 			**manga:** Displays information about the specified manga.
 			**character:** Displays information about the specified character.
@@ -24,23 +37,24 @@ export default class AnimeCommand extends Command {
 			examples: [
 				'`anime Bakemonogatari` Shows a list of shows that match this search and lets you pick one of those for a detailed view.',
 				'`manga Hyouka` Shows a list of mangas that match this search and lets you pick one of those for a detailed view.',
-				'`char hachiman hikigaya` shows information for him, search can be used the same as for the commands above.'
+				'`char hachiman hikigaya` shows information for him, search can be used the same as for the commands above.',
 			],
+			group: 'weebstuff',
 			guildOnly: true,
-			args: [
-				{
-					key: 'search',
-					prompt: 'what or who would you like to lookup?\n',
-					type: 'string',
-					parse: (value: string) => encodeURIComponent(value)
-				}
-			]
+			memberName: 'anime',
+			name: 'anime',
 		});
+		// tslint:enable:max-line-length
 	}
 
 	public async run(msg: CommandMessage, args: args): Promise<Message | Message[]> {
 		args.cmd = Util.getUsedAlias(msg, { char: 'character' });
-		const aniSettings: AniSettings = await updateToken(this.client, msg, this.client.provider.get('global', 'aniSettings', { expires: 0 }));
+
+		const aniSettings: AniSettings = await updateToken(
+			this.client,
+			msg,
+			this.client.provider.get('global', 'aniSettings', { expires: 0 }),
+		);
 		const responses: AnimeData[] | MangaData[] | CharData[] = await this._query(msg, aniSettings, args);
 
 		if (responses[1]) responses[0] = await this._select(msg, responses, args);
@@ -52,8 +66,11 @@ export default class AnimeCommand extends Command {
 		throw new Error(`Unknown model type: ${args.cmd}`);
 	}
 
+	// tslint:disable-next-line:max-line-length
 	private async _query(msg: CommandMessage, aniSettings: AniSettings, args: args): Promise<AnimeData[] | MangaData[] | CharData[]> {
-		const { body }: { body: any } = await get(`https://anilist.co/api/${args.cmd}/search/${args.search}?access_token=${aniSettings.token}`);
+		const { body }: {
+			body: any,
+		} = await get(`https://anilist.co/api/${args.cmd}/search/${args.search}?access_token=${aniSettings.token}`);
 		if (!body.error) return body as AnimeData[] | MangaData[] | CharData[];
 
 		if (body.error.messages[0] === 'No Results.') throw new FriendlyError(`no ${args.cmd} found.`);
@@ -62,15 +79,26 @@ export default class AnimeCommand extends Command {
 	}
 
 	private _mapResponses(response: AnimeData[] | MangaData[] | CharData[], type: string): [string, number] {
-		let count: number = 1;
 		if (type === 'character') {
-			return [(response as CharData[]).map((r: CharData) => `${count++}\t\t${r.name_first} ${r.name_last ? r.name_last : ''}`).join('\n'), count];
+			return [
+				(response as CharData[])
+					.map((r: CharData, i: number) =>
+						`${i + 1}\t\t${r.name_first} ${r.name_last ? r.name_last : ''}`)
+					.join('\n'),
+				response.length + 1,
+			];
 		} else {
-			return [(response as AnimeData[]).map((r: AnimeData) => `${count++}\t\t${r.title_english}`).join('\n'), count];
+			return [
+				(response as AnimeData[])
+					.map((r: AnimeData, i: number) => `${i + 1}\t\t${r.title_english}`).join('\n'),
+				response.length + 1,
+			];
 		}
 	}
 
-	private async _select(msg: CommandMessage, response: MangaData[] | AnimeData[] | CharData[], args: args, second: boolean = false): Promise<MangaData | AnimeData | CharData> {
+	// tslint:disable-next-line:max-line-length
+	private async _select(msg: CommandMessage, response: MangaData[] | AnimeData[] | CharData[], args: args, second: boolean = false):
+		Promise<MangaData | AnimeData | CharData> {
 		const [description, count]: [string, number] = this._mapResponses(response, args.cmd);
 		const message: Message = await msg.embed(new RichEmbed().setColor(msg.member.displayColor)
 			.setTitle(`There has been found more than one ${args.cmd}:`)
@@ -78,10 +106,10 @@ export default class AnimeCommand extends Command {
 
 		const argument: ArgumentInfo = {
 			key: 'entry',
+			max: count,
+			min: 1,
 			prompt: `For which ${args.cmd} would you like to see additional information?`,
 			type: 'integer',
-			min: 1,
-			max: count
 		};
 
 		const userInput: number = await Util.prompt<number>(msg, argument, false);
@@ -117,7 +145,9 @@ export default class AnimeCommand extends Command {
 
 	private _sendManga(msg: CommandMessage, mangaInfo: MangaData): Promise<Message | Message[]> {
 		let genres: string = '';
-		for (const genre of mangaInfo.genres) genres += ((mangaInfo.genres.indexOf(genre) % 3) - 2) ? `${genre},\n` : `${genre}, `;
+		for (const genre of mangaInfo.genres) {
+			genres += ((mangaInfo.genres.indexOf(genre) % 3) - 2) ? `${genre},\n` : `${genre}, `;
+		}
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x0800ff)
@@ -158,7 +188,10 @@ export default class AnimeCommand extends Command {
 
 	private _sendAnime(msg: CommandMessage, animeInfo: AnimeData): Promise<Message | Message[]> {
 		let genres: string = '';
-		for (const genre of animeInfo.genres) genres += ((animeInfo.genres.indexOf(genre) % 3) - 2) ? `${genre}, ` : `${genre},\n`;
+		for (const genre of animeInfo.genres) {
+			genres += ((animeInfo.genres.indexOf(genre) % 3) - 2) ? `${genre}, ` : `${genre},\n`;
+		}
+
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x0800ff)
 			.setThumbnail(animeInfo.image_url_lge)

@@ -9,10 +9,16 @@ type RichEmbedField = { name: string; value: string; inline?: boolean; };
 export default class HelpCommand extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'help',
-			group: 'util',
 			aliases: ['commands'],
-			memberName: 'help',
+			args: [
+				{
+					default: '',
+					key: 'input',
+					parse: (input: string) => input.toLowerCase(),
+					prompt: 'For which command or group would you like to view the help for?',
+					type: 'string',
+				},
+			],
 			description: 'Displays help.',
 			details: stripIndents`
 				Displays a list of available commands, or detailed information for a specified command.
@@ -20,17 +26,10 @@ export default class HelpCommand extends Command {
 				If it isn't specified, all available command groups will be listed.
 			`,
 			examples: ['help', 'help prefix'],
+			group: 'util',
 			guarded: true,
-
-			args: [
-				{
-					key: 'input',
-					prompt: 'For which command or group would you like to view the help for?',
-					type: 'string',
-					default: '',
-					parse: (input: string) => input.toLowerCase()
-				}
-			]
+			memberName: 'help',
+			name: 'help',
 		});
 	}
 
@@ -38,11 +37,17 @@ export default class HelpCommand extends Command {
 		const prefix: string = msg.guild ? (msg.guild as GuildExtension).commandPrefix : null;
 
 		if (!args.input || args.input === 'all') return this._displayGroups(msg, args.input.endsWith('all'), prefix);
-		return this._displayGroup(msg, args.input, prefix) || this._displayCommand(msg, args.input, prefix) || msg.say(`Unable to identify command. Use ${msg.usage(null, prefix, prefix ? this.client.user : null)} to view the list of all commands.`);
+		return this._displayGroup(msg, args.input, prefix)
+			|| this._displayCommand(msg, args.input, prefix)
+			|| msg.say(stripIndents`Unable to identify command.
+			Use ${msg.usage(null, prefix, prefix ? this.client.user : null)} to view the list of all commands.`);
 	}
 
 	private _displayGroups(msg: CommandMessage, all: boolean, prefix: string): Promise<Message | Message[]> {
-		const usableGroups: Collection<string, CommandGroup> = all ? this.client.registry.groups : this.client.registry.groups.filter((group: CommandGroup) => group.commands.some((command: Command) => command.isUsable(msg.message)));
+		const usableGroups: Collection<string, CommandGroup> = all
+			? this.client.registry.groups
+			: this.client.registry.groups
+				.filter((group: CommandGroup) => group.commands.some((command: Command) => command.isUsable(msg.message)));
 		const embed: RichEmbed = new RichEmbed()
 			.setColor('RANDOM')
 			.setTitle('Command groups overview')
@@ -55,7 +60,11 @@ export default class HelpCommand extends Command {
 						${all ? 'All existing groups' : 'All groups with at least one command you can use.'}`);
 
 		for (const group of usableGroups.values()) {
-			embed.addField(group.name, `${group.commands.filter((command: Command) => command.isUsable(msg.message)).size}/${group.commands.size} usable.`, true);
+			embed.addField(
+				group.name,
+				`${group.commands.filter((command: Command) => command.isUsable(msg.message)).size}/${group.commands.size} usable.`,
+				true,
+			);
 		}
 
 		let remainder: number = embed.fields.length % 3;
@@ -69,7 +78,11 @@ export default class HelpCommand extends Command {
 		const all: boolean = input.endsWith('all');
 
 		let groups: CommandGroup[] = this.client.registry.findGroups(input.split(' ')[0], false);
-		if (!all) groups = groups.filter((group: CommandGroup) => group.commands.some((command: Command) => command.isUsable(msg.message)));
+		if (!all) {
+			groups = groups.filter((group: CommandGroup) =>
+				group.commands.some((command: Command) => command.isUsable(msg.message)),
+			);
+		}
 
 		if (groups.length === 1) {
 			const group: CommandGroup = groups[0];

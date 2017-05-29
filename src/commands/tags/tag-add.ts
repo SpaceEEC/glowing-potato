@@ -6,33 +6,34 @@ import Tag from '../../dataProviders/models/Tag';
 export default class TagAdd extends Command {
 	public constructor(client: CommandoClient) {
 		super(client, {
-			name: 'tag-add',
 			aliases: ['addtag'],
-			group: 'tags',
-			memberName: 'tag-add',
+			args: [
+				{
+					key: 'name',
+					max: 1,
+					// max = new, because reasons
+					// also lowercases
+					prompt: 'how shall the tag be named?\n',
+					type: 'validtag',
+
+				},
+				{
+					key: 'content',
+					max: 1800,
+					prompt: 'what shall the content be?\n',
+					type: 'tagcontent',
+				},
+			],
 			description: 'Adds a tag.',
 			examples: [
 				'`tag-add meme Only the finest memes here`',
 				'Adds a tag with the name `meme` and the content `Only the finest memes here`',
-				'\nFor tags with names that contain spaces, omit all arguments. And enter name and content when being prompted to.'
+				'\nFor tags with names that contain spaces, omit all arguments. And enter name and content when being prompted to.',
 			],
+			group: 'tags',
 			guildOnly: true,
-			args: [
-				{
-					key: 'name',
-					prompt: 'how shall the tag be named?\n',
-					type: 'validtag',
-					max: 1
-					// max = new, because reasons
-					// also lowercases
-				},
-				{
-					key: 'content',
-					prompt: 'what shall the content be?\n',
-					type: 'tagcontent',
-					max: 1800,
-				}
-			]
+			memberName: 'tag-add',
+			name: 'tag-add',
 		});
 	}
 
