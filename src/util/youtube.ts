@@ -80,12 +80,10 @@ export class Youtube {
 	 * @static
 	 */
 	public static async getVideo(input: string): Promise<Video> {
-		const { pathname, query, hostname }: { pathname?: string, hostname?: string, query?: { v: string } } = parse(input, true);
+		const { pathname, query: { v }, hostname }: { pathname?: string, hostname?: string, query?: { v: string } } = parse(input, true);
 		if (!pathname) return null;
 
-		let id: string;
-		if (query.v) id = query.v;
-		else if (hostname === 'youtu.be' || !id) id = pathname.split('/').pop();
+		const id: string = (!v || hostname === 'youtu.be') ? pathname.split('/').pop() : v;
 
 		if (!id) return null;
 
@@ -100,12 +98,10 @@ export class Youtube {
 	 * @static
 	 */
 	public static async getPlaylist(input: string, limit: number): Promise<Video[]> {
-		const { pathname, query }: { pathname?: string, query?: { list: string } } = parse(input, true);
+		const { pathname, query: { list } }: { pathname?: string, query?: { list: string } } = parse(input, true);
 		if (!pathname) return null;
 
-		let id: string;
-		if (query.list) id = query.list;
-		else id = pathname.split('/').pop();
+		const id = list || pathname.split('/').pop();
 
 		if (!id) return null;
 
