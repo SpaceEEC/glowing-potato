@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build:gulp && cd bin && node index.js",
+    "start": "cd bin && node index.js",
     "test": "npm run build -s",
     "lint:gulp": "gulp lint",
     "build:gulp": "gulp build",
