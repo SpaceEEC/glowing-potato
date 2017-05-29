@@ -348,7 +348,14 @@ export default class PlayMusicCommand extends Command {
 				await queue.statusMessage.edit('❌ An error occured while playing the YouTube stream.', { embed: null });
 				queue.statusMessage = null;
 				queue.shift(true);
-				this._play(guildID);
+				this._play(guildID).catch((playErr: Error) => {
+					error('PlayMusicCommand#_play', guildID, playErr);
+					queue.sendText(stripIndents`
+					❌ There was an error while playing.
+					\`${playErr.message}\`
+
+					Consider running \`stop force\`, if the playback is not continuing.`);
+				});
 			})
 
 			.once('end', () => {
@@ -375,7 +382,14 @@ export default class PlayMusicCommand extends Command {
 
 						const stop: boolean = reason === 'stop';
 						if (stop || !queue.currentSong) this.client.setTimeout(() => (unlink(`./tempmusicfile_${guildID}`, (e: Error) => e && error(guildID, e))), 500);
-						this._play(guildID, stop);
+						this._play(guildID, stop).catch((err: Error) => {
+							error('PlayMusicCommand#_play', guildID, err);
+							queue.sendText(stripIndents`
+							❌ There was an error while playing.
+							\`${err.message}\`
+
+							Consider running \`stop force\`, if the playback is not continuing.`);
+						});
 					});
 
 				(queue.connection.player.opusEncoder as any).setPLP(0.01);
