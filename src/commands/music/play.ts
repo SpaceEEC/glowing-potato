@@ -313,8 +313,9 @@ export default class PlayMusicCommand extends Command {
 			.setDescription(`Length: ${Song.timeString(video.durationSeconds)}`)
 			.setFooter(`Result ${index + 1} from ${videos.length} results.`, this.client.user.avatarURL);
 
-		if (statusmsg) statusmsg = await statusmsg.edit({ embed });
-		else statusmsg = await msg.embed(embed) as Message;
+		statusmsg = statusmsg
+			? await statusmsg.edit({ embed })
+			: await msg.embed(embed) as Message;
 
 		const argument: ArgumentInfo = {
 			key: 'choice',

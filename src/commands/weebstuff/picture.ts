@@ -44,8 +44,10 @@ export default class PictureCommand extends Command {
 		}
 
 		if (args.cmd === 'picture') {
-			if (tagAmount > 2) args.cmd = 'konachan';
-			else args.cmd = ['konachan', 'donmai'][Math.floor(Math.random() * 2)];
+			args.cmd = tagAmount > 2
+				? 'konachan'
+				: ['konachan', 'donmai'][Math.floor(Math.random() * 2)];
+
 		} else if (args.cmd === 'donmai' && tagAmount > 2) {
 			return msg.say('You can not search donmai with more than two tags.');
 		}
