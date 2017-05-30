@@ -24,7 +24,7 @@ export default class AvatarCommand extends Command {
 		const user: User = this.client.users.get(args.id) || await this.client.fetchUser(args.id).catch(() => null);
 		if (!user) return msg.say('No user found by that ID.');
 
-		return msg.say(
+		return msg.say('',
 			{
 				files:
 				[
