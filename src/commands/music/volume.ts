@@ -41,7 +41,7 @@ export default class VolumeCommand extends Command {
 		if (!djRoles.length) return true;
 
 		const roles: string[] = this.client.provider.get(msg.guild.id, 'adminRoles', [])
-		.concat(this.client.provider.get(msg.guild.id, 'modRoles', []), djRoles);
+			.concat(this.client.provider.get(msg.guild.id, 'modRoles', []), djRoles);
 
 		return msg.member.roles.some((r: Role) => roles.includes(r.id))
 			|| msg.member.hasPermission('ADMINISTRATOR')
@@ -54,20 +54,24 @@ export default class VolumeCommand extends Command {
 
 		if (!queue || !queue.currentSong) {
 			return msg.say('The queue is empty, no need to change the volume.')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 		if (isNaN(volume)) {
 			return msg.say(`The volume is \`${queue.volume}\`.`)
-				.then((mes: Message) => mes.delete(30000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 		if (!queue.vcMembers.has(msg.author.id)) {
 			return msg.say(`I am playing over here in ${queue.vcName}, you are not here, so the current volume will stay.`)
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 
 		queue.volume = volume;
 		return msg.say(`Volume is now \`${volume}\`.`)
-			.then((mes: Message) => mes.delete(5000));
+			.then((mes: Message) => void mes.delete(5000))
+			.catch(() => undefined);
 	}
 
 	private get queue(): Map<string, Queue> {

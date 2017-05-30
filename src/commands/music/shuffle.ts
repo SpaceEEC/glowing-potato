@@ -37,13 +37,15 @@ export default class ShuffleQueueCommand extends Command {
 
 		if (!queue || !queue.currentSong) {
 			return msg.say('There is nothing to shuffle in this guild. Change that!')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 
 		queue.shuffle();
 
 		return msg.say('The queue has been shuffled.')
-			.then((mes: Message) => mes.delete(5000));
+			.then((mes: Message) => void mes.delete(5000))
+			.catch(() => undefined);
 	}
 
 	private get queue(): Map<string, Queue> {

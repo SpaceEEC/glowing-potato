@@ -48,32 +48,38 @@ export default class ShuffleQueueCommand extends Command {
 
 		if (!queue) {
 			return msg.say('Trying to enable the loop while nothing is being played?')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 
 		if (args.state === '') {
 			return msg.say(`The loop is at the moment ${queue.loop ? 'enabled' : 'disabled'}.`)
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 
 		if (args.state) {
 			if (queue.loop) {
 				return msg.say('The loop is already enabled, my friend.')
-					.then((mes: Message) => mes.delete(5000));
+					.then((mes: Message) => void mes.delete(5000))
+					.catch(() => undefined);
 			}
 
 			queue.loop = true;
 			return msg.say('The loop is now enabled!')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		} else {
 			if (!queue.loop) {
 				return msg.say('The loop is already disabled, my friend.')
-					.then((mes: Message) => mes.delete(5000));
+					.then((mes: Message) => void mes.delete(5000))
+					.catch(() => undefined);
 			}
 
 			queue.loop = false;
 			return msg.say('The loop is now disabled!')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 	}
 

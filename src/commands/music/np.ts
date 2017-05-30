@@ -24,7 +24,8 @@ export default class NowPlayingCommand extends Command {
 		const queue: Queue = this.queue.get(msg.guild.id);
 		if (!queue || !queue.currentSong) {
 			return msg.say('There is nothing going on in this guild. Add some songs!')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 
 		const { currentSong, currentTime } = queue;
@@ -37,7 +38,8 @@ export default class NowPlayingCommand extends Command {
 				Time: \`${currentSong.timeLeft(currentTime)}\` (\`${Song.timeString(currentTime)}\`/\`${currentSong.lengthString}\`)
 
 				${currentSong.playing ? '' : 'Currently paused.'}`))
-			.then((mes: Message) => mes.delete(30000));
+			.then((mes: Message) => void mes.delete(30000))
+			.catch(() => undefined);
 	}
 
 	private get queue(): Map<string, Queue> {

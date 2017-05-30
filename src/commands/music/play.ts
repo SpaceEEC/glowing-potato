@@ -109,23 +109,27 @@ export default class PlayMusicCommand extends Command {
 			voiceChannel = msg.member.voiceChannel;
 			if (!voiceChannel) {
 				return msg.say('You are not in a voice channel, I won\'t whisper you the song.\nMove into a voice channel!')
-					.then((mes: Message) => mes.delete(5000));
+					.then((mes: Message) => void mes.delete(5000))
+					.catch(() => undefined);
 			}
 
 			const permissions: Permissions = voiceChannel.permissionsFor(this.client.user);
 			if (!permissions.has('CONNECT')) {
 				// tslint:disable-next-line:max-line-length
 				return msg.say('Your voice channel sure looks nice, but I unfortunately don\' have permissions to join it.\nBetter luck next time, buddy.')
-					.then((mes: Message) => mes.delete(5000));
+					.then((mes: Message) => void mes.delete(5000))
+					.catch(() => undefined);
 			}
 			if (!permissions.has('SPEAK')) {
 				// tslint:disable-next-line:max-line-length
 				return msg.say('Your party sure looks nice, I\'d love to join, but I am unfortunately not allowed to speak there, so forget that.')
-					.then((mes: Message) => mes.delete(5000));
+					.then((mes: Message) => void mes.delete(5000))
+					.catch(() => undefined);
 			}
 		} else if (!queue.vcMembers.has(msg.author.id)) {
 			return msg.say('The party over here is good, you better join us!')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 
 		const fetchMessage: Message = await msg.say('Fetching info...') as Message;
@@ -146,13 +150,18 @@ export default class PlayMusicCommand extends Command {
 		if (search) {
 			const toAdd: Video = search[1] ? await this._chooseSong(msg, search, fetchMessage) : search[0];
 
-			if (!toAdd) return msg.say('Aborting then.').then((mes: Message) => mes.delete(5000));
+			if (!toAdd) {
+				return msg.say('Aborting then.')
+					.then((mes: Message) => void mes.delete(5000))
+					.catch(() => undefined);
+			}
 
 			return this._handleInput(toAdd, queue, msg, voiceChannel, fetchMessage);
 		}
 
 		return fetchMessage.edit('❔ Nothing found. Maybe made a typo?')
-			.then((mes: Message) => mes.delete(5000));
+			.then((mes: Message) => void mes.delete(5000))
+			.catch(() => undefined);
 	}
 
 	/**
@@ -177,7 +186,8 @@ export default class PlayMusicCommand extends Command {
 			if (typeof result === 'string') {
 				this.queue.delete(msg.guild.id);
 				return fetchMessage.edit(result)
-					.then((mes: Message) => mes.delete(30000));
+					.then((mes: Message) => void mes.delete(30000))
+					.catch(() => undefined);
 			}
 
 			try {
@@ -193,11 +203,13 @@ export default class PlayMusicCommand extends Command {
 			const result: string | RichEmbed = video instanceof Array ? this._addPlaylist(msg, video) : this._add(msg, video);
 			if (typeof result === 'string') {
 				return fetchMessage.edit(result, { embed: null })
-					.then((mes: Message) => mes.delete(10000));
+					.then((mes: Message) => void mes.delete(10000))
+					.catch(() => undefined);
 			}
 
 			return fetchMessage.edit('', { embed: result })
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 	}
 

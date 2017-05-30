@@ -33,25 +33,30 @@ export default class PauseMusicCommand extends Command {
 
 		if (!queue || !queue.currentSong) {
 			return msg.say('Trying to pause without anything playing is certainly a smart move.')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 		if (!queue.vcMembers.has(msg.author.id)) {
 			return msg.say(`I am currently playing in ${queue.vcName}. You better don't mess with their music bot!`)
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 		if (!queue.currentSong.dispatcher) {
 			return msg.say('Pausing is only possible after the song started.')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 		if (!queue.playing) {
 			return msg.say('That song is already paused, you genius.')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 
 		queue.playing = false;
 
 		return msg.say('Paused the song, be sure to finish it!')
-			.then((mes: Message) => mes.delete(5000));
+			.then((mes: Message) => void mes.delete(5000))
+			.catch(() => undefined);
 	}
 
 	private get queue(): Map<string, Queue> {

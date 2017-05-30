@@ -34,25 +34,30 @@ export default class ResumeMusicCommand extends Command {
 
 		if (!queue || !queue.currentSong) {
 			return msg.say('Sorry to disappoint you, but you can\'t resume an empty queue.')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 		if (!queue.vcMembers.has(msg.author.id)) {
 			return msg.say(`I am over here in ${queue.vcName}, either you come to me, or you summon me to you.`)
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 		if (!queue.currentSong.dispatcher) {
 			return msg.say('That song has no started yet, it will do that automatically whenever it\'s ready.')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 		if (queue.playing) {
 			return msg.say('Trying to resume a currently playing song? You are not the smartest one.')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 
 		queue.playing = true;
 
 		return msg.say('Revived the party!')
-			.then((mes: Message) => mes.delete(5000));
+			.then((mes: Message) => void mes.delete(5000))
+			.catch(() => undefined);
 	}
 
 	private get queue(): Map<string, Queue> {

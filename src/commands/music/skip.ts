@@ -38,22 +38,26 @@ export default class SkipMusicCommand extends Command {
 
 		if (!queue || !queue.currentSong) {
 			return msg.say('The queue is empty. 👀')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 		if (!queue.playing) {
 			return msg.say('I am not yet playing, skipping is duo technical limitations only after the song started available.')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 		if (!queue.vcMembers.has(msg.author.id)) {
 			return msg.say(`I am playing over here in ${queue.vcName}, you are not here, so no skipping for you.`)
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 
 		const { currentSong } = queue;
 		queue.skip();
 
 		return msg.say(`What a lame decision, you forced me to skipped this wonderful song here: \`${currentSong.name}\`!`)
-			.then((mes: Message) => mes.delete(5000));
+			.then((mes: Message) => void mes.delete(5000))
+			.catch(() => undefined);
 	}
 
 	private get queue(): Map<string, Queue> {
