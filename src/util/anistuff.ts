@@ -2,7 +2,12 @@ import { Message, RichEmbed } from 'discord.js';
 import { CommandMessage, CommandoClient } from 'discord.js-commando';
 import { post, Result } from 'snekfetch';
 
-const { anilist } = require('../../config.json');
+const { anilist }: {
+	anilist: {
+		client_id: string;
+		client_secret: string;
+	};
+} = require('../../config.json');
 
 export const replaceChars: { [char: string]: string } = {
 	'&#039;': '\'',
@@ -151,7 +156,7 @@ export type CharData = {
 };
 
 /**
- * Updates the access token for the anilist API.
+ * Updates the access token for the anilist API, if necessary.
  * @param {Commandoclient} client - The client
  * @param {Message} msg - The message to change on update
  * @param {aniSettings} aniSettings - The settings to compare the timestamp against
@@ -164,6 +169,7 @@ export async function updateToken(client: CommandoClient, msg: CommandMessage, a
 			new RichEmbed().setColor(0xffff00)
 				.setDescription('The token expired, a new one will be requested.\nThis may take a while.'),
 		) as Message;
+
 		const body: ClientCredentials = await post(`https://anilist.co/api/auth/access_token`)
 			.send({
 				client_id: anilist.client_id,
@@ -171,15 +177,19 @@ export async function updateToken(client: CommandoClient, msg: CommandMessage, a
 				grant_type: 'client_credentials',
 			})
 			.then<ClientCredentials>((result: Result) => result.body as any);
+
 		aniSettings = {
 			expires: Date.now() + body.expires_in * 1000,
 			token: body.access_token,
 		};
+
 		client.provider.set('global', 'aniSettings', aniSettings);
+
 		await statusMessage.edit({
 			embed: new RichEmbed().setColor(0x00ff08)
 				.setDescription('Successfully requested a new token, proceeding with your request now.'),
 		});
+
 		statusMessage.delete(30000).catch(() => null);
 	}
 	return aniSettings;
@@ -187,11 +197,11 @@ export async function updateToken(client: CommandoClient, msg: CommandMessage, a
 
 /**
  * Formats the fuzzy dates provided from anilist. (Using timestamps is way overrated.)
- * @param {number} input - The provided number, can be a string
+ * @param {number|string} input - The provided number, can be a string
  * @returns {string} The formatted output
  */
 export function formatFuzzy(input: number | string): string {
 	if (!input) return '';
-	input = input.toString();
+	if (typeof input !== 'string') input = input.toString();
 	return `${input.substring(6, 8)}.${input.substring(4, 6)}.${input.substring(0, 4)}`;
 }
