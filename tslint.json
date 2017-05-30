@@ -4,13 +4,28 @@
 	],
 	"rules": {
 		"array-type": [true, "array"],
+		"object-literal-key-quotes": [true, "as-needed"],
 		"quotemark": [true, "single"],
 		"indent": [true, "tabs"],
 		"radix": false,
 		"curly": [true, "ignore-same-line"],
-		"variable-name": [true, "ban-keywords", "allow-leading-underscore", "check-format"],
+		"variable-name": [
+			true, 
+			"ban-keywords",
+			"allow-leading-underscore",
+			"check-format"
+		],
 		"interface-name": [true, "always-prefix"],
 		"interface-over-type-literal": false,
-		"no-var-requires": false
+		"no-var-requires": false,
+		"typedef": [
+			true,
+			"arrow-parameter",
+			"call-signature",
+			"member-variable-declaration",
+			"parameter",
+			"property-declaration", 
+			"variable-declaration"
+		]
 	}
 }

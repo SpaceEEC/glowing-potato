@@ -107,7 +107,7 @@ export class Youtube {
 		const { pathname, query: { list } }: { pathname?: string, query?: { list: string } } = parse(input, true);
 		if (!pathname) return null;
 
-		const id = list || pathname.split('/').pop();
+		const id: string = list || pathname.split('/').pop();
 
 		if (!id) return null;
 
