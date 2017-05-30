@@ -412,7 +412,7 @@ export default class PlayMusicCommand extends Command {
 
 						if (streamErrored) return;
 
-						queue.shift();
+						queue.shift(['stop', 'skip'].includes(reason));
 
 						const stop: boolean = reason === 'stop';
 						if (stop || !queue.currentSong) {
