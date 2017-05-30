@@ -72,7 +72,8 @@ export default class QueueCommand extends Command {
 
 		page = page.join('\n');
 		return msg.embed(embed.setDescription(page),
-		).then((mes: Message) => mes.delete(30000));
+		).then((mes: Message) => void mes.delete(30000))
+			.catch(() => undefined);
 	}
 
 	private get queue(): Map<string, Queue> {

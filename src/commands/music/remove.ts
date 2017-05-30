@@ -49,12 +49,14 @@ export default class RemoveMusicCommand extends Command {
 		const queue: Queue = this.queue.get(msg.guild.id);
 		if (!queue || !queue.currentSong) {
 			return msg.say('There is no queue, what do you hope to remove?')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 		const song: Song = queue.Song(args.index);
 		if (!song) {
 			return msg.say('This entry wasn\'t found!')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 
 		const argument: ArgumentInfo = {
@@ -66,12 +68,14 @@ export default class RemoveMusicCommand extends Command {
 
 		if (!choice) {
 			return msg.say('Aborting then.')
-				.then((mes: Message) => mes.delete(5000));
+				.then((mes: Message) => void mes.delete(5000))
+				.catch(() => undefined);
 		}
 
 		queue.skip(args.index);
 		return msg.say(`What a shame, you forced me to remove this wonderful song from the queue:\`${song.name}\``)
-			.then((mes: Message) => mes.delete(5000));
+			.then((mes: Message) => void mes.delete(5000))
+			.catch(() => undefined);
 	}
 
 	private get queue(): Map<string, Queue> {
