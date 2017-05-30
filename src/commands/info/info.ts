@@ -1,8 +1,9 @@
-import { RichEmbed } from 'discord.js';
-import { Message } from 'discord.js';
+import { Message, RichEmbed, version as vdjs } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import * as moment from 'moment';
 import 'moment-duration-format';
+
+const { version: vcom }: { version: string } = require('discord.js-commando');
 
 export default class InfoCommand extends Command {
 	public constructor(client: CommandoClient) {
@@ -26,8 +27,9 @@ export default class InfoCommand extends Command {
 			// .addField('❯ spacebot-version:', `• v${version} ([glowing-potato](http://puu.sh/teDYW/d6f9555fbd.png))`, true)
 			.addField('❯ Shitcode repositorie:', '• [GitHub](https://github.com/SpaceEEC/glowing-potato)', true)
 			.addField('❯ Responsible:', '• `space#0302`', true)
-			.addField('❯ Library:', '• [discord.js](https://github.com/hydrabolt/discord.js)', true)
-			.addField('❯ Framework:', '• [discord.js-commando](https://github.com/Gawdl3y/discord.js-commando)', true)
+			.addField('❯ Library: ', `• [discord.js](https://github.com/hydrabolt/discord.js)\n• Version: ${vdjs}`, true)
+			.addField('❯ Framework: ',
+				`• [discord.js-commando](https://github.com/Gawdl3y/discord.js-commando)\n• Version: ${vcom}`, true)
 			.setTimestamp()
 			.setThumbnail(this.client.user.displayAvatarURL)
 			.setFooter(msg.cleanContent, msg.author.displayAvatarURL));
