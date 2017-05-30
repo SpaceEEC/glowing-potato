@@ -13,7 +13,7 @@ export default class Song {
 	 * @returns {string} The final time string
 	 * @static
 	 */
-	public static timeString(seconds: number, forceHours = false): string {
+	public static timeString(seconds: number, forceHours: boolean = false): string {
 		const hours: number = Math.floor(seconds / 3600);
 		const minutes: number = Math.floor(seconds % 3600 / 60);
 
