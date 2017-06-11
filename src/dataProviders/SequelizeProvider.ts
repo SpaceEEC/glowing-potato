@@ -1,11 +1,11 @@
 import { Guild } from 'discord.js';
 import { Command, CommandGroup, CommandoClient, GuildExtension, SettingProvider } from 'discord.js-commando';
 
-import Settings from './models/Settings';
+import { Settings } from './models/Settings';
 
 type Setting = string | object | any[];
 
-export default class SequelizeProvider extends SettingProvider {
+export class SequelizeProvider extends SettingProvider {
 	private settings: Map<string, Setting>;
 	private listeners: Map<string, (...params: any[]) => any>;
 	private client: CommandoClient;

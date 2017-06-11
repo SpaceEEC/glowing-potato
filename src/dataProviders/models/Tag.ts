@@ -1,13 +1,13 @@
 import { DataTypes, Model } from 'sequelize';
 
-import sequelize from '../SQLite';
+import { sequelize } from '../SQLite';
 
 type TagKey = 'userID' | 'guildID' | 'name' | 'content';
 
 /**
  * Represents a tag.
  */
-export default class Tag extends Model {
+export class Tag extends Model {
 	public getDataValue(key: TagKey): string {
 		return super.getDataValue(key);
 	}

@@ -12,7 +12,7 @@ import {
 	replaceChars,
 	updateToken,
 } from '../../util/anistuff.js';
-import Util from '../../util/util';
+import { Util } from '../../util/util';
 
 type args = { search: string, cmd: string };
 

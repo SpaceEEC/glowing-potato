@@ -2,8 +2,8 @@ import { stripIndents } from 'common-tags';
 import { Message, Role, TextChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
 
-import GuildConfig from '../../dataProviders/models/GuildConfig';
-import Util from '../../util/util';
+import { GuildConfig } from '../../dataProviders/models/GuildConfig';
+import { Util } from '../../util/util';
 
 export default class SetupCommand extends Command {
 	public constructor(client: CommandoClient) {

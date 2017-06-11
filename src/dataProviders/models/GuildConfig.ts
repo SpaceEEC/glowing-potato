@@ -1,6 +1,6 @@
 import { DataTypes, FindOrInitializeOptions, Model } from 'sequelize';
 
-import sequelize from '../SQLite';
+import { sequelize } from '../SQLite';
 
 type GuildConfigKey = 'guildID'
 	| 'mutedRole'
@@ -14,7 +14,7 @@ type GuildConfigKey = 'guildID'
  * Represents the Config for each specific guild
  * containing saved ids and messages.
  */
-export default class GuildConfig extends Model {
+export class GuildConfig extends Model {
 	/** Overrides Models findOrCreate, but only returns the model instance. */
 	public static findOrCreate(options: FindOrInitializeOptions): any {
 		return (super.findOrCreate(options) as any).then((instanceAndBool: [GuildConfig, boolean]) => instanceAndBool[0]);

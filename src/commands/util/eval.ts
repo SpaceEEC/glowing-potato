@@ -2,7 +2,7 @@ import { stripIndents } from 'common-tags';
 import { Message } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
-import Util from '../../util/util.js';
+import { Util } from '../../util/util.js';
 
 export default class EvalCommand extends Command {
 	public constructor(client: CommandoClient) {

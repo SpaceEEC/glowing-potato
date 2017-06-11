@@ -2,7 +2,7 @@ import { Message, RichEmbed } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { get, Result } from 'snekfetch';
 
-import Util from '../../util/util';
+import { Util } from '../../util/util';
 
 type Post = {
 	id: number;

@@ -1,7 +1,8 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../SQLite';
 
-export default class Settings extends Model {
+import { sequelize } from '../SQLite';
+
+export class Settings extends Model {
 	public guild: string;
 	public settings: string;
 }

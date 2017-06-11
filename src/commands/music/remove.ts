@@ -1,9 +1,9 @@
 import { Message, Role } from 'discord.js';
 import { ArgumentInfo, Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
-import Queue from '../../structures/Queue';
-import Song from '../../structures/Song';
-import Util from '../../util/util';
+import { Queue } from '../../structures/Queue';
+import { Song } from '../../structures/Song';
+import { Util } from '../../util/util';
 
 export default class RemoveMusicCommand extends Command {
 	private _queue: Map<string, Queue>;

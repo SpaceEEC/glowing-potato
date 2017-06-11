@@ -2,9 +2,9 @@ import { stripIndents } from 'common-tags';
 import { GuildMember, TextChannel } from 'discord.js';
 import { error } from 'winston';
 
-import GuildConfig from '../dataProviders/models/GuildConfig';
+import { GuildConfig } from '../dataProviders/models/GuildConfig';
 
-export default async function guildMemberAdd(member: GuildMember): Promise<void> {
+export async function guildMemberAdd(member: GuildMember): Promise<void> {
 	const { client } = member;
 	if (member.id === client.user.id) return;
 
