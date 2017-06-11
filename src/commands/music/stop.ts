@@ -3,7 +3,7 @@ import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { warn } from 'winston';
 
-import Queue from '../../structures/Queue';
+import { Queue } from '../../structures/Queue';
 
 export default class StopMusicCommand extends Command {
 	private _queue: Map<string, Queue>;

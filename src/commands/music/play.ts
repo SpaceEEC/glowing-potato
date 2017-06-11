@@ -7,9 +7,9 @@ import { Stream } from 'stream';
 import { addColors, ConsoleTransportOptions, error, Logger, LoggerInstance, silly, transports } from 'winston';
 import * as ytdl from 'ytdl-core';
 
-import Queue from '../../structures/Queue';
-import Song from '../../structures/Song';
-import Util from '../../util/util';
+import { Queue } from '../../structures/Queue';
+import { Song } from '../../structures/Song';
+import { Util } from '../../util/util';
 import { Video, Youtube } from '../../util/youtube';
 
 const options: ConsoleTransportOptions = {

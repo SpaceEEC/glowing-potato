@@ -3,7 +3,7 @@ import { Guild, Message, PermissionOverwrites, Permissions, Role, TextChannel } 
 import { Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
 import { error } from 'winston';
 
-import GuildConfig from '../../dataProviders/models/GuildConfig';
+import { GuildConfig } from '../../dataProviders/models/GuildConfig';
 
 export default class MutedRoleCommand extends Command {
 	public constructor(client: CommandoClient) {

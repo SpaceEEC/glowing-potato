@@ -2,6 +2,7 @@ import { stripIndents } from 'common-tags';
 import { GuildMember, Message, RichEmbed, Role, User } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import * as moment from 'moment';
+
 moment.locale('de');
 
 export default class MemberInfoCommand extends Command {

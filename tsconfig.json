@@ -5,7 +5,8 @@
 		"lib": [
 			"es2017",
 			"es2017.object",
-			"dom"
+			"dom",
+			"dom.iterable"
 		],
 		"declaration": false,
 		"noImplicitAny": true,

@@ -5,7 +5,7 @@ import { oneLineTrim } from 'common-tags';
 import { GuildMember, StreamDispatcher, Util } from 'discord.js';
 
 /** Represents a song in the queue. */
-export default class Song {
+export class Song {
 	/**
 	 * Converts a number of seconds to a human readable string.
 	 * @param {number} seconds The amount of total seconds

@@ -1,7 +1,7 @@
 import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
-import Queue from '../../structures/Queue';
+import { Queue } from '../../structures/Queue';
 
 export default class VolumeCommand extends Command {
 	private _queue: Map<string, Queue>;

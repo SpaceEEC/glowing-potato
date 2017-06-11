@@ -9,7 +9,7 @@ import {
 	GuildExtension,
 } from 'discord.js-commando';
 
-export default class Util {
+export class Util {
 
 	/**
 	 * Intializes the Util class.

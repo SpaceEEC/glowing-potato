@@ -5,9 +5,9 @@ import * as moment from 'moment';
 import { join } from 'path';
 import { add, addColors, error, info, Logger, LoggerInstance, remove, transports, warn } from 'winston';
 
-import SequelizeProvider from './dataProviders/SequelizeProvider';
-import registerEvents from './events/events';
-import Util from './util/util';
+import { SequelizeProvider } from './dataProviders/SequelizeProvider';
+import { registerEvents } from './events/events';
+import { Util } from './util/util';
 
 const { defaultPrefix, logLevel, maintoken, ownerID }: {
 	defaultPrefix: string;

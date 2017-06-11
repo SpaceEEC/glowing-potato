@@ -1,7 +1,7 @@
 import { Collection, GuildMember, Message, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
 import { CommandoClient } from 'discord.js-commando';
 
-import Song from './Song';
+import { Song } from './Song';
 
 const { util }: { util: any } = require('discord.js-commando');
 
@@ -12,7 +12,7 @@ export type Page = {
 };
 
 /** Represents a queue. */
-export default class Queue {
+export class Queue {
 	/** The current connection of the queue */
 	public connection: VoiceConnection;
 	/** Whether the loop is enabled */
@@ -145,17 +145,17 @@ export default class Queue {
 	}
 
 	/**
-	 * Shuffles the queue with the exception that the first song stays the first song.
+	 * Shuffles the queue with the exception of the first song.
 	 * @returns {void}
 	 */
 	public shuffle(): void {
 		const array: Song[] = this._songs.slice(1);
 
 		for (let i: number = array.length - 1; i > 0; i--) {
-			const randomIndex: number = Math.floor(Math.random() * (i + 1));
-			const temp: Song = array[i];
-			array[i] = array[randomIndex];
-			array[randomIndex] = temp;
+			const r: number = Math.floor(Math.random() * (i + 1));
+			const t: Song = array[i];
+			array[i] = array[r];
+			array[r] = t;
 		}
 
 		array.unshift(this._songs[0]);

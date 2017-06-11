@@ -1,7 +1,7 @@
 import { Message, RichEmbed } from 'discord.js';
 import { Command, CommandMessage, CommandoClient, FriendlyError } from 'discord.js-commando';
 
-import Tag from '../../dataProviders/models/Tag';
+import { Tag } from '../../dataProviders/models/Tag';
 
 export default class TagList extends Command {
 	public constructor(client: CommandoClient) {

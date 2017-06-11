@@ -1,8 +1,8 @@
 import { Message, RichEmbed } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
-import Queue from '../../structures/Queue';
-import Song from '../../structures/Song';
+import { Queue } from '../../structures/Queue';
+import { Song } from '../../structures/Song';
 
 export default class QueueCommand extends Command {
 	private _queue: Map<string, Queue>;

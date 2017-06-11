@@ -1,7 +1,7 @@
 import { Message, Permissions, Role, VoiceChannel } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 
-import Queue from '../../structures/Queue';
+import { Queue } from '../../structures/Queue';
 import { logger } from './play';
 
 export default class SummonCommand extends Command {

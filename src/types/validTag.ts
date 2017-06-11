@@ -1,5 +1,5 @@
 import { ArgumentType, CommandMessage, CommandoClient } from 'discord.js-commando';
-import Tag from '../dataProviders/models/Tag';
+import { Tag } from '../dataProviders/models/Tag';
 
 module.exports = class ValidTag extends ArgumentType {
 	public constructor(client: CommandoClient) {

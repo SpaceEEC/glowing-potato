@@ -1,8 +1,8 @@
 import { GuildMember, RichEmbed, TextChannel } from 'discord.js';
 
-import GuildConfig from '../dataProviders/models/GuildConfig';
+import { GuildConfig } from '../dataProviders/models/GuildConfig';
 
-export default async function voiceStateUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void> {
+export async function voiceStateUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void> {
 	const { client } = newMember;
 	if (newMember.user.bot) return;
 
