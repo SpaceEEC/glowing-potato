@@ -71,6 +71,7 @@ export type Video = {
 
 /**
  * Util class to fetch videos or playlists from YouTube.
+ * @static
  */
 export class Youtube {
 	/**

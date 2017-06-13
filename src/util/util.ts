@@ -9,8 +9,11 @@ import {
 	GuildExtension,
 } from 'discord.js-commando';
 
+/**
+ * Util class.
+ * @static
+ */
 export class Util {
-
 	/**
 	 * Intializes the Util class.
 	 * @param {CommandoClient} client The client to associate that class with
@@ -24,8 +27,8 @@ export class Util {
 
 	/**
 	 * Gets the used command or aliases from the message, which triggered the command's execution.
-	 * @param {message} msg The message to get the used command or alias from
-	 * @param {?object} map The optional object, containing key and value pairs to replace matches
+	 * @param {CommandMessage} msg CommandMessage to get the used command or alias from
+	 * @param {?object} map Optional object containing key and value pairs to replace matches
 	 * @returns {string}
 	 * @static
 	 */
@@ -43,10 +46,11 @@ export class Util {
 
 	/**
 	 * Prompts input from user and automatically cleans up after prompting.
-	 * @param {CommandMessage} msg - CommandMessage to prompt from
-	 * @param {ArgumentInfo} arg - ArgumentInfo to prompt
-	 * @param {boolean} [exception=false] exception - Whether a FriendlyError should be thrown, upon cancel or ignore
-	 * @returns {Promise<T>} - The prompted value, or null when not or invalid responded
+	 * @param {CommandMessage} msg CommandMessage to prompt from
+	 * @param {ArgumentInfo} arg ArgumentInfo to prompt
+	 * @param {boolean} [exception=false] Whether a FriendlyError should be thrown upon cancel or ignore,
+	 * otherwise `null` will be returned
+	 * @returns {Promise<T>} The prompted value or null when not or invalid responded
 	 * @static
 	 */
 	public static async prompt<T>(msg: CommandMessage, arg: ArgumentInfo, exception: boolean = true): Promise<T> {
@@ -68,8 +72,8 @@ export class Util {
 
 	/**
 	 * Replaces parts of a string determined by the specified map or object.
-	 * @param {string} input - The string that shall be replaced
-	 * @param {map|object} map - The map or object literal with keys and values to replace against
+	 * @param {string} input The string that shall be replaced
+	 * @param {map|object} map The map or object literal with keys and values to replace against
 	 * @returns {string}
 	 * @static
 	 */
@@ -82,7 +86,7 @@ export class Util {
 		return input.replace(new RegExp(regex.join('|'), 'g'), (w: string) => map[w]);
 	}
 
-	/** The client */
+	/** The client associated with the Util class */
 	private static _client: CommandoClient;
 	/** The prefix mention for the client */
 	private static _prefixMention: RegExp;
