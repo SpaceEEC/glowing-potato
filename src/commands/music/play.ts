@@ -4,7 +4,7 @@ import { ArgumentInfo, Command, CommandMessage, CommandoClient, GuildExtension }
 import { createWriteStream, unlink } from 'fs';
 import * as moment from 'moment';
 import { Stream } from 'stream';
-import { addColors, ConsoleTransportOptions, error, Logger, LoggerInstance, silly, transports } from 'winston';
+import { addColors, ConsoleTransportOptions, debug, error, Logger, LoggerInstance, silly, transports } from 'winston';
 import * as ytdl from 'ytdl-core';
 
 import { Queue } from '../../structures/Queue';
@@ -76,7 +76,6 @@ export default class PlayMusicCommand extends Command {
 		});
 		// tslint:enable:max-line-length
 
-		// hello crawl (or other curious people)
 		this.queue = new Map<string, Queue>();
 	}
 
@@ -102,6 +101,7 @@ export default class PlayMusicCommand extends Command {
 			args.input = args.input.split(' ').slice(1).join(' ');
 		}
 		args.input = args.input.replace(/<(.+)>/g, '$1');
+
 		const queue: Queue = this.queue.get(msg.guild.id);
 		let voiceChannel: VoiceChannel;
 
@@ -115,14 +115,18 @@ export default class PlayMusicCommand extends Command {
 
 			const permissions: Permissions = voiceChannel.permissionsFor(this.client.user);
 			if (!permissions.has('CONNECT')) {
-				// tslint:disable-next-line:max-line-length
-				return msg.say('Your voice channel sure looks nice, but I unfortunately don\' have permissions to join it.\nBetter luck next time, buddy.')
+				return msg.say(stripIndents`
+				Your voice channel sure looks nice, but I unfortunately don\' have permissions to join it.
+				Better luck next time, buddy.
+				`)
 					.then((mes: Message) => void mes.delete(5000))
 					.catch(() => undefined);
 			}
 			if (!permissions.has('SPEAK')) {
-				// tslint:disable-next-line:max-line-length
-				return msg.say('Your party sure looks nice, I\'d love to join, but I am unfortunately not allowed to speak there, so forget that.')
+				return msg.say(stripIndents`
+				Your party sure looks nice.
+				 I\'d love to join, but I am unfortunately not allowed to speak there, so forget that.
+				 `)
 					.then((mes: Message) => void mes.delete(5000))
 					.catch(() => undefined);
 			}
@@ -182,7 +186,11 @@ export default class PlayMusicCommand extends Command {
 				this.queue.set(msg.guild.id, queue);
 			}
 
-			const result: string | RichEmbed = video instanceof Array ? this._addPlaylist(msg, video) : this._add(msg, video);
+			const result: string | RichEmbed =
+				video instanceof Array
+					? this._addPlaylist(msg, video)
+					: this._add(msg, video);
+
 			if (typeof result === 'string') {
 				this.queue.delete(msg.guild.id);
 				return fetchMessage.edit(result)
@@ -200,7 +208,11 @@ export default class PlayMusicCommand extends Command {
 				return fetchMessage.edit('❌ There was an error while joining your channel, such a shame!', { embed: null });
 			}
 		} else {
-			const result: string | RichEmbed = video instanceof Array ? this._addPlaylist(msg, video) : this._add(msg, video);
+			const result: string | RichEmbed =
+				video instanceof Array
+					? this._addPlaylist(msg, video)
+					: this._add(msg, video);
+
 			if (typeof result === 'string') {
 				return fetchMessage.edit(result, { embed: null })
 					.then((mes: Message) => void mes.delete(10000))
@@ -223,9 +235,9 @@ export default class PlayMusicCommand extends Command {
 	private _add(msg: CommandMessage, video: Video): RichEmbed | string {
 		const queue: Queue = this.queue.get(msg.guild.id);
 
-		if (video.durationSeconds === 0) {
+		/*if (video.durationSeconds === 0) {
 			return '❌ Live streams are not supported.';
-		}
+		}*/
 		if (queue.isAlreadyQueued(video.id)) {
 			return '⚠ That song is already in the queue.';
 		}
@@ -243,7 +255,7 @@ export default class PlayMusicCommand extends Command {
 			.setFooter('has been added.', this.client.user.displayAvatarURL)
 			.setDescription(stripIndents
 				`${queue.loop ? '**Loop is enabled**\n' : ''}**++** [${song.name}](${song.url})
-				Length: ${song.lengthString}`);
+				Length: ${song.length ? song.lengthString : 'Livestream'}`);
 	}
 
 	/**
@@ -259,8 +271,8 @@ export default class PlayMusicCommand extends Command {
 		let lastsong: Song;
 
 		for (const video of videos) {
-			if (video.durationSeconds === 0
-				|| video.durationSeconds > 60 * 60
+			if (/*video.durationSeconds === 0
+				||*/ video.durationSeconds > 60 * 60
 				|| queue.isAlreadyQueued(video.id)
 			) {
 				ignored++;
@@ -271,7 +283,8 @@ export default class PlayMusicCommand extends Command {
 			queue.push(lastsong);
 		}
 
-		if (!lastsong) return 'No song qualifies for adding. Maybe all of them are already queued or too long.';
+		if (!lastsong) return 'No song qualifies for adding. Maybe all of them are already queued or too long?';
+
 		return new RichEmbed()
 			.setAuthor(lastsong.username, lastsong.avatar)
 			.setTimestamp()
@@ -310,8 +323,8 @@ export default class PlayMusicCommand extends Command {
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x9370DB).setTitle(video.title)
 			.setImage(`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`)
-			.setDescription(`Length: ${Song.timeString(video.durationSeconds)}`)
-			.setFooter(`Result ${index + 1} from ${videos.length} results.`, this.client.user.avatarURL);
+			.setDescription(`Length: ${video.durationSeconds ? Song.timeString(video.durationSeconds) : 'Livestream'}`)
+			.setFooter(`Result ${index + 1} from ${videos.length} results.`, this.client.user.displayAvatarURL);
 
 		statusmsg = statusmsg
 			? await statusmsg.edit({ embed })
@@ -341,30 +354,105 @@ export default class PlayMusicCommand extends Command {
 	 * @private
 	 */
 	private async _play(guildID: string, stopped: boolean = false): Promise<void> {
+		debug('_play method reached');
+
 		const queue: Queue = this.queue.get(guildID);
+		debug('queue:', !!queue);
+
+		// marvelous error handling
+		if (!queue) {
+			error('queue was falsy', guildID);
+			if (this.client.guilds.get(guildID).voiceConnection) {
+				this.client.guilds.get(guildID).voiceConnection.disconnect();
+			}
+			return;
+		}
+
 		const { currentSong, loop } = queue;
 
 		if (queue.statusMessage) queue.statusMessage.delete().catch(() => null);
 		queue.clearTimeout();
 
+		debug('currentSong:', !!currentSong);
 		if (!currentSong) {
-			queue.emptyQueue(stopped, this.queue);
-			return;
+			return queue.emptyQueue(stopped, this.queue);
 		}
 
 		queue.statusMessage = await queue.sendText({
 			embed: new RichEmbed().setColor(0x00ff08)
 				.setAuthor(currentSong.username, currentSong.avatar)
-				.setDescription(stripIndents
-					`${loop ? '**Loop enabled**\n' : ''}**>>** [${currentSong.name}](${currentSong.url})
-					Length: ${currentSong.lengthString}`)
+				.setDescription(stripIndents`
+					${loop ? '**Loop enabled**\n' : ''}**>>** [${currentSong.name}](${currentSong.url})
+					Length: ${currentSong.length ? currentSong.lengthString : 'Livestream'}
+				`)
 				.setImage(currentSong.thumbnail)
 				.setFooter('is now being played.', this.client.user.displayAvatarURL)
 				.setTimestamp(),
 		}) as Message;
 
 		let streamErrored: boolean = false;
-		const startTime: number = Date.now();
+
+		// inner declaration of a play function to support livestreams
+		const play: any = async (livestream?: string) => {
+			debug('inner play: livestreamstream?', !!livestream);
+
+			const dispatcher: StreamDispatcher = (livestream
+				? queue.connection.playStream(ytdl(livestream))
+				: queue.connection.playFile(`./tempmusicfile_${guildID}`, { passes: 2 }))
+
+				.once('error', async (err: Error) => {
+					logger.log('dispatcher', guildID, err);
+					await queue.statusMessage.edit(`❌ An internal error occured while playing.`);
+					queue.statusMessage = null;
+				})
+
+				.once('start', () => {
+					logger.log('dispatcher', guildID, 'Dispatcher started.');
+				})
+
+				.once('end', (reason: string) => {
+					const playedTime: string = Song.timeString(Math.floor(dispatcher.time / 1000));
+					const logReason: string = reason ? `Reason: ${reason}` : '';
+
+					logger.log('dispatcher',
+						guildID,
+						`Song finished after ${playedTime} / ${currentSong.lengthString} ${logReason}`);
+
+					(dispatcher.stream as any).destroy();
+
+					logger.log('dispatcher', 'streamerror:', !!streamErrored);
+
+					if (streamErrored) return;
+
+					queue.shift(['stop', 'skip'].includes(reason));
+
+					const stop: boolean = reason === 'stop';
+					if (stop || !queue.currentSong) {
+						if (currentSong.length) {
+							this.client.setTimeout(
+								() => unlink(`./tempmusicfile_${guildID}`, (e: Error) => e && error(guildID, e)),
+								500,
+							);
+						}
+					}
+					this._play(guildID, stop).catch((err: Error) => {
+						error('PlayMusicCommand#_play', guildID, err);
+						queue.sendText(stripIndents`
+							❌ There was an error while playing.
+							\`${err.message}\`
+
+							Consider running \`stop force\`, if the playback is not continuing.`);
+					});
+				});
+
+			(queue.connection.player.opusEncoder as any).setPLP(0.01);
+			dispatcher.setVolumeLogarithmic(queue.volume / 5);
+			currentSong.dispatcher = dispatcher;
+			currentSong.playing = true;
+		};
+
+		// livestream
+		if (!currentSong.length) return play(currentSong.url);
 
 		const stream: Stream = ytdl(currentSong.url, { filter: 'audioonly' })
 			.once('error', async (err: Error) => {
@@ -381,58 +469,19 @@ export default class PlayMusicCommand extends Command {
 
 					Consider running \`stop force\`, if the playback is not continuing.`);
 				});
-			})
-
-			.once('end', () => {
-				logger.log('musicInfo',
-					guildID,
-					'Piping to file finished after',
-					Song.timeString((Date.now() - startTime) / 1000),
-				);
-				const dispatcher: StreamDispatcher = queue.connection.playFile(`./tempmusicfile_${guildID}`, { passes: 2 })
-
-					.once('error', async (err: Error) => {
-						logger.log('dispatcher', guildID, err);
-						await queue.statusMessage.edit(`❌ An internal error occured while playing.`);
-						queue.statusMessage = null;
-					})
-
-					.once('start', () => {
-						logger.log('musicInfo', guildID, 'Dispatcher started.');
-					})
-
-					.once('end', (reason: string) => {
-						logger.log('musicInfo',
-							guildID,
-							// tslint:disable-next-line:max-line-length
-							`Song finished after ${Song.timeString(Math.floor(dispatcher.time / 1000))} / ${currentSong.lengthString} ${reason
-								? `Reason: ${reason}`
-								: ''}`);
-						(dispatcher.stream as any).destroy();
-
-						if (streamErrored) return;
-
-						queue.shift(['stop', 'skip'].includes(reason));
-
-						const stop: boolean = reason === 'stop';
-						if (stop || !queue.currentSong) {
-							this.client.setTimeout(() => (unlink(`./tempmusicfile_${guildID}`, (e: Error) => e && error(guildID, e))), 500);
-						}
-						this._play(guildID, stop).catch((err: Error) => {
-							error('PlayMusicCommand#_play', guildID, err);
-							queue.sendText(stripIndents`
-							❌ There was an error while playing.
-							\`${err.message}\`
-
-							Consider running \`stop force\`, if the playback is not continuing.`);
-						});
-					});
-
-				(queue.connection.player.opusEncoder as any).setPLP(0.01);
-				dispatcher.setVolumeLogarithmic(queue.volume / 5);
-				currentSong.dispatcher = dispatcher;
-				currentSong.playing = true;
 			});
+
+		const startTime: number = Date.now();
+
+		stream.once('end', () => {
+			logger.log('musicInfo',
+				guildID,
+				'Piping to file finished after',
+				Song.timeString((Date.now() - startTime) / 1000),
+			);
+
+			play();
+		});
 
 		stream.pipe(createWriteStream(`./tempmusicfile_${guildID}`));
 		logger.log('musicInfo', guildID, 'Piping to file started for: ', currentSong.name);
