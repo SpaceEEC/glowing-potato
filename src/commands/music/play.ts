@@ -393,7 +393,7 @@ export default class PlayMusicCommand extends Command {
 		let streamErrored: boolean = false;
 
 		// inner declaration of a play function to support livestreams
-		const play: any = async (livestream?: string) => {
+		const play: (livestream?: string) => Promise<void> = async (livestream?: string) => {
 			debug('inner play: livestreamstream?', !!livestream);
 
 			const dispatcher: StreamDispatcher = (livestream
@@ -416,7 +416,8 @@ export default class PlayMusicCommand extends Command {
 
 					logger.log('dispatcher',
 						guildID,
-						`Song finished after ${playedTime} / ${currentSong.lengthString} ${logReason}`);
+						`Song finished after ${playedTime} / ${currentSong.lengthString} ${logReason}`,
+					);
 
 					(dispatcher.stream as any).destroy();
 
@@ -441,7 +442,8 @@ export default class PlayMusicCommand extends Command {
 							❌ There was an error while playing.
 							\`${err.message}\`
 
-							Consider running \`stop force\`, if the playback is not continuing.`);
+							Consider running \`stop force\`, if the playback is not continuing.
+						`);
 					});
 				});
 
