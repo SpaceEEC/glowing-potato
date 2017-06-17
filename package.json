@@ -1,7 +1,7 @@
 {
-  "name": "spacebot-typescript",
-  "version": "1.0.0",
-  "description": "",
+  "name": "glowing-potato",
+  "version": "0.7.0",
+  "description": "Yet another Discord bot",
   "main": "index.js",
   "scripts": {
     "start": "cd bin && node index.js",
@@ -12,14 +12,21 @@
     "prebuild": "npm run lint",
     "build": "npm run build:gulp"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SpaceEEC/glowing-potato.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SpaceEEC/glowing-potato/issues"
+  },
+  "homepage": "https://github.com/SpaceEEC/glowing-potato",
   "keywords": [],
-  "author": "",
+  "author": "SpaceEEC",
   "license": "ISC",
   "dependencies": {
     "common-tags": "^1.4.0",
     "discord.js": "github:hydrabolt/discord.js#11.1-dev",
     "discord.js-commando": "github:gawdl3y/discord.js-commando#11.1",
-    "ffmpeg-binaries": "^3.2.2-3",
     "moment": "^2.18.1",
     "moment-duration-format": "^1.3.0",
     "node-opus": "^0.2.6",
@@ -42,6 +49,9 @@
     "tslint-eslint-rules": "^4.1.1",
     "typescript": "^2.3.3",
     "typings": "^2.1.1"
+  },
+  "peerDependencies": {
+    "ffmpeg-binaries": "^3.2.2-3"
   },
   "engines": {
     "node": ">=7.6.0"
