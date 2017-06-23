@@ -1,4 +1,3 @@
-import { stripIndents } from 'common-tags';
 import { Message, Role } from 'discord.js';
 import { Command, CommandMessage, CommandoClient } from 'discord.js-commando';
 import { warn } from 'winston';
@@ -35,6 +34,13 @@ export default class StopMusicCommand extends Command {
 	public async run(msg: CommandMessage, args: string): Promise<Message | Message[]> {
 		const queue: Queue = this.queue.get(msg.guild.id);
 
+		// Temporary(TM) workaround for strange music problem
+		if (args === 'force') {
+			await queue.emptyQueue(true, this.queue);
+			warn(`Force Stop: ${msg.author.tag} deleted the queue in ${msg.guild.name} (${msg.guild.id})`);
+			return msg.say('Forced the deletion of the queue, this might have unexpected side effects.');
+		}
+
 		if (!queue || !queue.currentSong) {
 			return msg.say('What do you expect to stop? 👀')
 				.then((mes: Message) => void mes.delete(5000))
@@ -51,19 +57,7 @@ export default class StopMusicCommand extends Command {
 				.catch(() => undefined);
 		}
 
-		// this whole thing should be unnecessary
-		try {
-			queue.stop();
-		} catch (e) {
-			if (args === 'force') {
-				await queue.emptyQueue(true, this.queue);
-				warn(`Force Stop: ${msg.author.tag} deleted the queue in ${msg.guild.name} (${msg.guild.id})`);
-				return msg.say(stripIndents`
-					Forced the deletion of the queue, this might have unexpected side effects.
-					Error thrown at StopMusicCommand#run - Queue#stop: ${e}`);
-			}
-			throw e;
-		}
+		queue.stop();
 
 		return msg.say('Party is over! 🚪 👈')
 			.then((mes: Message) => void mes.delete(5000))
