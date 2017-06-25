@@ -1,13 +1,14 @@
 import { Guild } from 'discord.js';
 import { Command, CommandGroup, CommandoClient, GuildExtension, SettingProvider } from 'discord.js-commando';
+import { info } from 'winston';
 
 import { Settings } from './models/Settings';
 
-type Setting = string | object | any[];
+type Setting = { [key: string]: any };
 
 export class SequelizeProvider extends SettingProvider {
 	private settings: Map<string, Setting>;
-	private listeners: Map<string, (...params: any[]) => any>;
+	private listeners: Map<string, (...params: any[]) => void>;
 	private client: CommandoClient;
 
 	public constructor() {
@@ -76,13 +77,13 @@ export class SequelizeProvider extends SettingProvider {
 	}
 
 	public get(guild: string | Guild, key: string, defVal: any): any {
-		const settings: any = this.settings.get((SettingProvider as any).getGuildID(guild));
+		const settings: Setting = this.settings.get((SettingProvider as any).getGuildID(guild));
 		return settings ? typeof settings[key] !== 'undefined' ? settings[key] : defVal : defVal;
 	}
 
 	public async set(guild: string | Guild, key: string, val: any): Promise<any> {
 		guild = (SettingProvider as any).getGuildID(guild) as string;
-		let settings: any = this.settings.get(guild);
+		let settings: Setting = this.settings.get(guild);
 		if (!settings) {
 			settings = {};
 			this.settings.set(guild, settings);
@@ -97,7 +98,7 @@ export class SequelizeProvider extends SettingProvider {
 
 	public async remove(guild: string | Guild, key: string): Promise<any> {
 		guild = (SettingProvider as any).getGuildID(guild) as string;
-		const settings: any = this.settings.get(guild);
+		const settings: Setting = this.settings.get(guild);
 		if (!settings || typeof settings[key] === 'undefined') return undefined;
 
 		const val: any = settings[key];
@@ -115,45 +116,60 @@ export class SequelizeProvider extends SettingProvider {
 		this.settings.delete(guild);
 		await Settings.destroy({ where: { guild: guild !== 'global' ? guild : '0' } });
 	}
+
 	private setupGuild(guild: GuildExtension | string, settings: Setting): void {
 		if (typeof guild !== 'string') throw new TypeError('The guild must be a guild ID or "global".');
-		guild = (this.client.guilds.get(guild) as any) || null;
+		guild = (this.client.guilds.get(guild) as GuildExtension) || null;
+
+		// statisfty typescript and tslint
+		if (typeof guild === 'string') return;
+		if (typeof settings === 'string' || settings instanceof Array) return;
 
 		// load the command prefix
-		if (typeof (settings as any).prefix !== 'undefined') {
-			if (guild) (guild as any)._commandPrefix = (settings as any).prefix;
-			else (this.client as any)._commandPrefix = (settings as any).prefix;
+		if (typeof settings.prefix !== 'undefined') {
+			if (guild) {
+				info(`Loading prefix ${settings.prefix} for guild ${guild.name}.`);
+				(guild as any)._commandPrefix = settings.prefix;
+			} else {
+				(this.client as any)._commandPrefix = settings.prefix;
+			}
 		}
 
 		// load all command/group statuses
 		for (const command of this.client.registry.commands.values()) {
-			this.setupGuildCommand(guild as GuildExtension, command, settings);
+			this.setupGuildCommand(guild, command, settings);
 		}
 
 		for (const group of this.client.registry.groups.values()) {
-			this.setupGuildGroup(guild as GuildExtension, group, settings);
+			this.setupGuildGroup(guild, group, settings);
 		}
 	}
 
 	private setupGuildCommand(guild: GuildExtension, command: Command, settings: Setting): void {
-		if (typeof (settings as any)[`cmd-${command.name}`] === 'undefined') return;
+		// statisfty typescript and tslint
+		if (typeof settings === 'string' || settings instanceof Array) return;
+
+		if (typeof settings[`cmd-${command.name}`] === 'undefined') return;
 
 		if (guild) {
 			if (!(guild as any)._commandsEnabled) (guild as any)._commandsEnabled = {};
-			(guild as any)._commandsEnabled[command.name] = (settings as any)[`cmd-${command.name}`];
+			(guild as any)._commandsEnabled[command.name] = settings[`cmd-${command.name}`];
 		} else {
-			(command as any)._globalEnabled = (settings as any)[`cmd-${command.name}`];
+			(command as any)._globalEnabled = settings[`cmd-${command.name}`];
 		}
 	}
 
 	private setupGuildGroup(guild: GuildExtension, group: CommandGroup, settings: Setting): void {
-		if (typeof (settings as any)[`grp-${group.name}`] === 'undefined') return;
+		// statisfty typescript and tslint
+		if (typeof settings === 'string' || settings instanceof Array) return;
+
+		if (typeof settings[`grp-${group.name}`] === 'undefined') return;
 
 		if (guild) {
 			if (!(guild as any)._groupsEnabled) (guild as any)._groupsEnabled = {};
-			(guild as any)._groupsEnabled[group.name] = (settings as any)[`grp-${group.name}`];
+			(guild as any)._groupsEnabled[group.name] = settings[`grp-${group.name}`];
 		} else {
-			(group as any)._globalEnabled = (settings as any)[`grp-${group.name}`];
+			(group as any)._globalEnabled = settings[`grp-${group.name}`];
 		}
 	}
 
