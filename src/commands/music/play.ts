@@ -1,10 +1,33 @@
 import { stripIndents } from 'common-tags';
-import { Message, Permissions, RichEmbed, Role, StreamDispatcher, TextChannel, VoiceChannel } from 'discord.js';
-import { ArgumentInfo, Command, CommandMessage, CommandoClient, GuildExtension } from 'discord.js-commando';
+import {
+	Message,
+	Permissions,
+	RichEmbed,
+	Role,
+	StreamDispatcher,
+	TextChannel,
+	VoiceChannel,
+} from 'discord.js';
+import {
+	ArgumentInfo,
+	Command,
+	CommandMessage,
+	CommandoClient,
+	GuildExtension,
+} from 'discord.js-commando';
 import { createWriteStream, unlink } from 'fs';
 import * as moment from 'moment';
 import { Stream } from 'stream';
-import { addColors, ConsoleTransportOptions, debug, error, Logger, LoggerInstance, silly, transports } from 'winston';
+import {
+	addColors,
+	ConsoleTransportOptions,
+	debug,
+	error,
+	Logger,
+	LoggerInstance,
+	silly,
+	transports,
+} from 'winston';
 import * as ytdl from 'ytdl-core';
 
 import { Queue } from '../../structures/Queue';
@@ -108,7 +131,10 @@ export default class PlayMusicCommand extends Command {
 		if (!queue) {
 			voiceChannel = msg.member.voiceChannel;
 			if (!voiceChannel) {
-				return msg.say('You are not in a voice channel, I won\'t whisper you the song.\nMove into a voice channel!')
+				return msg.say(stripIndents`
+				You are not in a voice channel, I won't whisper you the song.
+				Move into a voice channel!
+				`)
 					.then((mes: Message) => void mes.delete(5000))
 					.catch(() => undefined);
 			}
@@ -116,7 +142,7 @@ export default class PlayMusicCommand extends Command {
 			const permissions: Permissions = voiceChannel.permissionsFor(this.client.user);
 			if (!permissions.has('CONNECT')) {
 				return msg.say(stripIndents`
-				Your voice channel sure looks nice, but I unfortunately don\' have permissions to join it.
+				Your voice channel sure looks nice, but I am unfortunately not allowed to join it.
 				Better luck next time, buddy.
 				`)
 					.then((mes: Message) => void mes.delete(5000))
@@ -125,13 +151,13 @@ export default class PlayMusicCommand extends Command {
 			if (!permissions.has('SPEAK')) {
 				return msg.say(stripIndents`
 				Your party sure looks nice.
-				 I\'d love to join, but I am unfortunately not allowed to speak there, so forget that.
+				 I'd love to join, but I am unfortunately not allowed to speak there.
 				 `)
 					.then((mes: Message) => void mes.delete(5000))
 					.catch(() => undefined);
 			}
 		} else if (!queue.vcMembers.has(msg.author.id)) {
-			return msg.say('The party over here is good, you better join us!')
+			return msg.say(`I am currently playing in ${queue.vcName}, you better join us!`)
 				.then((mes: Message) => void mes.delete(5000))
 				.catch(() => undefined);
 		}
@@ -171,15 +197,21 @@ export default class PlayMusicCommand extends Command {
 	/**
 	 * Adds a video or an array of vidoes to the queue and joins the voice channel when necessary.
 	 * @param {video | video[]} video Video or array of videos to add
-	 * @param {queue} queue The queue to add to
+	 * @param {Queue} queue The queue to add to
 	 * @param {CommandMessage} msg Triggering CommandMessage
 	 * @param {VoiceChannel} voiceChannel The voice channel to join
 	 * @param {Message} fetchMessage The message to update
-	 * @returns {Promise<void>}
+	 * @returns {Promise<Message | Message[]>}
 	 * @private
 	 */
-	// tslint:disable-next-line:max-line-length
-	private async _handleInput(video: Video | Video[], queue: Queue, msg: CommandMessage, voiceChannel: VoiceChannel, fetchMessage: Message): Promise<Message> {
+	private async _handleInput(
+		video: Video | Video[],
+		queue: Queue,
+		msg: CommandMessage,
+		voiceChannel: VoiceChannel,
+		fetchMessage: Message)
+		: Promise<Message | Message[]> {
+
 		if (!queue || !queue.length) {
 			if (!queue) {
 				queue = new Queue(msg.channel as TextChannel, voiceChannel);
@@ -201,11 +233,13 @@ export default class PlayMusicCommand extends Command {
 			try {
 				await queue.join();
 				await this._play(msg.guild.id);
-				return fetchMessage.delete().catch(() => null);
+				return void fetchMessage.delete()
+					.catch(() => undefined);
 			} catch (err) {
 				logger.log('summon', msg.guild.id, 'join', err);
 				this.queue.delete(msg.guild.id);
-				return fetchMessage.edit('❌ There was an error while joining your channel, such a shame!', { embed: null });
+				return fetchMessage.edit('❌ There was an error while joining your channel, such a shame!', { embed: null })
+					.catch(() => undefined);
 			}
 		} else {
 			const result: string | RichEmbed =
@@ -228,7 +262,7 @@ export default class PlayMusicCommand extends Command {
 	/**
 	 * Adds a single video to the queue.
 	 * @param {CommandMessage} msg Triggering CommandMessage
-	 * @param {video} video Video to add
+	 * @param {Video} video Video to add
 	 * @returns {RichEmbed | string} Returns a string on failure, a RichEmbed upon success
 	 * @private
 	 */
@@ -237,11 +271,10 @@ export default class PlayMusicCommand extends Command {
 
 		/*if (video.durationSeconds === 0) {
 			return '❌ Live streams are not supported.';
-		}*/
+		} else*/
 		if (queue.isAlreadyQueued(video.id)) {
 			return '⚠ That song is already in the queue.';
-		}
-		if (video.durationSeconds > 60 * 60) {
+		} else if (video.durationSeconds > 60 * 60) {
 			return 'ℹ That song is too long, max length is one hour.';
 		}
 
@@ -261,7 +294,7 @@ export default class PlayMusicCommand extends Command {
 	/**
 	 * Adds a playlist (array of video objects) to the playlist.
 	 * @param {CommandMessage} msg Triggering CommandMessage
-	 * @param {video[]} videos Array of video objects to add to the queue
+	 * @param {Video[]} videos Array of video objects to add to the queue
 	 * @returns {RichEmbed | string} Returns a string on failure, a RichEmbed upon success
 	 * @private
 	 */
@@ -283,7 +316,7 @@ export default class PlayMusicCommand extends Command {
 			queue.push(lastsong);
 		}
 
-		if (!lastsong) return 'No song qualifies for adding. Maybe all of them are already queued or too long?';
+		if (!lastsong) return 'No song qualified for adding. Maybe all of them are already queued or too long?';
 
 		return new RichEmbed()
 			.setAuthor(lastsong.username, lastsong.avatar)
@@ -297,26 +330,31 @@ export default class PlayMusicCommand extends Command {
 
 				Full queue length: ${Song.timeString(queue.totalLength)}
 				Use ${msg.anyUsage('queue', (msg.guild as GuildExtension)
-					.commandPrefix, this.client.user)} to see what has been added.`);
+					.commandPrefix, this.client.user)} to see what has been added.
+			`);
 	}
 
 	/**
 	 * Let the user pick one of the search results.
 	 * @param {CommandMessage} msg The message to prompt from
-	 * @param {video[]} videos The video array to let the user pick from
-	 * @param {Message} statusmsg Optional message to use to display the choices
+	 * @param {Video[]} videos The video array to let the user pick from
+	 * @param {Message} [statusMessage] Optional message to use to display the choices
 	 * @param {number} [index=0] The index for the current video
-	 * @returns {video} The picked video
+	 * @returns {Promise<Video>} The picked video
 	 * @private
 	 */
-	// tslint:disable-next-line:max-line-length
-	private async _chooseSong(msg: CommandMessage, videos: Video[], statusmsg?: Message, index: number = 0): Promise<Video> {
+	private async _chooseSong(msg: CommandMessage, videos: Video[], statusMessage?: Message, index: number = 0)
+		: Promise<Video> {
 		const video: Video = videos[index];
+
+		// when nothing is left to pick, automatically dismiss this
 		if (!video) {
-			if (statusmsg) {
-				statusmsg.delete().catch(() => null);
-				msg.delete().catch(() => null);
+			if (statusMessage) {
+				statusMessage.delete()
+					.catch(() => null);
 			}
+			msg.delete()
+				.catch(() => null);
 			return null;
 		}
 
@@ -326,8 +364,8 @@ export default class PlayMusicCommand extends Command {
 			.setDescription(`Length: ${video.durationSeconds ? Song.timeString(video.durationSeconds) : 'Livestream'}`)
 			.setFooter(`Result ${index + 1} from ${videos.length} results.`, this.client.user.displayAvatarURL);
 
-		statusmsg = statusmsg
-			? await statusmsg.edit({ embed })
+		statusMessage = statusMessage
+			? await statusMessage.edit({ embed })
 			: await msg.embed(embed) as Message;
 
 		const argument: ArgumentInfo = {
@@ -338,17 +376,18 @@ export default class PlayMusicCommand extends Command {
 
 		const choice: boolean = await Util.prompt<boolean>(msg, argument).catch(() => null);
 
-		if (choice === null) return statusmsg.delete().then(() => null).catch(() => null);
-
+		if (choice === null) {
+			return statusMessage.delete()
+				.then(() => null)
+				.catch(() => null);
+		}
 		if (choice) return video;
-		else if (!choice) return this._chooseSong(msg, videos, statusmsg, index + 1);
-		else return null;
+		return this._chooseSong(msg, videos, statusMessage, index + 1);
 	}
 
 	/**
 	 * Method that actually plays the music.
 	 * @param {string} guildID ID of the guild to play music in
-	 * @param {song} song The song to play
 	 * @param {boolean} [stopped=false] Whether the playing was stopped through a command
 	 * @returns {Promise<void>}
 	 * @private
@@ -361,8 +400,9 @@ export default class PlayMusicCommand extends Command {
 
 		// marvelous error handling
 		if (!queue) {
-			error('queue was falsy', guildID);
+			logger.log('dispatcher', guildID, 'queue was falsy');
 			if (this.client.guilds.get(guildID).voiceConnection) {
+				logger.log('dispatcher', guildID, 'disconnecting...');
 				this.client.guilds.get(guildID).voiceConnection.disconnect();
 			}
 			return;
@@ -370,7 +410,11 @@ export default class PlayMusicCommand extends Command {
 
 		const { currentSong, loop } = queue;
 
-		if (queue.statusMessage) queue.statusMessage.delete().catch(() => null);
+		if (queue.statusMessage) {
+			queue.statusMessage.delete()
+				.catch(() => null);
+		}
+
 		queue.clearTimeout();
 
 		debug('currentSong:', !!currentSong);
@@ -388,54 +432,48 @@ export default class PlayMusicCommand extends Command {
 				.setImage(currentSong.thumbnail)
 				.setFooter('is now being played.', this.client.user.displayAvatarURL)
 				.setTimestamp(),
-		}) as Message;
+		}).catch(() => null) as Message;
 
 		let streamErrored: boolean = false;
 
 		// inner declaration of a play function to support livestreams
 		const play: (livestream?: string) => Promise<void> = async (livestream?: string) => {
-			debug('inner play: livestreamstream?', !!livestream);
+			debug('inner play: livestreamstream?', Boolean(livestream));
 
 			const dispatcher: StreamDispatcher = (livestream
-				? queue.connection.playStream(ytdl(livestream))
+				? queue.connection.playStream(ytdl(livestream), { passes: 2 })
 				: queue.connection.playFile(`./tempmusicfile_${guildID}`, { passes: 2 }))
 
 				.once('error', async (err: Error) => {
 					logger.log('dispatcher', guildID, err);
-					await queue.statusMessage.edit(`❌ An internal error occured while playing.`);
+
+					await queue.statusMessage.edit(`❌ An internal error occured while playing.`)
+						.catch(() => null);
 					queue.statusMessage = null;
 				})
 
-				.once('start', () => {
-					logger.log('dispatcher', guildID, 'Dispatcher started.');
-				})
+				.once('start', () => logger.log('dispatcher', guildID, 'Dispatcher started.'))
 
 				.once('end', (reason: string) => {
 					const playedTime: string = Song.timeString(Math.floor(dispatcher.time / 1000));
 					const logReason: string = reason ? `Reason: ${reason}` : '';
 
-					logger.log('dispatcher',
-						guildID,
-						`Song finished after ${playedTime} / ${currentSong.lengthString} ${logReason}`,
-					);
+					logger.log('dispatcher', guildID, `Song finished after ${playedTime} / ${currentSong.lengthString}`, logReason);
 
 					(dispatcher.stream as any).destroy();
 
-					logger.log('dispatcher', 'streamerror:', !!streamErrored);
-
-					if (streamErrored) return;
+					if (streamErrored) {
+						logger.log('dispatcher', 'stream errored!');
+						return;
+					}
 
 					queue.shift(['stop', 'skip'].includes(reason));
 
 					const stop: boolean = reason === 'stop';
-					if (stop || !queue.currentSong) {
-						if (currentSong.length) {
-							this.client.setTimeout(
-								() => unlink(`./tempmusicfile_${guildID}`, (e: Error) => e && error(guildID, e)),
-								500,
-							);
-						}
+					if ((stop || !queue.currentSong) && currentSong.length) {
+						this.client.setTimeout(() => unlink(`./tempmusicfile_${guildID}`, (e: Error) => e && error(guildID, e)), 500);
 					}
+
 					this._play(guildID, stop).catch((err: Error) => {
 						error('PlayMusicCommand#_play', guildID, err);
 						queue.sendText(stripIndents`
@@ -455,14 +493,19 @@ export default class PlayMusicCommand extends Command {
 
 		// livestream
 		if (!currentSong.length) return play(currentSong.url);
+		const startTime: number = Date.now();
 
 		const stream: Stream = ytdl(currentSong.url, { filter: 'audioonly' })
 			.once('error', async (err: Error) => {
 				streamErrored = true;
 				logger.log('ytdl', guildID, err);
-				await queue.statusMessage.edit('❌ An error occured while playing the YouTube stream.', { embed: null });
+
+				await queue.statusMessage.edit('❌ An error occured while playing the YouTube stream.', { embed: null })
+					.catch(() => null);
+
 				queue.statusMessage = null;
 				queue.shift(true);
+
 				this._play(guildID).catch((playErr: Error) => {
 					error('PlayMusicCommand#_play', guildID, playErr);
 					queue.sendText(stripIndents`
@@ -473,14 +516,8 @@ export default class PlayMusicCommand extends Command {
 				});
 			});
 
-		const startTime: number = Date.now();
-
 		stream.once('end', () => {
-			logger.log('musicInfo',
-				guildID,
-				'Piping to file finished after',
-				Song.timeString((Date.now() - startTime) / 1000),
-			);
+			logger.log('musicInfo', guildID, 'Piping to file finished after', Song.timeString((Date.now() - startTime) / 1000));
 
 			play();
 		});
