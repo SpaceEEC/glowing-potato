@@ -30,3 +30,7 @@ gulp.task('build', () => {
 
 	return tsCompile.js.pipe(gulp.dest('bin/'));
 });
+
+gulp.task('watch', () => {
+	gulp.watch('./src/**/*.ts', ['build']);
+});
