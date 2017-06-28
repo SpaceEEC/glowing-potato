@@ -1,7 +1,16 @@
+#modules and stuff
 typings/
-bin/
-.vscode/
 node_modules/
-config.json
+
+#generated files
+bin/
+
+#old files
+old/
+
+#config and logs
 disconnects.log
 settings.sqlite
+
+#vs code settings
+.vscode/
