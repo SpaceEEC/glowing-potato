@@ -16,6 +16,8 @@ import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
 @usage('<prefix>konachan <...tags>')
 export default class KonachanCommand extends Command<Client>
 {
+	public constructor(client: Client) { super(); }
+
 	@using((message: Message, tags: string[]) =>
 	{
 		if (tags.length > 5) throw new Error('You can not search with more than five tags!');

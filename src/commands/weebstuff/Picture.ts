@@ -12,6 +12,8 @@ import { ReportError } from '../../structures/ReportError';
 @usage('<prefix>picture <...tags>')
 export default class PictureCommand extends Command<Client>
 {
+	public constructor(client: Client) { super(); }
+
 	@ReportError
 	public action(message: Message, tags: string[]): void
 	{
