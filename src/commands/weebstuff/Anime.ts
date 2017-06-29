@@ -1,5 +1,5 @@
 import { Command, Message } from 'yamdbf/bin';
-import { clientPermissions, desc, group, guildOnly,  name, usage } from 'yamdbf/bin/command/CommandDecorators';
+import { clientPermissions, desc, group, guildOnly, name, usage } from 'yamdbf/bin/command/CommandDecorators';
 
 import { Client } from '../../structures/Client';
 import { ReportError } from '../../structures/ReportError';
@@ -14,6 +14,8 @@ import { AnilistUtil } from '../../util/AniList';
 @usage('<prefix>anime <Name>')
 export default class AnimeCommand extends Command<Client>
 {
+	public constructor(client: Client) { super(); }
+
 	@ReportError
 	public action(message: Message, args: string[]): Promise<void>
 	{
