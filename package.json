@@ -6,11 +6,13 @@
   "scripts": {
     "start": "cd bin && node index.js",
     "test": "npm run build -s",
-    "lint:gulp": "gulp lint",
-    "build:gulp": "gulp build",
-    "lint": "npm run lint:gulp",
     "prebuild": "npm run lint",
-    "build": "npm run build:gulp"
+    "lint": "npm run lint:gulp",
+    "lint:gulp": "gulp lint",
+    "build": "npm run build:gulp",
+    "build:gulp": "gulp build",
+    "watch": "npm run watch:gulp",
+    "watch:gulp": "gulp watch"
   },
   "repository": {
     "type": "git",

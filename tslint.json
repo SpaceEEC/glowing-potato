@@ -9,6 +9,7 @@
 		"indent": [true, "tabs"],
 		"radix": false,
 		"curly": [true, "ignore-same-line"],
+		"one-line":[false],
 		"variable-name": [
 			true, 
 			"ban-keywords",
