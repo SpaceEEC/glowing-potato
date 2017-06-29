@@ -9,6 +9,7 @@ bin/
 old/
 
 #config and logs
+config.json
 disconnects.log
 settings.sqlite
 
