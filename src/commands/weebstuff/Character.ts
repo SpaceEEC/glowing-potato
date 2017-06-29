@@ -15,6 +15,8 @@ import { AnilistUtil } from '../../util/AniList';
 @usage('<prefix>char <Name>')
 export default class CharacterCommand extends Command<Client>
 {
+	public constructor(client: Client) { super(); }
+
 	@ReportError
 	public action(message: Message, args: string[]): Promise<void>
 	{

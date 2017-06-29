@@ -14,6 +14,8 @@ import { AnilistUtil } from '../../util/AniList';
 @usage('<prefix>manga <Name>')
 export default class MangaCommand extends Command<Client>
 {
+	public constructor(client: Client) { super(); }
+
 	@ReportError
 	public action(message: Message, args: string[]): Promise<void>
 	{

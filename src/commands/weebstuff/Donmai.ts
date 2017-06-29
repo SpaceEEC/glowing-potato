@@ -16,6 +16,8 @@ import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
 @usage('<prefix>donmai <...tags>')
 export default class DonmaiCommand extends Command<Client>
 {
+	public constructor(client: Client) { super(); }
+
 	@using((message: Message, tags: string[]) =>
 	{
 		if (tags.length > 2) throw new Error('You can not search with more than two tags!');
