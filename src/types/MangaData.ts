@@ -1,24 +1,23 @@
 export type MangaData = {
-	id: number;
-	series_type: string;
-	title_romaji: string;
-	title_english: string;
-	title_japanese: string;
-	type: string;
-	start_date_fuzzy: number;
-	end_date_fuzzy: number;
-	season: number;
-	description: string;
-	synonyms: string[];
-	genres: string[];
 	adult: string;
 	average_score: number;
-	popularity: number;
-	image_url_sml: string;
-	image_url_med: string;
-	image_url_lge: string;
+	description: string;
+	end_date_fuzzy: number;
+	genres: string[];
+	id: number;
 	image_url_banner: string;
-	updated_at: number;
+	image_url_lge: string;
+	image_url_med: string;
+	image_url_sml: string;
+	list_stats: {
+		completed: number;
+		on_hold: number;
+		dropped: number;
+		plan_to_watch: number;
+		watching: number;
+	};
+	popularity: number;
+	publishing_status: string;
 	score_distribution: {
 		10: number;
 		20: number;
@@ -31,14 +30,14 @@ export type MangaData = {
 		90: number;
 		100: number;
 	};
-	list_stats: {
-		completed: number;
-		on_hold: number;
-		dropped: number;
-		plan_to_watch: number;
-		watching: number;
-	};
+	season: number;
+	series_type: string;
+	start_date_fuzzy: number;
+	title_english: string;
+	title_japanese: string;
+	title_romaji: string;
 	total_chapters: number;
 	total_volumes: number;
-	publishing_status: string;
+	type: string;
+	updated_at: number;
 };
