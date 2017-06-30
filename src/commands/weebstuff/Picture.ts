@@ -1,7 +1,8 @@
-import { Command, Message } from 'yamdbf/bin';
+import { Message } from 'yamdbf/bin';
 import { clientPermissions, desc, group, guildOnly, name, usage } from 'yamdbf/bin/command/CommandDecorators';
 
 import { Client } from '../../structures/Client';
+import { Command } from '../../structures/Command';
 import { ReportError } from '../../structures/ReportError';
 
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
@@ -12,8 +13,6 @@ import { ReportError } from '../../structures/ReportError';
 @usage('<prefix>picture <...tags>')
 export default class PictureCommand extends Command<Client>
 {
-	public constructor(client: Client) { super(); }
-
 	@ReportError
 	public action(message: Message, tags: string[]): void
 	{

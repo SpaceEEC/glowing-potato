@@ -1,6 +1,6 @@
 import { GuildMember, RichEmbed, Role, User } from 'discord.js';
 import * as moment from 'moment';
-import { Command, Guild, Message } from 'yamdbf/bin';
+import { Guild, Message } from 'yamdbf/bin';
 import {
 	aliases,
 	clientPermissions,
@@ -15,6 +15,7 @@ import { expect } from 'yamdbf/bin/command/middleware/Expect';
 import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
 
 import { Client } from '../../structures/Client';
+import { Command } from '../../structures/Command';
 import { ReportError } from '../../structures/ReportError';
 
 @aliases('user')
@@ -26,8 +27,6 @@ import { ReportError } from '../../structures/ReportError';
 @usage('<prefix>userinfo <User>')
 export default class UserInfoCommand extends Command<Client>
 {
-	public constructor(client: Client) { super(); }
-
 	@using(resolve({ '<User>': 'User' }))
 	@using(expect({ '<User>': 'User' }))
 	@ReportError
