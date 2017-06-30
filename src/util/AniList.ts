@@ -1,8 +1,9 @@
-import { Collection, RichEmbed, Snowflake } from 'discord.js';
+import { Collection, Snowflake } from 'discord.js';
 import { get, post } from 'snekfetch';
 import { Message } from 'yamdbf';
 
 import { Client } from '../structures/Client';
+import { RichEmbed } from '../structures/RichEmbed';
 import { AnimeData } from '../types/AnimeData';
 import { AniSettings } from '../types/AniSettings';
 import { AniType } from '../types/AniType';
@@ -182,44 +183,56 @@ export class AnilistUtil
 	 */
 	private static _sendAnime(message: Message, animeData: AnimeData): Promise<void>
 	{
-		const genres: string = Util.chunkArray(animeData.genres, 3).map((chunk: string[]) => chunk.join(', ')).join('\n');
+		const {
+			airing_status,
+			average_score,
+			description,
+			end_date_fuzzy,
+			genres,
+			image_url_lge,
+			source,
+			start_date_fuzzy,
+			title_english,
+			title_japanese,
+			title_romaji,
+			total_episodes,
+			type,
+		}: AnimeData = animeData;
+
+		const mappedGenres: string = Util.chunkArray(genres, 3).map((chunk: string[]) => chunk.join(', ')).join('\n');
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x0800ff)
-			.setThumbnail(animeData.image_url_lge)
-			.setTitle(animeData.title_japanese)
+			.setThumbnail(image_url_lge)
+			.setTitle(title_japanese)
 			.setDescription(
-			animeData.title_romaji === animeData.title_english
-				? animeData.title_english
-				: `${animeData.title_romaji}\n\n${animeData.title_english}`)
-			.addField('Genres', genres, true)
-			.addField('Rating | Typ', `${animeData.average_score} | ${animeData.type}`, true)
-			.addField('Episodes', animeData.total_episodes, true);
+			title_romaji === title_english
+				? title_english
+				: `${title_romaji}\n\n${title_english}`)
+			.addField('Genres', mappedGenres, true)
+			.addField('Rating | Typ', `${average_score} | ${type}`, true)
+			.addField('Episodes', total_episodes, true);
 
-		if (animeData.start_date_fuzzy)
+		if (start_date_fuzzy)
 		{
 			let title: string = 'Start:';
-			let value: string = AnilistUtil._formatFuzzy(animeData.start_date_fuzzy);
-			if (animeData.airing_status === 'finished airing')
+			let value: string = AnilistUtil._formatFuzzy(start_date_fuzzy);
+			if (airing_status === 'finished airing')
 			{
 				title = 'Period:';
-				value += ` - ${AnilistUtil._formatFuzzy(animeData.end_date_fuzzy) || `Not specified`}`;
+				value += ` - ${AnilistUtil._formatFuzzy(end_date_fuzzy) || `Not specified`}`;
 			}
 
 			embed.addField(title, value, true);
 		}
 
-		const description: string[] = animeData.description
-			? Util.replaceMap(animeData.description, replaceChars).match(/(.|[\r\n]){1,1024}/g)
-			: ['No description'];
+		embed.splitToFields('Description', description
+			? Util.replaceMap(description, replaceChars)
+			: 'No description',
+		);
 
-		for (const [i, chunk] of description.entries())
-		{
-			embed.addField(i ? '\u200b' : 'Description', chunk);
-		}
-
-		embed.addField('Airing Status:', animeData.airing_status, true)
-			.addField('Origin:', animeData.source || 'Not specified', true);
+		embed.addField('Airing Status:', airing_status, true)
+			.addField('Origin:', source || 'Not specified', true);
 
 		return message.channel.send({ embed }).then(() => undefined);
 	}
@@ -234,25 +247,30 @@ export class AnilistUtil
 	 */
 	private static _sendCharacter(message: Message, charData: CharData): Promise<void>
 	{
+		const {
+			image_url_lge,
+			info,
+			name_alt,
+			name_first,
+			name_japanese,
+			name_last,
+		}: CharData = charData;
+
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x0800ff)
-			.setThumbnail(charData.image_url_lge)
-			.setTitle(`${charData.name_first || ''}\u200b ${charData.name_last || ''}`)
-			.setDescription(charData.name_japanese || '');
+			.setThumbnail(image_url_lge)
+			.setTitle(`${name_first || ''}\u200b ${name_last || ''}`)
+			.setDescription(name_japanese || '');
 
-		if (charData.name_alt)
+		if (name_alt)
 		{
-			embed.addField('Aliases:', charData.name_alt);
+			embed.addField('Aliases:', name_alt);
 		}
 
-		const description: string[] = charData.info
-			? Util.replaceMap(charData.info, replaceChars).match(/(.|[\r\n]){1,1024}/g)
-			: ['No description'];
-
-		for (const [i, chunk] of description.entries())
-		{
-			embed.addField(i ? '\u200b' : 'Description', chunk);
-		}
+		embed.splitToFields('Description', info
+			? Util.replaceMap(info, replaceChars)
+			: 'No description',
+		);
 
 		return message.channel.send({ embed }).then(() => undefined);
 	}
@@ -267,42 +285,54 @@ export class AnilistUtil
 	 */
 	private static _sendManga(message: Message, mangaData: MangaData): Promise<void>
 	{
-		const genres: string = Util.chunkArray(mangaData.genres, 3).map((chunk: string[]) => chunk.join(', ')).join('\n');
+		const {
+			average_score,
+			description,
+			end_date_fuzzy,
+			genres,
+			image_url_lge,
+			publishing_status,
+			start_date_fuzzy,
+			title_english,
+			title_japanese,
+			title_romaji,
+			total_chapters,
+			total_volumes,
+			type,
+		}: MangaData = mangaData;
+
+		const mappedGenres: string = Util.chunkArray(genres, 3).map((chunk: string[]) => chunk.join(', ')).join('\n');
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x0800ff)
-			.setThumbnail(mangaData.image_url_lge)
-			.setTitle(mangaData.title_japanese)
+			.setThumbnail(image_url_lge)
+			.setTitle(title_japanese)
 			.setDescription(
-			mangaData.title_japanese === mangaData.title_english
-				? mangaData.title_english
-				: `${mangaData.title_romaji}\n${mangaData.title_english}`)
-			.addField('Genres', genres, true)
-			.addField('Rating | Typ', `${mangaData.average_score} | ${mangaData.type}`, true)
-			.addField('Chapters | Volumes', `${mangaData.total_chapters} | ${mangaData.total_volumes}`, true);
+			title_japanese === title_english
+				? title_english
+				: `${title_romaji}\n${title_english}`)
+			.addField('Genres', mappedGenres, true)
+			.addField('Rating | Typ', `${average_score} | ${type}`, true)
+			.addField('Chapters | Volumes', `${total_chapters} | ${total_volumes}`, true);
 
-		if (mangaData.start_date_fuzzy)
+		if (start_date_fuzzy)
 		{
 			let title: string = 'Start';
-			let value: string = AnilistUtil._formatFuzzy(mangaData.start_date_fuzzy);
-			if (mangaData.publishing_status === 'finished publishing')
+			let value: string = AnilistUtil._formatFuzzy(start_date_fuzzy);
+			if (publishing_status === 'finished publishing')
 			{
 				title = 'Period';
-				value += ` - ${AnilistUtil._formatFuzzy(mangaData.end_date_fuzzy) || `Not specified`}`;
+				value += ` - ${AnilistUtil._formatFuzzy(end_date_fuzzy) || `Not specified`}`;
 			}
 			embed.addField(title, value, true);
 		}
 
-		const description: string[] = mangaData.description
-			? Util.replaceMap(mangaData.description, replaceChars).match(/(.|[\r\n]){1,1024}/g)
-			: ['No description'];
+		embed.splitToFields('Description', description
+			? Util.replaceMap(description, replaceChars)
+			: 'No description',
+		);
 
-		for (const [i, chunk] of description.entries())
-		{
-			embed.addField(i ? '\u200b' : 'Description', chunk);
-		}
-
-		embed.addField('Publishing Status:', mangaData.publishing_status || 'Not specified', true);
+		embed.addField('Publishing Status:', publishing_status || 'Not specified', true);
 
 		return message.channel.send({ embed }).then(() => undefined);
 	}
