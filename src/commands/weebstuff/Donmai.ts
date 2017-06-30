@@ -1,9 +1,10 @@
 import { RichEmbed } from 'discord.js';
 import { get, Result } from 'snekfetch';
-import { Command, Message } from 'yamdbf/bin';
+import { Message } from 'yamdbf/bin';
 import { clientPermissions, desc, group, guildOnly, name, usage, using } from 'yamdbf/bin/command/CommandDecorators';
 
 import { Client } from '../../structures/Client';
+import { Command } from '../../structures/Command';
 import { ReportError } from '../../structures/ReportError';
 import { PicturePost } from '../../types/PicturePost';
 import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
@@ -16,8 +17,6 @@ import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
 @usage('<prefix>donmai <...tags>')
 export default class DonmaiCommand extends Command<Client>
 {
-	public constructor(client: Client) { super(); }
-
 	@using((message: Message, tags: string[]) =>
 	{
 		if (tags.length > 2) throw new Error('You can not search with more than two tags!');

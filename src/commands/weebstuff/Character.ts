@@ -1,7 +1,8 @@
-import { Command, Message } from 'yamdbf/bin';
+import { Message } from 'yamdbf/bin';
 import { aliases, clientPermissions, desc, group, guildOnly, name, usage } from 'yamdbf/bin/command/CommandDecorators';
 
 import { Client } from '../../structures/Client';
+import { Command } from '../../structures/Command';
 import { ReportError } from '../../structures/ReportError';
 import { AniType } from '../../types/AniType';
 import { AnilistUtil } from '../../util/AniList';
@@ -15,8 +16,6 @@ import { AnilistUtil } from '../../util/AniList';
 @usage('<prefix>char <Name>')
 export default class CharacterCommand extends Command<Client>
 {
-	public constructor(client: Client) { super(); }
-
 	@ReportError
 	public action(message: Message, args: string[]): Promise<void>
 	{
