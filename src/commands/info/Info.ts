@@ -1,10 +1,11 @@
 import { RichEmbed, User, version as libVersion } from 'discord.js';
 import * as moment from 'moment';
 import 'moment-duration-format';
-import { Command, Message, version as YAMDBFVersion } from 'yamdbf/bin';
+import { Message, version as YAMDBFVersion } from 'yamdbf/bin';
 import { aliases, clientPermissions, desc, group, guildOnly, name, usage } from 'yamdbf/bin/command/CommandDecorators';
 
 import { Client } from '../../structures/Client';
+import { Command } from '../../structures/Command';
 import { ReportError } from '../../structures/ReportError';
 
 const { version }: { version: string } = require('../../../package.json');
@@ -18,8 +19,6 @@ const { version }: { version: string } = require('../../../package.json');
 @usage('<prefix>info')
 export default class InfoCommand extends Command<Client>
 {
-	public constructor(client: Client) { super(); }
-
 	@ReportError
 	public async action(message: Message): Promise<void>
 	{

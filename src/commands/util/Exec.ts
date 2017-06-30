@@ -1,9 +1,10 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { Command, Message } from 'yamdbf/bin';
+import { Message } from 'yamdbf/bin';
 import { desc, group, name, ownerOnly, usage } from 'yamdbf/bin/command/CommandDecorators';
 
 import { Client } from '../../structures/Client';
+import { Command } from '../../structures/Command';
 import { ReportError } from '../../structures/ReportError';
 
 const execAsync: (command: string) => Promise<{
@@ -18,8 +19,6 @@ const execAsync: (command: string) => Promise<{
 @usage('<prefix>exec <...code>')
 export default class ExecCommand extends Command<Client>
 {
-	public constructor(client: Client) { super(); }
-
 	@ReportError
 	public async action(message: Message, code: string[]): Promise<void>
 	{
