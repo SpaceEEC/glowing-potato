@@ -5,7 +5,7 @@ import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { AniType } from '../../types/AniType';
-import { AnilistUtil } from '../../util/AniList';
+import { AnilistUtil } from '../../util/AniListUtil';
 
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
 @desc('Displays information about the requested anime.')
