@@ -4,9 +4,9 @@ import { clientPermissions, desc, group, guildOnly, name, usage, using } from 'y
 import { expect } from 'yamdbf/bin/command/middleware/Expect';
 import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
 
+import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
-import { ReportError } from '../../structures/ReportError';
 
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS', 'ATTACH_FILES')
 @desc('Gets an user\'s avatar')

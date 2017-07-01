@@ -3,9 +3,9 @@ import { promisify } from 'util';
 import { Message } from 'yamdbf/bin';
 import { desc, group, name, ownerOnly, usage } from 'yamdbf/bin/command/CommandDecorators';
 
+import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
-import { ReportError } from '../../structures/ReportError';
 
 const execAsync: (command: string) => Promise<{
 	stdout?: string,

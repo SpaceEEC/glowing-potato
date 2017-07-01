@@ -2,9 +2,9 @@ import { get, Result } from 'snekfetch';
 import { Message } from 'yamdbf/bin';
 import { clientPermissions, desc, group, guildOnly, name, usage, using } from 'yamdbf/bin/command/CommandDecorators';
 
+import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
-import { ReportError } from '../../structures/ReportError';
 import { RichEmbed } from '../../structures/RichEmbed';
 import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
 import { UrbanDefinition } from '../../types/UrbanDefinition';

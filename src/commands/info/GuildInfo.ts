@@ -12,9 +12,9 @@ import * as moment from 'moment';
 import { Guild, Message } from 'yamdbf/bin';
 import { aliases, clientPermissions, desc, group, guildOnly, name, usage } from 'yamdbf/bin/command/CommandDecorators';
 
+import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
-import { ReportError } from '../../structures/ReportError';
 
 // tslint:disable-next-line:variable-name
 const { Endpoints }: { Endpoints: any } = require('discord.js').Constants;

@@ -4,9 +4,9 @@ import 'moment-duration-format';
 import { Message, version as YAMDBFVersion } from 'yamdbf/bin';
 import { aliases, clientPermissions, desc, group, guildOnly, name, usage } from 'yamdbf/bin/command/CommandDecorators';
 
+import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
-import { ReportError } from '../../structures/ReportError';
 
 const { version }: { version: string } = require('../../../package.json');
 

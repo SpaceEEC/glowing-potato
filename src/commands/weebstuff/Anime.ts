@@ -1,9 +1,9 @@
 import { Message } from 'yamdbf/bin';
 import { clientPermissions, desc, group, guildOnly, name, usage } from 'yamdbf/bin/command/CommandDecorators';
 
+import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
-import { ReportError } from '../../structures/ReportError';
 import { AniType } from '../../types/AniType';
 import { AnilistUtil } from '../../util/AniList';
 
