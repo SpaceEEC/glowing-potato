@@ -14,9 +14,9 @@ import {
 import { expect } from 'yamdbf/bin/command/middleware/Expect';
 import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
 
+import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
-import { ReportError } from '../../structures/ReportError';
 
 @aliases('purge', 'clean', 'clear')
 @clientPermissions('SEND_MESSAGES', 'MANAGE_MESSAGES')
