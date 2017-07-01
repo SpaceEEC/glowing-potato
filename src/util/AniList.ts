@@ -32,7 +32,7 @@ const replaceChars: { [char: string]: string } = {
 export class AnilistUtil
 {
 	/**
-	 * Retrieves and displays a specific anime / character / char.
+	 * Retrieves and displays a specific anime / character / manga.
 	 * @param {AnyType} type The type of data to retrieve and display
 	 * @param {string} search The search query
 	 * @returns {Promise<void>}
@@ -60,7 +60,7 @@ export class AnilistUtil
 		}
 
 		const response: (AnimeData | CharData | MangaData) = body[1]
-			? await AnilistUtil._pick(message, body, stringType)
+			? await AnilistUtil._pick(message, body, type)
 			: body[0];
 
 		if (!response) return;
@@ -81,6 +81,7 @@ export class AnilistUtil
 	/**
 	 * Shortcut to `Util.client`
 	 * @readonly
+	 * @static
 	 */
 	public static get client(): Client
 	{
@@ -119,17 +120,17 @@ export class AnilistUtil
 	 * Lets the requester pick between one of the found results.
 	 * @param {message} message Original message
 	 * @param {(AnimeData | CharData | MangaData)[]} dataArray Array of data
-	 * @param {string} type String representation of the requested content type
+	 * @param {AniType} type The requested content type
 	 * @returns {Promise<(AnimeData | CharData | MangaData) | void>}
 	 * @private
 	 * @static
 	 */
-	private static async _pick(message: Message, dataArray: (AnimeData | CharData | MangaData)[], type: string)
+	private static async _pick(message: Message, dataArray: (AnimeData | CharData | MangaData)[], type: AniType)
 		: Promise<(AnimeData | CharData | MangaData) | void>
 	{
 		const tempArray: string[] = [];
 		let count: number = 0;
-		if (type === 'character')
+		if (type === AniType.CHARACTER)
 		{
 			for (const char of dataArray as CharData[])
 			{
