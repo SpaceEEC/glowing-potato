@@ -4,13 +4,11 @@ import { Message } from 'yamdbf';
 
 import { Client } from '../structures/Client';
 import { RichEmbed } from '../structures/RichEmbed';
-import { AnimeData } from '../types/AnimeData';
+import { AnimeData, CharData, MangaData } from '../types/AniListData';
 import { AniSettings } from '../types/AniSettings';
 import { AniType } from '../types/AniType';
-import { CharData } from '../types/CharData';
 import { ClientCredentials } from '../types/ClientCredentials';
 import { Config } from '../types/Config';
-import { MangaData } from '../types/MangaData';
 import { ProbablyNotABuffer } from '../types/ProbablyNotABuffer';
 import { Util } from './Util';
 
