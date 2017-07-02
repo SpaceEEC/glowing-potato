@@ -4,8 +4,16 @@ export class Util
 {
 	/**
 	 * The client associated with the Util class
+	 * @readonly
 	 */
-	public static client: Client;
+	public static get client(): Client
+	{
+		if (!Util._client)
+		{
+			throw new Error('Util class has not been instanciated (yet)!');
+		}
+		return Util._client;
+	}
 
 	/**
 	 * Intializes the Util class.
@@ -15,7 +23,7 @@ export class Util
 	 */
 	public static init(client: Client): void
 	{
-		this.client = client;
+		Util._client = client;
 	}
 
 	/**
@@ -53,4 +61,9 @@ export class Util
 
 		return chunks;
 	}
+
+	/**
+	 * The client associated with the Util class
+	 */
+	private static _client: Client;
 }
