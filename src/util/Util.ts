@@ -1,23 +1,28 @@
 import { Client } from '../structures/Client';
 
+/**
+ * Static Util class holding all sort of handy methods.
+ * @static
+ */
 export class Util
 {
 	/**
 	 * The client associated with the Util class
+	 * @static
 	 * @readonly
 	 */
 	public static get client(): Client
 	{
 		if (!Util._client)
 		{
-			throw new Error('Util class has not been instanciated (yet)!');
+			throw new Error('Util class has not been initialized (yet)!');
 		}
 		return Util._client;
 	}
 
 	/**
-	 * Intializes the Util class.
-	 * @param {Client} client The client to associate that class with
+	 * Initializes the Util class.
+	 * @param {Client} client The client to associate the class with
 	 * @returns {void}
 	 * @static
 	 */
@@ -48,6 +53,8 @@ export class Util
 	 * The original array will not be modified.
 	 * @param {T[]} input The array to split
 	 * @param {number} chunkSize The size of the chunks
+	 * @returns {T[][]}
+	 * @static
 	 */
 	public static chunkArray<T = string>(input: T[], chunkSize: number): T[][]
 	{
@@ -64,6 +71,8 @@ export class Util
 
 	/**
 	 * The client associated with the Util class
+	 * @private
+	 * @static
 	 */
 	private static _client: Client;
 }
