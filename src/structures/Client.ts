@@ -1,12 +1,12 @@
 import { join } from 'path';
-import { Client as YAMDBFClient, ListenerUtil, logger, Logger } from 'yamdbf';
+import { Client as YAMDBFClient, ListenerUtil, logger, Logger, Providers } from 'yamdbf';
 
 import { Config } from '../types/config';
 import { Util } from '../util/Util';
 
 const { once } = ListenerUtil;
 
-const { devToken, ownerID }: Config = require('../../config.json');
+const { database, devToken, ownerID }: Config = require('../../config.json');
 const { version }: { version: string } = require('../../package.json');
 
 export class Client extends YAMDBFClient
@@ -20,6 +20,7 @@ export class Client extends YAMDBFClient
 			name: 'spacebot',
 			owner: [ownerID],
 			pause: true,
+			provider: Providers.PostgresProvider(database),
 			token: devToken,
 			unknownCommandError: false,
 			version,
