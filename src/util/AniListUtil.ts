@@ -26,7 +26,7 @@ const replaceChars: { [char: string]: string } = {
 };
 
 /**
- * Static class which handles Anilist related commands.
+ * Static AniListUtil class which handles Anilist related commands.
  * @static
  */
 export class AnilistUtil
