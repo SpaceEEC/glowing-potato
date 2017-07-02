@@ -25,7 +25,7 @@ const { allConfigKeys, parseConfigKey, parseConfigType } = GuildConfigEnumUtil;
 @usage('<prefix>config <option> <key> [...value]`\n\n'
 	+ '`option` is one of `get`, `set`, `reset`.\n'
 	+ `\`key\` is one of ${allConfigKeys.map((key: string) => `\`${key.toLowerCase()}\``).join(', ')}.\n`
-	+ '`value` is either a channel, role or the desired text.\n')
+	+ '`value` is either a channel, role or the desired text. Only available when using the option `set')
 export default class ConfigCommand extends Command<Client>
 {
 	// tslint:disable-next-line:only-arrow-functions
@@ -67,7 +67,7 @@ export default class ConfigCommand extends Command<Client>
 			{
 				return resolve({ '<option>': 'String', '<key>': 'String', '<...value>': 'String' }).call(this, message, args);
 			}
-			throw new Error(`Couldn\'t resolve \`${args[0]}\` to a valid key, this should not happen!`);
+			throw new Error(`Couldn\'t resolve \`${args[0]}\` to a valid key.\n\nNote: This should never happen!`);
 		}
 		return [message, args];
 	})
@@ -111,7 +111,7 @@ export default class ConfigCommand extends Command<Client>
 		{
 			if (!(value instanceof Role))
 			{
-				throw new Error('The value is not a role, that should never happen!');
+				throw new Error('The value is not a role.\n\nNote: This should never happen!');
 			}
 			await message.guild.storage.set(key, value.id);
 
@@ -122,7 +122,7 @@ export default class ConfigCommand extends Command<Client>
 		{
 			if (typeof value !== 'string')
 			{
-				throw new Error('The value is not a string, that should never happen!');
+				throw new Error('The value is not a string.\n\nNote: This should never happen!');
 			}
 			await message.guild.storage.set(key, value);
 
