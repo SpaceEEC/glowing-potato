@@ -3,6 +3,7 @@ import { Client as YAMDBFClient, ListenerUtil, logger, Logger, Providers } from 
 
 import { Config } from '../types/config';
 import { Util } from '../util/Util';
+import { EventHandlers } from './EventHandlers';
 
 const { once } = ListenerUtil;
 
@@ -12,6 +13,7 @@ const { version }: { version: string } = require('../../package.json');
 export class Client extends YAMDBFClient
 {
 	@logger public logger: Logger;
+	private _eventHandlers: EventHandlers;
 
 	public constructor()
 	{
@@ -26,6 +28,7 @@ export class Client extends YAMDBFClient
 			version,
 		});
 
+		this._eventHandlers = new EventHandlers(this);
 	}
 
 	@once('pause')
