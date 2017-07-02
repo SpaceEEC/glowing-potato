@@ -27,6 +27,7 @@
 			"parameter",
 			"property-declaration", 
 			"variable-declaration"
-		]
+		],
+		"object-literal-sort-keys": true
 	}
 }
