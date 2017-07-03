@@ -31,8 +31,8 @@ import { GuildConfigUtil } from '../../util/GuildConfigUtil';
 export default class MusicRoleCommand extends Command<Client>
 {
 	@using(expect({ '<option>': 'String' }))
-	@using(expectConfigOption(GuildConfigType.ROLE))
 	@using(resolveConfigOption(GuildConfigType.ROLE))
+	@using(expectConfigOption(GuildConfigType.ROLE))
 	@ReportError
 	public async action(message: Message, [option, value]: ['get' | 'set' | 'reset', Role | undefined]): Promise<void>
 	{
