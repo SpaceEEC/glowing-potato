@@ -15,9 +15,18 @@ export class GuildConfigUtil
 	 * All available config keys for all types.
 	 * @static
 	 */
-	public static allConfigKeys: string[] = Object.getOwnPropertyNames(GuildConfigChannels).concat(
-		Object.getOwnPropertyNames(GuildConfigRoles),
-		Object.getOwnPropertyNames(GuildConfigStrings),
+	public static allConfigKeys: string[] = Object.keys(GuildConfigChannels).concat(
+		Object.keys(GuildConfigRoles),
+		Object.keys(GuildConfigStrings),
+	);
+
+	/**
+	 * All available config values for all types.
+	 * @static
+	 */
+	public static allConfigValues: string[] = Object.values(GuildConfigChannels).concat(
+		Object.values(GuildConfigRoles),
+		Object.values(GuildConfigStrings),
 	);
 
 	/**
