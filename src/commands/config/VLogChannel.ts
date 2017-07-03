@@ -30,8 +30,8 @@ import { GuildConfigUtil } from '../../util/GuildConfigUtil';
 export default class VLogChannelCommand extends Command<Client>
 {
 	@using(expect({ '<option>': 'String' }))
-	@using(expectConfigOption(GuildConfigType.CHANNEL))
 	@using(resolveConfigOption(GuildConfigType.CHANNEL))
+	@using(expectConfigOption(GuildConfigType.CHANNEL))
 	@ReportError
 	public async action(message: Message, [option, value]: ['get' | 'set' | 'reset', GuildChannel | undefined])
 		: Promise<void>

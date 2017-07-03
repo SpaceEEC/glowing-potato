@@ -21,8 +21,8 @@ import { GuildConfigUtil } from '../../util/GuildConfigUtil';
 export default class LeaveMessageCommand extends Command<Client>
 {
 	@using(expect({ '<option>': 'String' }))
-	@using(expectConfigOption(GuildConfigType.STRING))
 	@using(resolveConfigOption(GuildConfigType.STRING))
+	@using(expectConfigOption(GuildConfigType.STRING))
 	@ReportError
 	public async action(message: Message, [option, value]: ['get' | 'set' | 'reset', string | undefined]): Promise<void>
 	{
