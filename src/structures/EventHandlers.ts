@@ -5,7 +5,7 @@ import { GuildConfigChannels, GuildConfigStrings } from '../types/GuildConfigKey
 import { Client } from './Client';
 import { RichEmbed } from './RichEmbed';
 
-const { on, registerListeners } = ListenerUtil;
+const { on, once, registerListeners } = ListenerUtil;
 
 export class EventHandlers
 {
@@ -14,6 +14,30 @@ export class EventHandlers
 	{
 		this._client = client;
 		registerListeners(this._client, this);
+	}
+
+	@once('ready')
+	public _onceReady(): void
+	{
+		(this._client as any).ws.connection.on('close',
+			(event: any) =>
+			{
+				this._client.logger.warn('WS', event.code, ':', event.reason || 'No reason');
+			},
+		);
+	}
+
+	@on('debug')
+	public _onDebug(message: string): void
+	{
+		if (message.startsWith('Authenticated using token')
+			|| message.startsWith('[ws] [connection] Heartbeat acknowledged,')
+			|| message === '[ws] [connection] Sending a heartbeat')
+		{
+			return;
+		}
+
+		this._client.logger.debug('discord.js', message);
 	}
 
 	@on('guildMemberAdd')
