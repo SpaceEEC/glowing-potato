@@ -28,15 +28,15 @@ import { Command } from '../../structures/Command';
 @usage('<prefix>prune <count> [target]')
 export default class PruneCommand extends Command<Client>
 {
-	@using(function(message: Message, args: string[]): Promise<[Message, any[]]>
+	@using(function(msg: Message, args: string[]): Promise<[Message, any[]]>
 	{
-		if (args[1]) return resolve({ '<count>': 'Number', '<target>': 'Member' }).call(this, message, args);
-		return resolve({ '<count>': 'Number' }).call(this, message, args);
+		if (args[1]) return resolve({ '<count>': 'Number', '<target>': 'Member' }).call(this, msg, args);
+		return resolve({ '<count>': 'Number' }).call(this, msg, args);
 	})
-	@using(function(message: Message, args: string[]): Promise<[Message, any[]]>
+	@using(function(msg: Message, args: string[]): Promise<[Message, any[]]>
 	{
-		if (args[1]) return expect({ '<count>': 'Number', '<target>': 'Member' }).call(this, message, args);
-		return expect({ '<count>': 'Number' }).call(this, message, args);
+		if (args[1]) return expect({ '<count>': 'Number', '<target>': 'Member' }).call(this, msg, args);
+		return expect({ '<count>': 'Number' }).call(this, msg, args);
 	})
 	@ReportError
 	public async action(message: Message, [count, member]: [number, GuildMember]): Promise<void>

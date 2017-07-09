@@ -26,7 +26,7 @@ import { GuildConfigUtil } from '../../util/GuildConfigUtil';
 export default class ConfigCommand extends Command<Client>
 {
 	@using(expect({ '<options>': 'String', '<key>': 'String' }))
-	@using(function(message: Message, args: [string, string, string | undefined])
+	@using(function(msg: Message, args: [string, string, string | undefined])
 		: [Message, [string, string, string | undefined]]
 	{
 		args[0] = args[0].toLowerCase();
@@ -42,31 +42,31 @@ export default class ConfigCommand extends Command<Client>
 
 		if (['get', 'reset'].includes(args[0]))
 		{
-			return [message, args];
+			return [msg, args];
 		}
 
-		return expect({ '<option>': 'String', '<key>': 'String', '<...value>': 'Any' }).call(this, message, args);
+		return expect({ '<option>': 'String', '<key>': 'String', '<...value>': 'Any' }).call(this, msg, args);
 	})
-	@using(function(message: Message, args: [string, string, string | undefined])
+	@using(function(msg: Message, args: [string, string, string | undefined])
 		: [Message, [string, string, GuildChannel | Role | string | undefined]]
 	{
 		if (args[0] === 'set')
 		{
 			if (GuildConfigChannels.hasOwnProperty(args[1].toUpperCase()))
 			{
-				return resolve({ '<option>': 'String', '<key>': 'String', '<...value>': 'Channel' }).call(this, message, args);
+				return resolve({ '<option>': 'String', '<key>': 'String', '<...value>': 'Channel' }).call(this, msg, args);
 			}
 			else if (GuildConfigRoles.hasOwnProperty(args[1].toUpperCase()))
 			{
-				return resolve({ '<option>': 'String', '<key>': 'String', '<...value>': 'Role' }).call(this, message, args);
+				return resolve({ '<option>': 'String', '<key>': 'String', '<...value>': 'Role' }).call(this, msg, args);
 			}
 			else if (GuildConfigStrings.hasOwnProperty(args[1].toUpperCase()))
 			{
-				return resolve({ '<option>': 'String', '<key>': 'String', '<...value>': 'String' }).call(this, message, args);
+				return resolve({ '<option>': 'String', '<key>': 'String', '<...value>': 'String' }).call(this, msg, args);
 			}
 			throw new Error(`Couldn\'t resolve \`${args[0]}\` to a valid key.\n\nNote: This should never happen!`);
 		}
-		return [message, args];
+		return [msg, args];
 	})
 	@ReportError
 	public async action(message: Message, [option, key, value]

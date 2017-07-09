@@ -18,14 +18,14 @@ import { UrbanResponse } from '../../types/UrbanResponse';
 @usage('<prefix>urban [-n] <...search>')
 export default class Urban extends Command<Client>
 {
-	@using((message: Message, args: string[]) =>
+	@using((msg: Message, args: string[]) =>
 	{
-		let selectedNumber: number = 0;
+		let pickedNumber: number = 0;
 		if (args[0].match(/^-\d+$/g))
 		{
-			selectedNumber = parseInt(args.shift().slice(1)) - 1;
+			pickedNumber = parseInt(args.shift().slice(1)) - 1;
 		}
-		return [message, [selectedNumber, args]];
+		return [msg, [pickedNumber, args]];
 	})
 	@ReportError
 	public async action(message: Message, [selectedNumber, search]: [number, string[]]): Promise<void>

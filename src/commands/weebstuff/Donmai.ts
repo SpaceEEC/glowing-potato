@@ -17,10 +17,10 @@ import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
 @usage('<prefix>donmai <...tags>')
 export default class DonmaiCommand extends Command<Client>
 {
-	@using((message: Message, tags: string[]) =>
+	@using((msg: Message, tags: string[]) =>
 	{
 		if (tags.length > 2) throw new Error('You can not search with more than two tags!');
-		return [message, [encodeURIComponent(tags.join(' '))]];
+		return [msg, [encodeURIComponent(tags.join(' '))]];
 	})
 	@ReportError
 	public async action(message: Message, [search]: [string]): Promise<void>
