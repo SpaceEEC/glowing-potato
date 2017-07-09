@@ -17,15 +17,15 @@ import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
 @usage('<prefix>konachan <...tags>')
 export default class KonachanCommand extends Command<Client>
 {
-	@using((message: Message, tags: string[]) =>
+	@using((msg: Message, tags: string[]) =>
 	{
 		if (tags.length > 5) throw new Error('You can not search with more than five tags!');
-		return [message, [encodeURIComponent(tags.join(' '))]];
+		return [msg, [encodeURIComponent(tags.join(' '))]];
 	})
 	@ReportError
-	public async action(message: Message, [tags]: [string]): Promise<void>
+	public async action(message: Message, [search]: [string]): Promise<void>
 	{
-		const posts: PicturePost[] = await get(`http://konachan.com/post.json?tags=${tags}+rating:s&limit=100`)
+		const posts: PicturePost[] = await get(`http://konachan.com/post.json?tags=${search}+rating:s&limit=100`)
 			.then<PicturePost[]>((result: Result) => result.body as ProbablyNotABuffer);
 
 		if (!posts.length)
@@ -34,7 +34,7 @@ export default class KonachanCommand extends Command<Client>
 				embed: new RichEmbed().setColor(0xFFFF00)
 					.setAuthor('konachan.net', 'https://konachan.net/', 'https://konachan.net/favicon.ico')
 					.addField('No results', 'Maybe made a typo?')
-					.addField('Search:', `[Link](http://konachan.net/post?tags=${tags})`),
+					.addField('Search:', `[Link](http://konachan.net/post?tags=${search})`),
 			}).then(() => undefined);
 		}
 

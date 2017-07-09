@@ -21,13 +21,13 @@ export default class AvatarCommand extends Command<Client>
 	@ReportError
 	public async action(message: Message, [user]: [User]): Promise<void>
 	{
-		const name: string = (user.avatar && user.avatar.startsWith('a_'))
+		const filename: string = (user.avatar && user.avatar.startsWith('a_'))
 			? 'user.gif'
 			: 'user.png';
 
 		const fileOptions: FileOptions = {
 			attachment: user.displayAvatarURL,
-			name,
+			name: filename,
 		};
 
 		return message.channel.send(
@@ -35,7 +35,7 @@ export default class AvatarCommand extends Command<Client>
 				embed: new RichEmbed()
 					.setColor(message.member.displayColor)
 					.attachFile(fileOptions)
-					.setImage(`attachment://${name}`),
+					.setImage(`attachment://${filename}`),
 			},
 		).then(() => undefined);
 	}
