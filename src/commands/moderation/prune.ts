@@ -21,7 +21,7 @@ import { Command } from '../../structures/Command';
 @aliases('purge', 'clean', 'clear')
 @clientPermissions('SEND_MESSAGES', 'MANAGE_MESSAGES')
 @callerPermissions('MANAGE_MESSAGES')
-@desc('Deletes the specified number of messages a channel, optional with target filtering.')
+@desc('Deletes the specified number of messages in a channel, optional with target filtering.')
 @name('prune')
 @group('moderation')
 @guildOnly
