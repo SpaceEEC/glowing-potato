@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "sequelize": "registry:npm/sequelize#4.0.0-1+20161101121248"
-  }
-}
