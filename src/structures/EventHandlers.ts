@@ -1,5 +1,6 @@
 import { DiscordAPIError, GuildChannel, GuildMember, TextChannel } from 'discord.js';
-import { GuildStorage, ListenerUtil } from 'yamdbf/bin';
+import { inspect } from 'util';
+import { Guild, GuildStorage, ListenerUtil } from 'yamdbf/bin';
 
 import { GuildConfigChannels, GuildConfigStrings } from '../types/GuildConfigKeys';
 import { Client } from './Client';
@@ -22,7 +23,12 @@ export class EventHandlers
 		(this._client as any).ws.connection.on('close',
 			(event: any) =>
 			{
-				this._client.logger.warn('WS', event.code, ':', event.reason || 'No reason');
+				this._client.logger.warn('discord.js',
+					'[WS] [connection] disconnected:',
+					event.code,
+					':',
+					event.reason || 'No reason',
+				);
 			},
 		);
 	}
@@ -38,6 +44,25 @@ export class EventHandlers
 		}
 
 		this._client.logger.debug('discord.js', message);
+	}
+
+	@once('disconnect')
+	public async _onDisconnect(event: any): Promise<void>
+	{
+		await this._client.logger.info('Disconnect', 'Fatal disconnect:', event.code, event.reason);
+		process.exit();
+	}
+
+	@on('warn')
+	public _onWarn(message: string): void
+	{
+		this._client.logger.warn('discord.js', message);
+	}
+
+	@on('error')
+	public _onError(error: Error): void
+	{
+		this._client.logger.error('discord.js', inspect(error, true, Infinity, true));
 	}
 
 	@on('guildMemberAdd')
@@ -206,4 +231,15 @@ export class EventHandlers
 			}
 		}
 	}
+
+	@on('guildCreate')
+	@on('guildDelete', true)
+	public _onGuild(guild: Guild, left: boolean): void
+	{
+		this._client.logger.info(
+			left ? 'GuildDelete' : 'GuildCreate',
+			`${left ? 'Left' : 'Joined'} ${guild.name} (${guild.id})`,
+		);
+	}
+
 }
