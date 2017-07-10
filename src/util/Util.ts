@@ -38,14 +38,14 @@ export class Util
 	 * @returns {string}
 	 * @static
 	 */
-	public static replaceMap(input: string, map: { [key: string]: string }): string
+	public static replaceMap(input: string, dict: { [key: string]: string }): string
 	{
 		const regex: string[] = [];
-		for (const key of Object.keys(map))
+		for (const key of Object.keys(dict))
 		{
 			regex.push(key.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&'));
 		}
-		return input.replace(new RegExp(regex.join('|'), 'g'), (w: string) => map[w]);
+		return input.replace(new RegExp(regex.join('|'), 'g'), (w: string) => dict[w]);
 	}
 
 	/**
@@ -67,6 +67,25 @@ export class Util
 		}
 
 		return chunks;
+	}
+
+	/**
+	 * Converts a number of seconds to a human readable string.
+	 * @param {number} seconds The amount of total seconds
+	 * @param {boolean} [forceHours=false] Whether to force the display of hours
+	 * @returns {string} The final time string
+	 * @static
+	 */
+	public static timeString(seconds: number, forceHours: boolean = false): string
+	{
+		const hours: number = Math.floor(seconds / 3600);
+		const minutes: number = Math.floor(seconds % 3600 / 60);
+
+		return [
+			(forceHours || hours >= 1) ? `${hours}:` : '',
+			hours >= 1 ? `0${minutes}:`.slice(-2) : `${minutes}:`,
+			`0${Math.floor(seconds % 60)}`.slice(-2),
+		].join('');
 	}
 
 	/**
