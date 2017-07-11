@@ -182,6 +182,8 @@ export class EventHandlers
 	@on('voiceStateUpdate')
 	public async _onVoiceStateUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void>
 	{
+		this._client.musicPlayer.handleVoiceStateUpdate(oldMember, newMember);
+
 		if (newMember.user.bot) return;
 		const guildStorage: GuildStorage = await this._client.storage.guilds.get(newMember.guild.id);
 

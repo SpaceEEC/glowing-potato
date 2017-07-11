@@ -1,4 +1,5 @@
 import { Client } from '../structures/Client';
+import { PaginatedPage } from '../types/PaginatedPage';
 
 /**
  * Static Util class holding all sort of handy methods.
@@ -6,20 +7,6 @@ import { Client } from '../structures/Client';
  */
 export class Util
 {
-	/**
-	 * The client associated with the Util class
-	 * @static
-	 * @readonly
-	 */
-	public static get client(): Client
-	{
-		if (!Util._client)
-		{
-			throw new Error('Util class has not been initialized (yet)!');
-		}
-		return Util._client;
-	}
-
 	/**
 	 * Initializes the Util class.
 	 * @param {Client} client The client to associate the class with
@@ -89,9 +76,76 @@ export class Util
 	}
 
 	/**
+	 * Paginates the passed array.
+	 * @param {T[]} items The original items
+	 * @param {number} page The requested page
+	 * @param {number} pageLength The length of each page
+	 * @returns {PaginatedPage<T>}
+	 */
+	public static paginate<T>(items: T[], page: number = 1, pageLength: number = 10): PaginatedPage<T>
+	{
+		const maxPage: number = Math.ceil(items.length / pageLength);
+		if (page < 1) page = 1;
+		if (page > maxPage) page = maxPage;
+		const startIndex: number = (page - 1) * pageLength;
+		return {
+			items: items.length > pageLength ? items.slice(startIndex, startIndex + pageLength) : items,
+			maxPage,
+			page,
+			pageLength,
+		};
+	}
+
+	/**
+	 * Tries to resolve the input to a boolean, failing so returns null.
+	 * @param {string} input The string to resolve
+	 * @returns {?boolean} Null when it couldn't resolve
+	 * @static
+	 */
+	public static resolveBoolean(input: string): boolean
+	{
+		const lowercased: string = input.toLowerCase();
+		if (Util._truthy.has(lowercased)) return true;
+		if (Util._falsy.has(lowercased)) return false;
+		return null;
+	}
+
+	/**
+	 * The client associated with the Util class
+	 * @static
+	 * @readonly
+	 */
+	public static get client(): Client
+	{
+		if (!Util._client)
+		{
+			throw new Error('Util class has not been initialized (yet)!');
+		}
+		return Util._client;
+	}
+
+	/**
 	 * The client associated with the Util class
 	 * @private
 	 * @static
 	 */
 	private static _client: Client;
+
+	// straight copy from
+	// https://github.com/Gawdl3y/discord.js-commando/blob/master/src/types/boolean.js#L6-L7
+	/**
+	 * Set of "truthy" strings
+	 * @readonly
+	 * @private
+	 */
+	private static readonly _truthy: Set<string> = new
+		Set(['true', 't', 'yes', 'y', 'on', 'enable', 'enabled', '1', '+']);
+	/**
+	 * Set of "falsy" strings
+	 * @readonly
+	 * @private
+	 */
+	private static readonly _falsy: Set<string> = new
+		Set(['false', 'f', 'no', 'n', 'off', 'disable', 'disabled', '0', '-']);
+	// copy end
 }
