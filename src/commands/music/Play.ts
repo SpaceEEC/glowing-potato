@@ -223,11 +223,6 @@ export default class PlayCommand extends Command<Client>
 		// when nothing is left to pick automatically dismiss
 		if (!video)
 		{
-			if (statusMessage)
-			{
-				statusMessage.delete()
-					.catch(() => null);
-			}
 			if (message.deletable)
 			{
 				message.delete()
@@ -256,11 +251,11 @@ export default class PlayCommand extends Command<Client>
 			(m: Message) => m.author.id === message.author.id,
 			{ maxMatches: 1, time: 3e4 },
 		).then((collected: Collection<Snowflake, Message>) => collected.first());
+		if (response && response.deletable) response.delete().catch(() => null);
 
 		if (!response || !['y', 'n'].includes(response.content.split(' ')[0].toLowerCase()))
 		{
 			statusMessage.delete().catch(() => null);
-			if (response && response.deletable) response.delete().catch(() => null);
 			return null;
 		}
 
