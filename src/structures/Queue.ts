@@ -1,11 +1,11 @@
 
 import { StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
-import { inspect } from 'util';
 import { Message } from 'yamdbf/bin';
 
 import { PaginatedPage } from '../types/PaginatedPage';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { TimeoutType } from '../types/TimeoutType';
+import { RavenUtil } from '../util/RavenUtil';
 import { Util } from '../util/Util';
 import { RichEmbed } from './RichEmbed';
 import { Song } from './Song';
@@ -232,11 +232,7 @@ export class Queue
 
 		this._volume = volume;
 		client.storage.guilds.get(this.textChannel.guild.id).set('volume', volume)
-			.catch((error: Error) =>
-				client.logger.error('Queue', 'An error occured while saving the volume of the queue',
-					inspect(error, true, Infinity, true),
-				),
-		);
+			.catch((error: Error) => RavenUtil.error('Queue', error, 'While saving the volume of the queue'));
 
 		this.dispatcher.setVolumeLogarithmic(volume / 5);
 	}

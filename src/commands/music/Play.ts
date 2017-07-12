@@ -1,5 +1,4 @@
 import { Collection, Permissions, Snowflake, VoiceChannel } from 'discord.js';
-import { inspect } from 'util';
 import { Message } from 'yamdbf/bin';
 import {
 	aliases,
@@ -100,7 +99,7 @@ export default class PlayCommand extends Command<Client>
 		const fetchMessage: Message = await message.channel.send('Fetching info...') as Message;
 
 		const video: Video = await YouTubeUtil.getVideo(query);
-		this.client.logger.debug('PlayCommand | video', inspect(video, true, Infinity, true));
+		this.client.logger.debug('PlayCommand | video', video ? 'found' : 'not found');
 
 		if (video) return this._validateAndAdd(fetchMessage, message, queue, video);
 
