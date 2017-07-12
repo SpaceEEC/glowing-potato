@@ -1,12 +1,12 @@
 import { GuildMember, Snowflake, TextChannel, VoiceConnection } from 'discord.js';
 import { createWriteStream, unlink } from 'fs';
-import { inspect } from 'util';
 import { Message, Time } from 'yamdbf/bin';
 import * as ytdl from 'ytdl-core';
 
 import { PaginatedPage } from '../types/PaginatedPage';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { TimeoutType } from '../types/TimeoutType';
+import { RavenUtil } from '../util/RavenUtil';
 import { Util } from '../util/Util';
 import { Client } from './Client';
 import { Queue } from './Queue';
@@ -149,8 +149,12 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		}
 		catch (error)
 		{
-			this._client.logger.error('MusicPlayer | Summon', inspect(error, true, Infinity, true));
-			return joinMessage.edit('An error occurred while joining your channel, such a shame.')
+			RavenUtil.error('MusicPlayer | Summon', error);
+			return joinMessage.edit([
+				'An error occurred while joining your channel, such a shame.',
+				'',
+				'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
+			])
 				.then((m: Message) => m.delete(5e3))
 				.catch(() => null);
 		}
@@ -466,9 +470,13 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		}
 		catch (error)
 		{
-			this._client.logger.error('MusicPlayer', inspect(error, true, Infinity, true));
+			RavenUtil.error('MusicPlayer', error);
 			this.delete(guild.id);
-			channel.send('❌ There was an error while joining your channel, such a shame!')
+			channel.send([
+				'❌ There was an error while joining your channel, such a shame!',
+				'',
+				'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
+			])
 				.catch(() => null);
 		}
 
@@ -534,11 +542,15 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 			.once('error', async (error: Error) =>
 			{
-				this._client.logger.error('MusicPlayer | YTDL', inspect(error, true, Infinity, true));
+				RavenUtil.error('MusicPlayer | YTDL', error);
 				streamErrored.err = true;
 
 				queue.statusMessage = await queue.statusMessage
-					.edit('❌ An error occured while playing the YouTube stream.', { embed: null })
+					.edit([
+						'❌ An error occured while playing the YouTube stream.',
+						'',
+						'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
+					], { embed: null })
 					.then(() => null)
 					.catch(() => null);
 
@@ -546,7 +558,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 				this._play(guildID, false).catch((_playError: Error) =>
 				{
-					this._client.logger.error('MusicPlayer | _play', inspect(_playError, true, Infinity, true));
+					RavenUtil.error('MusicPlayer | _play', _playError);
 					queue.textChannel.send([
 						'❌ There was an error while playing.',
 						`\`${_playError.message}\``,
@@ -590,9 +602,16 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 			.once('error', async (error: Error) =>
 			{
-				this._client.logger.error('MusicPlayer | dispatcher', inspect(error, true, Infinity, true));
+				RavenUtil.error('MusicPlayer | dispatcher', error);
 
-				queue.statusMessage = await queue.statusMessage.edit(`❌ An internal error occured while playing.`)
+				queue.statusMessage = await queue.statusMessage.edit(
+					[
+						'❌ An internal error occured while playing.',
+						'',
+						'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
+					],
+					{ embed: null },
+				)
 					.then(() => null)
 					.catch(() => null);
 			})
@@ -637,7 +656,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 							{
 								if (error)
 								{
-									this._client.logger.error('MusicPlayer | unlink', inspect(error, true, Infinity, true));
+									RavenUtil.error('MusicPlayer | unlink', error);
 								}
 							});
 						},
@@ -647,12 +666,13 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 				this._play(guildID, reason === 'stop').catch((_playError: Error) =>
 				{
-					this._client.logger.error('MusicPlayer | _play', inspect(_playError, true, Infinity, true));
+					RavenUtil.error('MusicPlayer | _play', _playError);
 					queue.textChannel.send([
 						'❌ There was an error while playing.',
 						`\`${_playError.message}\``,
 						'',
 						'Consider running `<prefix>stop force`, if the playback is not continuing.',
+						'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
 					]);
 				});
 			});
