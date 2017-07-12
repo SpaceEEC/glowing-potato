@@ -2,6 +2,7 @@ import { join } from 'path';
 import { Client as YAMDBFClient, ListenerUtil, logger, Logger, Providers } from 'yamdbf';
 
 import { Config } from '../types/config';
+import { RavenUtil } from '../util/RavenUtil';
 import { Util } from '../util/Util';
 import { EventHandlers } from './EventHandlers';
 import { MusicPlayer } from './MusicPlayer';
@@ -13,8 +14,8 @@ const { version }: { version: string } = require('../../package.json');
 
 export class Client extends YAMDBFClient
 {
-	@logger public logger: Logger;
-	public musicPlayer: MusicPlayer;
+	@logger public readonly logger: Logger;
+	public readonly musicPlayer: MusicPlayer;
 
 	private _eventHandlers: EventHandlers;
 
@@ -32,8 +33,11 @@ export class Client extends YAMDBFClient
 		});
 
 		Util.init(this);
-		this._eventHandlers = new EventHandlers(this);
+		RavenUtil.init();
+
 		this.musicPlayer = new MusicPlayer(this);
+
+		this._eventHandlers = new EventHandlers(this);
 	}
 
 	@once('pause')

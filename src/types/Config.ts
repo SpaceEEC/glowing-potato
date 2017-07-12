@@ -7,6 +7,7 @@ export type Config = {
 	database: string,
 	defaultPrefix: string,
 	devToken: string,
+	dsn: string,
 	googleToken: string,
 	logLevel: string,
 	ownerID: string,

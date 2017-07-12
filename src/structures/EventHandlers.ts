@@ -1,8 +1,8 @@
 import { DiscordAPIError, GuildChannel, GuildMember, TextChannel } from 'discord.js';
-import { inspect } from 'util';
 import { Guild, GuildStorage, ListenerUtil } from 'yamdbf/bin';
 
 import { GuildConfigChannels, GuildConfigStrings } from '../types/GuildConfigKeys';
+import { RavenUtil } from '../util/RavenUtil';
 import { Client } from './Client';
 import { RichEmbed } from './RichEmbed';
 
@@ -62,7 +62,7 @@ export class EventHandlers
 	@on('error')
 	public _onError(error: Error): void
 	{
-		this._client.logger.error('discord.js', inspect(error, true, Infinity, true));
+		RavenUtil.error('discord.js', error);
 	}
 
 	@on('guildMemberAdd')
@@ -99,7 +99,7 @@ export class EventHandlers
 				channel.send(message)
 					.catch((error: DiscordAPIError) =>
 					{
-						this._client.logger.error('Join:LogChannel', error.name, error.code.toString(), error.message);
+						RavenUtil.error('Join:LogChannel', error);
 					});
 			}
 		}
@@ -116,7 +116,7 @@ export class EventHandlers
 				channel.send(message)
 					.catch((error: DiscordAPIError) =>
 					{
-						this._client.logger.error('Join:AnChannel', error.name, error.code.toString(), error.message);
+						RavenUtil.error('Join:AnChannel', error);
 					});
 			}
 		}
@@ -156,7 +156,7 @@ export class EventHandlers
 				channel.send(message)
 					.catch((error: DiscordAPIError) =>
 					{
-						this._client.logger.error('Leave:LogChannel', error.name, error.code.toString(), error.message);
+						RavenUtil.error('Leave:LogChannel', error);
 					});
 			}
 		}
@@ -173,7 +173,7 @@ export class EventHandlers
 				channel.send(message)
 					.catch((error: DiscordAPIError) =>
 					{
-						this._client.logger.error('Leave:AnChannel', error.name, error.code.toString(), error.message);
+						RavenUtil.error('Leave:AnChannel', error);
 					});
 			}
 		}
@@ -228,7 +228,7 @@ export class EventHandlers
 				channel.send({ embed })
 					.catch((error: DiscordAPIError) =>
 					{
-						this._client.logger.error('VLOG', error.name, error.code.toString(), error.message);
+						RavenUtil.error('VLOG', error);
 					});
 			}
 		}
