@@ -1,70 +1,37 @@
 import { DiscordAPIError, GuildChannel, GuildMember, TextChannel } from 'discord.js';
-import { Guild, GuildStorage, ListenerUtil } from 'yamdbf/bin';
+import { GuildStorage, ListenerUtil } from 'yamdbf/bin';
 
 import { GuildConfigChannels, GuildConfigStrings } from '../types/GuildConfigKeys';
 import { RavenUtil } from '../util/RavenUtil';
 import { Client } from './Client';
 import { RichEmbed } from './RichEmbed';
 
-const { on, once, registerListeners } = ListenerUtil;
+const { on, registerListeners } = ListenerUtil;
 
+/**
+ * Class to handle all not client relevant events in one place.
+ */
 export class EventHandlers
 {
 	private _client: Client;
+
+	/**
+	 * Instantiates the EventHandlers class
+	 * Is not meant to be instantiated multiple times
+	 * @param {Client} client
+	 */
 	public constructor(client: Client)
 	{
 		this._client = client;
 		registerListeners(this._client, this);
 	}
 
-	@once('ready')
-	public _onceReady(): void
-	{
-		(this._client as any).ws.connection.on('close',
-			(event: any) =>
-			{
-				this._client.logger.warn('discord.js',
-					'[WS] [connection] disconnected:',
-					event.code,
-					':',
-					event.reason || 'No reason',
-				);
-			},
-		);
-	}
-
-	@on('debug')
-	public _onDebug(message: string): void
-	{
-		if (message.startsWith('Authenticated using token')
-			|| message.startsWith('[ws] [connection] Heartbeat acknowledged,')
-			|| message === '[ws] [connection] Sending a heartbeat')
-		{
-			return;
-		}
-
-		this._client.logger.debug('discord.js', message);
-	}
-
-	@once('disconnect')
-	public async _onDisconnect(event: any): Promise<void>
-	{
-		await this._client.logger.info('Disconnect', 'Fatal disconnect:', event.code, event.reason);
-		process.exit();
-	}
-
-	@on('warn')
-	public _onWarn(message: string): void
-	{
-		this._client.logger.warn('discord.js', message);
-	}
-
-	@on('error')
-	public _onError(error: Error): void
-	{
-		RavenUtil.error('discord.js', error);
-	}
-
+	/**
+	 * Handles new members and their join message if applicable
+	 * @param {GuildMember} member New member that joined a guild
+	 * @returns {Promise<void>}
+	 * @private
+	 */
 	@on('guildMemberAdd')
 	public async _onGuildMemberAdd(member: GuildMember): Promise<void>
 	{
@@ -122,6 +89,12 @@ export class EventHandlers
 		}
 	}
 
+	/**
+	 * Handles left members and their leave message if applicable
+	 * @param {GuildMember} member Member that left a guild
+	 * @returns {Promise<void>}
+	 * @private
+	 */
 	@on('guildMemberRemove')
 	public async _onGuildMemberRemove(member: GuildMember): Promise<void>
 	{
@@ -179,6 +152,14 @@ export class EventHandlers
 		}
 	}
 
+	/**
+	 * Handles a voice state update for an voice log if applicable,
+	 * or an empty channel in case music is being played at the moment.
+	 * @param {GuildMember} oldMember Member before the update
+	 * @param {GuildMember} newMember Member after the update
+	 * @returns {Promise<void>}
+	 * @private
+	 */
 	@on('voiceStateUpdate')
 	public async _onVoiceStateUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void>
 	{
@@ -233,15 +214,4 @@ export class EventHandlers
 			}
 		}
 	}
-
-	@on('guildCreate')
-	@on('guildDelete', true)
-	public _onGuild(guild: Guild, left: boolean): void
-	{
-		this._client.logger.info(
-			left ? 'GuildDelete' : 'GuildCreate',
-			`${left ? 'Left' : 'Joined'} ${guild.name} (${guild.id})`,
-		);
-	}
-
 }
