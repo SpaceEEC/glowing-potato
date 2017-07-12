@@ -1,4 +1,4 @@
-import { RichEmbed, User, version as libVersion } from 'discord.js';
+import { RichEmbed, version as libVersion } from 'discord.js';
 import * as moment from 'moment';
 import 'moment-duration-format';
 import { Message, version as YAMDBFVersion } from 'yamdbf/bin';
@@ -22,20 +22,7 @@ export default class InfoCommand extends Command<Client>
 	@ReportError
 	public async action(message: Message): Promise<void>
 	{
-		let owners: string = '';
-		if (this.client.owner instanceof Array)
-		{
-			const ownerArray: User[] = await Promise.all(
-				this.client.owner.map((owner: string) =>
-					this.client.users.get(owner) || this.client.fetchUser(owner),
-				),
-			);
-			owners = ownerArray.map((owner: User) => `\`${owner.tag}\``).join(', ');
-		}
-		else
-		{
-			owners = `\`${(this.client.users.get(this.client.owner) || await this.client.fetchUser(this.client.owner)).tag}\``;
-		}
+		const owners: string = this.client.owner.map((owner: string) => `\`${this.client.users.get(owner).tag}\``).join(', ');
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0xffa500)
