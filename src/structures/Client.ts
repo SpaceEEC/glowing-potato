@@ -1,6 +1,6 @@
 import { DiscordAPIError, TextChannel, User } from 'discord.js';
 import { join } from 'path';
-import { Client as YAMDBFClient, Guild, ListenerUtil, logger, Logger, Message, Providers } from 'yamdbf';
+import { Client as YAMDBFClient, Guild, ListenerUtil, logger, Logger, LogLevel, Message, Providers } from 'yamdbf';
 
 import { Config } from '../types/config';
 import { RavenUtil } from '../util/RavenUtil';
@@ -11,7 +11,7 @@ import { RichEmbed } from './RichEmbed';
 
 const { on, once } = ListenerUtil;
 
-const { database, token, ownerID }: Config = require('../../config.json');
+const { database, logLevel, token, ownerID }: Config = require('../../config.json');
 const { version }: { version: string } = require('../../package.json');
 
 /**
@@ -102,6 +102,9 @@ export class Client extends YAMDBFClient
 	@on('command')
 	public _onCommand(name: string, args: any[], execTime: number, message: Message): void
 	{
+		// ingore dev environment
+		if (logLevel === LogLevel.DEBUG) return;
+
 		const channel: TextChannel = this.channels.get('334843191545036800') as TextChannel;
 
 		const embed: RichEmbed = new RichEmbed()
@@ -131,6 +134,9 @@ export class Client extends YAMDBFClient
 			left ? 'GuildDelete' : 'GuildCreate',
 			`${left ? 'Left' : 'Joined'} ${guild.name} (${guild.id})`,
 		);
+
+		// ingore dev environment
+		if (logLevel === LogLevel.DEBUG) return;
 
 		const channel: TextChannel = this.channels.get('334820476557852683') as TextChannel;
 
