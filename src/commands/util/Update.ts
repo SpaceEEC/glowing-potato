@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { Message } from 'yamdbf/bin';
+import { Message, Time } from 'yamdbf/bin';
 import { desc, group, name, ownerOnly, usage } from 'yamdbf/bin/command/CommandDecorators';
 
 import { ReportError } from '../../decorators/ReportError';
@@ -36,6 +36,7 @@ export default class UpdateCommand extends Command<Client>
 	@ReportError
 	public async action(message: Message, args: string[]): Promise<void>
 	{
+		const startTime: number = Date.now();
 		const statusMessage: Message = await message.channel.send('**Pulling new files...**') as Message;
 
 		if (!await this._pull(statusMessage)) return;
@@ -46,13 +47,21 @@ export default class UpdateCommand extends Command<Client>
 
 		if (!await this._install(statusMessage)) return;
 
-		return statusMessage.edit('Successfully updated, you may want to restart manually if necessary.')
+		await wait(2000);
+
+		return statusMessage.edit(
+			[
+				`Successfully updated; Took: \`${Time.difference(Date.now(), startTime).toSimplifiedString()}\``,
+				'You may want to restart or reload commands manually if necessary.',
+			])
 			.then(() => undefined)
 			.catch(() => null);
 	}
 
 	private async _pull(statusMessage: Message): Promise<boolean>
 	{
+		const startTime: number = Date.now();
+
 		const { error, stdout, stderr }: execResult = await execAsync('git pull')
 			.catch((err: execError) => ({
 				error: err,
@@ -60,7 +69,7 @@ export default class UpdateCommand extends Command<Client>
 				stdout: err.stdout,
 			}));
 
-		let response: string = '`Update`\n';
+		let response: string = `\`Update\` Took: \`${Time.difference(Date.now(), startTime).toSimplifiedString()}\`\n`;
 		if (error)
 		{
 			response += (error.code ? `\`Error Code: ${error.code}\`\n\n` : '')
@@ -83,11 +92,12 @@ export default class UpdateCommand extends Command<Client>
 
 	private async _install(statusMessage: Message): Promise<boolean>
 	{
+		const startTime: number = Date.now();
+
 		const { error, stdout, stderr }: execResult = await execAsync('npm run install')
 			.catch((err: execError) => ({ error: err, stdout: err.stdout, stderr: err.stderr }));
 
-		let response: string = '`Install`\n';
-
+		let response: string = `\`Install\` Took: \`${Time.difference(Date.now(), startTime).toSimplifiedString()}\`\n`;
 		if (error)
 		{
 			response += (error.code ? `\`Error Code: ${error.code}\`\n\n` : '')
@@ -99,9 +109,10 @@ export default class UpdateCommand extends Command<Client>
 				.then(() => false)
 				.catch(() => false);
 		}
-
 		response += `\`\`\`xl\n${stdout}\n\n${stderr}\`\`\``;
 
 		await statusMessage.edit(response);
+
+		return true;
 	}
 }
