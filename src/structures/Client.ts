@@ -110,7 +110,11 @@ export class Client extends YAMDBFClient
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0xb4e0e0)
 			.setAuthor(`${message.author.tag} (${message.author.id})`, message.author.displayAvatarURL);
-		if (message.guild) embed.addField('Guild', message.guild.name, true);
+		if (message.guild)
+		{
+			embed.addField('Guild', message.guild.name, true)
+				.setThumbnail(message.guild.iconURL);
+		}
 		embed.addField('Exec time', `${execTime.toFixed(2)}ms`, true)
 			.addField('Command content', message.content)
 			.setFooter(message.channel.type.toUpperCase(), this.user.displayAvatarURL)
