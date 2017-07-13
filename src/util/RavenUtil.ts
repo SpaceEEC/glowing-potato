@@ -1,10 +1,10 @@
 import { CaptureOptions, Client as Raven } from 'raven';
 import { inspect, promisify } from 'util';
-import { LogData, Logger } from 'yamdbf';
+import { LogData, Logger, LogLevel } from 'yamdbf';
 
 import { Config } from '../types/config';
 
-const { dsn }: Config = require('../../config.json');
+const { logLevel, dsn }: Config = require('../../config.json');
 const { version }: { version: string } = require('../../package.json');
 
 /**
@@ -14,35 +14,6 @@ const { version }: { version: string } = require('../../package.json');
 export class RavenUtil
 {
 	/**
-	 * Original Raven class instance
-	 * @static
-	 * @readonly
-	 */
-	public static readonly raven: Raven = new Raven(dsn, {
-		captureUnhandledRejections: true,
-		release: version,
-	}).install();
-
-	/**
-	 * Promisified captureException
-	 * @param {string} error
-	 * @returns {Promise<string>} eventId
-	 * @static
-	 * @readonly
-	 */
-	public static readonly captureException: (error: Error, options?: CaptureOptions) => Promise<string> =
-	promisify(RavenUtil.raven.captureException).bind(RavenUtil.raven);
-	/**
-	 * Promisified captureMessage
-	 * @param {string} message Message to log
-	 * @returns {Promise<string>} eventId
-	 * @static
-	 * @readonly
-	 */
-	public static readonly captureMessage: (message: string, options?: CaptureOptions) => Promise<string> =
-	promisify(RavenUtil.raven.captureMessage).bind(RavenUtil.raven);
-
-	/**
 	 * Initiates the static RavenUtil class.
 	 * @returns {void}
 	 * @static
@@ -51,12 +22,16 @@ export class RavenUtil
 	{
 		Logger.instance().addTransport(({ timestamp, type, tag, text }: LogData) =>
 		{
+			// only sent to raven on non-dev
+			if (logLevel === LogLevel.DEBUG) return;
+
+			// ignore raven log messages
 			if (tag === 'Raven') return;
 
 			// those colors
 			if (type.includes('WARN'))
 			{
-				RavenUtil.captureMessage(text, { level: 'warning', tags: { label: tag } })
+				RavenUtil._captureMessage(text, { level: 'warning', tags: { label: tag } })
 					.then((eventId: string) => Logger.instance().info('Raven', `Logged warn; eventId: ${eventId}`))
 					.catch((error: Error) =>
 					{
@@ -82,9 +57,13 @@ export class RavenUtil
 	public static async error(label: string, error: Error, ...rest: string[]): Promise<void>
 	{
 		Logger.instance().error(label, inspect(error, true, Infinity, true));
+
+		// only sent to raven on non-dev
+		if (logLevel === LogLevel.DEBUG) return;
+
 		try
 		{
-			const eventId: string = await RavenUtil.captureException(
+			const eventId: string = await RavenUtil._captureException(
 				error,
 				{
 					extra: { rest: rest.join(' ') },
@@ -102,4 +81,36 @@ export class RavenUtil
 			);
 		}
 	}
+
+	/**
+	 * Original Raven class instance
+	 * @private
+	 * @static
+	 * @readonly
+	 */
+	private static readonly _raven: Raven = new Raven(dsn, {
+		captureUnhandledRejections: true,
+		release: version,
+	}).install();
+
+	/**
+	 * Promisified captureException
+	 * @param {string} error
+	 * @returns {Promise<string>} eventId
+	 * @private
+	 * @static
+	 * @readonly
+	 */
+	private static readonly _captureException: (error: Error, options?: CaptureOptions) => Promise<string> =
+	promisify(RavenUtil._raven.captureException).bind(RavenUtil._raven);
+	/**
+	 * Promisified captureMessage
+	 * @param {string} message Message to log
+	 * @returns {Promise<string>} eventId
+	 * @private
+	 * @static
+	 * @readonly
+	 */
+	private static readonly _captureMessage: (message: string, options?: CaptureOptions) => Promise<string> =
+	promisify(RavenUtil._raven.captureMessage).bind(RavenUtil._raven);
 }
