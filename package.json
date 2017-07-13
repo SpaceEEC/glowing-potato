@@ -4,15 +4,12 @@
   "description": "Yet another Discord bot",
   "main": "index.js",
   "scripts": {
-    "start": "cd bin && node index.js",
-    "test": "npm run build -s",
     "prebuild": "npm run lint",
     "lint": "npm run lint:gulp",
     "lint:gulp": "gulp lint",
     "build": "npm run build:gulp",
     "build:gulp": "gulp build",
-    "watch": "npm run watch:gulp",
-    "watch:gulp": "gulp watch"
+    "install": "npm run build:gulp"
   },
   "repository": {
     "type": "git",
