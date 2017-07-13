@@ -223,6 +223,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		queue.timeout(TimeoutType.CHANNEL, false);
 		queue.timeout(TimeoutType.QUEUE, false);
 		queue.dispatcher.end('stop');
+		this.delete(message.guild.id);
 
 		return message.channel.send('Party is over! 🚪 👈')
 			.then((m: Message) => m.delete(5e3))
