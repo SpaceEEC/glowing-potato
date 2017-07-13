@@ -158,8 +158,6 @@ export default class PlayCommand extends Command<Client>
 			// tslint:disable-next-line:no-shadowed-variable that is no shadow variable <.<
 			const first: boolean = await this.client.musicPlayer.add(message, songs);
 
-			this.client.logger.warn('Play', String(fullLength));
-
 			if (!first)
 			{
 				return fetchMessage.edit('', {
