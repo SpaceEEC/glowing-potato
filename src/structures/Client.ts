@@ -25,7 +25,7 @@ export class Client extends YAMDBFClient
 	 */
 	@logger public readonly logger: Logger;
 	/**
-	 * Music play of the client which handles all voice related commands and logic
+	 * Music player of the client which handles all voice related commands and logic
 	 * @readonly
 	 */
 	public readonly musicPlayer: MusicPlayer;
