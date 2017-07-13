@@ -9,15 +9,15 @@ import { Command } from '../../structures/Command';
 
 const wait: (timeout: number) => Promise<void> = promisify(setTimeout) as any;
 
-const execAsync: (command: string) => Promise<execResult> = promisify(exec) as any;
+const execAsync: (command: string) => Promise<ExecResult> = promisify(exec) as any;
 
-type execResult = {
-	error?: execError,
+type ExecResult = {
+	error?: ExecError,
 	stdout: string,
 	stderr: string,
 };
 
-type execError = {
+type ExecError = {
 	code: number,
 	cmd: string,
 	killed: boolean,
@@ -49,9 +49,10 @@ export default class UpdateCommand extends Command<Client>
 
 		await wait(2000);
 
+		const diff: string = Time.difference(Date.now(), startTime).toSimplifiedString() || '0s';
 		return statusMessage.edit(
 			[
-				`Successfully updated; Took: \`${Time.difference(Date.now(), startTime).toSimplifiedString()}\``,
+				`Successfully updated; Took: \`${diff}\`.`,
 				'You may want to restart or reload commands manually if necessary.',
 			])
 			.then(() => undefined)
@@ -62,14 +63,15 @@ export default class UpdateCommand extends Command<Client>
 	{
 		const startTime: number = Date.now();
 
-		const { error, stdout, stderr }: execResult = await execAsync('git pull')
-			.catch((err: execError) => ({
+		const { error, stdout, stderr }: ExecResult = await execAsync('git pull')
+			.catch((err: ExecError) => ({
 				error: err,
 				stderr: err.stderr,
 				stdout: err.stdout,
 			}));
 
-		let response: string = `\`Update\` Took: \`${Time.difference(Date.now(), startTime).toSimplifiedString()}\`\n`;
+		const diff: string = Time.difference(Date.now(), startTime).toSimplifiedString() || '0s';
+		let response: string = `\`Update\` Took: \`${diff}\`\n`;
 		if (error)
 		{
 			response += (error.code ? `\`Error Code: ${error.code}\`\n\n` : '')
@@ -94,10 +96,11 @@ export default class UpdateCommand extends Command<Client>
 	{
 		const startTime: number = Date.now();
 
-		const { error, stdout, stderr }: execResult = await execAsync('npm run install')
-			.catch((err: execError) => ({ error: err, stdout: err.stdout, stderr: err.stderr }));
+		const { error, stdout, stderr }: ExecResult = await execAsync('npm run install')
+			.catch((err: ExecError) => ({ error: err, stdout: err.stdout, stderr: err.stderr }));
 
-		let response: string = `\`Install\` Took: \`${Time.difference(Date.now(), startTime).toSimplifiedString()}\`\n`;
+		const diff: string = Time.difference(Date.now(), startTime).toSimplifiedString() || '0s';
+		let response: string = `\`Install\` Took: \`${diff}\`\n`;
 		if (error)
 		{
 			response += (error.code ? `\`Error Code: ${error.code}\`\n\n` : '')
