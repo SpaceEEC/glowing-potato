@@ -114,8 +114,8 @@ export class Client extends YAMDBFClient
 			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL);
 		if (guild)
 		{
-			embed.addField('Guild', `${guild.name} (${guild.id})`, true)
-				.addField('Channel', `#${(channel as TextChannel).name} (${channel.id})`)
+			embed.addField('Guild', `${guild.name}\n(${guild.id})`, true)
+				.addField('Channel', `#${(channel as TextChannel).name}\n(${channel.id})`, true)
 				.setThumbnail(guild.iconURL);
 		}
 		embed.addField('Exec time', `${execTime.toFixed(2)}ms`, true)
