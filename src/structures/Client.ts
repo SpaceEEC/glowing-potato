@@ -105,22 +105,25 @@ export class Client extends YAMDBFClient
 		// ingore dev environment
 		if (logLevel === LogLevel.DEBUG) return;
 
-		const channel: TextChannel = this.channels.get('334843191545036800') as TextChannel;
+		const logChannel: TextChannel = this.channels.get('334843191545036800') as TextChannel;
+
+		const { author, channel, content, guild }: Message = message;
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0xb4e0e0)
-			.setAuthor(`${message.author.tag} (${message.author.id})`, message.author.displayAvatarURL);
-		if (message.guild)
+			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL);
+		if (guild)
 		{
-			embed.addField('Guild', message.guild.name, true)
-				.setThumbnail(message.guild.iconURL);
+			embed.addField('Guild', `${guild.name} (${guild.id})`, true)
+				.addField('Channel', `#${(channel as TextChannel).name} (${channel.id})`)
+				.setThumbnail(guild.iconURL);
 		}
 		embed.addField('Exec time', `${execTime.toFixed(2)}ms`, true)
-			.addField('Command content', message.content)
-			.setFooter(message.channel.type.toUpperCase(), this.user.displayAvatarURL)
+			.addField('Command content', content)
+			.setFooter(channel.type.toUpperCase(), this.user.displayAvatarURL)
 			.setTimestamp();
 
-		channel.send({ embed }).catch(() => null);
+		logChannel.send({ embed }).catch(() => null);
 	}
 
 	/**
