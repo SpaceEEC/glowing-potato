@@ -1,5 +1,5 @@
 import { GuildMember, Snowflake, TextChannel, VoiceConnection } from 'discord.js';
-import { createWriteStream, unlink } from 'fs';
+import { createWriteStream, unlink, WriteStream } from 'fs';
 import { Message, Time } from 'yamdbf/bin';
 import * as ytdl from 'ytdl-core';
 
@@ -538,8 +538,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 		const startTime: number = Date.now();
 
-		// tslint:disable-next-line:no-unused-expression
-		ytdl(currentSong.url, { filter: 'audioonly' })
+		const stream: WriteStream = ytdl(currentSong.url, { filter: 'audioonly' })
 
 			.once('error', async (error: Error) =>
 			{
@@ -571,6 +570,8 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 			.once('end', () =>
 			{
+				stream.removeAllListeners();
+
 				this._client.logger.log(
 					'MusicPlayer | Pipe',
 					'Piping to file finished after',
@@ -631,6 +632,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				);
 
 				(queue.dispatcher.stream as any).destroy();
+				queue.dispatcher.removeAllListeners();
 				queue.dispatcher = null;
 
 				if (streamErrored.err)
