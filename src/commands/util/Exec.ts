@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { Message } from 'yamdbf/bin';
+import { Message, Time } from 'yamdbf/bin';
 import { desc, group, name, ownerOnly, usage } from 'yamdbf/bin/command/CommandDecorators';
 
 import { ReportError } from '../../decorators/ReportError';
@@ -22,20 +22,24 @@ export default class ExecCommand extends Command<Client>
 	@ReportError
 	public async action(message: Message, code: string[]): Promise<void>
 	{
+		const statusMessage: Message = await message.channel.send('Executing...') as Message;
+
+		const startTime: number = Date.now();
 		const { error, stdout, stderr }: { error?: any, stdout?: string, stderr?: string } = await execAsync(code.join(' '))
 			.catch((err: any) => ({ error: err, stdout: err.stdout, stderr: err.stderr }));
+		const diff: string = Time.difference(Date.now(), startTime).toSimplifiedString() || '0s';
 
-		let response: string = '`EXEC` '
+		let response: string = `\`EXEC\` \`Took: ${diff}\`\n\n`
 			+ (error && error.code ? `\`Error Code: ${error.code}\`\n\n` : '')
 			+ (stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`\n\n` : '')
 			+ (stderr ? `\`STDERR\`\n\`\`\`xl\n${stderr}\`\`\`\n\n` : '');
 
-		// might be replaced with a hastebing or something similar in the future
+		// might be replaced with a hastebin or something similar in the future
 		if (response.length > 2000)
 		{
-			response = `${response.slice(0, 1997)}...`;
+			response = `${response.slice(0, 1994)}\`\`\`...`;
 		}
 
-		return message.channel.send(response).then(() => undefined);
+		return statusMessage.edit(response).then(() => undefined);
 	}
 }
