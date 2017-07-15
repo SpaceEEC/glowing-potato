@@ -2,7 +2,7 @@
   "name": "glowing-potato",
   "version": "0.8.0",
   "description": "Yet another Discord bot",
-  "main": "index.js",
+  "main": "bin/index",
   "scripts": {
     "prebuild": "npm run lint",
     "lint": "npm run lint:gulp",
@@ -30,7 +30,8 @@
     "pg": "^6.4.0",
     "raven": "^2.1.0",
     "sequelize": "^4.2.1",
-    "yamdbf": "github:zajrik/yamdbf#master",
+    "yamdbf": "github:zajrik/yamdbf",
+    "yamdbf-league": "github:spaceeec/yamdbf-league",
     "ytdl-core": "^0.14.4"
   },
   "devDependencies": {

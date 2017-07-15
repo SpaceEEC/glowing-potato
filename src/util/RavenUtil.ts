@@ -20,29 +20,32 @@ export class RavenUtil
 	 */
 	public static init(): void
 	{
-		Logger.instance().addTransport(({ timestamp, type, tag, text }: LogData) =>
-		{
-			// only sent to raven on non-dev
-			if (logLevel === LogLevel.DEBUG) return;
-
-			// ignore raven log messages
-			if (tag === 'Raven') return;
-
-			// those colors
-			if (type.includes('WARN'))
+		Logger.instance().addTransport({
+			level: LogLevel.WARN,
+			transport: ({ timestamp, type, tag, text }: LogData) =>
 			{
-				RavenUtil._captureMessage(text, { level: 'warning', tags: { label: tag } })
-					.then((eventId: string) => Logger.instance().info('Raven', `Logged warn; eventId: ${eventId}`))
-					.catch((error: Error) =>
-					{
-						Logger.instance().error(
-							'Raven',
-							'An error occured while logging the error:',
-							inspect(error, true, Infinity, true),
-						);
-					},
-				);
-			}
+				// only sent to raven on non-dev
+				if (logLevel === LogLevel.DEBUG) return;
+
+				// ignore raven log messages
+				if (tag === 'Raven') return;
+
+				// those colors
+				if (type.includes('WARN'))
+				{
+					RavenUtil._captureMessage(text, { level: 'warning', tags: { label: tag } })
+						.then((eventId: string) => Logger.instance().info('Raven', `Logged warn; eventId: ${eventId}`))
+						.catch((error: Error) =>
+						{
+							Logger.instance().error(
+								'Raven',
+								'An error occured while logging the error:',
+								inspect(error, true, Infinity, true),
+							);
+						},
+					);
+				}
+			},
 		});
 	}
 
