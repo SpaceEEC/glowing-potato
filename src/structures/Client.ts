@@ -1,6 +1,7 @@
 import { DiscordAPIError, TextChannel, User } from 'discord.js';
 import { join } from 'path';
 import { Client as YAMDBFClient, Guild, ListenerUtil, logger, Logger, LogLevel, Message, Providers } from 'yamdbf';
+import League from 'yamdbf-league';
 
 import { Config } from '../types/config';
 import { RavenUtil } from '../util/RavenUtil';
@@ -11,8 +12,7 @@ import { RichEmbed } from './RichEmbed';
 
 const { on, once } = ListenerUtil;
 
-const { database, logLevel, token, ownerID }: Config = require('../../config.json');
-const { version }: { version: string } = require('../../package.json');
+const { database, logLevel, token, ownerID, ritoToken }: Config = require('../../config.json');
 
 /**
  * The central client for this bot
@@ -45,13 +45,19 @@ export class Client extends YAMDBFClient
 	{
 		super({
 			commandsDir: join(__dirname, '..', 'commands'),
-			name: 'spacebot',
 			owner: [ownerID],
 			pause: true,
+			plugins: [League(ritoToken, {
+				emojis: {
+					level4: '<:level4:335427521078231051> ',
+					level5: '<:level5:335427521900445696> ',
+					level6: '<:level6:335427522332459008> ',
+					level7: '<:level7:335427524429348866> ',
+				},
+			})],
 			provider: Providers.PostgresProvider(database),
 			token,
 			unknownCommandError: false,
-			version,
 		});
 
 		Util.init(this);
