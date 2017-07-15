@@ -234,7 +234,7 @@ export class Queue
 		client.storage.guilds.get(this.textChannel.guild.id).set('volume', volume)
 			.catch((error: Error) => RavenUtil.error('Queue', error, 'While saving the volume of the queue'));
 
-		this.dispatcher.setVolumeLogarithmic(volume / 5);
+		if (this.dispatcher) this.dispatcher.setVolumeLogarithmic(volume / 5);
 	}
 
 	public get loop(): boolean
