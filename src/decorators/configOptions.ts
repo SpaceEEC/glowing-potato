@@ -14,7 +14,8 @@ export function expectConfigOption(type: GuildConfigType)
 		args[0] = args[0].toLowerCase();
 		if (!['get', 'set', 'reset'].includes(args[0]))
 		{
-			throw new Error(`Couldn't resolve \`${args[0]}\` to a valid \`option\`.`);
+			throw new Error(`Couldn't resolve \`${args[0]}\` to a valid \`option\`.\n`
+				+ 'Valid options are `get`, `set` and `reset`.');
 		}
 		if (args[0] === 'set')
 		{
