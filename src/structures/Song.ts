@@ -81,7 +81,9 @@ export class Song
 			const currentTime: number = dispatcher ? dispatcher.time / 1000 : 0;
 			const left: string = this.timeLeft(currentTime);
 			const current: string = Util.timeString(currentTime);
-			description.push(`Time: \`${this.length ? `${left}\`(\`${current}\`/\`${this.lengthString}\`)` : 'Livestream\`'}`);
+			description.push(
+				`${this.length ? `Time left: \`${left}\` (\`${current}\`/\`${this.lengthString}\`)` : '\`Livestream\`'}`,
+			);
 		}
 		else
 		{
