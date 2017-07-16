@@ -514,14 +514,14 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				.catch(() => null);
 		}
 
-		queue.timeout(TimeoutType.QUEUE, false);
+		await queue.timeout(TimeoutType.QUEUE, false);
 
 		const { currentSong }: { currentSong: Song } = queue;
 
 		if (!currentSong)
 		{
-			if (!stopped) queue.timeout(TimeoutType.QUEUE, true);
-			return;
+			if (stopped) return queue.voiceChannel.leave();
+			return queue.timeout(TimeoutType.QUEUE, true);
 		}
 
 		const embed: RichEmbed = currentSong.embed(SongEmbedType.PLAYING);
