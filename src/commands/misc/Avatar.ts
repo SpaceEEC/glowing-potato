@@ -21,9 +21,11 @@ export default class AvatarCommand extends Command<Client>
 	@ReportError
 	public async action(message: Message, [user]: [User]): Promise<void>
 	{
+		message.channel.startTyping();
+
 		const filename: string = (user.avatar && user.avatar.startsWith('a_'))
-			? 'user.gif'
-			: 'user.png';
+			? 'avatar.gif'
+			: 'avatar.png';
 
 		const fileOptions: FileOptions = {
 			attachment: user.displayAvatarURL,
@@ -36,7 +38,8 @@ export default class AvatarCommand extends Command<Client>
 					.setColor(message.member.displayColor)
 					.attachFile(fileOptions)
 					.setImage(`attachment://${filename}`),
-			},
-		).then(() => undefined);
+			})
+			.then(() => message.channel.stopTyping())
+			.catch(() => message.channel.stopTyping());
 	}
 }
