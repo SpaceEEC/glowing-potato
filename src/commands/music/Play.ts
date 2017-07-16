@@ -11,6 +11,7 @@ import {
 	using,
 } from 'yamdbf/bin/command/CommandDecorators';
 import { expect } from 'yamdbf/bin/command/middleware/Expect';
+import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
@@ -30,27 +31,33 @@ import { YouTubeUtil } from '../../util/YouTubeUtil';
 @name('play')
 @group('music')
 @guildOnly
-@usage('<prefix>play [-n] <...query>`\n'
-	+ '`[-n]` is an optional amount to search or queue (defaults to `1` for search and `20` for playlists)\n'
-	+ '`<...query>` is either the ID, link or name of the requested video or playlist (name is video only)')
+@usage('<prefix>play [Limit] <...Query>`\n'
+	+ '`[Limit]` (formatted as ``-7``) is an optional amount to search or queue '
+	+ '(defaults to `-1` for search and `-20` for playlists)\n'
+	+ '`<...Query>` is either the ID, link or name of the requested video or playlist (name is video only)')
 export default class PlayCommand extends Command<Client>
 {
+	// tslint:disable:only-arrow-functions no-shadowed-variable object-literal-sort-keys
 	@using(musicRestricted())
-	@using(expect({ '<...query>': 'String' }))
-	// tslint:disable-next-line:only-arrow-functions no-shadowed-variable
+	@using(expect({ '<...Query>': 'String' }))
 	@using(function(message: Message, args: string[]): [Message, [number, string]]
 	{
-		// tslint:disable-next-line:no-shadowed-variable
-		let limit: number = 0;
 		if (args[0].match(/^-\d+$/))
 		{
-			limit = parseInt(args.shift().slice(1)) || 0;
+			return resolve({
+				'<Limit>': 'Number',
+				'<...Query>': 'String',
+			}).call(this, message, [args.shift().slice(1), args.join(' ').replace(/<(.+)>/g, '$1')]);
 		}
 
-		return [message, [limit, args.join(' ').replace(/<(.+)>/g, '$1')]];
+		return [message, [0, args.join(' ').replace(/<(.+)>/g, '$1')]];
 	})
-	@using(expect({ '<limit>': 'Number', '<...query>': 'String' }))
+	@using(expect({
+		'<Limit>': 'Number',
+		'<...Query>': 'String',
+	}))
 	@ReportError
+	// tslint:enable:only-arrow-functions no-shadowed-variable object-literal-sort-keys
 	public async action(message: Message, [limit, query]: [number, string]): Promise<void>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
