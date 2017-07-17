@@ -548,6 +548,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				queue.statusMessage = await queue.statusMessage
 					.edit([
 						'❌ An error occured while playing the YouTube stream.',
+						`\`${error.message}\``,
 						'',
 						'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
 					], { embed: null })
@@ -609,6 +610,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				queue.statusMessage = await queue.statusMessage.edit(
 					[
 						'❌ An internal error occured while playing.',
+						`\`${error.message}\``,
 						'',
 						'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
 					],
