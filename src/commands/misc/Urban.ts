@@ -1,6 +1,5 @@
 import { get, Result } from 'snekfetch';
-import { Message } from 'yamdbf/bin';
-import { clientPermissions, desc, group, guildOnly, name, usage, using } from 'yamdbf/bin/command/CommandDecorators';
+import { CommandDecorators, Message } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
@@ -9,6 +8,8 @@ import { RichEmbed } from '../../structures/RichEmbed';
 import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
 import { UrbanDefinition } from '../../types/UrbanDefinition';
 import { UrbanResponse } from '../../types/UrbanResponse';
+
+const { clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
 
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
 @desc('Displays a definition from the urbandictionary.')

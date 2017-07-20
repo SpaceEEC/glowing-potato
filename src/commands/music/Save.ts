@@ -1,9 +1,10 @@
-import { Message } from 'yamdbf/bin';
-import { desc, group, guildOnly, name, usage } from 'yamdbf/bin/command/CommandDecorators';
+import { CommandDecorators, Message } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
+
+const { desc, group, guildOnly, name, usage } = CommandDecorators;
 
 @desc('"Saves" the current song into your DMs.')
 @name('save')

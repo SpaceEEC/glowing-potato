@@ -1,4 +1,4 @@
-import { Logger } from 'yamdbf/bin';
+import { Logger } from 'yamdbf';
 
 import { Client } from './structures/Client';
 import { Config } from './types/Config';

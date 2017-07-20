@@ -1,5 +1,5 @@
 import { Role } from 'discord.js';
-import { Message, MiddlewareFunction } from 'yamdbf/bin';
+import { Message, MiddlewareFunction } from 'yamdbf';
 
 import { Queue } from '../structures/Queue';
 import { GuildConfigChannels, GuildConfigRoles } from '../types/GuildConfigKeys';

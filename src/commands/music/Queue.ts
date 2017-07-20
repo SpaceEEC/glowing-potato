@@ -1,10 +1,11 @@
-import { Message } from 'yamdbf/bin';
-import { aliases, desc, group, guildOnly, name, usage, using } from 'yamdbf/bin/command/CommandDecorators';
-import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
+
+const { aliases, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { resolve } = Middleware;
 
 @aliases('songs', 'playlist', 'playback')
 @desc('Displays the requested page of the queue, defaults to first.')

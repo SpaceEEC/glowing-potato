@@ -1,4 +1,4 @@
-import { Command, Message } from 'yamdbf/bin';
+import { Command, Message } from 'yamdbf';
 
 import { Client } from '../structures/Client';
 import { RavenUtil } from '../util/RavenUtil';
@@ -6,7 +6,10 @@ import { RavenUtil } from '../util/RavenUtil';
 export function ReportError(target: Command, key: string, descriptor: PropertyDescriptor): PropertyDescriptor
 {
 	if (!target) throw new Error('@ReportError must be used as a method decorator for a Command action method.');
-	if (key !== 'action') throw new Error(`"${target.constructor.name}#${key}" is not a valid method target for @using.`);
+	if (key !== 'action')
+	{
+		throw new Error(`"${target.constructor.name}#${key}" is not a valid method target for @ReportError.`);
+	}
 	if (!descriptor) descriptor = Object.getOwnPropertyDescriptor(target, key);
 
 	const original: (message: Message, args: any[]) => Promise<void> = descriptor.value;
@@ -28,8 +31,6 @@ export function ReportError(target: Command, key: string, descriptor: PropertyDe
 				'',
 				'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
 			]);
-
-			throw err;
 		}
 	};
 

@@ -1,15 +1,16 @@
-import { Message } from 'yamdbf/bin';
-import { desc, group, guildOnly, name, usage, using } from 'yamdbf/bin/command/CommandDecorators';
-import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 
+const { desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { resolve } = Middleware;
+
 @desc('Sets or gets the volume of the current playback.\n'
-+ 'Command is usable by everyone when no volume is specified to get the current volume.'
-+ 'Otherwise restrictred to music role and music channel if applicable.')
+	+ 'Command is usable by everyone when no volume is specified to get the current volume.'
+	+ 'Otherwise restrictred to music role and music channel if applicable.')
 @name('volume')
 @group('music')
 @guildOnly

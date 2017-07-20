@@ -1,6 +1,6 @@
 import { GuildMember, Snowflake, TextChannel, VoiceConnection } from 'discord.js';
 import { createWriteStream, unlink, WriteStream } from 'fs';
-import { Message, Time } from 'yamdbf/bin';
+import { Message, Time } from 'yamdbf';
 import * as ytdl from 'ytdl-core';
 
 import { PaginatedPage } from '../types/PaginatedPage';

@@ -1,13 +1,14 @@
 import { RichEmbed } from 'discord.js';
 import { get, Result } from 'snekfetch';
-import { Message } from 'yamdbf/bin';
-import { clientPermissions, desc, group, guildOnly, name, usage, using } from 'yamdbf/bin/command/CommandDecorators';
+import { CommandDecorators, Message } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { PicturePost } from '../../types/PicturePost';
 import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
+
+const { clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
 
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
 @desc('Displays a random picture from konachan.net')

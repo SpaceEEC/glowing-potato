@@ -1,6 +1,15 @@
 import { DiscordAPIError, TextChannel, User } from 'discord.js';
 import { join } from 'path';
-import { Client as YAMDBFClient, Guild, ListenerUtil, logger, Logger, LogLevel, Message, Providers } from 'yamdbf';
+import {
+	Client as YAMDBFClient,
+	Guild,
+	ListenerUtil,
+	logger,
+	Logger,
+	LogLevel,
+	Message,
+	Providers,
+} from 'yamdbf';
 import { League } from 'yamdbf-league';
 
 import { Config } from '../types/config';
