@@ -1,5 +1,5 @@
 import { Collection, GuildChannel, Role, Snowflake, TextChannel, Util as DJSUtil } from 'discord.js';
-import { Message } from 'yamdbf/bin';
+import { Message } from 'yamdbf';
 
 import { Client } from '../structures/Client';
 import { GuildConfigChannels, GuildConfigRoles, GuildConfigStrings, GuildConfigType } from '../types/GuildConfigKeys';

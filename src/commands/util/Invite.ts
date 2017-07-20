@@ -1,10 +1,11 @@
-import { Message } from 'yamdbf/bin';
-import { desc, group, name, usage } from 'yamdbf/bin/command/CommandDecorators';
+import { CommandDecorators, Message } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { RichEmbed } from '../../structures/RichEmbed';
+
+const { desc, group, name, usage } = CommandDecorators;
 
 @desc('Generates an invite for this bot.')
 @name('invite')

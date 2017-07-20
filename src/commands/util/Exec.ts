@@ -1,11 +1,12 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { Message, Time } from 'yamdbf/bin';
-import { desc, group, name, ownerOnly, usage } from 'yamdbf/bin/command/CommandDecorators';
+import { CommandDecorators, Message, Time } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
+
+const { desc, group, name, ownerOnly, usage } = CommandDecorators;
 
 const execAsync: (command: string) => Promise<{
 	stdout?: string,

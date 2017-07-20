@@ -1,16 +1,5 @@
 import { Role } from 'discord.js';
-import { Message } from 'yamdbf/bin';
-import {
-	aliases,
-	callerPermissions,
-	desc,
-	group,
-	guildOnly,
-	name,
-	usage,
-	using,
-} from 'yamdbf/bin/command/CommandDecorators';
-import { expect } from 'yamdbf/bin/command/middleware/Expect';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { expectConfigOption, resolveConfigOption } from '../../decorators/configOptions';
 import { ReportError } from '../../decorators/ReportError';
@@ -18,6 +7,9 @@ import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { GuildConfigRoles, GuildConfigType } from '../../types/GuildConfigKeys';
 import { GuildConfigUtil } from '../../util/GuildConfigUtil';
+
+const { aliases, callerPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { expect } = Middleware;
 
 @aliases('djrole')
 @callerPermissions('MANAGE_GUILD')

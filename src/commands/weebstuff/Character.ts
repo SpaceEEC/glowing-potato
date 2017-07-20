@@ -1,11 +1,12 @@
-import { Message } from 'yamdbf/bin';
-import { aliases, clientPermissions, desc, group, guildOnly, name, usage } from 'yamdbf/bin/command/CommandDecorators';
+import { CommandDecorators, Message } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { AniType } from '../../types/AniType';
 import { AnilistUtil } from '../../util/AniListUtil';
+
+const { aliases, clientPermissions, desc, group, guildOnly, name, usage } = CommandDecorators;
 
 @aliases('char')
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')

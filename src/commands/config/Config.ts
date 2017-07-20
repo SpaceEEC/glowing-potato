@@ -1,18 +1,14 @@
 import { GuildChannel, Role } from 'discord.js';
-import { Message } from 'yamdbf/bin';
-import { callerPermissions, desc, group, guildOnly, name, usage, using } from 'yamdbf/bin/command/CommandDecorators';
-import { expect } from 'yamdbf/bin/command/middleware/Expect';
-import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
-import {
-	GuildConfigChannels,
-	GuildConfigRoles,
-	GuildConfigStrings,
-} from '../../types/GuildConfigKeys';
+import { GuildConfigChannels, GuildConfigRoles, GuildConfigStrings } from '../../types/GuildConfigKeys';
 import { GuildConfigUtil } from '../../util/GuildConfigUtil';
+
+const { callerPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { expect, resolve } = Middleware;
 
 @callerPermissions('MANAGE_GUILD')
 @desc('Sets, gets or resets config entries.')

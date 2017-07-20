@@ -1,6 +1,6 @@
 
 import { StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
-import { Message } from 'yamdbf/bin';
+import { Message } from 'yamdbf';
 
 import { PaginatedPage } from '../types/PaginatedPage';
 import { SongEmbedType } from '../types/SongEmbedType';

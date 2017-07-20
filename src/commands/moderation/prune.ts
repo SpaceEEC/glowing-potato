@@ -1,22 +1,12 @@
 import { Collection, GuildMember, TextChannel } from 'discord.js';
-import { Message } from 'yamdbf/bin';
-import {
-	aliases,
-	callerPermissions,
-	clientPermissions,
-	desc,
-	group,
-	guildOnly,
-	name,
-	usage,
-	using,
-} from 'yamdbf/bin/command/CommandDecorators';
-import { expect } from 'yamdbf/bin/command/middleware/Expect';
-import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
+
+const { aliases, callerPermissions, clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { expect, resolve } = Middleware;
 
 @aliases('purge', 'clean', 'clear')
 @clientPermissions('SEND_MESSAGES', 'MANAGE_MESSAGES')

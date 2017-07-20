@@ -1,12 +1,12 @@
-import { Message } from 'yamdbf/bin';
-import { desc, group, guildOnly, name, usage, using } from 'yamdbf/bin/command/CommandDecorators';
-import { expect } from 'yamdbf/bin/command/middleware/Expect';
-import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
+
+const { desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { expect, resolve } = Middleware;
 
 @desc('Removes a song from the queue.')
 @name('remove')

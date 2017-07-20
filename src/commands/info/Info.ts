@@ -1,12 +1,13 @@
 import { RichEmbed, version as libVersion } from 'discord.js';
 import * as moment from 'moment';
 import 'moment-duration-format';
-import { Message, version as YAMDBFVersion } from 'yamdbf/bin';
-import { aliases, clientPermissions, desc, group, guildOnly, name, usage } from 'yamdbf/bin/command/CommandDecorators';
+import { CommandDecorators, Message, version as YAMDBFVersion } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
+
+const { aliases, clientPermissions, desc, group, guildOnly, name, usage } = CommandDecorators;
 
 const { version }: { version: string } = require('../../../package.json');
 

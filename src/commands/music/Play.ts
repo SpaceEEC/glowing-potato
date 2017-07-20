@@ -1,17 +1,5 @@
 import { Collection, Permissions, Snowflake, VoiceChannel } from 'discord.js';
-import { Message } from 'yamdbf/bin';
-import {
-	aliases,
-	clientPermissions,
-	desc,
-	group,
-	guildOnly,
-	name,
-	usage,
-	using,
-} from 'yamdbf/bin/command/CommandDecorators';
-import { expect } from 'yamdbf/bin/command/middleware/Expect';
-import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
@@ -24,6 +12,9 @@ import { SongEmbedType } from '../../types/SongEmbedType';
 import { Video } from '../../types/Video';
 import { Util } from '../../util/Util';
 import { YouTubeUtil } from '../../util/YouTubeUtil';
+
+const { aliases, clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { expect, resolve } = Middleware;
 
 @aliases('search', 'serach')
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')

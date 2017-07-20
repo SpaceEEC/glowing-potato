@@ -1,12 +1,12 @@
 import { FileOptions, RichEmbed, User } from 'discord.js';
-import { Message } from 'yamdbf/bin';
-import { clientPermissions, desc, group, guildOnly, name, usage, using } from 'yamdbf/bin/command/CommandDecorators';
-import { expect } from 'yamdbf/bin/command/middleware/Expect';
-import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
+
+const { clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { expect, resolve } = Middleware;
 
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS', 'ATTACH_FILES')
 @desc('Gets an user\'s avatar')

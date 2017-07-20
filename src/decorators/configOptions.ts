@@ -1,9 +1,9 @@
 import { GuildChannel, Role } from 'discord.js';
-import { ExpectArgType, Message, ResolveArgType } from 'yamdbf/bin';
-import { expect } from 'yamdbf/bin/command/middleware/Expect';
-import { resolve } from 'yamdbf/bin/command/middleware/Resolve';
+import { ExpectArgType, Message, Middleware, ResolveArgType } from 'yamdbf';
 
 import { GuildConfigType } from '../types/GuildConfigKeys';
+
+const { expect, resolve } = Middleware;
 
 export function expectConfigOption(type: GuildConfigType)
 	: (message: Message, args: string[]) => [Message, [string, GuildChannel | Role | string | undefined]]

@@ -1,5 +1,5 @@
 import { DiscordAPIError, GuildChannel, GuildMember, TextChannel } from 'discord.js';
-import { GuildStorage, ListenerUtil } from 'yamdbf/bin';
+import { GuildStorage, ListenerUtil } from 'yamdbf';
 
 import { GuildConfigChannels, GuildConfigStrings } from '../types/GuildConfigKeys';
 import { RavenUtil } from '../util/RavenUtil';

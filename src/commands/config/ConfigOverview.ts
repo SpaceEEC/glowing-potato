@@ -1,10 +1,11 @@
-import { GuildStorage, Message, Util } from 'yamdbf/bin';
-import { aliases, callerPermissions, desc, group, guildOnly, name, usage } from 'yamdbf/bin/command/CommandDecorators';
+import { CommandDecorators, GuildStorage, Message, Util } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { GuildConfigUtil } from '../../util/GuildConfigUtil';
+
+const { aliases, callerPermissions, desc, group, guildOnly, name, usage } = CommandDecorators;
 
 @aliases('config-overview', 'show-config', 'showconfig')
 @callerPermissions('MANAGE_GUILD')
