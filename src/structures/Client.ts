@@ -96,8 +96,8 @@ export class Client extends YAMDBFClient
 	 * @returns {void}
 	 * @private
 	 */
-	@on('blackListAdd')
-	@on('blackListRemove', true)
+	@on('blacklistAdd')
+	@on('blacklistRemove', true)
 	public _onBlacklist(user: User, global: boolean, remove: boolean): void
 	{
 		this.logger.info(remove ? 'Whitelist' : 'Blacklist', 'User:', user.tag, 'Global:', global ? 'yes' : 'no');
