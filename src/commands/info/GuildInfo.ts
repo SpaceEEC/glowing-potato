@@ -1,15 +1,17 @@
 import {
 	Collection,
+	DiscordAPIError,
 	Emoji,
+	Guild,
+	GuildMember,
 	Invite,
 	PartialGuild,
 	PartialGuildChannel,
 	RichEmbed,
-	Role,
 	SnowflakeUtil,
 } from 'discord.js';
 import * as moment from 'moment';
-import { CommandDecorators, Guild, Message } from 'yamdbf';
+import { CommandDecorators, Message } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
@@ -29,11 +31,25 @@ const { Endpoints }: { Endpoints: any } = require('discord.js').Constants;
 export default class GuildInfo extends Command<Client>
 {
 	@ReportError
-	public action(message: Message, [input]: [string]): Promise<void>
+	public async action(message: Message, [input]: [string]): Promise<void>
 	{
-		return this._resolveGuild(message, input)
-			.catch(() => message.channel.send('Could not resolve the provided ID or invite code to a guild.'))
-			.then(() => undefined);
+		try
+		{
+			const guildOrInvite: Guild | Invite = await this._resolveInput(message, input);
+
+			if (guildOrInvite instanceof Guild) return this._sendFullGuild(message, guildOrInvite);
+			return this._sendPartialGuild(message, guildOrInvite);
+		}
+		catch (error)
+		{
+			if (error instanceof DiscordAPIError && error.code === 10006)
+			{
+				return message.channel.send('Could not resolve the provided ID or invite code to a guild.')
+					.then(() => undefined);
+			}
+
+			throw error;
+		}
 	}
 
 	private _sendFullGuild(message: Message, guild: Guild): Promise<void>
@@ -53,19 +69,18 @@ export default class GuildInfo extends Command<Client>
 			++channels[channel.type];
 		}
 
-		const roles: string = guild.roles
-			.reduce((acc: string[], role: Role) =>
-			{
-				if (role.id !== message.guild.id)
-				{
-					acc.push(role.toString());
-				}
-				return acc;
-			},
-			[],
-		).join(', ');
+		const roles: string[] = [];
+		for (const role of guild.roles.values())
+		{
+			// no everyone role
+			if (role.id === message.guild.id) continue;
+			roles.push(role.toString());
+		}
 
 		const created: moment.Moment = moment(guild.createdTimestamp);
+		const onlineMembers: number = guild.members
+			.filter((member: GuildMember) => member.presence.status !== 'offline')
+			.size;
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0xffa500)
@@ -73,24 +88,38 @@ export default class GuildInfo extends Command<Client>
 			.setTitle(`Information about ${guild.name}`)
 			.setThumbnail(guild.iconURL)
 			.addField('❯ Channel:',
-			`• \`${channels.text}\` text channels\n`
-			+ `• \`${channels.voice}\` voice channels`, true)
-			.addField('❯ Member:', `\`${guild.memberCount}\` total members\n`
-			+ `Owner is ${guild.owner}`, true)
+			[
+				`• Default: \`${guild.defaultChannel}\``,
+				`• Text: \`${channels.text}\``,
+				`• Voice: \`${channels.voice}\``,
+			],
+			true)
+			.addField('❯ Members:',
+			[
+				`• Owner: ${guild.owner || this.client.users.get(guild.ownerID).tag}`,
+				`• Total: \`${guild.memberCount}\``,
+				`• Online: \`${onlineMembers}\` (Note: This may be wrong in large guilds duo cache.)`,
+			],
+			true)
 			.addField('❯ Created:',
-			`Roughly ${created.utc().fromNow()}\n`
-			+ `(${created.format('DD.MM.YYYY hh:mm:ss [[UTC]]')})`, true)
-			.addField('❯ Region:',
-			guild.region[0].toUpperCase() + guild.region.slice(1), true)
+			[
+				`• Relative: ${created.utc().fromNow()}`,
+				`• Absolute: ${created.format('DD.MM.YYYY hh:mm:ss [[UTC]]')}`,
+			],
+			true)
+			.addField('❯ Region:', `• ${guild.region[0].toUpperCase() + guild.region.slice(1)}`, true)
 			.addField('❯ Roles:',
-			`• \`${guild.roles.size}\`: ${roles}`.slice(0, 1024), true)
-			.addField('❯ Emojis:', this._getRandomEmojis(guild.emojis) || '`none`', true)
+			[
+				`• Total: \`${guild.roles.size - 1 || 'none'}\``,
+				`• List: ${roles.join(', ') || '`none`'}`,
+			].join('\n').slice(0, 2000),
+			true)
+			.addField('❯ Emojis:', this._mapCollection<string, Emoji>(guild.emojis, true) || '`none`', true)
 			.setTimestamp()
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);
 
 		return message.channel.send({ embed })
 			.then(() => undefined);
-
 	}
 
 	private _sendPartialGuild(message: Message, { channel, guild, memberCount, presenceCount }:
@@ -102,22 +131,34 @@ export default class GuildInfo extends Command<Client>
 		}): Promise<void>
 	{
 		const iconURL: string = guild.icon
-			? Endpoints.Guild(guild).Icon((this.client.options as any).http.cdn, guild.icon)
+			? Endpoints.Guild(guild).Icon(this.client.options.http.cdn, guild.icon)
 			: null;
 
-		const created: moment.Moment = moment(SnowflakeUtil.deconstruct(guild.id).timestamp);
+		const createdAt: moment.Moment = moment(SnowflakeUtil.deconstruct(guild.id).timestamp);
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0xffa500)
-			.setDescription('\u200b')
-			.setTitle(`(Partial Guild) Information about ${guild.name}`)
+			.setTitle(`Information about ${guild.name}`)
+			.setDescription('(Partial Guild)')
 			.setThumbnail(iconURL)
-			.addField('❯ Default Channel:', channel.name, true)
-			.addField('❯ Online / Total Members:',
-			`${presenceCount} / ${memberCount}`, true)
+			.addField('❯ Default Channel:',
+			[
+				`• Name: \`${channel.name}\``,
+				`• Mention: #<${channel.id}}> (Note: This mention only works when you are in the guild.)`,
+			],
+			true)
+			.addField('❯ Members:',
+			[
+				`• Total: \`${memberCount}\``,
+				`• Online: \`${presenceCount}\``,
+			],
+			true)
 			.addField('❯ Created:',
-			`Roughly ${created.utc().fromNow()}\n`
-			+ `(${created.format('DD.MM.YYYY hh:mm:ss [[UTC]]')})`, true)
+			[
+				`• Relative: ${createdAt.utc().fromNow()}`,
+				`• Absolute: ${createdAt.format('DD.MM.YYYY hh:mm:ss [[UTC]]')}`,
+			],
+			true)
 			.setTimestamp()
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);
 
@@ -125,47 +166,51 @@ export default class GuildInfo extends Command<Client>
 			.then(() => undefined);
 	}
 
-	private _resolveGuild(message: Message, input: string): Promise<void>
+	private async _resolveInput(message: Message, input: string): Promise<Guild | Invite>
 	{
-		if (!input) return this._sendFullGuild(message, message.guild);
+		if (!input) return message.guild;
 
 		if (this.client.guilds.has(input))
 		{
-			return this._sendFullGuild(message, this.client.guilds.get(input));
+			return this.client.guilds.get(input);
 		}
 
-		return this.client.fetchInvite(input)
-			.then((invite: Invite) =>
-			{
-				if (invite.guild instanceof Guild) return this._sendFullGuild(message, invite.guild);
-				return this._sendPartialGuild(message, invite);
-			},
-		);
+		const invite: Invite = await this.client.fetchInvite(input);
+
+		if (invite.guild instanceof Guild) return invite.guild;
+		return invite;
 	}
 
-	private _getRandomEmojis(emojiCollection: Collection<string, Emoji>): string
+	private _mapCollection<K = any, V = any>(collection: Collection<K, V>, random: boolean = false): string
 	{
-		const emojis: string[] = emojiCollection.map((e: Emoji) => e.toString());
-
-		for (let i: number = emojis.length - 1; i > 0; --i)
+		const valueArray: string[] = [];
+		for (const value of collection.values())
 		{
-			const r: number = Math.floor(Math.random() * (i + 1));
-			const t: string = emojis[i];
-			emojis[i] = emojis[r];
-			emojis[r] = t;
+			valueArray.push(value.toString());
 		}
 
-		let mappedEmojis: string = '';
-		for (const emoji of emojis)
+		if (random)
 		{
-			if (mappedEmojis.length + emoji.length > 1021)
+			for (let i: number = valueArray.length - 1; i > 0; --i)
 			{
-				mappedEmojis += '...';
+				const r: number = Math.floor(Math.random() * (i + 1));
+				const t: string = valueArray[i];
+				valueArray[i] = valueArray[r];
+				valueArray[r] = t;
+			}
+		}
+
+		let mappedValues: string = '';
+		for (const value of valueArray)
+		{
+			if (mappedValues.length + value.length > 1021)
+			{
+				mappedValues += '...';
 				break;
 			}
-			mappedEmojis += ` ${emoji}`;
+			mappedValues += ` ${value}`;
 		}
 
-		return mappedEmojis;
+		return mappedValues;
 	}
 }
