@@ -1,13 +1,12 @@
-import { CommandDecorators, Message, Middleware } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { expectConfigOption, resolveConfigOption } from '../../decorators/configOptions';
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { ConfigCommand } from '../../structures/ConfigCommand';
 import { GuildConfigStrings, GuildConfigType } from '../../types/GuildConfigKeys';
-import { GuildConfigUtil } from '../../util/GuildConfigUtil';
 
-const { callerPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { callerPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 const { expect } = Middleware;
 
 @callerPermissions('MANAGE_GUILD')
@@ -19,14 +18,16 @@ const { expect } = Middleware;
 @guildOnly
 @usage('<prefix>leavemessage <option> [...message]`\n\n'
 	+ '`option` is one of `get`, `set`, `reset')
-export default class LeaveMessageCommand extends Command<Client>
+export default class LeaveMessageCommand extends ConfigCommand<Client>
 {
 	@using(expect({ '<option>': 'String' }))
 	@using(resolveConfigOption(GuildConfigType.STRING))
 	@using(expectConfigOption(GuildConfigType.STRING))
+	@localizable
 	@ReportError
-	public async action(message: Message, [option, value]: ['get' | 'set' | 'reset', string | undefined]): Promise<void>
+	public async action(message: Message, [res, option, value]
+		: [ResourceLoader, 'get' | 'set' | 'reset', string | undefined]): Promise<void>
 	{
-		return GuildConfigUtil[option](message, GuildConfigStrings.LEAVEMESSAGE, GuildConfigType.STRING, value);
+		return this[option](message, res, GuildConfigStrings.LEAVEMESSAGE, GuildConfigType.STRING, value);
 	}
 }

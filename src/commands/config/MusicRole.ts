@@ -1,14 +1,13 @@
 import { Role } from 'discord.js';
-import { CommandDecorators, Message, Middleware } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { expectConfigOption, resolveConfigOption } from '../../decorators/configOptions';
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { ConfigCommand } from '../../structures/ConfigCommand';
 import { GuildConfigRoles, GuildConfigType } from '../../types/GuildConfigKeys';
-import { GuildConfigUtil } from '../../util/GuildConfigUtil';
 
-const { aliases, callerPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { aliases, callerPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 const { expect } = Middleware;
 
 @aliases('djrole')
@@ -20,14 +19,16 @@ const { expect } = Middleware;
 @guildOnly
 @usage('<prefix>musicrole <option> [...role]`\n\n'
 	+ '`option` is one of `get`, `set`, `reset')
-export default class MusicRoleCommand extends Command<Client>
+export default class MusicRoleCommand extends ConfigCommand<Client>
 {
 	@using(expect({ '<option>': 'String' }))
 	@using(resolveConfigOption(GuildConfigType.ROLE))
 	@using(expectConfigOption(GuildConfigType.ROLE))
+	@localizable
 	@ReportError
-	public async action(message: Message, [option, value]: ['get' | 'set' | 'reset', Role | undefined]): Promise<void>
+	public async action(message: Message, [res, option, value]
+		: [ResourceLoader, 'get' | 'set' | 'reset', Role | undefined]): Promise<void>
 	{
-		return GuildConfigUtil[option](message, GuildConfigRoles.MUSICROLE, GuildConfigType.ROLE, value);
+		return this[option](message, res, GuildConfigRoles.MUSICROLE, GuildConfigType.ROLE, value);
 	}
 }

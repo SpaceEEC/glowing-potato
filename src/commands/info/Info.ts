@@ -1,13 +1,13 @@
 import { RichEmbed, version as libVersion } from 'discord.js';
 import * as moment from 'moment';
 import 'moment-duration-format';
-import { CommandDecorators, Message, version as YAMDBFVersion } from 'yamdbf';
+import { CommandDecorators, Message, ResourceLoader, version as YAMDBFVersion } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 
-const { aliases, clientPermissions, desc, group, guildOnly, name, usage } = CommandDecorators;
+const { aliases, clientPermissions, desc, group, guildOnly, name, usage, localizable } = CommandDecorators;
 
 const { version }: { version: string } = require('../../../package.json');
 
@@ -20,8 +20,9 @@ const { version }: { version: string } = require('../../../package.json');
 @usage('<prefix>info')
 export default class InfoCommand extends Command<Client>
 {
+	@localizable
 	@ReportError
-	public async action(message: Message): Promise<void>
+	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
 	{
 		const owners: string = this.client.owner.map((owner: string) => `\`${this.client.users.get(owner).tag}\``).join(', ');
 

@@ -1,4 +1,5 @@
-import { Command, Message } from 'yamdbf';
+import { TextChannel } from 'discord.js';
+import { Command, Lang, Message, ResourceLoader } from 'yamdbf';
 
 import { Client } from '../structures/Client';
 import { RavenUtil } from '../util/RavenUtil';
@@ -25,6 +26,11 @@ export function ReportError(target: Command, key: string, descriptor: PropertyDe
 
 			await RavenUtil.error(this.name, err)
 				.catch(() => null);
+
+			const lang: string = message.channel instanceof TextChannel
+				? await message.guild.storage.settings.get('lang') || this.client.defaultLang
+				: this.client.defaultLang;
+			const res: ResourceLoader = Lang.createResourceLoader(lang);
 
 			await message.channel.send([
 				`An unexpected error occured while running the command: \`${err.message}\``,

@@ -1,20 +1,21 @@
-import { CommandDecorators, Message } from 'yamdbf';
+import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { RichEmbed } from '../../structures/RichEmbed';
 
-const { desc, group, name, usage } = CommandDecorators;
+const { desc, group, name, usage, localizable } = CommandDecorators;
 
 @desc('Generates an invite for this bot.')
 @name('invite')
 @group('util')
 @usage('<prefix>invite')
-export default class ExecCommand extends Command<Client>
+export default class InviteCommand extends Command<Client>
 {
+	@localizable
 	@ReportError
-	public async action(message: Message, code: string[]): Promise<void>
+	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
 	{
 		const invite: string = await this.client.generateInvite([
 			'READ_MESSAGES',
@@ -47,7 +48,6 @@ export default class ExecCommand extends Command<Client>
 			]);
 
 		return message.channel.send({ embed })
-			.then(() => undefined)
-			.catch(() => null);
+			.then(() => undefined);
 	}
 }

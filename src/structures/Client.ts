@@ -58,6 +58,7 @@ export class Client extends YAMDBFClient
 			owner: [ownerID],
 			pause: true,
 			plugins: [
+				'lang-german',
 				commandUsage('334843191545036800'),
 				League(ritoToken,
 					{
