@@ -87,9 +87,9 @@ export default class GuildInfo extends Command<Client>
 			.setDescription('\u200b')
 			.setTitle(`Information about ${guild.name}`)
 			.setThumbnail(guild.iconURL)
-			.addField('❯ Channel:',
+			.addField('❯ Channels:',
 			[
-				`• Default: \`${guild.defaultChannel}\``,
+				`• Default: ${guild.defaultChannel}`,
 				`• Text: \`${channels.text}\``,
 				`• Voice: \`${channels.voice}\``,
 			],
@@ -144,7 +144,7 @@ export default class GuildInfo extends Command<Client>
 			.addField('❯ Default Channel:',
 			[
 				`• Name: \`${channel.name}\``,
-				`• Mention: #<${channel.id}}> (Note: This mention only works when you are in the guild.)`,
+				`• Mention: #<${channel.id}> (Note: This mention only works when you are in the guild.)`,
 			],
 			true)
 			.addField('❯ Members:',
