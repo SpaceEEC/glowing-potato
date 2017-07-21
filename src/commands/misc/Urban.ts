@@ -1,5 +1,5 @@
 import { get, Result } from 'snekfetch';
-import { CommandDecorators, Message } from 'yamdbf';
+import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
@@ -9,7 +9,7 @@ import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
 import { UrbanDefinition } from '../../types/UrbanDefinition';
 import { UrbanResponse } from '../../types/UrbanResponse';
 
-const { clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { clientPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
 @desc('Displays a definition from the urbandictionary.')
@@ -28,8 +28,9 @@ export default class Urban extends Command<Client>
 		}
 		return [msg, [pickedNumber, args]];
 	})
+	@localizable
 	@ReportError
-	public async action(message: Message, [selectedNumber, search]: [number, string[]]): Promise<void>
+	public async action(message: Message, [res, selectedNumber, search]: [ResourceLoader, number, string[]]): Promise<void>
 	{
 		const query: string = encodeURIComponent(search.join('+')).replace(/%2B/g, '+');
 

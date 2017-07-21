@@ -25,6 +25,8 @@ gulp.task('build', () => {
 		.pipe(gulp.dest('bin/'));
 	gulp.src('./src/**/*.json')
 		.pipe(gulp.dest('bin/'));
+	gulp.src('./src/**/*.lang')
+		.pipe(gulp.dest('bin/'));
 
 	const tsCompile = gulp.src(['./src/**/*.ts', './typings/index.d.ts'])
 		.pipe(sourcemaps.init())

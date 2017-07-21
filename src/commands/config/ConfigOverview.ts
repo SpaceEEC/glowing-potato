@@ -1,11 +1,11 @@
-import { CommandDecorators, GuildStorage, Message, Util } from 'yamdbf';
+import { CommandDecorators, GuildStorage, Message, ResourceLoader, Util } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { GuildConfigUtil } from '../../util/GuildConfigUtil';
 
-const { aliases, callerPermissions, desc, group, guildOnly, name, usage } = CommandDecorators;
+const { aliases, callerPermissions, desc, group, guildOnly, name, usage, localizable } = CommandDecorators;
 
 @aliases('config-overview', 'show-config', 'showconfig')
 @callerPermissions('MANAGE_GUILD')
@@ -16,8 +16,9 @@ const { aliases, callerPermissions, desc, group, guildOnly, name, usage } = Comm
 @usage('<prefix>configoverview')
 export default class ConfigOverviewCommand extends Command<Client>
 {
+	@localizable
 	@ReportError
-	public async action(message: Message): Promise<void>
+	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
 	{
 		const values: [string, boolean][] = await this._fetchAllValues(message.guild.storage);
 

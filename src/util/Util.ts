@@ -139,13 +139,13 @@ export class Util
 	 * @private
 	 */
 	private static readonly _truthy: Set<string> = new
-		Set(['true', 't', 'yes', 'y', 'on', 'enable', 'enabled', '1', '+']);
+		Set(['true', 't', 'yes', 'y', 'on', 'enable', 'enabled', '1', '+', 'ja', 'j']);
 	/**
 	 * Set of "falsy" strings
 	 * @readonly
 	 * @private
 	 */
 	private static readonly _falsy: Set<string> = new
-		Set(['false', 'f', 'no', 'n', 'off', 'disable', 'disabled', '0', '-']);
+		Set(['false', 'f', 'no', 'n', 'off', 'disable', 'disabled', '0', '-', 'nein']);
 	// copy end
 }

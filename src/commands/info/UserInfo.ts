@@ -1,12 +1,12 @@
 import { GuildMember, RichEmbed, Role, User } from 'discord.js';
 import * as moment from 'moment';
-import { CommandDecorators, Guild, Message, Middleware } from 'yamdbf';
+import { CommandDecorators, Guild, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 
-const { aliases, clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { aliases, clientPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 const { expect, resolve } = Middleware;
 
 @aliases('user')
@@ -20,8 +20,9 @@ export default class UserInfoCommand extends Command<Client>
 {
 	@using(resolve({ '<User>': 'User' }))
 	@using(expect({ '<User>': 'User' }))
+	@localizable
 	@ReportError
-	public async action(message: Message, [user]: [User]): Promise<void>
+	public async action(message: Message, [res, user]: [ResourceLoader, User]): Promise<void>
 	{
 		const member: GuildMember = await message.guild.fetchMember(user).catch(() => undefined);
 

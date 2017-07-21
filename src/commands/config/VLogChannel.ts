@@ -1,14 +1,13 @@
 import { GuildChannel } from 'discord.js';
-import { CommandDecorators, Message, Middleware } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { expectConfigOption, resolveConfigOption } from '../../decorators/configOptions';
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { ConfigCommand } from '../../structures/ConfigCommand';
 import { GuildConfigChannels, GuildConfigType } from '../../types/GuildConfigKeys';
-import { GuildConfigUtil } from '../../util/GuildConfigUtil';
 
-const { aliases, callerPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { aliases, callerPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 const { expect } = Middleware;
 
 @aliases('voicelogchannel')
@@ -19,15 +18,16 @@ const { expect } = Middleware;
 @guildOnly
 @usage('<prefix>vlogchannel <option> [...channel]`\n\n'
 	+ '`option` is one of `get`, `set`, `reset')
-export default class VLogChannelCommand extends Command<Client>
+export default class VLogChannelCommand extends ConfigCommand<Client>
 {
 	@using(expect({ '<option>': 'String' }))
 	@using(resolveConfigOption(GuildConfigType.CHANNEL))
 	@using(expectConfigOption(GuildConfigType.CHANNEL))
+	@localizable
 	@ReportError
-	public async action(message: Message, [option, value]: ['get' | 'set' | 'reset', GuildChannel | undefined])
-		: Promise<void>
+	public async action(message: Message, [res, option, value]
+		: [ResourceLoader, 'get' | 'set' | 'reset', GuildChannel | undefined]): Promise<void>
 	{
-		return GuildConfigUtil[option](message, GuildConfigChannels.VLOGCHANNEL, GuildConfigType.CHANNEL, value);
+		return this[option](message, res, GuildConfigChannels.VLOGCHANNEL, GuildConfigType.CHANNEL, value);
 	}
 }

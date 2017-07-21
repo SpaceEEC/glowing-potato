@@ -30,8 +30,9 @@
     "node-opus": "^0.2.6",
     "pg": "^6.4.1",
     "raven": "^2.1.0",
-    "sequelize": "^4.3.2",
+    "sequelize": "^4.4.0",
     "yamdbf": "github:zajrik/yamdbf",
+    "yamdbf-lang-german": "github:spaceeec/yamdbf-lang-german",
     "yamdbf-command-usage": "github:zajrik/yamdbf-command-usage",
     "yamdbf-league": "github:spaceeec/yamdbf-league",
     "ytdl-core": "^0.14.4"
@@ -39,7 +40,7 @@
   "devDependencies": {
     "@types/node": "^8.0.14",
     "@types/raven": "^1.2.4",
-    "@types/sequelize": "^4.0.65",
+    "@types/sequelize": "^4.0.66",
     "@types/snekfetch": "^3.1.0",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
@@ -48,7 +49,7 @@
     "gulp-typescript": "^3.2.1",
     "tslint": "^5.5.0",
     "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.4.1"
+    "typescript": "^2.4.2"
   },
   "engines": {
     "node": ">=8.0.0"

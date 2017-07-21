@@ -1,6 +1,6 @@
 import { RichEmbed } from 'discord.js';
 import { get, Result } from 'snekfetch';
-import { CommandDecorators, Message } from 'yamdbf';
+import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
@@ -8,7 +8,7 @@ import { Command } from '../../structures/Command';
 import { PicturePost } from '../../types/PicturePost';
 import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
 
-const { clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { clientPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
 @desc('Displays a random picture from safebooru.donmai.us')
@@ -18,13 +18,15 @@ const { clientPermissions, desc, group, guildOnly, name, usage, using } = Comman
 @usage('<prefix>donmai <...tags>')
 export default class DonmaiCommand extends Command<Client>
 {
-	@using((msg: Message, tags: string[]) =>
+	@localizable
+	// tslint:disable-next-line:no-shadowed-variable
+	@using((msg: Message, [res, ...tags]: any[]) =>
 	{
 		if (tags.length > 2) throw new Error('You can not search with more than two tags!');
-		return [msg, [encodeURIComponent(tags.join(' '))]];
+		return [msg, [res, encodeURIComponent(tags.join(' '))]];
 	})
 	@ReportError
-	public async action(message: Message, [search]: [string]): Promise<void>
+	public async action(message: Message, [res, search]: [ResourceLoader, string]): Promise<void>
 	{
 		const posts: PicturePost[] = await get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${search}`)
 			.then<PicturePost[]>((result: Result) => result.body as ProbablyNotABuffer);

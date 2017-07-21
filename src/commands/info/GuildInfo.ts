@@ -11,13 +11,13 @@ import {
 	SnowflakeUtil,
 } from 'discord.js';
 import * as moment from 'moment';
-import { CommandDecorators, Message } from 'yamdbf';
+import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 
-const { aliases, clientPermissions, desc, group, guildOnly, name, usage } = CommandDecorators;
+const { aliases, clientPermissions, desc, group, guildOnly, name, usage, localizable } = CommandDecorators;
 // tslint:disable-next-line:variable-name
 const { Endpoints }: { Endpoints: any } = require('discord.js').Constants;
 
@@ -30,15 +30,16 @@ const { Endpoints }: { Endpoints: any } = require('discord.js').Constants;
 @usage('<prefix>guildinfo [ID | Invite]')
 export default class GuildInfo extends Command<Client>
 {
+	@localizable
 	@ReportError
-	public async action(message: Message, [input]: [string]): Promise<void>
+	public async action(message: Message, [res, input]: [ResourceLoader, string]): Promise<void>
 	{
 		try
 		{
 			const guildOrInvite: Guild | Invite = await this._resolveInput(message, input);
 
-			if (guildOrInvite instanceof Guild) return this._sendFullGuild(message, guildOrInvite);
-			return this._sendPartialGuild(message, guildOrInvite);
+			if (guildOrInvite instanceof Guild) return this._sendFullGuild(message, res, guildOrInvite);
+			return this._sendPartialGuild(message, res, guildOrInvite);
 		}
 		catch (error)
 		{
@@ -52,7 +53,7 @@ export default class GuildInfo extends Command<Client>
 		}
 	}
 
-	private _sendFullGuild(message: Message, guild: Guild): Promise<void>
+	private _sendFullGuild(message: Message, res: ResourceLoader, guild: Guild): Promise<void>
 	{
 		const channels: {
 			// just for typescript
@@ -122,7 +123,7 @@ export default class GuildInfo extends Command<Client>
 			.then(() => undefined);
 	}
 
-	private _sendPartialGuild(message: Message, { channel, guild, memberCount, presenceCount }:
+	private _sendPartialGuild(message: Message, res: ResourceLoader, { channel, guild, memberCount, presenceCount }:
 		{
 			channel: PartialGuildChannel,
 			guild: PartialGuild,
