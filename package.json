@@ -32,6 +32,7 @@
     "raven": "^2.1.0",
     "sequelize": "^4.3.2",
     "yamdbf": "github:zajrik/yamdbf",
+    "yamdbf-command-usage": "github:zajrik/yamdbf-command-usage",
     "yamdbf-league": "github:spaceeec/yamdbf-league",
     "ytdl-core": "^0.14.4"
   },
