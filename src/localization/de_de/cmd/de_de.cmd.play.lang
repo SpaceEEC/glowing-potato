@@ -1,0 +1,31 @@
+[CMD_PLAY_DIFFERENT_CHANNEL]
+Ich spiele im moment in `#{{ channel }}`, du machst wohl besser mit uns mit!
+
+[CMD_PLAY_FETCHING_MESSAGE]
+Rufe ab...
+
+[CMD_PLAY_NOTHING_FOUND]
+❔ Nichts gefunden. Hast du dich vielleicht vertippt?
+
+[CMD_PLAY_NOTHING_QUALIFIED]
+Nichts hat sich zum hinzufügen qualifiziert. Vielleicht sind alle Lieder zu lang oder bereits in der Queue?
+
+[CMD_PLAY_VALIDATE_FOOTER]
+Fügte Lieder hinzu.
+
+[CMD_PLAY_VALIDATE_DESCRIPTION]
+Habe {{ added }} / {{ requested }} deiner Angefragten Lieder hinzugefügt.
+Insgesamte Wiedergabelänge: {{ length }}
+
+[CMD_PLAY_VALIDATE_ALREADY_QUEUED]
+⚠ Dieses Lied ist bereits in der Queue.
+
+[CMD_PLAY_VALIDATE_TOO_LONG]
+ℹ Dieses Lied ist zu lang, die maximal erlaubte Länge beträgt eine Stunde.
+
+[CMD_PLAY_PICK_DESCRIPTION]
+Dauer: {{ length}}\n
+Antworte mit `y` um diese Lied auszuwühlen, mit `n` für das nächste Ergebnis, oder mit `cancel` um diesen Vorgang abzubrechen
+
+[CMD_PLAY_PICK_FOOTER]
+Ergebnis {{ current }} von {{ total }}.

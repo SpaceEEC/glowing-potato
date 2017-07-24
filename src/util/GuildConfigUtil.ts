@@ -1,6 +1,4 @@
-import { Client } from '../structures/Client';
 import { GuildConfigChannels, GuildConfigRoles, GuildConfigStrings, GuildConfigType } from '../types/GuildConfigKeys';
-import { Util } from './Util';
 
 /**
  * Static GuildConfigUtil class holding useful methods and props to interact with the guild configs.
@@ -68,15 +66,5 @@ export class GuildConfigUtil
 			|| GuildConfigRoles[uppercased]
 			|| GuildConfigStrings[uppercased]
 			|| null;
-	}
-
-	/**
-	 * Shortcut to `Util.client`
-	 * @readonly
-	 * @static
-	 */
-	public static get client(): Client
-	{
-		return Util.client;
 	}
 }

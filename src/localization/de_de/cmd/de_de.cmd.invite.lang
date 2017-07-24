@@ -1,0 +1,15 @@
+[CMD_INIVTE_EMBED_AUTHOR]
+Invite / Einladung
+
+[CMD_INVITE_EMBED_DESCRIPTION]
+Um mich auf deine Gilde/Server einzuladen klicke auf diesen Link [hier]({{ url }}).
+**Hinweis**: Du brauchst **Manage Guild**, um mich zu einer Gilde hinzuzufügen 
+\u200b
+
+[CMD_INVITE_EMBED_FIELD_TITLE]
+Weitere Informationen über die beigelegten Rechte:
+
+[CMD_INVITE_EMBED_FIELD_VALUE]
+Diese Rechte sind dazu da um sicher zu stellen, dass ich vernünftig funktioniere
+Das **Manage Messages** Recht ist nicht zwingend notwending, falls das nicht gewünscht ist.
+Ich werde dann lediglich nach Ab- oder Nachfragen nicht aufräumen können.

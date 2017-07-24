@@ -1,0 +1,66 @@
+## region action
+[CMD_GUILDINFO_RESOLVE_FAILED]
+Could not resolve the provided ID or invite code to a guild.
+## endregion
+
+## region both
+[CMD_GUILDINFO_EMBED_TITLE]
+Information about {{ name }}
+
+[CMD_GUILDINFO_EMBED_BOTH_MEMBERS_TITLE]
+❯ Members:
+
+[CMD_GUILDINFO_EMBED_BOTH_CREATED_TITLE]
+❯ Created:
+
+[CMD_GUILDINFO_EMBED_BOTH_CREATED_VALUE]
+• Relative: {{ relative }}
+• Absolute: {{ absolute }}
+## endergion
+
+## region full
+[CMD_GUILDINFO_EMBED_FULL_CHANNELS_TITLE]
+❯ Channels:
+
+[CMD_GUILDINFO_EMBED_FULL_CHANNELS_VALUE]
+• Default: `{{ default }}`
+• Text: `{{ text }}`
+• Voice: `{{ voice }}`
+
+[CMD_GUILDINFO_EMBED_FULL_MEMBERS_VALUE]
+• Owner: {{ owner }}
+• Total: `{{ total }}`
+• Online: `{{ online }}` (Note: This value may vary dou caching.)
+
+[CMD_GUILDINFO_EMBED_FULL_REGION_TITLE]
+❯ Region:
+## value only contains the region
+
+[CMD_GUILDINFO_EMBED_FULL_ROLES_TITLE]
+❯ Roles:
+
+[CMD_GUILDINFO_EMBED_FULL_ROLES_VALUE]
+• Total: `{{ total }}`
+• List: {{ list }}
+
+[CMD_GUILDINFO_EMBED_FULL_EMOJI_TITLE]
+❯ Emojis:
+## value only contains the emojis
+## endregion
+
+##region partial
+[CMD_GUILDINFO_EMBED_PARTIAL_DESCRIPTION]
+(Partial Guild)
+
+[CMD_GUILDINFO_EMBED_PARTIAL_CHANNEL_TITLE]
+❯ Default Channel:
+
+[CMD_GUILDINFO_EMBED_PARTIAL_CHANNEL_VALUE]
+• Name: `{{ name }}`
+• Mention: {{ channel }} (Note: This mentions only displays when you are in the guild.)
+
+## see both
+[CMD_GUILDINFO_EMBED_PARTIAL_MEMBERS_VALUE]
+• Total: `{{ memberCount }}`
+• Online: `{{ presenceCount }}`
+## endregion

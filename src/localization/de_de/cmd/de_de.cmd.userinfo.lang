@@ -1,0 +1,37 @@
+## in case I want to change that to a different layout per language.
+[CMD_USERINFO_MOMENT_FORMAT]
+DD.MM.YYYY hh:mm:ss [[UTC]]
+
+[CMD_USERINFO_CREATE_OR_JOIN_FORMAT]
+y[ Jahren], M[ Monaten und] d[ Tagen]
+
+
+[CMD_USERINFO_GAMESTATUS]
+{{! args.streaming ? 'streamt' : 'spielt' !}} moment: {{ name }}
+
+## field
+[CMD_USERINFO_GLOBAL_TITLE]
+❯ Global
+
+[CMD_USERINFO_GLOBAL_VALUE]
+• ` {{ tag }}`, {{ status }}
+• Spiel: {{ game }}
+• Avatar: {{ avatarURL }}
+• Mit mir geteile Gilden: `{{ sharedGuilds }}`
+• {{! args.bot ? 'Erstellt' : 'Account registriert' !}} vor {{ createdAgo }}.
+  ({{ createdAt }})
+
+[CMD_USERINFO_MEMBER_TITLE]
+❯ Gildenspezifisch
+
+[CMD_USERINFO_MEMBER_VALUE]
+• Nickname: {{ nickname }}
+• Rollen: {{ roles }}
+• {{! args.bot ? 'Zu dieser Gilde eingeladen' : 'Dieser Gilde beigetreten' !}} vor {{ joinedAgo }}
+  ({{ joinedAt }})
+
+[CMD_USERINFO_N_A]
+`❌`
+
+[CMD_USER_INFO_AVATAR]
+[Klick mich]({{ avatar }})

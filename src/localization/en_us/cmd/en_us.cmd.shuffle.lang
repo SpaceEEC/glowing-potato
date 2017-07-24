@@ -1,0 +1,5 @@
+[CMD_SHUFFLE_QUEUE_EMPTY_OR_TOO_SMALL]
+There is either no queue or there are less than `3` songs queued.
+
+[CMD_SHUFFLE_SUCCESS]
+Queue has been shuffled.

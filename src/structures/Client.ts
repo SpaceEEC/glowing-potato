@@ -3,6 +3,7 @@ import { join } from 'path';
 import {
 	Client as YAMDBFClient,
 	Guild,
+	Lang,
 	ListenerUtil,
 	logger,
 	Logger,
@@ -15,7 +16,6 @@ import { League } from 'yamdbf-league';
 
 import { Config } from '../types/config';
 import { RavenUtil } from '../util/RavenUtil';
-import { Util } from '../util/Util';
 import { EventHandlers } from './EventHandlers';
 import { MusicPlayer } from './MusicPlayer';
 import { RichEmbed } from './RichEmbed';
@@ -55,6 +55,7 @@ export class Client extends YAMDBFClient
 	{
 		super({
 			commandsDir: join(__dirname, '..', 'commands'),
+			localeDir: join(__dirname, '..', 'localization'),
 			owner: [ownerID],
 			pause: true,
 			plugins: [
@@ -76,7 +77,8 @@ export class Client extends YAMDBFClient
 			unknownCommandError: false,
 		});
 
-		Util.init(this);
+		Lang.loadCommandLocalizationsFrom(join(__dirname, '..', 'localization'));
+
 		RavenUtil.init();
 
 		this.musicPlayer = new MusicPlayer(this);
@@ -93,6 +95,7 @@ export class Client extends YAMDBFClient
 	public async _onPause(): Promise<void>
 	{
 		await this.setDefaultSetting('prefix', '$');
+		await this.setDefaultSetting('volume', 2);
 		this.emit('continue');
 	}
 
@@ -124,8 +127,9 @@ export class Client extends YAMDBFClient
 	@on('command')
 	public _onCommand(name: string, args: any[], execTime: number, message: Message): void
 	{
-		// ingore dev environment
-		if (logLevel === LogLevel.DEBUG) return;
+		// ingore dev environment and owner(s)
+		if (logLevel === LogLevel.DEBUG
+			|| this.isOwner(message.author)) return;
 
 		const logChannel: TextChannel = this.channels.get('334843191545036800') as TextChannel;
 
@@ -134,10 +138,10 @@ export class Client extends YAMDBFClient
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0xb4e0e0)
 			.setAuthor(`${author.tag} (${author.id})`, author.displayAvatarURL);
-		if (guild)
+		if (channel instanceof TextChannel)
 		{
 			embed.addField('Guild', `${guild.name}\n(${guild.id})`, true)
-				.addField('Channel', `#${(channel as TextChannel).name}\n(${channel.id})`, true)
+				.addField('Channel', `#${channel.name}\n(${channel.id})`, true)
 				.setThumbnail(guild.iconURL);
 		}
 		embed.addField('Exec time', `${execTime.toFixed(2)}ms`, true)
@@ -161,11 +165,10 @@ export class Client extends YAMDBFClient
 	{
 		this.logger.info(
 			left ? 'GuildDelete' : 'GuildCreate',
-			`${left ? 'Left' : 'Joined'} ${guild.name} (${guild.id})`,
+			left ? 'Left' : 'Joined',
+			guild.name,
+			`(${guild.id})`,
 		);
-
-		// ingore dev environment
-		if (logLevel === LogLevel.DEBUG) return;
 
 		const channel: TextChannel = this.channels.get('334820476557852683') as TextChannel;
 
@@ -178,7 +181,7 @@ export class Client extends YAMDBFClient
 				`Member count: ${guild.memberCount}`,
 				`Owner: ${guild.owner} - ${this.users.get(guild.ownerID).tag} (${guild.ownerID})`,
 			])
-			.setFooter(`current guild count: ${this.guilds.size}`)
+			.setFooter(`Current guild count: ${this.guilds.size}`)
 			.setTimestamp();
 
 		return channel.send({ embed })

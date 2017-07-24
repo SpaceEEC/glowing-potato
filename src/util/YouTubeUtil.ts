@@ -5,10 +5,10 @@
 
 import { get } from 'snekfetch';
 import { parse } from 'url';
+import { Logger } from 'yamdbf';
 
 import { Config } from '../types/Config';
 import { Video } from '../types/Video';
-import { Util } from './Util';
 
 const { googleToken }: Config = require('../../config.json');
 
@@ -148,7 +148,7 @@ export class YouTubeUtil
 			return response;
 		}) as any;
 
-		Util.client.logger.debug('YouTubeUtil | searchVideos', String(status), statusText, String(ok));
+		Logger.instance().debug('YouTubeUtil | searchVideos', String(status), statusText, String(ok));
 
 		if (!body.items[0]) return null;
 
@@ -209,7 +209,7 @@ export class YouTubeUtil
 			return response;
 		}) as any;
 
-		Util.client.logger.debug('YouTubeUtil | fetchPlaylist', String(status), statusText, String(ok));
+		Logger.instance().debug('YouTubeUtil | fetchPlaylist', String(status), statusText, String(ok));
 
 		if (!body.items) return arr.length ? arr : null;
 
@@ -254,7 +254,7 @@ export class YouTubeUtil
 			else return response;
 		}) as any;
 
-		Util.client.logger.debug('YouTubeUtil | fetchVideos', String(status), statusText, String(ok), !ok ? text : undefined);
+		Logger.instance().debug('YouTubeUtil | fetchVideos', String(status), statusText, String(ok), !ok ? text : undefined);
 
 		const videos: Video[] = [];
 		for (const video of body.items)

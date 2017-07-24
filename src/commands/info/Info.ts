@@ -25,26 +25,30 @@ export default class InfoCommand extends Command<Client>
 	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
 	{
 		const owners: string = this.client.owner.map((owner: string) => `\`${this.client.users.get(owner).tag}\``).join(', ');
+		const uptime: string = (moment.duration(this.client.uptime) as any).format(res('CMD_INFO_UPTIME_FORMAT_STRING'));
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0xffa500)
-			.setTitle('General information about the bot')
-			.addField('❯ Uptime:',
-			`• ${(moment.duration(this.client.uptime) as any).format('d[ days], h[ hours], m[ minutes and ]s[ seconds]')}`,
+			.setTitle(res('CMD_INFO_TITLE'))
+			.addField(res('CMD_INFO_UPTIME_TITLE'),
+			`• ${uptime}`,
 			false)
-			.addField('❯ Memory in use:',
+			.addField(res('CMD_INFO_UPTIME_MEMORY_USAGE_TITLE'),
 			`• ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
 			.addField('❯ spacebot-version:',
-			`• v${version}\n`
-			+ '  ([glowing-potato](http://puu.sh/teDYW/d6f9555fbd.png))', true)
+			[
+				`• v${version}`,
+				'  ([glowing-potato](http://puu.sh/teDYW/d6f9555fbd.png))',
+			],
+			true)
 			.addField('❯ Repositorie:',
 			'• [GitHub](https://github.com/SpaceEEC/glowing-potato)', true)
-			.addField('❯ Responsible:',
+			.addField(res('CMD_INFO_OWNER_TITLE'),
 			`• ${owners}`, true);
 
 		if (this.client.voiceConnections.size)
 		{
-			embed.addField('❯ Active voice connections:', this.client.voiceConnections.size, false);
+			embed.addField(res('CMD_INFO_VOICE_CONNECTIONS_TITLE'), this.client.voiceConnections.size, false);
 		}
 
 		embed.addField('❯ Library: ',

@@ -1,0 +1,3 @@
+[DECORATORS_REPORT_ERROR_TEXT]
+Ein unerwarteter Fehler ist aufgetreten: `{{ message }}`\n
+Dieser Fehler wurde gemeldet und wird ~~hoffentlich~~ bald behoben!

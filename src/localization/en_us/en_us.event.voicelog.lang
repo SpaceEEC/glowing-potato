@@ -1,0 +1,8 @@
+[EVENT_VOICELOG_DISCONNECT]
+{{ member }} disconnected from {{ channel }}.
+
+[EVENT_VOICELOG_CONNECT]
+{{ member }} connected to {{ channel }}.
+
+[EVENT_VOICELOG_MOVE]
+{{ member }} went from {{ oldChannel }} to {{ newChannel }}.

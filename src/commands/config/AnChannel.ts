@@ -16,11 +16,10 @@ const { expect } = Middleware;
 @name('anchannel')
 @group('config')
 @guildOnly
-@usage('<prefix>anchannel <option> [...channel]`\n\n'
-	+ '`option` is one of `get`, `set`, `reset')
+@usage('<prefix>anchannel <Option> [Channel]')
 export default class AnChannelCommand extends ConfigCommand<Client>
 {
-	@using(expect({ '<option>': 'String' }))
+	@using(expect({ '<Option>': 'String' }))
 	@using(resolveConfigOption(GuildConfigType.CHANNEL))
 	@using(expectConfigOption(GuildConfigType.CHANNEL))
 	@localizable

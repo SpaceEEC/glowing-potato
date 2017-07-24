@@ -1,0 +1,8 @@
+[CMD_LOOP_CURRENT_STATE]
+Die Wiedergabe {{! args.state ? 'läuft momentan' : 'ist im moment pausiert' !}}.
+
+[CMD_LOOP_CURRENT_ALREADY]
+Die Wiedergabe {{! args.state ? 'läuft bereits' : 'ist bereits pausiert' !}}.
+
+[CMD_LOOP_CURRENT_SET]
+Die Wiedergabe {{! args.state ? 'wird nun fortgesetzt' : 'ist jetzt pausiert' !}}.

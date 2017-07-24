@@ -1,0 +1,31 @@
+[CMD_PLAY_DIFFERENT_CHANNEL]
+I am currently playing in `#{{ channel }}`, you better join us!
+
+[CMD_PLAY_FETCHING_MESSAGE]
+Fetching...
+
+[CMD_PLAY_NOTHING_FOUND]
+❔ Nothing found. Maybe made a typo?
+
+[CMD_PLAY_NOTHING_QUALIFIED]
+No song qualified for adding. Maybe all of them are already queued or too long?
+
+[CMD_PLAY_VALIDATE_FOOTER]
+Added songs.
+
+[CMD_PLAY_VALIDATE_DESCRIPTION]
+Added {{ added }} / {{ requested }} of your requested songs.
+Full queue length: {{ length }}
+
+[CMD_PLAY_VALIDATE_ALREADY_QUEUED]
+⚠ That song is already in the queue.
+
+[CMD_PLAY_VALIDATE_TOO_LONG]
+ℹ That song is too long, max length is one hour.
+
+[CMD_PLAY_PICK_DESCRIPTION]
+Length: {{ length}}\n
+Respond with either `y` to select this video or with `n` for the next result.
+
+[CMD_PLAY_PICK_FOOTER]
+Result {{ current }} from {{ total }} results.

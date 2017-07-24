@@ -16,11 +16,10 @@ const { expect } = Middleware;
 @name('leavemessage')
 @group('config')
 @guildOnly
-@usage('<prefix>leavemessage <option> [...message]`\n\n'
-	+ '`option` is one of `get`, `set`, `reset')
+@usage('<prefix>leavemessage <Option> [...Message]')
 export default class LeaveMessageCommand extends ConfigCommand<Client>
 {
-	@using(expect({ '<option>': 'String' }))
+	@using(expect({ '<Option>': 'String' }))
 	@using(resolveConfigOption(GuildConfigType.STRING))
 	@using(expectConfigOption(GuildConfigType.STRING))
 	@localizable

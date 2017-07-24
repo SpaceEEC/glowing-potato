@@ -25,7 +25,7 @@ export default class ConfigOverviewCommand extends Command<Client>
 		let length: number = 0;
 		for (const [key] of values) if (length < key.length) length = key.length;
 
-		let response: string = 'Overview of whether config options are set up:\n```ldif\n';
+		let response: string = `${res('CMD_CONFIGOWERVIEW_EXPLANATION')}\n\`\`\`ldif\n`;
 		for (const [key, set] of values)
 		{
 			response += `${Util.padRight(key, length + 1)}: ${set ? '✅' : '❌'}\n`;

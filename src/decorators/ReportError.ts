@@ -21,10 +21,10 @@ export function ReportError(target: Command, key: string, descriptor: PropertyDe
 		{
 			return await original.apply(this, [message, args]);
 		}
-		catch (err)
+		catch (error)
 		{
 
-			await RavenUtil.error(this.name, err)
+			await RavenUtil.error(this.name, error)
 				.catch(() => null);
 
 			const lang: string = message.channel instanceof TextChannel
@@ -32,11 +32,7 @@ export function ReportError(target: Command, key: string, descriptor: PropertyDe
 				: this.client.defaultLang;
 			const res: ResourceLoader = Lang.createResourceLoader(lang);
 
-			await message.channel.send([
-				`An unexpected error occured while running the command: \`${err.message}\``,
-				'',
-				'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
-			]);
+			await message.channel.send(res('DECORATORS_REPORT_ERROR_TEXT', { message: error.message }));
 		}
 	};
 

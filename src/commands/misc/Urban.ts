@@ -1,5 +1,5 @@
 import { get, Result } from 'snekfetch';
-import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
@@ -9,6 +9,7 @@ import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
 import { UrbanDefinition } from '../../types/UrbanDefinition';
 import { UrbanResponse } from '../../types/UrbanResponse';
 
+const { expect } = Middleware;
 const { clientPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
@@ -16,9 +17,10 @@ const { clientPermissions, desc, group, guildOnly, name, usage, using, localizab
 @name('urban')
 @group('misg')
 @guildOnly
-@usage('<prefix>urban [-n] <...search>')
+@usage('<prefix>urban [-n] <...Search>')
 export default class Urban extends Command<Client>
 {
+	@using(expect({ '<...Search>': 'String' }))
 	@using((msg: Message, args: string[]) =>
 	{
 		let pickedNumber: number = 0;
@@ -47,10 +49,10 @@ export default class Urban extends Command<Client>
 						.setAuthor('Urbandictionary',
 						'http://www.urbandictionary.com/favicon.ico',
 						'http://www.urbandictionary.com/')
-						// tslint:disable-next-line:max-line-length
-						.setThumbnail('https://cdn.discordapp.com/attachments/242641288397062145/308943250465751041/eyJ1cmwiOiJodHRwOi8vaS5pbWd1ci5jb20vQ2NJWlpzYS5wbmcifQ.png')
-						.addField('No results', 'Maybe made a typo?')
-						.addField('Search:', `[URL](http://www.urbandictionary.com/define.php?term=${query})`)
+						.setThumbnail('https://a.safe.moe/7BZzg.png')
+						.addField(res('CMD_NO_RESULTS_TITLE'), res('CMD_NO_RESULTS_VALUE'))
+						.addField(res('CMD_NO_RESULTS_SEARCH'),
+						`[${res('CMD_NO_RESULTS_URL')}](http://www.urbandictionary.com/define.php?term=${query})`)
 						.setFooter(message.cleanContent, message.author.displayAvatarURL),
 				},
 			).then(() => undefined);
@@ -63,22 +65,29 @@ export default class Urban extends Command<Client>
 			.setAuthor('Urbandictionary',
 			'http://www.urbandictionary.com/favicon.ico',
 			'http://www.urbandictionary.com/')
-			// tslint:disable-next-line:max-line-length
-			.setThumbnail('https://cdn.discordapp.com/attachments/242641288397062145/308943250465751041/eyJ1cmwiOiJodHRwOi8vaS5pbWd1ci5jb20vQ2NJWlpzYS5wbmcifQ.png')
+			.setThumbnail('https://a.safe.moe/7BZzg.png')
 			.setTitle(`${search.join(' ')} [${selectedNumber + 1}/${body.list.length}]`)
 			.setDescription('\u200b');
 
 		const { example, definition }: UrbanDefinition = body.list[selectedNumber];
 
-		embed.splitToFields('Defition', definition);
+		embed.splitToFields(res('CMD_URBAN_DEFINITION'), definition);
 
 		if (example)
 		{
-			embed.splitToFields('Example', example);
+			embed.splitToFields(res('CMD_URBAN_EXAMPLE'), example);
 		}
 
-		embed.setFooter(`${message.cleanContent} | Definition ${selectedNumber + 1} from ${body.list.length} Definitions.`,
-			message.author.displayAvatarURL);
+		embed.setFooter(
+			res('CMD_URBAN_FOOTER',
+				{
+					content: message.cleanContent,
+					definition: (selectedNumber + 1).toLocaleString(),
+					maxDefinition: body.list.length.toLocaleString(),
+				},
+			),
+			message.author.displayAvatarURL,
+		);
 
 		return message.channel.send({ embed })
 			.then(() => undefined);

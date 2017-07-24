@@ -1,0 +1,25 @@
+[CMD_QUEUE_EMBED_TITLE]
+Insgesamte Lieder: {{ songs }} | Insgesamte Laufzeit: {{ queueLength }}
+
+[CMD_QUEUE_EMBED_FOOTER]
+Seite {{ page }} von {{ maxPage }}
+
+[CMD_QUEUE_LOOP_ENABLED]
+**Die Schleife ist aktiv**\n
+
+[CMD_QUEUE_CUURENTLY_PLAYING]
+**Moment gespielt:**\n
+
+[CMD_QUEUE_CURRENTLY_PAUSED]
+**Momentan pausiert:**\n
+
+[CMD_QUEUE_CURRENT_TIME]
+[{{ name }}]({{ url }})
+**Time:** (`{{ current }}`/`{{ length }}`) `-{{ left }}`
+
+[CMD_QUEUE_QUEUE]
+**Queue:**
+
+[CMD_QUEUE_LOOP_ENABLED]
+**Loop is enabled!**
+{{ page }}

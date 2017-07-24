@@ -1,0 +1,25 @@
+[CMD_QUEUE_EMBED_TITLE]
+Queued up Songs: {{ songs }} | Queue length: {{ queueLength }}
+
+[CMD_QUEUE_EMBED_FOOTER]
+Page {{ page }} of {{ maxPage }}
+
+[CMD_QUEUE_LOOP_ENABLED]
+**The loop is enabled**\n
+
+[CMD_QUEUE_CUURENTLY_PLAYING]
+**Currently playing:**\n
+
+[CMD_QUEUE_CURRENTLY_PAUSED]
+**Currently paused:**\n
+
+[CMD_QUEUE_CURRENT_TIME]
+[{{ name }}]({{ url }})
+**Time:** (`{{ current }}`/`{{ length }}`) `-{{ left }}`
+
+[CMD_QUEUE_QUEUE]
+**Queue:**
+
+[CMD_QUEUE_LOOP_ENABLED]
+**Loop is enabled!**
+{{ page }}

@@ -1,11 +1,12 @@
-import { CommandDecorators, Message, Middleware } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
+import { Queue } from '../../structures/Queue';
 
-const { desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 const { resolve } = Middleware;
 
 @desc('Sets or gets the volume of the current playback.\n'
@@ -17,34 +18,74 @@ const { resolve } = Middleware;
 @usage('<prefix>volume [volume]')
 export default class VolumeCommand extends Command<Client>
 {
-	// tslint:disable-next-line:only-arrow-functions
-	// tslint:disable-next-line:no-shadowed-variable
-	@using(function(message: Message, args: string[]): [Message, string[]]
+	// tslint:disable:only-arrow-functions no-shadowed-variable
+	@using(function(message: Message, [volume]: [number]): [Message, [number]]
 	{
-		if (args[0]) return musicRestricted(true).call(this, message, args);
+		if (volume) return musicRestricted(true).call(this, message, [volume]);
 
-		return [message, args];
+		return [message, [null]];
 	})
 	@using(resolve({ '<Volume>': 'Number' }))
-	@ReportError
-	public async action(message: Message, [volume]: [number]): Promise<void>
+	@localizable
+	@using(function(message: Message, [res, volume]: [ResourceLoader, number]): [Message, [ResourceLoader, number]]
 	{
 		if (typeof volume === 'number')
 		{
 			if (volume > 10)
 			{
-				return message.channel.send('The volume may not be higher than `10`.')
-					.then((m: Message) => m.delete(5e3))
-					.catch(() => null);
+				throw new Error(res('CMD_VOLUME_TOO_HIGH'));
+
 			}
 			if (volume < 1)
 			{
-				return message.channel.send('The volume may not be lower than `1`.')
-					.then((m: Message) => m.delete(5e3))
-					.catch(() => null);
+				throw new Error(res('CMD_VOLUME_TOO_LOW'));
+			}
+		}
+		return [message, [res, volume]];
+	})
+	@ReportError
+	// tslint:enable:only-arrow-functions no-shadowed-variable
+	public async action(message: Message, [res, volume]: [ResourceLoader, number]): Promise<void>
+	{
+		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
+		const update: boolean = Boolean(volume);
+
+		if (queue)
+		{
+			if (update)
+			{
+				queue.volume = volume;
+			}
+			else
+			{
+				volume = queue.volume;
+			}
+
+		}
+		else
+		{
+			if (update)
+			{
+				await message.guild.storage.settings.set('volume', volume);
+			}
+			else
+			{
+				volume = await message.guild.storage.settings.get('volume');
 			}
 		}
 
-		return this.client.musicPlayer.volume(message, volume);
+		// tslint:disable-next-line:no-console
+		console.log(volume, update, !!queue);
+
+		return message.channel.send(
+			res(
+				'CMD_VOLUME_SUCCESS',
+				{
+					update: String(update || ''),
+					volume: volume.toLocaleString(),
+				},
+			))
+			.then((m: Message) => m.delete(1e4))
+			.catch(() => null);
 	}
 }

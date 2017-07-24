@@ -15,16 +15,13 @@ const { expect, resolve } = Middleware;
 @name('config')
 @group('config')
 @guildOnly
-@usage('<prefix>config <option> <key> [...value]`\n\n'
-	+ '`option` is one of `get`, `set`, `reset`.\n'
-	+ `\`key\` is one of ${GuildConfigUtil.allConfigKeys.map((key: string) => `\`${key.toLowerCase()}\``).join(', ')}.\n`
-	+ '`value` is either a channel, role or the desired text. Only available when using the option `set')
+@usage('<prefix>config <Option> <Key> [...Value]')
 export default class ConfigCommand extends ConfigCommandBase<Client>
 {
 	// tslint:disable:no-shadowed-variable object-literal-sort-keys
 	@using(expect({
-		'<options>': 'String',
-		'<key>': 'String',
+		'<Options>': 'String',
+		'<Key>': 'String',
 	}))
 	@using(async function(message: Message, args: [string, string, string | undefined])
 		: Promise<[Message, [string, string, string | undefined]]>
@@ -67,9 +64,9 @@ export default class ConfigCommand extends ConfigCommandBase<Client>
 		}
 
 		return expect({
-			'<option>': 'String',
-			'<key>': 'String',
-			'<...value>': 'Any',
+			'<Option>': 'String',
+			'<Key>': 'String',
+			'<...Value>': 'Any',
 		}).call(this, message, args);
 	})
 	@using(function(msg: Message, args: [string, string, string | undefined])
@@ -80,25 +77,25 @@ export default class ConfigCommand extends ConfigCommandBase<Client>
 			if (GuildConfigChannels.hasOwnProperty(args[1].toUpperCase()))
 			{
 				return resolve({
-					'<option>': 'String',
-					'<key>': 'String',
-					'<...value>': 'Channel',
+					'<Option>': 'String',
+					'<Key>': 'String',
+					'<...Value>': 'Channel',
 				}).call(this, msg, args);
 			}
 			else if (GuildConfigRoles.hasOwnProperty(args[1].toUpperCase()))
 			{
 				return resolve({
-					'<option>': 'String',
-					'<key>': 'String',
-					'<...value>': 'Role',
+					'<Option>': 'String',
+					'<Key>': 'String',
+					'<...Value>': 'Role',
 				}).call(this, msg, args);
 			}
 			else if (GuildConfigStrings.hasOwnProperty(args[1].toUpperCase()))
 			{
 				return resolve({
-					'<option>': 'String',
-					'<key>': 'String',
-					'<...value>': 'String',
+					'<Option>': 'String',
+					'<Key>': 'String',
+					'<...Value>': 'String',
 				}).call(this, msg, args);
 			}
 

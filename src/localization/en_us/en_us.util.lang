@@ -1,0 +1,3 @@
+[UTIL_RESOLVE_BOOLEAN]
+Could not resolve {{ input }} to a boolean.
+Use `y` or `n`, for example.

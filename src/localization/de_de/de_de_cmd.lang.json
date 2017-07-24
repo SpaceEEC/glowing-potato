@@ -1,0 +1,204 @@
+{
+	"anchannel": {
+		"de_de": {
+			"desc": "Legt den \"announcements channel\" für diesen Server fest, zeigt diesen an oder entfernt diesen aus der Konfiguration.",
+			"usage": "<prefix>anchannel <Option> [Channel]",
+			"info": "In dem festgelegten Channel werden Member, welche den Server betreten begrüßt, sowie verlassenen Membern eine Nachricht hinterlassen."
+		}
+	},
+	"config": {
+		"de_de": {
+			"desc": "Ermöglich das bearbeiten von allen verfügbaren Einstellungen.",
+			"usage": "<prefix>config <Option> <Schlüssel> [...Wert]"
+		}
+	},
+	"configoverview": {
+		"de_de": {
+			"desc": "Zeigt einen Überblick der Config an.",
+			"usage": "<prefix>configoverview",
+			"info": "Dies Zeigt nur an ob ein Wert fesgetelegt wurde, aber nicht womit."
+		}
+	},
+	"joinmessage": {
+		"de_de": {
+			"desc": "Legt die Willkommensnachricht für diesen Server fest, zeigt diese an, oder löscht diese.",
+			"usage": "<prefix>joinmessage <Option> [...Nachricht]",
+			"info": "Es kann `:member:` und `:guild:` als Platzhalter verwendet werden.\nDiese werden dann mit dem Member und dem Namen der Gilde/Server ausgewechselt."
+		}
+	},
+	"leavemessage": {
+		"de_de": {
+			"desc": "Legt die Abschiedsnachricht für diesen Server fest, zeigt diese an, oder löscht diese.",
+			"usage": "<prefix>leavemessage <Option> [...Nachricht]",
+			"info": "Es kann `:member:` und `:guild:` als Platzhalter verwendet werden.\nDiese werden dann mit dem Member und dem Namen der Gilde/Server ausgewechselt."
+		}
+	},
+	"logchannel": {
+		"de_de": {
+			"desc": "Legt die \"log channel\" für diesen Server fest, zeigt diesen an, oder löscht diesen aus der Konfiguration..",
+			"usage": "<prefix>logchannel <Option> [Channel]",
+			"info": "Identisch zum \"announcement channel\", Willkommens- und Abschiedsnachrichten aller Member."
+		}
+	},
+	"musicchannel": {
+		"de_de": {
+			"desc": "Legt den \"music channel\" für diesen Server fest, zeigt diesen an, oder löscht diesen aus der Konfiguration.",
+			"usage": "<prefix>musicchannel <Option> [Channel]",
+			"info": "Wenn festgelegt, können Musikbefehle nur in diesem Channel verwendet werden."
+		}
+	},
+	"musicrole": {
+		"de_de": {
+			"desc": "Legt die \"music role\" für diesen Server fest, zeigt diese an, oder löscht diesen aus der Konfiguration.",
+			"usage": "<prefix>musicrole <Option> [Rolle]",
+			"info": "Wenn festgelegt, können Musikbefehle nur von Members mit dieser Riolle ausgeführt werden."
+		}
+	},
+	"vlogchannel": {
+		"de_de": {
+			"desc": "Legt den \"voice log channel\" für diesen Server fest, zeigt diesen an, oder löscht diesen aus der Konfiguration.",
+			"usage": "<prefix>vlogchannel <Option> [Channel]",
+			"info": "In diesen Channel wird immer dann eine Nachricht gesendent, wenn ein Member einen Channel, betritt, verlässt, oder sich zwischen zweien bewegt."
+		}
+	},
+	"guildinfo": {
+		"de_de": {
+			"desc": "Zeigt allgemeine Informationen über die angegebene Gilde an.",
+			"usage": "<prefix>guildinfo [ID | Invite Code]"
+		}
+	},
+	"info": {
+		"de_de": {
+			"desc": "Zeigt allgemeine Informationen über diesen Bot an.",
+			"usage": "<prefix>info"
+		}
+	},
+	"userinfo": {
+		"de_de": {
+			"desc": "Zeigt allgemeine Informationen über den Angegenen Nutzer.",
+			"usage": "<prefix>userinfo <Nutzer>"
+		}
+	},
+	"avatar": {
+		"de_de": {
+			"desc": "Zeigt das Avatar des gewünschten Nutzers an.",
+			"usage": "<prefix>avatar <Nutzer>"
+		}
+	},
+	"urban": {
+		"de_de": {
+			"desc": "Zeigt eine Definition von Urbandictionary an.",
+			"usage": "<prefix>urban [-n] <...Suche>"
+		}
+	},
+	"prune": {
+		"de_de": {
+			"desc": "Löscht die angegeben Anzahl der Nachrichten aus diesem Channel, mit optionalem Filtern eines Nutzer.",
+			"usage": "<prefix>prune <Anzahl> [Ziel]"
+		}
+	},
+	"loop": {
+		"de_de": {
+			"desc": "Legt fest ob abeschlossene Lieder wieder hinten an die Queue angehängt werden sollen, oder zeigt dies an.",
+			"usage": "<prefix>loop [y|n]"
+		}
+	},
+	"nowplaying": {
+		"de_de": {
+			"desc": "Zeigt den aktuell wiedergebenden Song an.",
+			"usage": "<prefix>np"
+		}
+	},
+	"pause": {
+		"de_de": {
+			"desc": "Pausiert die aktuelle wiedergabe.",
+			"usage": "<prefix>pause"
+		}
+	},
+	"play": {
+		"de_de": {
+			"desc": "Fügt ein Lieder oder Playlist von YouTube zur Playlist hinzu und startet die Wiedergabe falls notwendig.",
+			"usage": "<prefix>play [Limit] <...Suche|ID|Link>",
+			"info": "[Limit] formattiert als `-7` ist optional um mehr als ein Ergebnis anzeigen zu lassen, oder mehr/weniger als 20 Lieder einer Playlist hinzuzufügen."
+		}
+	},
+	"queue": {
+		"de_de": {
+			"desc": "Zeigt die angeforderte Seite der Queue an.",
+			"usage": "<prefix>queue [Seite]"
+		}
+	},
+	"remove": {
+		"de_de": {
+			"desc": "Entfernt ein Lied aus der Queue.",
+			"usage": "<prefix>remove <Index>"
+		}
+	},
+	"resume": {
+		"de_de": {
+			"desc": "Setzt die pausierte Wiedergabe wiedert fort.",
+			"usage": "<prefix>resume"
+		}
+	},
+	"save": {
+		"de_de": {
+			"desc": "Schickt die das aktuell gespielte Lied als direkte Nachricht zu.",
+			"usage": "<prefix>save"
+		}
+	},
+	"shuffle": {
+		"de_de": {
+			"desc": "Mischt die Queue.",
+			"usage": "<prefix>shuffle"
+		}
+	},
+	"skip": {
+		"de_de": {
+			"desc": "Überspringt das aktuelle Lied,",
+			"usage": "<prefix>skip"
+		}
+	},
+	"stop": {
+		"de_de": {
+			"desc": "Stopt die Wiedergabe komplett.",
+			"usage": "<prefix>stop"
+		}
+	},
+	"summon": {
+		"de_de": {
+			"desc": "Beschwört den Bot in den aktuellen Channel herbei.",
+			"usage": "<prefix>summoner"
+		}
+	},
+	"volume": {
+		"de_de": {
+			"desc": "Setzt die Lautstärke fest, oder Zeigt diese an.",
+			"usage": "<prefix>volume [Lautstärke]",
+			"info": "Die Lautstärke reicht von `1` bis `10`."
+		}
+	},
+	"invite": {
+		"de_de": {
+			"desc": "Generiert einen Link um diesen Bot in eine anderen Gilde/Server einzuladen.",
+			"usage": "<prefix>invite"
+		}
+	},
+	"donmai": {
+		"de_de": {
+			"desc": "Zeigt ein zufälliges Bild von safebooru.donmai.us an, welches die angegebenen Tags hat.",
+			"usage": "<prefix>donmai <...Tags>"
+		}
+	},
+	"konachan": {
+		"de_de": {
+			"desc": "Zeigt ein zufälliges Bild von konachan.net an, welches die angegebenen Tags hat.",
+			"usage": "<prefix>konachan <...Tags>"
+		}
+	},
+	"picture": {
+		"de_de": {
+			"desc": "Zeigt ein zufälliges Bild von konachan.net oder safeboory.donmai.us an, welches die angegebenen Tags hat.",
+			"usage": "<prefix>picture <...Tags>"
+		}
+	}
+}

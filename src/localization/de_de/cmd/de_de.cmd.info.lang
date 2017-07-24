@@ -1,0 +1,18 @@
+[CMD_INFO_TITLE]
+Allgemeine Informationen über diesen Bot
+
+[CMD_INFO_UPTIME_TITLE]
+❯ Laufzeit
+
+## this is the moment#format string!
+[CMD_INFO_UPTIME_FORMAT_STRING]
+d[ Tage], h[ Stunden], m[ Minuten und ]s[ Sekunden]
+
+[CMD_INFO_UPTIME_MEMORY_USAGE_TITLE]
+❯ Genutzter Ram
+
+[CMD_INFO_OWNER_TITLE]
+❯ Verantwortlich
+
+[CMD_INFO_VOICE_CONNECTIONS_TITLE]
+❯ Aktuelle Sprachverbindungen (Musik):

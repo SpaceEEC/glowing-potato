@@ -27,25 +27,15 @@ export default class InviteCommand extends Command<Client>
 			'ADD_REACTIONS',
 			'CONNECT',
 			'SPEAK',
-			'USE_VAD',
+			'USE_VAD', // is this even needed?
 		]);
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(7019884)
-			.setAuthor('Invite', null, invite)
+			.setAuthor(res('CMD_INIVTE_EMBED_AUTHOR'), null, invite)
 			.setThumbnail(this.client.user.displayAvatarURL)
-			.setDescription([
-				`To invite me to your server click this link [here](${invite}).`,
-				'**Note**: You need the **Manage Guild** permission to add me.',
-				'\u200b',
-			])
-			.addField('**Additional informations regarding the attached permissions:**',
-			[
-				'Those permissions are there to ensure I can work as expected.',
-				'',
-				'You don\'t have to entrust me with **Manage Messages** if you don\'t want to.',
-				'I just won\'t be able to clean up after prompts, that\'s it!',
-			]);
+			.setDescription(res('CMD_INVITE_EMBED_DESCRIPTION', { url: invite }))
+			.addField(res('CMD_INVITE_EMBED_FIELD_TITLE'), res('CMD_INVITE_EMBED_FIELD_VALUE'));
 
 		return message.channel.send({ embed })
 			.then(() => undefined);

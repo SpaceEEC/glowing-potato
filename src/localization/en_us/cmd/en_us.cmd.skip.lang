@@ -1,0 +1,5 @@
+[CMD_SKIP_NOT_POSSIBLE_YET]
+The song did not start yet, duo technical limitations skipping is only possible after the song started.
+
+[CMD_SKIP_SUCCESS]
+Skipped `{{ song }}`.

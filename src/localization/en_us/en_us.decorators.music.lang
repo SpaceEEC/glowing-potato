@@ -1,0 +1,9 @@
+[DECORATORS_MUSIC_ROLE_MEMBERS]
+This command is only usable by members with the music role: `{{ role }}`!
+
+[DECORATORS_MUSIC_TEXT_CHANNEL]
+This command is only usable in the music channel: {{ channel }}!
+
+[DECORATORS_MUSIC_VOICE_CHANNEL]
+This command is only usable by members that are in my voice channel: {{ channel }}!
+
