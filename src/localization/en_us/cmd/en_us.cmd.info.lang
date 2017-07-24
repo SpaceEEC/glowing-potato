@@ -1,0 +1,18 @@
+[CMD_INFO_TITLE]
+General information about this bot
+
+[CMD_INFO_UPTIME_TITLE]
+❯ Uptime
+
+## this is the moment#format string!
+[CMD_INFO_UPTIME_FORMAT_STRING]
+d[ days], h[ hours], m[ minutes and ]s[ seconds]
+
+[CMD_INFO_UPTIME_MEMORY_USAGE_TITLE]
+❯ Memory in use:
+
+[CMD_INFO_OWNER_TITLE]
+❯ Responsible
+
+[CMD_INFO_VOICE_CONNECTIONS_TITLE]
+❯ Active voice connections:

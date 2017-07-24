@@ -26,14 +26,14 @@ export function expectConfigOption(type: GuildConfigType)
 				{
 					arg: args[0],
 					name: '<Option>',
-					type: '`get`, `set` and `reset`',
+					type: '`get`, `set`, `reset`',
 					usage: this.usage,
 				}),
 			);
 		}
 		if (args[0] === 'set')
 		{
-			return expect({ '<option>': 'String', [name]: argType }).call(this, message, args);
+			return expect({ '<Option>': 'String', [name]: argType }).call(this, message, args);
 		}
 		return [message, [args[0], undefined]];
 	};
@@ -47,7 +47,7 @@ export function resolveConfigOption(type: GuildConfigType)
 	{
 		if (args[0] === 'set')
 		{
-			return resolve({ '<option>': 'String', [name]: argType }).call(this, message, args);
+			return resolve({ '<Option>': 'String', [name]: argType }).call(this, message, args);
 		}
 		return [message, [args[0], undefined]];
 	};
@@ -58,10 +58,10 @@ function resolveArgType(type: GuildConfigType): [string, ExpectArgType | Resolve
 	switch (type)
 	{
 		case GuildConfigType.CHANNEL:
-			return ['<...channel>', 'Channel'];
+			return ['<Channel>', 'Channel'];
 		case GuildConfigType.ROLE:
-			return ['<...role>', 'Role'];
+			return ['<...Role>', 'Role'];
 		case GuildConfigType.STRING:
-			return ['<...message>', 'String'];
+			return ['<...Message>', 'String'];
 	}
 }

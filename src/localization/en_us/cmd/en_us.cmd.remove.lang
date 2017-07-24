@@ -1,0 +1,5 @@
+[CMD_REMOVE_NOT_FOUND]
+The specified entry could not be found!
+
+[CMD_REMOVE_SUCCESS]
+Removed `{{ removed }}` at position {{ position }}.

@@ -17,11 +17,10 @@ const { expect } = Middleware;
 @name('musicrole')
 @group('config')
 @guildOnly
-@usage('<prefix>musicrole <option> [...role]`\n\n'
-	+ '`option` is one of `get`, `set`, `reset')
+@usage('<prefix>musicrole <Option> [Role]')
 export default class MusicRoleCommand extends ConfigCommand<Client>
 {
-	@using(expect({ '<option>': 'String' }))
+	@using(expect({ '<Option>': 'String' }))
 	@using(resolveConfigOption(GuildConfigType.ROLE))
 	@using(expectConfigOption(GuildConfigType.ROLE))
 	@localizable

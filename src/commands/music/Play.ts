@@ -1,5 +1,5 @@
 import { Collection, Permissions, Snowflake, VoiceChannel } from 'discord.js';
-import { CommandDecorators, Message, Middleware } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
@@ -13,7 +13,7 @@ import { Video } from '../../types/Video';
 import { Util } from '../../util/Util';
 import { YouTubeUtil } from '../../util/YouTubeUtil';
 
-const { aliases, clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { aliases, clientPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 const { expect, resolve } = Middleware;
 
 @aliases('search', 'serach')
@@ -47,9 +47,10 @@ export default class PlayCommand extends Command<Client>
 		'<Limit>': 'Number',
 		'<...Query>': 'String',
 	}))
+	@localizable
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable object-literal-sort-keys
-	public async action(message: Message, [limit, query]: [number, string]): Promise<void>
+	public async action(message: Message, [res, limit, query]: [ResourceLoader, number, string]): Promise<void>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 		let voiceChannel: VoiceChannel;
@@ -59,52 +60,43 @@ export default class PlayCommand extends Command<Client>
 			voiceChannel = message.member.voiceChannel;
 			if (!voiceChannel)
 			{
-				return message.channel.send([
-					'You are not in a voice channel, I won\'t whisper you the song...',
-					'Move into a voice channel!',
-				])
-					.then((mes: Message) => void mes.delete(5e3))
+				return message.channel.send(res('MUSIC_NOT_IN_VOICECHANNEL'))
+					.then((mes: Message) => void mes.delete(1e4))
 					.catch(() => undefined);
 			}
 
 			const permissions: Permissions = voiceChannel.permissionsFor(message.guild.me);
 			if (!permissions.has('CONNECT'))
 			{
-				return message.channel.send([
-					'Your voice channel sure looks nice, but I am unfortunately not allowed to join it.',
-					'Better luck next time, buddy.',
-				])
-					.then((mes: Message) => void mes.delete(5e3))
+				return message.channel.send(res('MUSIC_NO_CONNECT'))
+					.then((mes: Message) => void mes.delete(1e4))
 					.catch(() => undefined);
 			}
 			if (!permissions.has('SPEAK'))
 			{
-				return message.channel.send([
-					'Your party sure looks nice.',
-					'I\'d love to join, but I am unfortunately not allowed to speak there.',
-				])
-					.then((mes: Message) => void mes.delete(5e3))
+				return message.channel.send(res('MUSIC_NO_SPEAK'))
+					.then((mes: Message) => void mes.delete(1e4))
 					.catch(() => undefined);
 			}
 		}
 		else if (!queue.voiceChannel.members.has(message.author.id))
 		{
-			return message.channel.send(`I am currently playing in ${queue.voiceChannel.name}, you better join us!`)
-				.then((mes: Message) => void mes.delete(5e3))
+			return message.channel.send(res('CMD_PLAY_DIFFERENT_CHANNEL', { channel: queue.voiceChannel.name }))
+				.then((mes: Message) => void mes.delete(1e4))
 				.catch(() => undefined);
 		}
 
-		const fetchMessage: Message = await message.channel.send('Fetching info...') as Message;
+		const fetchMessage: Message = await message.channel.send(res('CMD_PLAY_FETCHING_MESSAGE')) as Message;
 
 		const video: Video = await YouTubeUtil.getVideo(query);
 		this.client.logger.debug('PlayCommand | video', video ? 'found' : 'not found');
 
-		if (video) return this._validateAndAdd(fetchMessage, message, queue, video);
+		if (video) return this._validateAndAdd(res, fetchMessage, message, queue, video);
 
 		const playlist: Video[] = await YouTubeUtil.getPlaylist(query, Math.min(limit || 20, 200));
 		this.client.logger.debug('PlayCommand | playlist', String(playlist ? playlist.length : playlist), 'items');
 
-		if (playlist) return this._validateAndAdd(fetchMessage, message, queue, playlist);
+		if (playlist) return this._validateAndAdd(res, fetchMessage, message, queue, playlist);
 
 		const search: Video[] = await YouTubeUtil.searchVideos(query, Math.min(limit || 1, 50));
 		this.client.logger.debug('PlayCommand | search', String(search ? search.length : search), 'items');
@@ -112,22 +104,27 @@ export default class PlayCommand extends Command<Client>
 		if (search)
 		{
 			const toAdd: Video = search[1]
-				? await this._pick(message, search, fetchMessage)
+				? await this._pick(res, message, search, fetchMessage)
 				: search[0];
 
-			if (toAdd) return this._validateAndAdd(fetchMessage, message, queue, toAdd);
+			if (toAdd) return this._validateAndAdd(res, fetchMessage, message, queue, toAdd);
 
-			return message.channel.send('Aborting then.')
-				.then((mes: Message) => void mes.delete(5e3))
+			return message.channel.send(res('CMD_ABORTING'))
+				.then((mes: Message) => void mes.delete(1e4))
 				.catch(() => undefined);
 		}
 
-		return fetchMessage.edit('❔ Nothing found. Maybe made a typo?')
-			.then((mes: Message) => void mes.delete(5e3))
+		return fetchMessage.edit(res('CMD_PLAY_NOTHING_FOUND'))
+			.then((mes: Message) => void mes.delete(1e4))
 			.catch(() => undefined);
 	}
 
-	private async _validateAndAdd(fetchMessage: Message, message: Message, queue: Queue, input: Video | Video[])
+	private async _validateAndAdd(
+		res: ResourceLoader,
+		fetchMessage: Message,
+		message: Message,
+		queue: Queue,
+		input: Video | Video[])
 		: Promise<void>
 	{
 		if (input instanceof Array)
@@ -146,15 +143,15 @@ export default class PlayCommand extends Command<Client>
 
 			if (!success)
 			{
-				return message.channel.send('No song qualified for adding. Maybe all of them are already queued or too long?')
-					.then((m: Message) => void m.delete(5e3));
+				return message.channel.send(res('CMD_PLAY_NOTHING_QUALIFIED'))
+					.then((m: Message) => void m.delete(1e4));
 			}
 
 			const fullLength: number = +(queue && queue.reduce((val: number, cur: Song) => val += cur.length, 0))
 				+ songs.reduce((val: number, cur: Song) => val += cur.length, 0);
 			const lastSong: Song = songs[songs.length - 1];
 			// tslint:disable-next-line:no-shadowed-variable that is no shadow variable <.<
-			const first: boolean = await this.client.musicPlayer.add(message, songs);
+			const first: boolean = await this.client.musicPlayer.add(res, message, songs);
 
 			if (!first)
 			{
@@ -162,12 +159,15 @@ export default class PlayCommand extends Command<Client>
 					embed: new RichEmbed()
 						.setAuthor(lastSong.username, lastSong.avatarURL)
 						.setColor(0xFFFF00)
-						.setFooter('added songs', this.client.user.avatarURL)
-						.setDescription([
-							`Added ${songs.length} / ${input.length} of your requested songs.`,
-							`Full queue length: ${Util.timeString(fullLength)}`,
-						].join('\n')),
-				}).then((m: Message) => void m.delete(5e3));
+						.setFooter(res('CMD_PLAY_VALIDATE_FOOTER'), this.client.user.avatarURL)
+						.setDescription(res('CMD_PLAY_VALIDATE_DESCRIPTION',
+							{
+								added: songs.length.toLocaleString(),
+								lenght: Util.timeString(fullLength),
+								requested: input.length.toLocaleString(),
+							},
+						)),
+				}).then((m: Message) => void m.delete(1e4));
 			}
 			return fetchMessage.delete()
 				.then(() => undefined)
@@ -177,23 +177,23 @@ export default class PlayCommand extends Command<Client>
 		const failed: string = this._validate(input, queue);
 		if (failed)
 		{
-			return fetchMessage.edit(failed, { embed: null })
-				.then((m: Message) => m.delete(5e3))
+			return fetchMessage.edit(res(failed), { embed: null })
+				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		const song: Song = new Song(input, message.member);
-		const first: boolean = await this.client.musicPlayer.add(message, song);
+		const first: boolean = await this.client.musicPlayer.add(res, message, song);
 
 		if (!first)
 		{
 			return fetchMessage.edit('', { embed: song.embed(SongEmbedType.ADDED) })
-				.then((m: Message) => m.delete(5e3))
+				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		return fetchMessage.delete()
-			.then((m: Message) => m.delete(5e3))
+			.then((m: Message) => m.delete(1e4))
 			.catch(() => null);
 	}
 
@@ -201,17 +201,23 @@ export default class PlayCommand extends Command<Client>
 	{
 		if (queue && queue.some((song: Song) => song.id === video.id))
 		{
-			return '⚠ That song is already in the queue.';
+			return 'CMD_PLAY_VALIDATE_ALREADY_QUEUED';
 		}
 		if (video.durationSeconds > 36e2)
 		{
-			return 'ℹ That song is too long, max length is one hour.';
+			return 'CMD_PLAY_VALIDATE_TOO_LONG';
 		}
 
 		return null;
 	}
 
-	private async _pick(message: Message, videos: Video[], statusMessage: Message, index: number = 0): Promise<Video>
+	private async _pick(
+		res: ResourceLoader,
+		message: Message,
+		videos: Video[],
+		statusMessage: Message,
+		index: number = 0,
+	): Promise<Video>
 	{
 		const video: Video = videos[index];
 
@@ -230,12 +236,17 @@ export default class PlayCommand extends Command<Client>
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x9370DB).setTitle(video.title)
 			.setImage(`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`)
-			.setDescription([
-				`Length: ${video.durationSeconds ? Util.timeString(video.durationSeconds) : 'Livestream'}`,
-				'',
-				'Respond with either `y` to select this video or with `n` for the next result.',
-			])
-			.setFooter(`Result ${index + 1} from ${videos.length} results.`,
+			.setDescription(res('CMD_PLAY_PICK_DESCRIPTION',
+				{
+					length: video.durationSeconds ? Util.timeString(video.durationSeconds) : 'Livestream',
+				},
+			))
+			.setFooter(res('CMD_PLAY_PICK_FOOTER',
+				{
+					current: (index + 1).toLocaleString(),
+					total: videos.length.toLocaleString(),
+				},
+			),
 			message.author.displayAvatarURL);
 
 		statusMessage = statusMessage
@@ -256,7 +267,7 @@ export default class PlayCommand extends Command<Client>
 
 		if (response.content.split(' ')[0].toLowerCase() === 'n')
 		{
-			return this._pick(message, videos, statusMessage, ++index);
+			return this._pick(res, message, videos, statusMessage, ++index);
 		}
 
 		return video;

@@ -1,9 +1,8 @@
 import { GuildMember, Snowflake, TextChannel, VoiceConnection } from 'discord.js';
 import { createWriteStream, unlink, WriteStream } from 'fs';
-import { Message, Time } from 'yamdbf';
+import { Message, ResourceLoader, Time } from 'yamdbf';
 import * as ytdl from 'ytdl-core';
 
-import { PaginatedPage } from '../types/PaginatedPage';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { TimeoutType } from '../types/TimeoutType';
 import { RavenUtil } from '../util/RavenUtil';
@@ -60,394 +59,13 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 	}
 
 	/**
-	 * Outputs the current queue.
-	 * @param {Message} message
-	 * @param {number} page The requested page
-	 * @returns {Promise<void>}
-	 */
-	public queue(message: Message, page: number): Promise<void>
-	{
-		const queue: Queue = this.get(message.guild.id);
-
-		if (!queue)
-		{
-			return message.channel
-				.send('There is nothing being played at the moment, just queue something up.')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		if (queue.length === 1) return this.nowPlaying(message);
-
-		const { items, maxPage }: PaginatedPage<Song> = queue.page(page);
-		const fullLength: string = Util.timeString(queue.reduce((p: number, c: Song) => p += c.length, 0));
-
-		let i: number = (page - 1) * 11;
-		const currentPage: string[] = items
-			.map((song: Song) => `\`${i++}.\` ${song.lengthString} - [${song.name}](${song.url})`);
-
-		const embed: RichEmbed = new RichEmbed()
-			.setColor(0x0800ff)
-			.setTitle(`Queued up Songs: ${queue.length} | Queue length: ${fullLength}`)
-			.setFooter(`Page ${page} of ${maxPage}.`);
-
-		if (page === 1)
-		{
-			const { currentSong, dispatcher, playing, loop } = queue;
-			const currentTime: number = dispatcher ? dispatcher.time / 1000 : 0;
-
-			// ugly string builder start
-			let pageOne: string = '';
-			if (loop) pageOne += '**Queue is enabled**\n';
-			if (playing) pageOne += '**Currently playing:**\n';
-			else pageOne += '**Currently paused:**\n';
-			pageOne += `[${currentSong.name}](${currentSong.url})\n`
-				+ `**Time:** ${currentSong.timeLeft(currentTime)} (${Util.timeString(currentTime)}/${currentSong.lengthString})`;
-			if (currentPage.length !== 1) pageOne += `\u200b\n\n**Queue:**`;
-			// ugly string builder end
-
-			currentPage.splice(0, 1, pageOne);
-			embed.setThumbnail(currentSong.thumbnailURL);
-		}
-		else if (queue.loop)
-		{
-			currentPage[0] = `**Loop is enabled!**\n${currentPage[0]}`;
-		}
-
-		embed.setDescription(currentPage);
-
-		return message.channel.send({ embed })
-			.then((m: Message) => m.delete(3e4))
-			.catch(() => null);
-
-	}
-
-	/**
-	 * Summons the bot to the calling voice channel.
-	 * @param {Message} message
-	 * @returns {Promise<void>}
-	 */
-	public async summon(message: Message): Promise<void>
-	{
-		const queue: Queue = this.get(message.guild.id);
-
-		if (!queue)
-		{
-			return message.channel
-				.send('There is nothing being played at the moment, just queue something up.')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		const joinMessage: Message = await message.channel.send('Joining your channel...') as Message;
-		try
-		{
-			await message.member.voiceChannel.join();
-			return joinMessage.edit('Joined your channel, party will now continue here!')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-		catch (error)
-		{
-			RavenUtil.error('MusicPlayer | Summon', error);
-			return joinMessage.edit([
-				'An error occurred while joining your channel, such a shame.',
-				'',
-				'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
-			])
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-	}
-
-	/**
-	 * Removes a song at the specified index.
-	 * @param {Message} message
-	 * @param {number} index
-	 * @returns {Promise<void>}
-	 */
-	public remove(message: Message, index: number): Promise<void>
-	{
-		const queue: Queue = this.get(message.guild.id);
-
-		if (!queue)
-		{
-			return message.channel
-				.send('There is nothing being played at the moment.')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		if (index === 0) return this.skip(message);
-
-		if (!queue.at(index))
-		{
-			return message.channel.send('The specified entry wasn\'t found!')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		const [removed]: Song[] = queue.removeAt(index);
-
-		return message.channel.send(`Removed \`${removed}\` at position ${index}`)
-			.then((m: Message) => m.delete(5e3))
-			.catch(() => null);
-	}
-
-	/**
-	 * Stops the current playback and deletes the queue.
-	 * @param {Message} message
-	 * @returns {Promise<void>}
-	 */
-	public stop(message: Message): Promise<void>
-	{
-		const queue: Queue = this.get(message.guild.id);
-
-		if (!queue)
-		{
-			return message.channel
-				.send('There is nothing being played at the moment, you can not stop what never has been started.')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		if (!queue.dispatcher)
-		{
-			return message.channel
-				.send('The song didn\'t start yet, duo technical limitation stopping is only available after the song started.')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		queue.clear();
-		queue.timeout(TimeoutType.CHANNEL, false);
-		queue.timeout(TimeoutType.QUEUE, false);
-		queue.dispatcher.end('stop');
-		this.delete(message.guild.id);
-
-		return message.channel.send('Party is over! 🚪 👈')
-			.then((m: Message) => m.delete(5e3))
-			.catch(() => null);
-	}
-
-	/**
-	 * Skips the current song.
-	 * @param {Message} message
-	 * @returns {Promise<void>}
-	 */
-	public skip(message: Message): Promise<void>
-	{
-		const queue: Queue = this.get(message.guild.id);
-
-		if (!queue)
-		{
-			return message.channel.send('There is nothing being played at the moment, what do you want to skip?')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		if (!queue.dispatcher)
-		{
-			return message.channel
-				.send('The song didn\'t start yet, duo technical limitation skipping is only available after the song started.')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		const { currentSong }: Queue = queue;
-
-		queue.dispatcher.end('skip');
-
-		return message.channel.send(`Skipped \`${currentSong}\`.`)
-			.then((m: Message) => m.delete(5e3))
-			.catch(() => null);
-	}
-
-	/**
-	 * Sets or gets the state of the loop in the current guild's playback.
-	 * @param {Message} message
-	 * @param {?boolean} state
-	 * @return {Promise<void>}
-	 */
-	public async loop(message: Message, state: boolean): Promise<void>
-	{
-		const queue: Queue = this.get(message.guild.id);
-
-		if (!queue)
-		{
-			return message.channel.send('There is nothing being played at the moment.')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		if (typeof state !== 'boolean')
-		{
-			return message.channel.send(`The queue is at the moment ${queue.loop ? 'enabled' : 'disabled'}.`)
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		if (queue.loop === state)
-		{
-			return message.channel.send(`The queue is already ${queue.loop ? 'enabled' : 'disabled'}.`)
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		queue.loop = state;
-
-		return message.channel.send(`The queue is now ${queue.loop ? 'enabled' : 'disabled'}.`)
-			.then((m: Message) => m.delete(5e3))
-			.catch(() => null);
-	}
-
-	/**
-	 * Sends the currently played song into the current channel.
-	 * @param {Message} message
-	 * @returns {Promise<void>}
-	 */
-	public nowPlaying(message: Message): Promise<void>
-	{
-		const queue: Queue = this.get(message.guild.id);
-
-		if (!queue)
-		{
-			return message.channel.send('There is nothing being played at the moment.')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		const { currentSong }: Queue = queue;
-
-		const embed: RichEmbed = currentSong.embed(SongEmbedType.NP);
-
-		return message.channel.send({ embed })
-			.then((m: Message) => m.delete(5e3))
-			.catch(() => null);
-	}
-
-	/**
-	 * Sends the author of the message the currently played song in their guild.
-	 * @param {Message} message
-	 * @returns {Promise<void>}
-	 */
-	public save(message: Message): Promise<void>
-	{
-		const queue: Queue = this.get(message.guild.id);
-
-		if (!queue)
-		{
-			return message.channel.send('There is nothing being played at the moment, so nothing you can save.')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		const embed: RichEmbed = queue.currentSong.embed(SongEmbedType.SAVE);
-		embed.author = null;
-
-		return message.author.send({ embed })
-			.then(() => undefined)
-			.catch(() =>
-				message.channel.send('An error occured while sending the DM, did you perhaps have DMs disabled or blocked me?'),
-		);
-
-	}
-
-	/**
-	 * Shuffles the queue
-	 * @param {Message} message
-	 * @returns {Promise<void>}
-	 */
-	public shuffle(message: Message): Promise<void>
-	{
-		const queue: Queue = this.get(message.guild.id);
-
-		if (!queue || queue.length < 3)
-		{
-			return message.channel.send('There is either no queue or there are less then `3` songs queued.')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		queue.shuffle();
-
-		return message.channel.send('Queue has been shuffled.')
-			.then((m: Message) => m.delete(5e3))
-			.catch(() => null);
-	}
-
-	/**
-	 * Sets or gets the volume of the the queue in the provided guild.
-	 * @param {Message} message
-	 * @param {?number} volume The volume to set to if any
-	 * @returns {Promise<void>}
-	 */
-	public async volume(message: Message, volume: number): Promise<void>
-	{
-		const queue: Queue = this.get(message.guild.id);
-
-		const update: boolean = typeof volume === 'number';
-
-		if (queue)
-		{
-			if (update)
-			{
-				queue.volume = volume;
-			}
-			else
-			{
-				volume = queue.volume;
-			}
-
-		}
-		else
-		{
-			if (update)
-			{
-				await message.guild.storage.set('volume', volume);
-			}
-			else
-			{
-				volume = await message.guild.storage.get('volume');
-			}
-		}
-
-		return message.channel.send(`The ${queue ? 'configurated ' : ''}volume is ${update ? 'now ' : ''}\`${volume}\`.`)
-			.then((m: Message) => m.delete(5e3))
-			.catch(() => null);
-	}
-
-	/**
-	 * Pauses or resumes the playback of the queue in the provided guild.
-	 * @param {Message} message
-	 * @param {boolean} state Whether to resume or pause.
-	 * @returns {Promise<void>}
-	 */
-	public setPlaying(message: Message, state: boolean): Promise<void>
-	{
-		const queue: Queue = this.get(message.guild.id);
-
-		if (!queue)
-		{
-			return message.channel
-				.send('That is not possible, there is nothing being played at the moment.')
-				.then((m: Message) => m.delete(5e3))
-				.catch(() => null);
-		}
-
-		return message.channel
-			.send(queue.setPlaying(state))
-			.then((m: Message) => m.delete(5e3))
-			.catch(() => null);
-	}
-
-	/**
 	 * Adds a Song or an array of Songs to the current playback, or starts it if there is none.
+	 * @param {ResourceLoader} res
 	 * @param {Message} message
 	 * @param {Song|Song[]} input Song(s) to add
 	 * @returns {Promise<boolean>}
 	 */
-	public async add({ guild, channel, member }: Message, input: Song | Song[]): Promise<boolean>
+	public async add(res: ResourceLoader, { guild, channel, member }: Message, input: Song | Song[]): Promise<boolean>
 	{
 		let queue: Queue = this.get(guild.id);
 		if (queue)
@@ -458,7 +76,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		}
 		else
 		{
-			queue = new Queue(channel as TextChannel);
+			queue = new Queue(res, channel as TextChannel);
 			this.set(guild.id, queue);
 		}
 		if (input instanceof Array) queue.concat(input);
@@ -473,11 +91,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		{
 			RavenUtil.error('MusicPlayer', error);
 			this.delete(guild.id);
-			channel.send([
-				'❌ There was an error while joining your channel, such a shame!',
-				'',
-				'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
-			])
+			channel.send(res('MUSIC_JOIN_FAILED', { message: error.message }))
 				.catch(() => null);
 		}
 
@@ -516,7 +130,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 		await queue.timeout(TimeoutType.QUEUE, false);
 
-		const { currentSong }: { currentSong: Song } = queue;
+		const { res, currentSong }: Queue = queue;
 
 		if (!currentSong)
 		{
@@ -546,12 +160,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				streamErrored.err = true;
 
 				queue.statusMessage = await queue.statusMessage
-					.edit([
-						'❌ An error occured while playing the YouTube stream.',
-						`\`${error.message}\``,
-						'',
-						'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
-					], { embed: null })
+					.edit(res('MUSIC_YOUTUBE_ERROR', { message: error.message }), { embed: null })
 					.then(() => null)
 					.catch(() => null);
 
@@ -560,12 +169,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				this._play(guildID, false).catch((_playError: Error) =>
 				{
 					RavenUtil.error('MusicPlayer | _play', _playError);
-					queue.textChannel.send([
-						'❌ There was an error while playing.',
-						`\`${_playError.message}\``,
-						'',
-						'Consider running `<prefix>stop force`, if the playback is not continuing.',
-					]);
+					queue.textChannel.send(res('MUSIC_PLAY_ERROR', { message: error.message }));
 				});
 			})
 
@@ -595,7 +199,11 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 	 * @param {?string} [livestream] Livestream URL if any
 	 * @returns {void}
 	 */
-	private _stream(queue: Queue, guildID: string, streamErrored: { err: boolean }, livestream?: string): void
+	private _stream(
+		queue: Queue,
+		guildID: string,
+		streamErrored: { err: boolean },
+		livestream?: string): void
 	{
 		this._client.logger.debug('MusicPlayer', '_stream');
 
@@ -608,12 +216,11 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				RavenUtil.error('MusicPlayer | dispatcher', error);
 
 				queue.statusMessage = await queue.statusMessage.edit(
-					[
-						'❌ An internal error occured while playing.',
-						`\`${error.message}\``,
-						'',
-						'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
-					],
+					queue.res('MUSIC_PLAY_ERROR',
+						{
+							message: error.message,
+						},
+					),
 					{ embed: null },
 				)
 					.then(() => null)
@@ -672,13 +279,13 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				this._play(guildID, reason === 'stop').catch((_playError: Error) =>
 				{
 					RavenUtil.error('MusicPlayer | _play', _playError);
-					queue.textChannel.send([
-						'❌ There was an error while playing.',
-						`\`${_playError.message}\``,
-						'',
-						'Consider running `<prefix>stop force`, if the playback is not continuing.',
-						'This issue has been reported and will ~~hopefully~~ be sorted out in no time!',
-					]);
+					queue.textChannel.send(
+						queue.res('MUSIC_PLAY_ERROR',
+							{
+								message: _playError.message,
+							},
+						),
+					);
 				});
 			});
 

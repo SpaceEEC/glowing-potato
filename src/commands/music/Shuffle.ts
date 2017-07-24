@@ -1,11 +1,12 @@
-import { CommandDecorators, Message } from 'yamdbf';
+import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
+import { Queue } from '../../structures/Queue';
 
-const { desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 
 @desc('Shuffles the current queue.')
 @name('shuffle')
@@ -15,9 +16,23 @@ const { desc, group, guildOnly, name, usage, using } = CommandDecorators;
 export default class ShuffleCommaand extends Command<Client>
 {
 	@using(musicRestricted(true))
+	@localizable
 	@ReportError
-	public async action(message: Message): Promise<void>
+	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
 	{
-		return this.client.musicPlayer.shuffle(message);
+		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
+
+		if (!queue || queue.length < 3)
+		{
+			return message.channel.send(res('CMD_SHUFFLE_QUEUE_EMPTY_OR_TOO_SMALL'))
+				.then((m: Message) => m.delete(1e4))
+				.catch(() => null);
+		}
+
+		queue.shuffle();
+
+		return message.channel.send(res('CMD_SHUFFLE_SUCCESS'))
+			.then((m: Message) => m.delete(10e4))
+			.catch(() => null);
 	}
 }

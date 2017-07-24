@@ -1,0 +1,8 @@
+[CMD_VOLUME_TOO_HIGH]
+The volume may not be higher than `10`.
+
+[CMD_VOLUME_TOO_LOW]
+The volume may not be lower than `1`.
+
+[CMD_VOLUME_SUCCESS]
+The volume is {{! update ? 'now ' : '' !}}`{{ volume }}`.

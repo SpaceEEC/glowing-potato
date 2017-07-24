@@ -45,7 +45,7 @@ export default class GuildInfo extends Command<Client>
 		{
 			if (error instanceof DiscordAPIError && error.code === 10006)
 			{
-				return message.channel.send('Could not resolve the provided ID or invite code to a guild.')
+				return message.channel.send(res('CMD_GUILDINFO_RESOLVE_FAILED'))
 					.then(() => undefined);
 			}
 
@@ -78,7 +78,7 @@ export default class GuildInfo extends Command<Client>
 			roles.push(role.toString());
 		}
 
-		const created: moment.Moment = moment(guild.createdTimestamp);
+		const createdAt: moment.Moment = moment(guild.createdTimestamp);
 		const onlineMembers: number = guild.members
 			.filter((member: GuildMember) => member.presence.status !== 'offline')
 			.size;
@@ -86,36 +86,48 @@ export default class GuildInfo extends Command<Client>
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0xffa500)
 			.setDescription('\u200b')
-			.setTitle(`Information about ${guild.name}`)
+			.setTitle(res('CMD_GUILDINFO_EMBED_TITLE', { name: guild.name }))
 			.setThumbnail(guild.iconURL)
-			.addField('❯ Channels:',
-			[
-				`• Default: ${guild.defaultChannel}`,
-				`• Text: \`${channels.text}\``,
-				`• Voice: \`${channels.voice}\``,
-			],
+			.addField(res('CMD_GUILDINFO_EMBED_FULL_CHANNELS_TITLE'),
+			res('CMD_GUILDINFO_EMBED_FULL_CHANNELS_VALUE',
+				{
+					default: guild.defaultChannel.toString(),
+					text: channels.text.toLocaleString(),
+					voice: channels.voice.toLocaleString(),
+				},
+			),
 			true)
-			.addField('❯ Members:',
-			[
-				`• Owner: ${guild.owner || this.client.users.get(guild.ownerID).tag}`,
-				`• Total: \`${guild.memberCount}\``,
-				`• Online: \`${onlineMembers}\` (Note: This may be wrong in large guilds duo cache.)`,
-			],
+			.addField(res('CMD_GUILDINFO_EMBED_BOTH_MEMBERS_TITLE'),
+			res('CMD_GUILDINFO_EMBED_FULL_MEMBERS_VALUE',
+				{
+					online: onlineMembers.toLocaleString(),
+					owner: guild.owner ? guild.owner.toString() : `\`${this.client.users.get(guild.ownerID).tag}\``,
+					total: guild.memberCount.toLocaleString(),
+				},
+			),
 			true)
-			.addField('❯ Created:',
-			[
-				`• Relative: ${created.utc().fromNow()}`,
-				`• Absolute: ${created.format('DD.MM.YYYY hh:mm:ss [[UTC]]')}`,
-			],
+			.addField(res('CMD_GUILDINFO_EMBED_BOTH_CREATED_TITLE'),
+			res('CMD_GUILDINFO_EMBED_BOTH_CREATED_VALUE',
+				{
+					absolute: createdAt.format('DD.MM.YYYY hh:mm:ss [[UTC]]'),
+					relative: createdAt.utc().fromNow(),
+				},
+			),
 			true)
-			.addField('❯ Region:', `• ${guild.region[0].toUpperCase() + guild.region.slice(1)}`, true)
-			.addField('❯ Roles:',
-			[
-				`• Total: \`${guild.roles.size - 1 || 'none'}\``,
-				`• List: ${roles.join(', ') || '`none`'}`,
-			].join('\n').slice(0, 2000),
+			.addField(res('CMD_GUILDINFO_EMBED_FULL_REGION_TITLE'),
+			`• ${guild.region[0].toUpperCase() + guild.region.slice(1)}`,
 			true)
-			.addField('❯ Emojis:', this._mapCollection<string, Emoji>(guild.emojis, true) || '`none`', true)
+			.addField(res('CMD_GUILDINFO_EMBED_FULL_ROLES_TITLE'),
+			res('CMD_GUILDINFO_EMBED_FULL_ROLES_VALUE',
+				{
+					list: roles.join(', ') || '`none`',
+					total: (guild.roles.size - 1 || 'none').toLocaleString(),
+				},
+			),
+			true)
+			.addField(res('CMD_GUILDINFO_EMBED_FULL_EMOJI_TITLE'),
+			this._mapCollection<string, Emoji>(guild.emojis, true) || '`none`',
+			true)
 			.setTimestamp()
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);
 
@@ -139,26 +151,32 @@ export default class GuildInfo extends Command<Client>
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0xffa500)
-			.setTitle(`Information about ${guild.name}`)
-			.setDescription('(Partial Guild)')
+			.setTitle(res('CMD_GUILDINFO_EMBED_TITLE', { name: guild.name }))
+			.setDescription(res('CMD_GUILDINFO_EMBED_PARTIAL_DESCRIPTION'))
 			.setThumbnail(iconURL)
-			.addField('❯ Default Channel:',
-			[
-				`• Name: \`${channel.name}\``,
-				`• Mention: #<${channel.id}> (Note: This mention only works when you are in the guild.)`,
-			],
+			.addField(res('CMD_GUILDINFO_EMBED_PARTIAL_CHANNEL_TITLE'),
+			res('CMD_GUILDINFO_EMBED_PARTIAL_CHANNEL_VALUE',
+				{
+					channel: `<#${channel.id}>`,
+					name: channel.name,
+				},
+			),
 			true)
-			.addField('❯ Members:',
-			[
-				`• Total: \`${memberCount}\``,
-				`• Online: \`${presenceCount}\``,
-			],
+			.addField(res('CMD_GUILDINFO_EMBED_BOTH_MEMBERS_TITLE'),
+			res('CMD_GUILDINFO_EMBED_PARTIAL_MEMBERS_VALUE',
+				{
+					memberCount : memberCount.toLocaleString(),
+					presenceCount : presenceCount.toLocaleString(),
+				},
+			),
 			true)
-			.addField('❯ Created:',
-			[
-				`• Relative: ${createdAt.utc().fromNow()}`,
-				`• Absolute: ${createdAt.format('DD.MM.YYYY hh:mm:ss [[UTC]]')}`,
-			],
+			.addField(res('CMD_GUILDINFO_EMBED_BOTH_CREATED_TITLE'),
+			res('CMD_GUILDINFO_EMBED_BOTH_CREATED_VALUE',
+				{
+					absolute: createdAt.format('DD.MM.YYYY hh:mm:ss [[UTC]]'),
+					relative: createdAt.utc().fromNow(),
+				},
+			),
 			true)
 			.setTimestamp()
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);

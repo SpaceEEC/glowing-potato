@@ -1,5 +1,5 @@
 import { DiscordAPIError, GuildChannel, GuildMember, TextChannel } from 'discord.js';
-import { GuildStorage, ListenerUtil } from 'yamdbf';
+import { GuildStorage, Lang, ListenerUtil, ResourceLoader } from 'yamdbf';
 
 import { GuildConfigChannels, GuildConfigStrings } from '../types/GuildConfigKeys';
 import { RavenUtil } from '../util/RavenUtil';
@@ -181,6 +181,10 @@ export class EventHandlers
 		}
 		else if (channel.permissionsFor(guildMe).has(['SEND_MESSAGES', 'EMBED_LINKS']))
 		{
+			const res: ResourceLoader = Lang.createResourceLoader(
+				await this._client.storage.guilds.get(newMember.guild.id).settings.get('lang')
+				|| this._client.defaultLang);
+
 			if (oldMember.voiceChannel !== newMember.voiceChannel)
 			{
 				const embed: RichEmbed = new RichEmbed()
@@ -191,19 +195,41 @@ export class EventHandlers
 				{
 					embed
 						.setColor(0xFF4500)
-						.setDescription(`${newMember} disconnected from ${oldMember.voiceChannel.name}.`);
+						.setDescription(
+						res('EVENT_VOICELOG_DISCONNECT',
+							{
+								channel: oldMember.voiceChannel.toString(),
+								member: newMember.toString(),
+							},
+						),
+					);
 				}
 				else if (!oldMember.voiceChannel)
 				{
 					embed
 						.setColor(0x7CFC00)
-						.setDescription(`${newMember} connected to ${newMember.voiceChannel.name}.`);
+						.setDescription(
+						res('EVENT_VOICELOG_CONNECT',
+							{
+								channel: newMember.voiceChannel.toString(),
+								member: newMember.toString(),
+							},
+						),
+					);
 				}
 				else
 				{
 					embed
 						.setColor(3447003)
-						.setDescription(`${newMember} went from ${oldMember.voiceChannel.name} to ${newMember.voiceChannel.name}.`);
+						.setDescription(
+						res('EVENT_VOICELOG_MOVE',
+							{
+								member: newMember.toString(),
+								newChannel: newMember.voiceChannel.toString(),
+								oldChannel: oldMember.voiceChannel.toString(),
+							},
+						),
+					);
 				}
 
 				channel.send({ embed })

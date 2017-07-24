@@ -1,0 +1,2 @@
+[CMD_PRUNE_INVALID_COUNT]
+`<Count>` must be a positive integer not smaller than `1` and greater than `100`.

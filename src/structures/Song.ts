@@ -9,6 +9,7 @@ import { SongEmbedOptions, songEmbedOptions } from '../types/SongEmbedOptions';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { Video } from '../types/Video';
 import { Util } from '../util/Util';
+import { Client } from './Client';
 import { Queue } from './Queue';
 import { RichEmbed } from './RichEmbed';
 
@@ -70,7 +71,7 @@ export class Song
 
 		if ([SongEmbedType.PLAYING, SongEmbedType.NP].includes(type) && this._queue.loop)
 		{
-			description.push('**Loop is enabled.**');
+			description.push(this._queue.res('MUSIC_SONG_LOOP'));
 		}
 
 		description.push(`**${descriptionPrefix}** [${this.name}](${this.url})`);
@@ -82,12 +83,24 @@ export class Song
 			const left: string = this.timeLeft(currentTime);
 			const current: string = Util.timeString(currentTime);
 			description.push(
-				`${this.length ? `Time left: \`${left}\` (\`${current}\`/\`${this.lengthString}\`)` : '\`Livestream\`'}`,
+				this._queue.res(this.length ? 'MUSIC_SONG_NP_DESCRIPTION' : 'MUSIC_LIVESTREAM',
+					{
+						current,
+						left,
+						length: this.lengthString,
+					},
+				),
 			);
 		}
 		else
 		{
-			description.push(`Length: ${this.length ? this.lengthString : 'Livestream'}`);
+			description.push(
+				this._queue.res(this.length ? 'MUSIC_SONGS_GENERIC_DESCRIPTION' : 'MUSIC_LIVESTREAM',
+					{
+						length: this.lengthString,
+					},
+				),
+			);
 		}
 
 		return new RichEmbed()
@@ -96,7 +109,7 @@ export class Song
 			.setTimestamp()
 			.setImage(this.thumbnailURL)
 			.setColor(color)
-			.setFooter(footer, Util.client.user.displayAvatarURL);
+			.setFooter(footer, this.member.client.user.displayAvatarURL);
 	}
 
 	/**
@@ -160,6 +173,6 @@ export class Song
 	 */
 	private get _queue(): Queue
 	{
-		return Util.client.musicPlayer.get(this.member.guild.id);
+		return (this.member.client as Client).musicPlayer.get(this.member.guild.id);
 	}
 }

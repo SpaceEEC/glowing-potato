@@ -1,6 +1,8 @@
 import { Role } from 'discord.js';
-import { Message, MiddlewareFunction } from 'yamdbf';
+import { Lang, Message, MiddlewareFunction, ResourceLoader } from 'yamdbf';
 
+import { Client } from '../structures/Client';
+import { Command } from '../structures/Command';
 import { Queue } from '../structures/Queue';
 import { GuildConfigChannels, GuildConfigRoles } from '../types/GuildConfigKeys';
 
@@ -12,12 +14,15 @@ import { GuildConfigChannels, GuildConfigRoles } from '../types/GuildConfigKeys'
 export function musicRestricted(voiceChannel: boolean = false): MiddlewareFunction
 {
 	// tslint:disable-next-line:only-arrow-functions
-	return async function(message: Message, args: string[]): Promise<[Message, any[]]>
+	return async function(this: Command<Client>, message: Message, args: string[]): Promise<[Message, any[]]>
 	{
-		const [musicRole, musicChannel]: string[] = await Promise.all([
+		const [lang, musicRole, musicChannel]: string[] = await Promise.all<string>([
+			message.guild.storage.settings.get('lang'),
 			message.guild.storage.get(GuildConfigRoles.MUSICROLE),
 			message.guild.storage.get(GuildConfigChannels.MUSICCHANNEL),
 		]);
+
+		const res: ResourceLoader = Lang.createResourceLoader(lang || this.client.defaultLang);
 
 		if (musicRole)
 		{
@@ -28,7 +33,7 @@ export function musicRestricted(voiceChannel: boolean = false): MiddlewareFuncti
 			}
 			else if (!message.member.roles.has(musicRole))
 			{
-				throw new Error(`This command is only usable by members with the music role: \`@${role.name}\`!`);
+				throw new Error(res('DECORATORS_MUSIC_ROLE_MEMBERS', { role: `\`@${role.name}\`` }));
 			}
 		}
 
@@ -40,7 +45,7 @@ export function musicRestricted(voiceChannel: boolean = false): MiddlewareFuncti
 			}
 			else if (message.channel.id !== musicChannel)
 			{
-				throw new Error(`This command is only usable in the music channel: <#${musicChannel}>!`);
+				throw new Error(res('DECORATORS_MUSIC_TEXT_CHANNEL', { channel: `<#${musicChannel}>` }));
 			}
 		}
 
@@ -49,7 +54,7 @@ export function musicRestricted(voiceChannel: boolean = false): MiddlewareFuncti
 			const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 			if (queue && queue.voiceChannel !== message.member.voiceChannel)
 			{
-				throw new Error(`This command is only usable by members that are in my voice channel: ${queue.voiceChannel}!`);
+				throw new Error(res('DECORATORS_MUSIC_VOICE_CHANNEL', { channel: queue.voiceChannel.toString() }));
 			}
 		}
 

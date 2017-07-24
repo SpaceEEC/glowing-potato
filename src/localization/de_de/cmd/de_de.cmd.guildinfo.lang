@@ -1,0 +1,66 @@
+## region action
+[CMD_GUILDINFO_RESOLVE_FAILED]
+Konnte die Eingabe nicht zu einer ID oder einem Invite Code auflösen.
+## endregion
+
+## region both
+[CMD_GUILDINFO_EMBED_TITLE]
+Informationen über {{ name }}
+
+[CMD_GUILDINFO_EMBED_BOTH_MEMBERS_TITLE]
+❯ Member:
+
+[CMD_GUILDINFO_EMBED_BOTH_CREATED_TITLE]
+❯ Erstellt:
+
+[CMD_GUILDINFO_EMBED_BOTH_CREATED_VALUE]
+• Relativ: {{ relative }}
+• Absolut: {{ absolute }}
+## endergion
+
+## region full
+[CMD_GUILDINFO_EMBED_FULL_CHANNELS_TITLE]
+❯ Channel:
+
+[CMD_GUILDINFO_EMBED_FULL_CHANNELS_VALUE]
+• Standard: `{{ default }}`
+• Text: `{{ text }}`
+• Sprach: `{{ voice }}`
+
+[CMD_GUILDINFO_EMBED_FULL_MEMBERS_VALUE]
+• Besitzer: {{ owner }}
+• Insgesamt: `{{ total }}`
+• Online: `{{ online }}` (Hinweis: Dieser Wert kann aufgrund des Caches abweichen.)
+
+[CMD_GUILDINFO_EMBED_FULL_REGION_TITLE]
+❯ Region:
+## value only contains the region
+
+[CMD_GUILDINFO_EMBED_FULL_ROLES_TITLE]
+❯ Rollen:
+
+[CMD_GUILDINFO_EMBED_FULL_ROLES_VALUE]
+• Insgesamt: `{{ total }}`
+• Auflistung: {{ list }}
+
+[CMD_GUILDINFO_EMBED_FULL_EMOJI_TITLE]
+❯ Emojis:
+## value only contains the emojis
+## endregion
+
+##region partial
+[CMD_GUILDINFO_EMBED_PARTIAL_DESCRIPTION]
+(Unvollständige Gilde/Server)
+
+[CMD_GUILDINFO_EMBED_PARTIAL_CHANNEL_TITLE]
+❯ Standard Channel:
+
+[CMD_GUILDINFO_EMBED_PARTIAL_CHANNEL_VALUE]
+• Name: `{{ name }}`
+• Mention: {{ channel }} (Hinweis: Diese Mention funktioniert nur für Mitglieder dieser Gilde.)
+
+## see both
+[CMD_GUILDINFO_EMBED_PARTIAL_MEMBERS_VALUE]
+• Insgesamt: `{{ memberCount }}`
+• Online: `{{ presenceCount }}`
+## endregion

@@ -1,6 +1,6 @@
-import { GuildMember, RichEmbed, Role, User } from 'discord.js';
+import { GuildMember, RichEmbed, User } from 'discord.js';
 import * as moment from 'moment';
-import { CommandDecorators, Guild, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
@@ -26,54 +26,79 @@ export default class UserInfoCommand extends Command<Client>
 	{
 		const member: GuildMember = await message.guild.fetchMember(user).catch(() => undefined);
 
-		const createdAt: string = moment(user.createdTimestamp).utc().format('DD.MM.YYYY hh:mm:ss [[UTC]]');
-		const createdSince: string = moment(user.createdTimestamp).fromNow();
+		const createdAt: string = moment(user.createdTimestamp).utc().format(res('CMD_USERINFO_MOMENT_FORMAT'));
+		const tmp: number = message.createdTimestamp - user.createdTimestamp;
+		this.client.logger.warn('tmp', tmp.toLocaleString());
+		const createdAgo: string = (moment.duration(tmp, 'milliseconds') as any)
+			.format(res('CMD_USERINFO_CREATE_OR_JOIN_FORMAT'));
 
-		const gameStatus: string = user.presence.game
-			? `, currently ${user.presence.game.streaming ? 'streaming' : 'playing'}: ${user.presence.game.name}`
-			: '';
-		const sharedGuilds: number = this.client.guilds
-			.reduce((acc: number, guild: Guild) =>
-				acc += +guild.members.has(user.id),
-			0,
-		);
+		const game: string = user.presence.game
+			? res('CMD_USERINFO_GAMESTATUS',
+				{
+					name: user.presence.game.name,
+					// super hacky
+					streaming: String(user.presence.game.streaming || ''),
+				})
+			: res('CMD_USERINFO_N_A');
+
+		let sharedGuilds: number = 0;
+		for (const guild of this.client.guilds.values())
+		{
+			if (guild.members.has(user.id))++sharedGuilds;
+		}
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(member ? member.displayColor : 0xffa500)
 			.setThumbnail(user.displayAvatarURL)
 			.setTimestamp()
 			.setFooter(message.cleanContent, message.author.displayAvatarURL)
-
-			.addField('❯ Global',
-			`• \`${user.tag}\`, ${user.presence.status} ${gameStatus}\n`
-			+ `${user.avatarURL ? `• Avatar: [click me](${user.avatarURL})\n` : ''}`
-			+ `${sharedGuilds ? `• Shared guilds: \`${sharedGuilds}\`\n` : ''}`
-			+ `• ${user.bot ? 'Created' : 'Registered account'} ${createdSince}.\n`
-			+ `  (${createdAt})\n`,
+			.addField(
+			res('CMD_USERINFO_GLOBAL_TITLE'),
+			res('CMD_USERINFO_GLOBAL_VALUE',
+				{
+					avatarURL: user.avatarURL
+						? res('CMD_USER_INFO_AVATAR', { avatar: user.avatarURL })
+						: res('CMD_USERINFO_N_A'),
+					bot: String(user.bot || ''),
+					createdAgo,
+					createdAt,
+					game,
+					sharedGuilds: sharedGuilds.toLocaleString(),
+					status: user.presence.status,
+					tag: user.tag,
+				},
+			),
+			true,
 		);
 
 		if (member)
 		{
-			const joinedAt: string = moment(member.joinedTimestamp).utc().format('DD.MM.YYYY hh:mm:ss [[UTC]]');
-			const joinedSince: string = moment(member.joinedTimestamp).fromNow();
+			const joinedAt: string = moment(member.joinedTimestamp).utc().format(res('CMD_USERINFO_MOMENT_FORMAT'));
+			const tmp2: number = message.createdTimestamp - member.joinedTimestamp;
+			this.client.logger.warn('tmp2', tmp2.toLocaleString());
+			const joinedAgo: string = (moment.duration(tmp2, 'milliseconds') as any)
+				.format(res('CMD_USERINFO_CREATE_OR_JOIN_FORMAT'));
 
-			const roles: string = member.roles
-				.reduce((acc: string[], role: Role) =>
-				{
-					if (role.id !== message.guild.id)
+			const roles: string[] = [];
+			for (const role of member.roles.values())
+			{
+				// no everyone role
+				if (role.id === message.guild.id) continue;
+				roles.push(role.toString());
+			}
+
+			embed.addField(
+				res('CMD_USERINFO_MEMBER_TITLE'),
+				res('CMD_USERINFO_MEMBER_VALUE',
 					{
-						acc.push(role.toString());
-					}
-					return acc;
-				},
-				[],
-			).join(', ');
-
-			embed.addField('❯ Guild specific',
-				`• Nickname: ${member.nickname || '`none`'}\n`
-				+ `• Roles: ${roles}\n`
-				+ `• ${user.bot ? 'Invited to' : 'Joined'} this guild ${joinedSince}.\n`
-				+ `  (${joinedAt})\n`,
+						bot: String(user.bot || ''),
+						joinedAgo,
+						joinedAt,
+						nickname: member.nickname || res('CMD_USERINFO_N_A'),
+						roles: roles.join(', ') || res('CMD_USERINFO_N_A'),
+					},
+				),
+				true,
 			);
 		}
 

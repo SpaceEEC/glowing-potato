@@ -1,11 +1,12 @@
-import { CommandDecorators, Message } from 'yamdbf';
+import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
+import { Queue } from '../../structures/Queue';
 
-const { desc, group, guildOnly, name, usage, using } = CommandDecorators;
+const { desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 
 @desc('Resumes the current playback in this guild.')
 @name('resume')
@@ -15,9 +16,38 @@ const { desc, group, guildOnly, name, usage, using } = CommandDecorators;
 export default class ResumeCommand extends Command<Client>
 {
 	@using(musicRestricted(true))
+	@localizable
 	@ReportError
-	public async action(message: Message): Promise<void>
+	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
 	{
-		return this.client.musicPlayer.setPlaying(message, true);
+		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
+
+		if (!queue)
+		{
+			return message.channel.send(res('MUSIC_QUEUE_NON_EXISTENT'))
+				.then((m: Message) => m.delete(1e4))
+				.catch(() => null);
+		}
+
+		if (!queue.dispatcher)
+		{
+			return message.channel.send(res('MUSIC_NO_DISPATCHER'))
+				.then((m: Message) => m.delete(1e4))
+				.catch(() => null);
+		}
+
+		if (!queue.dispatcher.paused)
+		{
+			return message.channel.send(res('CMD_RESUME_ALREADY_RUNNING'))
+				.then((m: Message) => m.delete(1e4))
+				.catch(() => null);
+		}
+
+		queue.dispatcher.resume();
+
+		return message.channel
+			.send(res('CMD_RESUME_SUCCESS'))
+			.then((m: Message) => m.delete(1e4))
+			.catch(() => null);
 	}
 }

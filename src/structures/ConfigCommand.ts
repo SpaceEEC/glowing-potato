@@ -4,9 +4,9 @@ import { Message, ResourceLoader } from 'yamdbf';
 import { GuildConfigType } from '../types/GuildConfigKeys';
 import { Util } from '../util/Util';
 import { Client } from './Client';
-import { Command } from './Command';
+import { Command as AbstractCommand } from './Command';
 
-export abstract class ConfigCommand<T extends Client = Client> extends Command<T>
+abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 {
 	/**
 	 * Outputs a specific value from the config to the channel where the message comes from.
@@ -23,7 +23,7 @@ export abstract class ConfigCommand<T extends Client = Client> extends Command<T
 		const value: string = await message.guild.storage.get(key);
 		if (!value)
 		{
-			return message.channel.send(`There is no ${key.toLowerCase()} set up.`)
+			return message.channel.send(res('CMD_CONFIG_KEY_NOT_SET_UP', { key: key.toLowerCase() }))
 				.then(() => undefined);
 		}
 
@@ -34,12 +34,19 @@ export abstract class ConfigCommand<T extends Client = Client> extends Command<T
 			{
 				await message.guild.storage.remove(key);
 				return message.channel
-					.send(`The set up ${key.toLowerCase()} is no longer present and has been removed from the config.`)
+					.send(res('CMD_CONFIG_NOT_PRESENT', { key: key.toLowerCase() }))
 					.then(() => undefined);
 			}
 
-			return message.channel.send(`The current ${key.toLowerCase()} is ${channel}.`)
-				.then(() => undefined);
+			return message.channel.send(
+				res(
+					'CMD_CONFIG_CURRENT_VALUE',
+					{
+						key: key.toLowerCase(),
+						value: channel.toString(),
+					},
+				),
+			).then(() => undefined);
 		}
 		if (type === GuildConfigType.ROLE)
 		{
@@ -48,18 +55,31 @@ export abstract class ConfigCommand<T extends Client = Client> extends Command<T
 			{
 				await message.guild.storage.remove(key);
 				return message.channel
-					.send(`The specified up \`${key.toLowerCase()}\` is no longer present and has been removed from the config.`)
+					.send(res('CMD_CONFIG_NOT_PRESENT', { key: key.toLowerCase() }))
 					.then(() => undefined);
 			}
 
-			return message.channel.send(`The current \`${key.toLowerCase()}\` is \`@${role.name}}\``)
-				.then(() => undefined);
+			return message.channel.send(
+				res(
+					'CMD_CONFIG_CURRENT_VALUE',
+					{
+						key: key.toLowerCase(),
+						value: `\`@${role.name}}\``,
+					},
+				),
+			).then(() => undefined);
 		}
 		if (type === GuildConfigType.STRING)
 		{
-			return message.channel
-				.send(`The current \`${key.toLowerCase()}\` is \`\`\`${DJSUtil.escapeMarkdown(value, true)}\`\`\``)
-				.then(() => undefined);
+			return message.channel.send(
+				res(
+					'CMD_CONFIG_CURRENT_VALUE',
+					{
+						key: key.toLowerCase(),
+						value: `\`\`\`${DJSUtil.escapeMarkdown(value, true)}\`\`\``,
+					},
+				),
+			).then(() => undefined);
 		}
 	}
 
@@ -80,13 +100,20 @@ export abstract class ConfigCommand<T extends Client = Client> extends Command<T
 		{
 			if (!(value instanceof TextChannel))
 			{
-				return message.channel.send(`The ${key.toLowerCase()} must be a text channel!`)
+				return message.channel.send(res('CMD_CONFIG_VALUE_MUST_BE_TEXTCHANNEL', { key: key.toLowerCase() }))
 					.then(() => undefined);
 			}
 			await message.guild.storage.set(key, value.id);
 
-			return message.channel.send(`The ${key.toLowerCase()} is now ${value}`)
-				.then(() => undefined);
+			return message.channel.send(
+				res(
+					'CMD_CONFIG_VALUE_UPDATE',
+					{
+						key: key.toLowerCase(),
+						value: value.toString(),
+					},
+				),
+			).then(() => undefined);
 		}
 		if (type === GuildConfigType.ROLE)
 		{
@@ -96,8 +123,15 @@ export abstract class ConfigCommand<T extends Client = Client> extends Command<T
 			}
 			await message.guild.storage.set(key, value.id);
 
-			return message.channel.send(`The ${key.toLowerCase()} is now \`@${value.name}\``)
-				.then(() => undefined);
+			return message.channel.send(
+				res(
+					'CMD_CONFIG_VALUE_UPDATE',
+					{
+						key: key.toLowerCase(),
+						value: `\`@${value.name}\``,
+					},
+				),
+			).then(() => undefined);
 		}
 		if (type === GuildConfigType.STRING)
 		{
@@ -107,8 +141,15 @@ export abstract class ConfigCommand<T extends Client = Client> extends Command<T
 			}
 			await message.guild.storage.set(key, value);
 
-			return message.channel.send(`The ${key.toLowerCase()} is now \`\`\`\n${DJSUtil.escapeMarkdown(value, true)}\`\`\``)
-				.then(() => undefined);
+			return message.channel.send(
+				res(
+					'CMD_CONFIG_VALUE_UPDATE',
+					{
+						key: key.toLowerCase(),
+						value: `\`\`\`${DJSUtil.escapeMarkdown(value, true)}\`\`\``,
+					},
+				),
+			).then(() => undefined);
 		}
 	}
 
@@ -124,12 +165,13 @@ export abstract class ConfigCommand<T extends Client = Client> extends Command<T
 	 */
 	protected async reset(message: Message, res: ResourceLoader, key: string, _?: GuildConfigType, __?: any): Promise<void>
 	{
-		const prompt: Message = await message.channel.send(`Are you sure you want to reset the \`${key}\`?\n`
-			+ '__y__es / __n__o\n\n'
-			+ 'This prompt will be automatically canceled in \`30\` seconds.') as Message;
+		const prompt: Message = await message.channel.send(res('CMD_CONFIG_RESET_PROMPT')) as Message;
 		const response: Message = await message.channel.awaitMessages(
 			(m: Message) => m.author.id === message.author.id,
-			{ maxMatches: 1, time: 3e4 },
+			{
+				maxMatches: 1,
+				time: 3e4,
+			},
 		).then((collected: Collection<Snowflake, Message>) => collected.first());
 
 		prompt.delete().catch(() => undefined);
@@ -137,13 +179,15 @@ export abstract class ConfigCommand<T extends Client = Client> extends Command<T
 
 		if (!response || !Util.resolveBoolean(response.content.split(' ')[0]))
 		{
-			return message.channel.send('Aborting then...')
+			return message.channel.send(res('CMD_CONFIG_RESET_ABORT'))
 				.then(() => undefined);
 		}
 
 		await message.guild.storage.remove(key);
 
-		return message.channel.send(`The \`${key}\` has been reset!`)
+		return message.channel.send(res('CMD_CONFIG_RESET_SUCCESS', { key: key.toLowerCase() }))
 			.then(() => undefined);
 	}
 }
+
+export { Command as ConfigCommand };

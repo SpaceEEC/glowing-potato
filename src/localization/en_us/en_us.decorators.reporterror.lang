@@ -1,0 +1,3 @@
+[DECORATORS_REPORT_ERROR_TEXT]
+An unexpected error occured while running the command: `{{ message }}`\n
+This issue has been reported and will ~~hopefully~~ be sorted out in no time!

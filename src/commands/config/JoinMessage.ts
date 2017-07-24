@@ -16,11 +16,10 @@ const { expect } = Middleware;
 @name('joinmessage')
 @group('config')
 @guildOnly
-@usage('<prefix>joinmessage <option> [...message]`\n\n'
-	+ '`option` is one of `get`, `set`, `reset')
+@usage('<prefix>joinmessage <Option> [...message]')
 export default class JoinMessageCommand extends ConfigCommand<Client>
 {
-	@using(expect({ '<option>': 'String' }))
+	@using(expect({ '<Option>': 'String' }))
 	@using(resolveConfigOption(GuildConfigType.STRING))
 	@using(expectConfigOption(GuildConfigType.STRING))
 	@localizable

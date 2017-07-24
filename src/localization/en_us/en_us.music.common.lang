@@ -1,0 +1,48 @@
+[MUSIC_LIVESTREAM]
+Livestream
+
+[MUSIC_QUEUE_NON_EXISTENT]
+There is nothing queued up at the moment.
+
+[MUSIC_EMPTY_TIMEOUT]
+Since the {{! args.channel ? 'channel' : 'queue' !}} is empty I will leave in `30` seconds if this state persists.
+
+[MUSIC_NOT_IN_VOICECHANNEL]
+Small reminder: You have to be in a voice channel!
+
+[MUSIC_NO_SPEAK]
+Your party sure looks nice.
+I would love to join, but I am unfortunately not allowed to speak there.
+
+[MUSIC_NO_CONNECT]
+Your voice channel sure looks nice, but I am unfortunately not allowed to join it.
+Better luck next time.
+
+[MUSIC_NO_DISPATCHER]
+There is no dispatcher, perhaps the playback did not start yet?
+
+[MUSIC_JOIN_FAILED]
+An error occurred while joining your channel, such a same.
+`{{ message }}`\n
+This issue has been reported and will ~~hopefully~~ be sorted out in no time.
+
+[MUSIC_YOUTUBE_ERROR]
+❌ An error occured while playing the YouTube stream.
+`{{ message }}`\n
+This issue has been reported and will ~~hopefully~~ be sorted out in no time!
+
+[MUSIC_PLAY_ERROR]
+❌ There was an error while playing.
+`{{ message }}`\n
+Consider running `<prefix>stop force`, if the playback is not continuing.
+This issue has been reported and will ~~hopefully~~ be sorted out in no time!
+
+[MUSIC_SONG_LOOP]
+**Loop is enabled.**
+
+[MUSIC_SONG_NP_DESCRIPTION]
+Time left: (`{{ current }}`/`{{ length }}`) `-{{ left }}`
+
+[MUSIC_SONGS_GENERIC_DESCRIPTION]
+Length: {{ length }}
+

@@ -1,4 +1,3 @@
-import { Client } from '../structures/Client';
 import { PaginatedPage } from '../types/PaginatedPage';
 
 /**
@@ -7,17 +6,6 @@ import { PaginatedPage } from '../types/PaginatedPage';
  */
 export class Util
 {
-	/**
-	 * Initializes the Util class.
-	 * @param {Client} client The client to associate the class with
-	 * @returns {void}
-	 * @static
-	 */
-	public static init(client: Client): void
-	{
-		Util._client = client;
-	}
-
 	/**
 	 * Replaces parts of a string determined by the specified object.
 	 * @param {string} input The original string
@@ -109,27 +97,6 @@ export class Util
 		if (Util._falsy.has(lowercased)) return false;
 		return null;
 	}
-
-	/**
-	 * The client associated with the Util class
-	 * @static
-	 * @readonly
-	 */
-	public static get client(): Client
-	{
-		if (!Util._client)
-		{
-			throw new Error('Util class has not been initialized (yet)!');
-		}
-		return Util._client;
-	}
-
-	/**
-	 * The client associated with the Util class
-	 * @private
-	 * @static
-	 */
-	private static _client: Client;
 
 	// straight copy from
 	// https://github.com/Gawdl3y/discord.js-commando/blob/master/src/types/boolean.js#L6-L7

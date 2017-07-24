@@ -1,0 +1,15 @@
+[CMD_INIVTE_EMBED_AUTHOR]
+Invite
+
+[CMD_INVITE_EMBED_DESCRIPTION]
+To invite me to your server click this link [here]({{ url }}).
+**Note**: You need **Manage GUild** permission to add me there.
+\u200b
+
+[CMD_INVITE_EMBED_FIELD_TITLE]
+Additional informations regarding the attached permissions:
+
+[CMD_INVITE_EMBED_FIELD_VALUE]
+Those permissions are there to ensure I can work as expected.\n
+You don't have to entrust me with **Manage Messages** if you don't want to.
+I just won't be able to clean up after prompts, that's it!

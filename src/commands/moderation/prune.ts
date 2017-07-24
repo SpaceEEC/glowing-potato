@@ -1,4 +1,4 @@
-import { Collection, GuildMember, TextChannel } from 'discord.js';
+import { Collection, TextChannel, User } from 'discord.js';
 import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
@@ -26,7 +26,7 @@ const { expect, resolve } = Middleware;
 @name('prune')
 @group('moderation')
 @guildOnly
-@usage('<prefix>prune <count> [target]')
+@usage('<prefix>prune <Count> [Target]')
 export default class PruneCommand extends Command<Client>
 {
 	@using(function(msg: Message, args: string[]): Promise<[Message, any[]]>
@@ -34,26 +34,26 @@ export default class PruneCommand extends Command<Client>
 		if (args[1])
 		{
 			return resolve({
-				'<count>': 'Number',
-				'<target>': 'Member',
+				'<Count>': 'Number',
+				'<Target>': 'User',
 			}).call(this, msg, args);
 		}
-		return resolve({ '<count>': 'Number' }).call(this, msg, args);
+		return resolve({ '<Count>': 'Number' }).call(this, msg, args);
 	})
 	@using(function(msg: Message, args: string[]): Promise<[Message, any[]]>
 	{
 		if (args[1])
 		{
 			return expect({
-				'<count>': 'Number',
-				'<target>': 'Member',
+				'<Count>': 'Number',
+				'<Target>': 'User',
 			}).call(this, msg, args);
 		}
-		return expect({ '<count>': 'Number' }).call(this, msg, args);
+		return expect({ '<Count>': 'Number' }).call(this, msg, args);
 	})
 	@localizable
 	@ReportError
-	public async action(message: Message, [res, count, member]: [ResourceLoader, number, GuildMember]): Promise<void>
+	public async action(message: Message, [res, count, user]: [ResourceLoader, number, User]): Promise<void>
 	{
 		// for tslint and typescript
 		if (!(message.channel instanceof TextChannel))
@@ -63,12 +63,12 @@ export default class PruneCommand extends Command<Client>
 
 		if (count > 100 || count < 1)
 		{
-			return message.channel.send('`<Count>` must be a positive integer not smaller than 2 and grater than 100.')
+			return message.channel.send(res('CMD_PRUNE_INVALID_COUNT'))
 				.then(() => undefined);
 		}
 
 		let messages: Collection<string, Message> = await message.channel.fetchMessages({ limit: count });
-		if (member) messages = messages.filter((m: Message) => m.author.id === member.id);
+		if (user) messages = messages.filter((m: Message) => m.author.id === user.id);
 		if (!messages.size) return undefined;
 
 		if (messages.size === 1) return messages.first().delete().then(() => undefined);

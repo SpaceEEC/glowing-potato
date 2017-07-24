@@ -1,0 +1,5 @@
+[CMD_SHUFFLE_QUEUE_EMPTY_OR_TOO_SMALL]
+Entweder findet gerade keine Wiedergabe statt, oder in der Queue befinden sich weniger als `3` Lieder.
+
+[CMD_SHUFFLE_SUCCESS]
+Die Queue wurde gemischt.

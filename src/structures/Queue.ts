@@ -1,12 +1,12 @@
-
 import { StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
-import { Message } from 'yamdbf';
+import { Message, ResourceLoader } from 'yamdbf';
 
 import { PaginatedPage } from '../types/PaginatedPage';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { TimeoutType } from '../types/TimeoutType';
 import { RavenUtil } from '../util/RavenUtil';
 import { Util } from '../util/Util';
+import { Client } from './Client';
 import { RichEmbed } from './RichEmbed';
 import { Song } from './Song';
 
@@ -28,6 +28,12 @@ export class Queue
 	 * Status message that usually displays the current song
 	 */
 	public statusMessage: Message;
+
+	/**
+	 * Resource loader for this queue
+	 * @readonly
+	 */
+	public readonly res: ResourceLoader;
 
 	/**
 	 * The text channel this queue has been started
@@ -67,16 +73,17 @@ export class Queue
 	 * Instantiates a new queue for this guild.
 	 * @param {TextChannel} textChannel The text channel this queue should be bound to
 	 */
-	public constructor(textChannel: TextChannel)
+	public constructor(res: ResourceLoader, textChannel: TextChannel)
 	{
 		this.connection = null;
 		this.statusMessage = null;
 
+		this.res = res;
 		this.textChannel = textChannel;
 
 		this._loop = false;
 		this._songs = [];
-		Util.client.storage.guilds.get(textChannel.guild.id).get('volume')
+		(textChannel.client as Client).storage.guilds.get(textChannel.guild.id).get('volume')
 			.then((volume: number) => this._volume = volume || 2);
 	}
 
@@ -88,9 +95,7 @@ export class Queue
 	 */
 	public async timeout(type: TimeoutType, state: boolean): Promise<void>
 	{
-		const { client }: typeof Util = Util;
-
-		client.logger.debug('Queue', TimeoutType[type], String(state));
+		(this.textChannel.client as Client).logger.debug('Queue', TimeoutType[type], String(state));
 
 		// remove timeout
 		if (!state)
@@ -98,7 +103,7 @@ export class Queue
 			// only if one is present an it's the same type
 			if (this._timeout && this._timeoutType === type)
 			{
-				client.clearTimeout(this._timeout);
+				(this.textChannel.client as Client).clearTimeout(this._timeout);
 				this._timeout = null;
 				this._timeoutType = null;
 
@@ -127,13 +132,13 @@ export class Queue
 		// timer is already present
 		if (this._timeout)
 		{
-			client.clearTimeout(this._timeout);
+			(this.textChannel.client as Client).clearTimeout(this._timeout);
 			this._timeout = null;
 			if (this._timeoutType !== type)
 			{
 				this._timeoutType = null;
 				if (this.statusMessage) this.statusMessage.delete().catch(() => null);
-				client.musicPlayer.delete(this.textChannel.guild.id);
+				(this.textChannel.client as Client).musicPlayer.delete(this.textChannel.guild.id);
 				this.voiceChannel.leave();
 				return;
 			}
@@ -142,17 +147,14 @@ export class Queue
 		if (this.statusMessage) this.statusMessage.delete().catch(() => null);
 
 		this.statusMessage = await this.textChannel
-			.send(
-			`Since the ${type === TimeoutType.CHANNEL ? 'channe' : 'queue'} is `
-			+ 'empty I will wait another `30` seconds for anyone to change that.',
-		)
+			.send(this.res('MUSIC_EMPTY_TIMEOUT', { channel: String(type === TimeoutType.CHANNEL || '') }))
 			.catch(() => null);
 
 		this._timeoutType = type;
-		this._timeout = client.setTimeout(() =>
+		this._timeout = (this.textChannel.client as Client).setTimeout(() =>
 		{
 			if (this.statusMessage) this.statusMessage.delete().catch(() => null);
-			client.musicPlayer.delete(this.textChannel.guild.id);
+			(this.textChannel.client as Client).musicPlayer.delete(this.textChannel.guild.id);
 			this.voiceChannel.leave();
 		}, 3e4);
 	}
@@ -197,29 +199,6 @@ export class Queue
 	}
 
 	/**
-	 * Pauses or resumes the current playback.
-	 * @param {boolean} state Whether is should be paused or resumed
-	 * @returns {?string}
-	 */
-	public setPlaying(state: boolean): string
-	{
-		if (!this.dispatcher)
-		{
-			return 'There is no current dispatcher, perhaps the playback didn\'t start yet?';
-		}
-
-		if (this.dispatcher.paused !== state)
-		{
-			return `The playback is already ${state ? 'resumed' : 'paused'}, isn't it?`;
-		}
-
-		if (state) this.dispatcher.resume();
-		else this.dispatcher.pause();
-
-		return `Successfully ${state ? 'resumed' : 'paused'} the playback.`;
-	}
-
-	/**
 	 * Volume of the queue, will be saved when set
 	 */
 	public get volume(): number
@@ -228,10 +207,8 @@ export class Queue
 	}
 	public set volume(volume: number)
 	{
-		const { client }: typeof Util = Util;
-
 		this._volume = volume;
-		client.storage.guilds.get(this.textChannel.guild.id).set('volume', volume)
+		(this.textChannel.client as Client).storage.guilds.get(this.textChannel.guild.id).set('volume', volume)
 			.catch((error: Error) => RavenUtil.error('Queue', error, 'While saving the volume of the queue'));
 
 		if (this.dispatcher) this.dispatcher.setVolumeLogarithmic(volume / 5);

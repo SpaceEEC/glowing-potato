@@ -1,0 +1,49 @@
+[MUSIC_LIVESTREAM]
+Livestream
+
+[MUSIC_QUEUE_NON_EXISTENT]
+Es wird im moment nichts gespielt.
+
+[MUSIC_EMPTY_TIMEOUT]
+Da {{! args.channel ? 'der Channel' : 'die Queue' !}} leer ist, werde ich in `30` Sekunden diesen Channel verlassen.
+Es sei denn {{! args.channel ? 'jemand kommt zu mir' : 'etwas wird zur Queue hinzugefügt' !}}.
+
+[MUSIC_NOT_IN_VOICECHANNEL]
+Nur mal so nebenbei: Du musst dich in einem voice Channel befinden 👀
+
+[MUSIC_NO_SPEAK]
+Dein Channel sieht toll aus.
+Aber ich darf in diesem leider nicht sprechen.
+
+[MUSIC_NO_CONNECT]
+Dein Channel sieht toll aus.
+Aber ich darf diesem leider nicht beitreten.
+
+[MUSIC_NO_DISPATCHER]
+Es existiert kein Dispatcher, vielleicht ist das Lied noch nicht gestartete?
+
+[MUSIC_JOIN_FAILED]
+Ein Fehler ist aufgetreten, bei dem Versuch deinen Channel zu betreten:
+`{{ message }}`\n
+Dieser Fehler wurde gemeldet und wird ~~hoffentlich~~ bald behoben!
+
+[MUSIC_YOUTUBE_ERROR]
+❌ Ein Fehler ust während des Cachen vom YouTube Stream aufgetreten.
+`{{ message }}`\n
+Dieser Fehler wurde gemeldet und wird ~~hoffentlich~~ bald behoben!
+
+[MUSIC_PLAY_ERROR]
+❌ Es ist ein Fehler beim Abspielen aufgetreten.
+`{{ message }}`\n
+Führe `<prefix>stop force` aus, falls die Musik sich widererwartend nicht fortsetzt.
+Dieser Fehler wurde gemeldet und wird ~~hoffentlich~~ bald behoben!
+
+[MUSIC_SONG_LOOP]
+**Schleife ist aktiv.**
+
+[MUSIC_SONG_NP_DESCRIPTION]
+Aktuelle Zeit: (`{{ current }}`/`{{ length }}`) `-{{ left }}`
+
+[MUSIC_SONGS_GENERIC_DESCRIPTION]
+Länge: {{ length }}
+

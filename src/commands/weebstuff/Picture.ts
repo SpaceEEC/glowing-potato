@@ -1,19 +1,21 @@
-import { CommandDecorators, Message } from 'yamdbf';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 
-const { clientPermissions, desc, group, guildOnly, name, usage } = CommandDecorators;
+const { expect } = Middleware;
+const { clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
 
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
 @desc('Displays a random picture from konachan.net or safebooru.donmai.us')
 @name('picture')
 @group('weebstuff')
 @guildOnly
-@usage('<prefix>picture <...tags>')
+@usage('<prefix>picture <...Tags>')
 export default class PictureCommand extends Command<Client>
 {
+	@using(expect({ '<...Tags>': 'String' }))
 	@ReportError
 	public action(message: Message, tags: string[]): void
 	{

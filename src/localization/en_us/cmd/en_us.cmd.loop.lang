@@ -1,0 +1,8 @@
+[CMD_LOOP_CURRENT_STATE]
+The queue is at the moment {{! args.state ? 'resumed' : 'paused' !}}.
+
+[CMD_LOOP_CURRENT_ALREADY]
+The queue is already {{! args.state ? 'resumed' : 'paused' !}}.
+
+[CMD_LOOP_CURRENT_SET]
+The queue is now {{! args.state ? 'resumed' : 'paused' !}}.
