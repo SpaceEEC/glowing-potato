@@ -1,6 +1,5 @@
 [DECORATORS_MUSIC_ROLE_MEMBERS]
 Dieser Befehl kann nur von Membern der music role (`{{ role }}`) verwendet werden!
-This command is only usable by members with the music role: `{{ role }}`!
 
 [DECORATORS_MUSIC_TEXT_CHANNEL]
 Dieser Befehl kann nur im music channel verwendet werden: {{ channel}}!
