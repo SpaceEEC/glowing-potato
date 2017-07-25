@@ -70,7 +70,7 @@ export class Client extends YAMDBFClient
 						level6: '<:level6:335427522332459008> ',
 						level7: '<:level7:335427524429348866> ',
 					},
-				),
+				}),
 			],
 			provider: Providers.PostgresProvider(database),
 			token,

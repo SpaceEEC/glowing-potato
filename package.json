@@ -32,10 +32,10 @@
     "raven": "^2.1.0",
     "sequelize": "^4.4.2",
     "yamdbf": "github:zajrik/yamdbf",
-    "yamdbf-lang-german": "github:spaceeec/yamdbf-lang-german",
-    "yamdbf-command-usage": "github:zajrik/yamdbf-command-usage",
-    "yamdbf-league": "github:spaceeec/yamdbf-league",
     "yamdbf-anilist-unofficial": "github:spaceeec/yamdbf-anilist-unofficial",
+    "yamdbf-command-usage": "github:zajrik/yamdbf-command-usage",
+    "yamdbf-lang-german": "github:spaceeec/yamdbf-lang-german",
+    "yamdbf-league": "github:spaceeec/yamdbf-league",
     "ytdl-core": "^0.14.4"
   },
   "devDependencies": {
