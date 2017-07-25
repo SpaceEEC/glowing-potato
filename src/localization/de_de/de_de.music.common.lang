@@ -6,7 +6,6 @@ Es wird im moment nichts gespielt.
 
 [MUSIC_EMPTY_TIMEOUT]
 Da {{! args.channel ? 'der Channel' : 'die Queue' !}} leer ist, werde ich in `30` Sekunden diesen Channel verlassen.
-Es sei denn {{! args.channel ? 'jemand kommt zu mir' : 'etwas wird zur Queue hinzugefügt' !}}.
 
 [MUSIC_NOT_IN_VOICECHANNEL]
 Nur mal so nebenbei: Du musst dich in einem voice Channel befinden 👀
