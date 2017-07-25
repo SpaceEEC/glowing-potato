@@ -85,6 +85,12 @@
 			"usage": "<prefix>avatar <Nutzer>"
 		}
 	},
+	"emoji": {
+		"de_de": {
+			"decs": "Sendet das gewünschte Emoji in den Channel.",
+			"usage": "<prefix> emoji <Emoji>"
+		}
+	},
 	"urban": {
 		"de_de": {
 			"desc": "Zeigt eine Definition von Urbandictionary an.",
