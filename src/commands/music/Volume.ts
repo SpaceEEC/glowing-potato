@@ -74,9 +74,6 @@ export default class VolumeCommand extends Command<Client>
 			}
 		}
 
-		// tslint:disable-next-line:no-console
-		console.log(volume, update, !!queue);
-
 		return message.channel.send(
 			res(
 				'CMD_VOLUME_SUCCESS',
