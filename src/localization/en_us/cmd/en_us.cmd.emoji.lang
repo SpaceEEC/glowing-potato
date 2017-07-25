@@ -1,0 +1,2 @@
+[CMD_EMOJI_COULD_NOT_RESOLVE]
+Could not find an emoji with the name or id `{{ input }}`.
