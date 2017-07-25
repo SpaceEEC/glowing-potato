@@ -5,4 +5,4 @@ Die Lautstärke darf nicht höher als `10` sein.
 Die Lautstärke darf nicht niedriger als `1` sein.
 
 [CMD_VOLUME_SUCCESS]
-Die Läutstärke beträgt {{! update ? 'jetzt ' : '' !}}`{{ volume }}`.
+Die Läutstärke beträgt {{! args.update ? 'jetzt ' : '' !}}`{{ volume }}`.

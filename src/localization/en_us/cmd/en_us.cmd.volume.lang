@@ -5,4 +5,4 @@ The volume may not be higher than `10`.
 The volume may not be lower than `1`.
 
 [CMD_VOLUME_SUCCESS]
-The volume is {{! update ? 'now ' : '' !}}`{{ volume }}`.
+The volume is {{! args.update ? 'now ' : '' !}}`{{ volume }}`.
