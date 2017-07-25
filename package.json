@@ -35,6 +35,7 @@
     "yamdbf-lang-german": "github:spaceeec/yamdbf-lang-german",
     "yamdbf-command-usage": "github:zajrik/yamdbf-command-usage",
     "yamdbf-league": "github:spaceeec/yamdbf-league",
+    "yamdbf-anilist-unofficial": "github:spaceeec/yamdbf-anilist-unofficial",
     "ytdl-core": "^0.14.4"
   },
   "devDependencies": {

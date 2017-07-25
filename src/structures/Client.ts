@@ -11,6 +11,7 @@ import {
 	Message,
 	Providers,
 } from 'yamdbf';
+import { AniList } from 'yamdbf-anilist-unofficial';
 import { commandUsage } from 'yamdbf-command-usage';
 import { League } from 'yamdbf-league';
 
@@ -22,7 +23,7 @@ import { RichEmbed } from './RichEmbed';
 
 const { on, once } = ListenerUtil;
 
-const { database, logLevel, token, ownerID, ritoToken }: Config = require('../../config.json');
+const { anilist, database, logLevel, token, ownerID, ritoToken }: Config = require('../../config.json');
 
 /**
  * The central client for this bot
@@ -61,14 +62,13 @@ export class Client extends YAMDBFClient
 			plugins: [
 				'lang-german',
 				commandUsage('334843191545036800'),
-				League(ritoToken,
-					{
-						emojis: {
-							level4: '<:level4:335427521078231051> ',
-							level5: '<:level5:335427521900445696> ',
-							level6: '<:level6:335427522332459008> ',
-							level7: '<:level7:335427524429348866> ',
-						},
+				AniList(anilist),
+				League(ritoToken, {
+					emojis: {
+						level4: '<:level4:335427521078231051> ',
+						level5: '<:level5:335427521900445696> ',
+						level6: '<:level6:335427522332459008> ',
+						level7: '<:level7:335427524429348866> ',
 					},
 				),
 			],

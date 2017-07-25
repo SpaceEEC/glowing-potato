@@ -1,8 +1,8 @@
 export type Config = {
 	anilist:
 	{
-		client_id: string,
-		client_secret: string,
+		clientId: string,
+		clientSecret: string,
 	},
 	database: string,
 	defaultPrefix: string,
