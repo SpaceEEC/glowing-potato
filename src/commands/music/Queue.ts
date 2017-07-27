@@ -43,7 +43,7 @@ export default class QueueCommand extends Command<Client>
 		if (queue.length === 1) return this.client.commands.get('nowPlaying').action(message, []);
 
 		const { items, maxPage }: PaginatedPage<Song> = queue.page(page);
-		const fullLength: string = Util.timeString(queue.reduce((p: number, c: Song) => p += c.length, 0));
+		const queueLength: string = Util.timeString(queue.reduce((p: number, c: Song) => p += c.length, 0));
 
 		let i: number = (page - 1) * 11;
 		const currentPage: string[] = [];
@@ -57,7 +57,7 @@ export default class QueueCommand extends Command<Client>
 			.setTitle(
 			res('CMD_QUEUE_EMBED_TITLE',
 				{
-					fullLength,
+					queueLength,
 					songs: queue.length.toLocaleString(),
 				},
 			))
