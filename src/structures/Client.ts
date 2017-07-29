@@ -1,4 +1,4 @@
-import { DiscordAPIError, TextChannel, User } from 'discord.js';
+import { DiscordAPIError, GuildMember, TextChannel, User } from 'discord.js';
 import { join } from 'path';
 import {
 	Client as YAMDBFClient,
@@ -94,8 +94,19 @@ export class Client extends YAMDBFClient
 	@once('pause')
 	public async _onPause(): Promise<void>
 	{
-		await this.setDefaultSetting('prefix', '$');
-		await this.setDefaultSetting('volume', 2);
+		// ensure that own guild member is cached
+		const promises: Promise<GuildMember | this>[] = [];
+		for (const guild of this.guilds.values())
+		{
+			if (guild.me) continue;
+			promises.push(guild.fetchMember(this.user));
+		}
+
+		promises.push(
+			this.setDefaultSetting('prefix', '$'),
+			this.setDefaultSetting('volume', 2),
+		);
+		await Promise.all(promises);
 		this.emit('continue');
 	}
 
@@ -163,6 +174,11 @@ export class Client extends YAMDBFClient
 	@on('guildDelete', true)
 	public _onGuild(guild: Guild, left: boolean): Promise<void>
 	{
+		if (!left && !guild.me)
+		{
+			guild.fetchMember(this.user)
+				.then(() => this.logger.info('Cached own member for newly joined guild.'));
+		}
 		this.logger.info(
 			left ? 'GuildDelete' : 'GuildCreate',
 			left ? 'Left' : 'Joined',
