@@ -4,7 +4,6 @@ const gulpTslint = require('gulp-tslint');
 const tslint = require('tslint');
 const sourcemaps = require('gulp-sourcemaps');
 const del = require('del');
-const path = require('path');
 
 const project = gulpTs.createProject('tsconfig.json');
 const typeCheck = tslint.Linter.createProgram('tsconfig.json');

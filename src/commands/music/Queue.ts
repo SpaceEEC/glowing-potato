@@ -32,7 +32,7 @@ export default class QueueCommand extends Command<Client>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 
-		if (!queue)
+		if (!queue || !queue.length)
 		{
 			return message.channel
 				.send(res('MUSIC_QUEUE_NON_EXISTENT'))
