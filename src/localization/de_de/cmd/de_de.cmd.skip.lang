@@ -1,5 +1,5 @@
 [CMD_SKIP_NOT_POSSIBLE_YET]
-Das Lied hat noch nicht begonnen, aufgrund technischer Limitierungen ist das überspringen von Liedern erst nach deren Start möglich.
+Das Lied hat noch nicht begonnen, aufgrund technischer Limitierungen ist das überspringen von Liedern erst nach derem Start möglich.
 
 [CMD_SKIP_SUCCESS]
 Habe `{{ song }}` übersprungen.
