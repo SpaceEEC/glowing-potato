@@ -27,9 +27,7 @@ export default class UserInfoCommand extends Command<Client>
 		const member: GuildMember = await message.guild.fetchMember(user).catch(() => undefined);
 
 		const createdAt: string = moment(user.createdTimestamp).utc().format(res('CMD_USERINFO_MOMENT_FORMAT'));
-		const tmp: number = message.createdTimestamp - user.createdTimestamp;
-		this.client.logger.warn('tmp', tmp.toLocaleString());
-		const createdAgo: string = (moment.duration(tmp, 'milliseconds') as any)
+		const createdAgo: string = (moment.duration(message.createdTimestamp - user.createdTimestamp, 'milliseconds') as any)
 			.format(res('CMD_USERINFO_CREATE_OR_JOIN_FORMAT'));
 
 		const game: string = user.presence.game
@@ -74,9 +72,7 @@ export default class UserInfoCommand extends Command<Client>
 		if (member)
 		{
 			const joinedAt: string = moment(member.joinedTimestamp).utc().format(res('CMD_USERINFO_MOMENT_FORMAT'));
-			const tmp2: number = message.createdTimestamp - member.joinedTimestamp;
-			this.client.logger.warn('tmp2', tmp2.toLocaleString());
-			const joinedAgo: string = (moment.duration(tmp2, 'milliseconds') as any)
+			const joinedAgo: string = (moment.duration(message.createdTimestamp - member.joinedTimestamp, 'milliseconds') as any)
 				.format(res('CMD_USERINFO_CREATE_OR_JOIN_FORMAT'));
 
 			const roles: string[] = [];
