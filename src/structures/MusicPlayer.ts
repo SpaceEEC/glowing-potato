@@ -1,6 +1,6 @@
 import { GuildMember, Snowflake, TextChannel, VoiceConnection } from 'discord.js';
-import { createWriteStream, unlink, WriteStream } from 'fs';
-import { Message, ResourceLoader, Time } from 'yamdbf';
+// import { createWriteStream, unlink, WriteStream } from 'fs';
+import { Message, ResourceLoader/*, Time*/ } from 'yamdbf';
 import * as ytdl from 'ytdl-core';
 
 import { SongEmbedType } from '../types/SongEmbedType';
@@ -72,6 +72,13 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		{
 			if (input instanceof Array) queue.concat(input);
 			else queue.push(input);
+
+			if (await queue.timeout(TimeoutType.QUEUE, false))
+			{
+				await this._play(guild.id, false);
+				return true;
+			}
+
 			return false;
 		}
 		else
@@ -130,12 +137,13 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 		await queue.timeout(TimeoutType.QUEUE, false);
 
-		const { res, currentSong }: Queue = queue;
+		const { currentSong }: Queue = queue;
 
 		if (!currentSong)
 		{
 			if (stopped) return queue.voiceChannel.leave();
-			return queue.timeout(TimeoutType.QUEUE, true);
+			await queue.timeout(TimeoutType.QUEUE, true);
+			return;
 		}
 
 		const embed: RichEmbed = currentSong.embed(SongEmbedType.PLAYING);
@@ -148,9 +156,10 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		const streamErrored: { err: boolean } = { err: false };
 
 		// livestream
-		if (!currentSong.length) return this._stream(queue, guildID, streamErrored, currentSong.url);
+		/*if (!currentSong.length)*/
+		return this._stream(queue, guildID, streamErrored, currentSong.url);
 
-		const startTime: number = Date.now();
+		/*const startTime: number = Date.now();
 
 		const stream: WriteStream = ytdl(currentSong.url, { filter: 'audioonly' })
 
@@ -188,7 +197,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 			.pipe(createWriteStream(`./tempMusicFile_${guildID}`));
 
-		this._client.logger.log('MusicPlayer | Pipe', 'Piping to file started for:', currentSong.name);
+		this._client.logger.log('MusicPlayer | Pipe', 'Piping to file started for:', currentSong.name);*/
 	}
 
 	/**
@@ -207,9 +216,9 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 	{
 		this._client.logger.debug('MusicPlayer', '_stream');
 
-		queue.dispatcher = (livestream
-			? queue.connection.playStream(ytdl(livestream), { passes: 2 })
-			: queue.connection.playFile(`./tempMusicFile_${guildID}`, { passes: 2 }))
+		queue.dispatcher = /*(livestream
+			?*/ queue.connection.playStream(ytdl(livestream), { passes: 2 })
+			/*: queue.connection.playFile(`./tempMusicFile_${guildID}`, { passes: 2 }))*/
 
 			.once('error', async (error: Error) =>
 			{
@@ -259,7 +268,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 					queue.shift();
 				}
 
-				if ((reason === 'stop' || !queue.length))
+				/*if ((reason === 'stop' || !queue.length))
 				{
 					this._client.setTimeout(
 						() =>
@@ -274,7 +283,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 						},
 						5e2,
 					);
-				}
+				}*/
 
 				this._play(guildID, reason === 'stop').catch((_playError: Error) =>
 				{

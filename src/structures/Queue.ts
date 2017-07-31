@@ -91,9 +91,9 @@ export class Queue
 	 * Sets or removes a timeout of the specified type.
 	 * @param {TimeoutType} type Empty QUEUE or CHANNEL
 	 * @param {boolean} state Whether it's empty
-	 * @returns {Promise<void>}
+	 * @returns {Promise<boolean>} Whether this method's invoking removed the timeout.
 	 */
-	public async timeout(type: TimeoutType, state: boolean): Promise<void>
+	public async timeout(type: TimeoutType, state: boolean): Promise<boolean>
 	{
 		(this.textChannel.client as Client).logger.debug('Queue', TimeoutType[type], String(state));
 
@@ -124,23 +124,29 @@ export class Queue
 							.catch(() => null);
 					}
 				}
-				else if (this.statusMessage) this.statusMessage.delete().catch(() => null);
+				else if (this.statusMessage)
+				{
+					this.statusMessage.delete().catch(() => null);
+				}
 			}
-			return;
+
+			return true;
 		}
 
-		// timer is already present
+		// a timer is already present
 		if (this._timeout)
 		{
 			(this.textChannel.client as Client).clearTimeout(this._timeout);
 			this._timeout = null;
+			// if it's different type, leave
 			if (this._timeoutType !== type)
 			{
 				this._timeoutType = null;
 				if (this.statusMessage) this.statusMessage.delete().catch(() => null);
 				(this.textChannel.client as Client).musicPlayer.delete(this.textChannel.guild.id);
 				this.voiceChannel.leave();
-				return;
+
+				return false;
 			}
 		}
 
@@ -157,6 +163,8 @@ export class Queue
 			(this.textChannel.client as Client).musicPlayer.delete(this.textChannel.guild.id);
 			this.voiceChannel.leave();
 		}, 3e4);
+
+		return false;
 	}
 
 	/**
