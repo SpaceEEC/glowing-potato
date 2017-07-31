@@ -8,6 +8,8 @@ import {
 	PartialGuild,
 	PartialGuildChannel,
 	RichEmbed,
+	Role,
+	Snowflake,
 	SnowflakeUtil,
 } from 'discord.js';
 import * as moment from 'moment';
@@ -70,13 +72,9 @@ export default class GuildInfo extends Command<Client>
 			++channels[channel.type];
 		}
 
-		const roles: string[] = [];
-		for (const role of guild.roles.values())
-		{
-			// no everyone role
-			if (role.id === message.guild.id) continue;
-			roles.push(role.toString());
-		}
+		const rolesCopy: Collection<Snowflake, Role> = guild.roles.clone();
+		rolesCopy.delete(guild.id);
+		const roles: string = this._mapIterator<Role>(rolesCopy.values());
 
 		const createdAt: moment.Moment = moment(guild.createdTimestamp);
 		const onlineMembers: number = guild.members
@@ -120,13 +118,13 @@ export default class GuildInfo extends Command<Client>
 			.addField(res('CMD_GUILDINFO_EMBED_FULL_ROLES_TITLE'),
 			res('CMD_GUILDINFO_EMBED_FULL_ROLES_VALUE',
 				{
-					list: roles.join(', ') || '`none`',
+					list: roles || '`none`',
 					total: (guild.roles.size - 1 || 'none').toLocaleString(),
 				},
-			),
+			).slice(0, 1023),
 			true)
 			.addField(res('CMD_GUILDINFO_EMBED_FULL_EMOJI_TITLE'),
-			this._mapCollection<string, Emoji>(guild.emojis, true) || '`none`',
+			this._mapIterator<Emoji>(guild.emojis.values(), true) || '`none`',
 			true)
 			.setTimestamp()
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);
@@ -165,8 +163,8 @@ export default class GuildInfo extends Command<Client>
 			.addField(res('CMD_GUILDINFO_EMBED_BOTH_MEMBERS_TITLE'),
 			res('CMD_GUILDINFO_EMBED_PARTIAL_MEMBERS_VALUE',
 				{
-					memberCount : memberCount.toLocaleString(),
-					presenceCount : presenceCount.toLocaleString(),
+					memberCount: memberCount.toLocaleString(),
+					presenceCount: presenceCount.toLocaleString(),
 				},
 			),
 			true)
@@ -200,10 +198,10 @@ export default class GuildInfo extends Command<Client>
 		return invite;
 	}
 
-	private _mapCollection<K = any, V = any>(collection: Collection<K, V>, random: boolean = false): string
+	private _mapIterator<T = any>(iterator: IterableIterator<T>, random: boolean = false): string
 	{
 		const valueArray: string[] = [];
-		for (const value of collection.values())
+		for (const value of iterator)
 		{
 			valueArray.push(value.toString());
 		}
