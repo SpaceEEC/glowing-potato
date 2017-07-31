@@ -1,6 +1,5 @@
 import { GuildMember, Snowflake, TextChannel, VoiceConnection } from 'discord.js';
-import { createWriteStream, unlink, WriteStream } from 'fs';
-import { Message, ResourceLoader, Time } from 'yamdbf';
+import { Message, ResourceLoader } from 'yamdbf';
 import * as ytdl from 'ytdl-core';
 
 import { SongEmbedType } from '../types/SongEmbedType';
@@ -130,7 +129,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 		await queue.timeout(TimeoutType.QUEUE, false);
 
-		const { res, currentSong }: Queue = queue;
+		const { currentSong }: Queue = queue;
 
 		if (!currentSong)
 		{
@@ -144,72 +143,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 			.send({ embed })
 			.catch(() => null);
 
-		// js and its sometimes reference, sometimes value types
-		const streamErrored: { err: boolean } = { err: false };
-
-		// livestream
-		if (!currentSong.length) return this._stream(queue, guildID, streamErrored, currentSong.url);
-
-		const startTime: number = Date.now();
-
-		const stream: WriteStream = ytdl(currentSong.url, { filter: 'audioonly' })
-
-			.once('error', async (error: Error) =>
-			{
-				RavenUtil.error('MusicPlayer | YTDL', error);
-				streamErrored.err = true;
-
-				queue.statusMessage = await queue.statusMessage
-					.edit(res('MUSIC_YOUTUBE_ERROR', { message: error.message }), { embed: null })
-					.then(() => null)
-					.catch(() => null);
-
-				queue.shift();
-
-				this._play(guildID, false).catch((_playError: Error) =>
-				{
-					RavenUtil.error('MusicPlayer | _play', _playError);
-					queue.textChannel.send(res('MUSIC_PLAY_ERROR', { message: error.message }));
-				});
-			})
-
-			.once('end', () =>
-			{
-				stream.removeAllListeners();
-
-				this._client.logger.log(
-					'MusicPlayer | Pipe',
-					'Piping to file finished after',
-					Time.difference(Date.now(), startTime).toSimplifiedString(),
-				);
-
-				this._stream(queue, guildID, streamErrored);
-			})
-
-			.pipe(createWriteStream(`./tempMusicFile_${guildID}`));
-
-		this._client.logger.log('MusicPlayer | Pipe', 'Piping to file started for:', currentSong.name);
-	}
-
-	/**
-	 * Actually streams the song to the voice channel.
-	 * @param {Queue} queue
-	 * @param {string} guildID
-	 * @param {object} streamErrored
-	 * @param {?string} [livestream] Livestream URL if any
-	 * @returns {void}
-	 */
-	private _stream(
-		queue: Queue,
-		guildID: string,
-		streamErrored: { err: boolean },
-		livestream?: string): void
-	{
-		this._client.logger.debug('MusicPlayer', '_stream');
-
-		queue.dispatcher = (livestream
-			? queue.connection.playStream(ytdl(livestream), { passes: 2 })
-			: queue.connection.playFile(`./tempMusicFile_${guildID}`, { passes: 2 }))
+		queue.dispatcher = queue.connection.playStream(ytdl(currentSong.url), { passes: 2 })
 
 			.once('error', async (error: Error) =>
 			{
@@ -236,19 +170,13 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 				this._client.logger.log(
 					'MusicPlayer | dispatcher',
-					`Song finished after ${playedTime} / ${queue.currentSong.lengthString};`,
+					`Song finished after ${playedTime} / ${queue.currentSong ? queue.currentSong.lengthString : 'No current song'};`,
 					reason || 'No reason',
 				);
 
 				(queue.dispatcher.stream as any).destroy();
 				queue.dispatcher.removeAllListeners();
 				queue.dispatcher = null;
-
-				if (streamErrored.err)
-				{
-					this._client.logger.warn('MusicPlayer | Dispatcher', 'Stream errored!');
-					return;
-				}
 
 				if ((!['stop', 'skip'].includes(reason) && queue.loop))
 				{
@@ -257,23 +185,6 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				else
 				{
 					queue.shift();
-				}
-
-				if ((reason === 'stop' || !queue.length))
-				{
-					this._client.setTimeout(
-						() =>
-						{
-							unlink(`./tempMusicFile_${guildID}`, (error: Error) =>
-							{
-								if (error)
-								{
-									RavenUtil.error('MusicPlayer | unlink', error);
-								}
-							});
-						},
-						5e2,
-					);
 				}
 
 				this._play(guildID, reason === 'stop').catch((_playError: Error) =>
