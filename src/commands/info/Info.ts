@@ -1,4 +1,4 @@
-import { RichEmbed, version as libVersion } from 'discord.js';
+import { RichEmbed, Util as DJSUtil, version as DJSVersion } from 'discord.js';
 import * as moment from 'moment';
 import 'moment-duration-format';
 import { CommandDecorators, Message, ResourceLoader, version as YAMDBFVersion } from 'yamdbf';
@@ -6,6 +6,7 @@ import { CommandDecorators, Message, ResourceLoader, version as YAMDBFVersion } 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
+import { Util } from '../../util/Util';
 
 const { aliases, clientPermissions, desc, group, guildOnly, name, usage, localizable } = CommandDecorators;
 
@@ -33,16 +34,23 @@ export default class InfoCommand extends Command<Client>
 			.addField(res('CMD_INFO_UPTIME_TITLE'),
 			`• ${uptime}`,
 			false)
-			.addField(res('CMD_INFO_UPTIME_MEMORY_USAGE_TITLE'),
-			`• ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
-			.addField('❯ spacebot-version:',
+			.addField(res('CMD_INFO_VERSIONS'),
 			[
-				`• v${version}`,
-				'  ([glowing-potato](http://puu.sh/teDYW/d6f9555fbd.png))',
+				'• __**[discord.js](https://github.com/hydrabolt/discord.js)**__',
+				`  Version: v${DJSVersion}`,
+				'',
+				'• __**[YAMDBF](https://github.com/zajrik/yamdbf)**__',
+				`  Version: v${YAMDBFVersion}`,
 			],
 			true)
-			.addField('❯ Repositorie:',
-			'• [GitHub](https://github.com/SpaceEEC/glowing-potato)', true)
+			.addField('\u200b',
+			[
+				'• __**[glowing-potato](https://github.com/SpaceEEC/glowing-potato)**__',
+				` Version: v${version}`,
+			],
+			true)
+			.addField(res('CMD_INFO_UPTIME_MEMORY_USAGE_TITLE'),
+			`• ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
 			.addField(res('CMD_INFO_OWNER_TITLE'),
 			`• ${owners}`, true);
 
@@ -51,17 +59,35 @@ export default class InfoCommand extends Command<Client>
 			embed.addField(res('CMD_INFO_VOICE_CONNECTIONS_TITLE'), this.client.voiceConnections.size, false);
 		}
 
-		embed.addField('❯ Library: ',
-			'• [discord.js](https://github.com/hydrabolt/discord.js)\n'
-			+ `  Version: ${libVersion}`, true)
-			.addField('❯ Framework: ',
-			'• [YAMDBF](https://github.com/zajrik/yamdbf)\n'
-			+ `  Version: ${YAMDBFVersion}`, true)
+		embed.addField(res('CMD_INFO_RECENT_CHANGES'), await this._formatCommits())
 			.setTimestamp()
 			.setThumbnail(this.client.user.displayAvatarURL)
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);
 
 		return message.channel.send({ embed })
 			.then(() => undefined);
+	}
+
+	private async _formatCommits(): Promise<string>
+	{
+		const { stdout }: { stdout: string } = await Util.execAsync(
+			'git log --pretty=format:"%h,%an,%ad,%s" | head -n 5',
+			{ encoding: 'utf8' },
+		);
+
+		const commits: string[] = [];
+		for (const commit of stdout.split('\n').slice(0, -1))
+		{
+			const [hash, author, date, ...message] = commit.split(',');
+			commits.push(
+				[
+					`• [${hash}](https://github.com/SpaceEEC/glowing-potato/commit/${hash})`,
+					` - ${author}, ${moment(date).fromNow()}:\n`,
+					`\`${DJSUtil.escapeMarkdown(message.join(','), undefined, true)}\``,
+				].join(''),
+			);
+		}
+
+		return commits.join('\n');
 	}
 }
