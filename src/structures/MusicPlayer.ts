@@ -3,7 +3,6 @@ import { Message, ResourceLoader } from 'yamdbf';
 import * as ytdl from 'ytdl-core';
 
 import { SongEmbedType } from '../types/SongEmbedType';
-import { TimeoutType } from '../types/TimeoutType';
 import { RavenUtil } from '../util/RavenUtil';
 import { Util } from '../util/Util';
 import { Client } from './Client';
@@ -43,17 +42,22 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 		const { voiceChannel }: Queue = queue;
 
-		if (oldMember.voiceChannel === newMember.voiceChannel
-			|| (oldMember.voiceChannel !== voiceChannel && newMember.voiceChannel !== voiceChannel)
-		) return;
+		// the bug of the not cached guildmember of the bot
+		// probably duo being kicked while connected to voice
+		if (!voiceChannel) return;
 
-		if (voiceChannel.members.size - 1)
+		// member didn't move
+		if (oldMember.voiceChannel === newMember.voiceChannel) return;
+		// neither the old nor the new is the current channel of the bot
+		if (oldMember.voiceChannel !== voiceChannel && newMember.voiceChannel !== voiceChannel) return;
+
+		if (voiceChannel.members.size > 1)
 		{
-			queue.timeout(TimeoutType.CHANNEL, false);
+			queue.emtpyChannel(false);
 		}
 		else
 		{
-			queue.timeout(TimeoutType.CHANNEL, true);
+			queue.emtpyChannel(true);
 		}
 	}
 
@@ -127,14 +131,12 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				.catch(() => null);
 		}
 
-		await queue.timeout(TimeoutType.QUEUE, false);
-
 		const { currentSong }: Queue = queue;
 
 		if (!currentSong)
 		{
-			if (stopped) return queue.voiceChannel.leave();
-			return queue.timeout(TimeoutType.QUEUE, true);
+			this.delete(guildID);
+			return queue.voiceChannel.leave();
 		}
 
 		const embed: RichEmbed = currentSong.embed(SongEmbedType.PLAYING);

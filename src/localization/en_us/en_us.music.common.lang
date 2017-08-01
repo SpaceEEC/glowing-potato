@@ -5,7 +5,7 @@ Livestream
 There is nothing queued up at the moment.
 
 [MUSIC_EMPTY_TIMEOUT]
-Since the {{! args.channel ? 'channel' : 'queue' !}} is empty I will leave in `30` seconds if this state persists.
+Since the channel is empty I will leave in `30` seconds if this state persists.
 
 [MUSIC_NOT_IN_VOICECHANNEL]
 Small reminder: You have to be in a voice channel!

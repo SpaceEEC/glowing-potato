@@ -5,7 +5,6 @@ import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
-import { TimeoutType } from '../../types/TimeoutType';
 
 const { desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 
@@ -40,8 +39,7 @@ export default class StopCommand extends Command<Client>
 		}
 
 		queue.clear();
-		queue.timeout(TimeoutType.CHANNEL, false);
-		queue.timeout(TimeoutType.QUEUE, false);
+		queue.emtpyChannel(false);
 		queue.dispatcher.end('stop');
 
 		this.client.musicPlayer.delete(message.guild.id);

@@ -3,7 +3,6 @@ import { Message, ResourceLoader } from 'yamdbf';
 
 import { PaginatedPage } from '../types/PaginatedPage';
 import { SongEmbedType } from '../types/SongEmbedType';
-import { TimeoutType } from '../types/TimeoutType';
 import { RavenUtil } from '../util/RavenUtil';
 import { Util } from '../util/Util';
 import { Client } from './Client';
@@ -58,16 +57,10 @@ export class Queue
 	 */
 	private _volume: number;
 	/**
-	 * An emtpy channel or emtpy queue timout
-	 * otherwise null.
+	 * Current timeout, if any
 	 * @private
 	 */
 	private _timeout: NodeJS.Timer;
-	/**
-	 * The type of the current timeout.
-	 * @private
-	 */
-	private _timeoutType: TimeoutType;
 
 	/**
 	 * Instantiates a new queue for this guild.
@@ -88,24 +81,20 @@ export class Queue
 	}
 
 	/**
-	 * Sets or removes a timeout of the specified type.
-	 * @param {TimeoutType} type Empty QUEUE or CHANNEL
-	 * @param {boolean} state Whether it's empty
+	 * Sets or removes an timouet if the channel is or was empty.
+	 * @param {boolean} empty Whether the channel is empty
 	 * @returns {Promise<void>}
 	 */
-	public async timeout(type: TimeoutType, state: boolean): Promise<void>
+	public async emtpyChannel(empty: boolean): Promise<void>
 	{
-		(this.textChannel.client as Client).logger.debug('Queue', TimeoutType[type], String(state));
+		(this.textChannel.client as Client).logger.debug('Queue | emptyChannel', String(empty));
 
-		// remove timeout
-		if (!state)
+		if (!empty)
 		{
-			// only if one is present an it's the same type
-			if (this._timeout && this._timeoutType === type)
+			if (this._timeout)
 			{
-				(this.textChannel.client as Client).clearTimeout(this._timeout);
+				this.textChannel.client.clearTimeout(this._timeout);
 				this._timeout = null;
-				this._timeoutType = null;
 
 				if (this.currentSong)
 				{
@@ -124,34 +113,23 @@ export class Queue
 							.catch(() => null);
 					}
 				}
-				else if (this.statusMessage) this.statusMessage.delete().catch(() => null);
+				else if (this.statusMessage)
+				{
+					this.statusMessage.delete().catch(() => null);
+				}
 			}
+
 			return;
 		}
 
-		// timer is already present
-		if (this._timeout)
-		{
-			(this.textChannel.client as Client).clearTimeout(this._timeout);
-			this._timeout = null;
-			if (this._timeoutType !== type)
-			{
-				this._timeoutType = null;
-				if (this.statusMessage) this.statusMessage.delete().catch(() => null);
-				(this.textChannel.client as Client).musicPlayer.delete(this.textChannel.guild.id);
-				this.voiceChannel.leave();
-				return;
-			}
-		}
-
+		if (this._timeout) this.textChannel.client.clearTimeout(this._timeout);
 		if (this.statusMessage) this.statusMessage.delete().catch(() => null);
 
 		this.statusMessage = await this.textChannel
-			.send(this.res('MUSIC_EMPTY_TIMEOUT', { channel: String(type === TimeoutType.CHANNEL || '') }))
+			.send(this.res('MUSIC_EMPTY_TIMEOUT'))
 			.catch(() => null);
 
-		this._timeoutType = type;
-		this._timeout = (this.textChannel.client as Client).setTimeout(() =>
+		this._timeout = this.textChannel.client.setTimeout(() =>
 		{
 			if (this.statusMessage) this.statusMessage.delete().catch(() => null);
 			(this.textChannel.client as Client).musicPlayer.delete(this.textChannel.guild.id);
@@ -238,6 +216,12 @@ export class Queue
 	 */
 	public get voiceChannel(): VoiceChannel
 	{
+		if (!this.textChannel.guild.me)
+		{
+			(this.textChannel.client as Client).logger.warn('Queue | voiceChannel', 'Own guild member is not cached!');
+			return null;
+		}
+
 		return this.textChannel.guild.me.voiceChannel;
 	}
 
