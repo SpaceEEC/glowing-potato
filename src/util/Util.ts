@@ -1,3 +1,6 @@
+import { exec, ExecOptions } from 'child_process';
+import { promisify } from 'util';
+
 import { PaginatedPage } from '../types/PaginatedPage';
 
 /**
@@ -6,6 +9,24 @@ import { PaginatedPage } from '../types/PaginatedPage';
  */
 export class Util
 {
+	/**
+	 * Promisified exec from child_process
+	 * @param {string} command Command to execute
+	 * @param {?ExecOptions} options
+	 * @returns {Promise<object>}
+	 * @static
+	 */
+	public static execAsync: (command: string, options?: ({ encoding?: string | null } & ExecOptions))
+		=> Promise<{ stdout: string, stderr: string }> = promisify(exec);
+
+	/**
+	 * Promisified setTimeout without arguments
+	 * @param {number} timeout Time to wait
+	 * @returns {Promise<void>}
+	 * @static
+	 */
+	public static wait: (timeout: number) => Promise<void> = promisify(setTimeout) as any;
+
 	/**
 	 * Replaces parts of a string determined by the specified object.
 	 * @param {string} input The original string
