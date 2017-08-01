@@ -1,31 +1,18 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import { CommandDecorators, Message, Time } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
+import { ExecError } from '../../types/ExecError';
+import { Util } from '../../util/Util';
 
 const { desc, group, name, ownerOnly, usage } = CommandDecorators;
-
-const wait: (timeout: number) => Promise<void> = promisify(setTimeout) as any;
-
-const execAsync: (command: string) => Promise<ExecResult> = promisify(exec) as any;
 
 type ExecResult = {
 	error?: ExecError,
 	stdout: string,
 	stderr: string,
 };
-
-type ExecError = {
-	code: number,
-	cmd: string,
-	killed: boolean,
-	signal: any,
-	stderr: string,
-	stdout: string,
-} & Error;
 
 @desc('Updates the bot\'s files.')
 @name('update')
@@ -42,13 +29,13 @@ export default class UpdateCommand extends Command<Client>
 
 		if (!await this._pull(statusMessage)) return;
 
-		await wait(2000);
+		await Util.wait(2000);
 
 		await statusMessage.edit('**Installing new files...**');
 
 		if (!await this._install(statusMessage)) return;
 
-		await wait(2000);
+		await Util.wait(2000);
 
 		const diff: string = Time.difference(Date.now(), startTime).toSimplifiedString() || '0s';
 		return statusMessage.edit(
@@ -64,7 +51,7 @@ export default class UpdateCommand extends Command<Client>
 	{
 		const startTime: number = Date.now();
 
-		const { error, stdout, stderr }: ExecResult = await execAsync('git pull')
+		const { error, stdout, stderr }: ExecResult = await Util.execAsync('git pull')
 			.catch((err: ExecError) => ({
 				error: err,
 				stderr: err.stderr,
@@ -97,7 +84,7 @@ export default class UpdateCommand extends Command<Client>
 	{
 		const startTime: number = Date.now();
 
-		const { error, stdout, stderr }: ExecResult = await execAsync('npm run install')
+		const { error, stdout, stderr }: ExecResult = await Util.execAsync('npm run install')
 			.catch((err: ExecError) => ({ error: err, stdout: err.stdout, stderr: err.stderr }));
 
 		const diff: string = Time.difference(Date.now(), startTime).toSimplifiedString() || '0s';
