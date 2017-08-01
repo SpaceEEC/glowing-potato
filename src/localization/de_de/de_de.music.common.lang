@@ -5,7 +5,7 @@ Livestream
 Es wird im moment nichts gespielt.
 
 [MUSIC_EMPTY_TIMEOUT]
-Da {{! args.channel ? 'der Channel' : 'die Queue' !}} leer ist, werde ich in `30` Sekunden diesen Channel verlassen.
+Da der Channel leer ist, werde ich in `30` Sekunden diesen Channel verlassen, sofern nicht noch jemand zu mir stößt.
 
 [MUSIC_NOT_IN_VOICECHANNEL]
 Nur mal so nebenbei: Du musst dich in einem voice Channel befinden 👀
