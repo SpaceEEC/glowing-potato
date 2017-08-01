@@ -24,7 +24,7 @@ export function ReportError(target: Command, key: string, descriptor: PropertyDe
 		catch (error)
 		{
 
-			await RavenUtil.error(this.name, error)
+			await RavenUtil.error(this.name, error, message)
 				.catch(() => null);
 
 			const lang: string = message.channel instanceof TextChannel
