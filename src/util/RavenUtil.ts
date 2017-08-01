@@ -1,3 +1,4 @@
+import { GuildChannel, Message } from 'discord.js';
 import { CaptureOptions, Client as Raven } from 'raven';
 import { inspect, promisify } from 'util';
 import { LogData, Logger, LogLevel } from 'yamdbf';
@@ -53,16 +54,36 @@ export class RavenUtil
 	 * Logs an exception to sentry and relays the error also to the built-in logger.
 	 * @param {string} label Label for the logger
 	 * @param {Error} error Error to log
-	 * @param {...string} rest Additional strings
+	 * @param {...string} rest Additional strings, first entry can be a message object.
 	 * @returns {Promise<void>}
 	 * @static
 	 */
-	public static async error(label: string, error: Error, ...rest: string[]): Promise<void>
+	public static async error(label: string, error: Error, message: Message, ...rest: string[]): Promise<void>;
+	public static async error(label: string, error: Error, ...rest: string[]): Promise<void>;
+	public static async error(label: string, error: Error, ...rest: any[]): Promise<void>
 	{
 		Logger.instance().error(label, inspect(error, true, Infinity, true));
 
 		// only sent to raven on non-dev
 		if (logLevel === LogLevel.DEBUG) return;
+
+		const message: Message = rest[0];
+		if (message instanceof Message)
+		{
+			rest = rest.slice(1);
+
+			this._raven.captureBreadcrumb({
+				category: 'Message',
+				data:
+				{
+					author: `${message.author.tag} (${message.author.id})`,
+					channel: `${message.channel instanceof GuildChannel ? message.channel.name : 'DM'} (${message.channel.id})`,
+					content: message.content,
+					guild: message.guild ? `${message.guild.name} (${message.guild.id})` : '',
+				},
+				message: 'Info about the sent message',
+			});
+		}
 
 		try
 		{
@@ -91,10 +112,12 @@ export class RavenUtil
 	 * @static
 	 * @readonly
 	 */
-	private static readonly _raven: Raven = new Raven(dsn, {
-		captureUnhandledRejections: true,
-		release: version,
-	}).install();
+	private static readonly _raven: Raven = new Raven(dsn,
+		{
+			captureUnhandledRejections: true,
+			release: version,
+		},
+	).install();
 
 	/**
 	 * Promisified captureException
