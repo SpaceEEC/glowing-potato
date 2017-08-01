@@ -8,6 +8,9 @@ General information about this bot
 [CMD_INFO_UPTIME_FORMAT_STRING]
 d[ days], h[ hours], m[ minutes and ]s[ seconds]
 
+[CMD_INFO_VERSIONS]
+❯ Versions
+
 [CMD_INFO_UPTIME_MEMORY_USAGE_TITLE]
 ❯ Memory in use:
 
@@ -16,3 +19,6 @@ d[ days], h[ hours], m[ minutes and ]s[ seconds]
 
 [CMD_INFO_VOICE_CONNECTIONS_TITLE]
 ❯ Active voice connections:
+
+[CMD_INFO_RECENT_CHANGES]
+❯ Recent Changes

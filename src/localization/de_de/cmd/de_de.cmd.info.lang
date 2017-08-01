@@ -8,6 +8,9 @@ Allgemeine Informationen über diesen Bot
 [CMD_INFO_UPTIME_FORMAT_STRING]
 d[ Tage], h[ Stunden], m[ Minuten und ]s[ Sekunden]
 
+[CMD_INFO_VERSIONS]
+❯ Versionen
+
 [CMD_INFO_UPTIME_MEMORY_USAGE_TITLE]
 ❯ Genutzter Ram
 
@@ -16,3 +19,6 @@ d[ Tage], h[ Stunden], m[ Minuten und ]s[ Sekunden]
 
 [CMD_INFO_VOICE_CONNECTIONS_TITLE]
 ❯ Aktuelle Sprachverbindungen (Musik):
+
+[CMD_INFO_RECENT_CHANGES]
+❯ Letzte Änderungen
