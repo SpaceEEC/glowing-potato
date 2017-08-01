@@ -29,7 +29,7 @@
     "moment-duration-format": "^1.3.0",
     "node-opus": "^0.2.6",
     "pg": "^6.4.1",
-    "raven": "^2.1.0",
+    "raven": "^2.1.1",
     "sequelize": "^4.4.2",
     "yamdbf": "github:zajrik/yamdbf",
     "yamdbf-anilist-unofficial": "github:spaceeec/yamdbf-anilist-unofficial",
@@ -39,7 +39,7 @@
     "ytdl-core": "^0.14.4"
   },
   "devDependencies": {
-    "@types/node": "^8.0.16",
+    "@types/node": "^8.0.18",
     "@types/raven": "^1.2.4",
     "@types/sequelize": "^4.0.67",
     "@types/snekfetch": "^3.1.0",
