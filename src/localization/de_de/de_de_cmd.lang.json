@@ -88,7 +88,7 @@
 	"emoji": {
 		"de_de": {
 			"decs": "Sendet das gewünschte Emoji in den Channel.",
-			"usage": "<prefix> emoji <Emoji>"
+			"usage": "<prefix> emoji <Emoji> [Nachricht]"
 		}
 	},
 	"urban": {

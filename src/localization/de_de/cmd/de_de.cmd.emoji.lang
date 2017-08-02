@@ -1,2 +1,5 @@
-[CMD_EMOJI_COULD_NOT_RESOLVE]
+[CMD_EMOJI_COULD_NOT_RESOLVE_EMOJI]
 Konnte kein Emoji mit dem Namen oder der ID `{{ input }}` finden.
+
+[CMD_EMOJI_COULD_NOT_RESOLVE_MESSAGE]
+Konnte keine Nachricht mit dieser ID in diesem Channel finden.

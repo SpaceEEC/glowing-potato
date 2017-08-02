@@ -14,29 +14,59 @@ const { expect } = Middleware;
 @name('emoji')
 @group('misc')
 @guildOnly
-@usage('<prefix>emoji <Emoji>')
+@usage('<prefix>emoji <Emoji> [Message]')
 export default class EmojiCommand extends Command<Client>
 {
 	// tslint:disable:only-arrow-functions no-shadowed-variable
 	@using(expect({ '<Emoji>': 'String' }))
 	@localizable
-	@using(function(
+	@using(async function(
 		this: EmojiCommand,
 		message: Message,
-		[res, input]: [ResourceLoader, string],
-	): [Message, [ResourceLoader, Emoji]]
+		[res, inputEmoji, inputMessage]: [ResourceLoader, string, string],
+	): Promise<[Message, [ResourceLoader, Emoji, Message]]>
 	{
-		let emoji: Emoji = this.client.emojis.get(input)
-			|| this.client.emojis.find('name', input)
-			|| this.client.emojis.find((e: Emoji) => e.name.toUpperCase() === input.toUpperCase());
-		if (!emoji) throw new Error(res('CMD_EMOJI_COULD_NOT_RESOLVE', { input }));
+		const emoji: Emoji = this.client.emojis.get(inputEmoji)
+			|| this.client.emojis.find('name', inputEmoji)
+			|| this.client.emojis.find((e: Emoji) => e.name.toUpperCase() === inputEmoji.toUpperCase());
+		if (!emoji) throw new Error(res('CMD_EMOJI_COULD_NOT_RESOLVE_EMOJI', { input: inputEmoji }));
 
-		return [message, [res, emoji]];
+		let fetched: Message = null;
+		if (inputMessage)
+		{
+			if (isNaN(Number(inputMessage)))
+			{
+				throw new Error(res('CMD_EMOJI_COULD_NOT_RESOLVE_MESSAGE'));
+			}
+
+			try
+			{
+				fetched = await message.channel.fetchMessage(inputMessage);
+			}
+			catch (error)
+			{
+				if (error.code === 10008)
+				{
+					throw new Error(res('CMD_EMOJI_COULD_NOT_RESOLVE_MESSAGE'));
+				}
+
+				throw error;
+			}
+		}
+
+		return [message, [res, emoji, fetched]];
 	})
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable
-	public async action(message: Message, [res, emoji]: [ResourceLoader, Emoji]): Promise<void>
+	public async action(message: Message, [res, emoji, target]: [ResourceLoader, Emoji, Message]): Promise<void>
 	{
+		if (message.deletable) message.delete().catch(() => null);
+
+		if (target)
+		{
+			return target.react(emoji)
+				.then(() => undefined);
+		}
 		return message.channel.send(emoji.toString())
 			.then(() => undefined);
 	}
