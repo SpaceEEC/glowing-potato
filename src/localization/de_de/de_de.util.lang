@@ -1,3 +1,3 @@
 [UTIL_RESOLVE_BOOLEAN]
-Konnte {{ input }} nicht zu einer entscheidung interpretieren.
+Konnte {{ input }} nicht zu einer Entscheidung interpretieren.
 Verwende zum Beispiel `y` oder `n`.
