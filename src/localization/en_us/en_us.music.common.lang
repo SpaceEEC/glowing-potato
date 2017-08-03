@@ -46,3 +46,14 @@ Time left: (`{{ current }}`/`{{ length }}`) `-{{ left }}`
 [MUSIC_SONGS_GENERIC_DESCRIPTION]
 Length: {{ length }}
 
+[MUSIC_EMBED_FOOTER_ADDED]
+has been added.
+
+[MUSIC_EMBED_FOOTER_PLAYING]
+is now being played.
+
+[MUSIC_EMBED_FOOTER_SAVED]
+saved, just for you.
+
+[MUSIC_EMBED_FOOTER_NP]
+currently playing.
