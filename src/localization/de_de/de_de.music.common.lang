@@ -46,3 +46,14 @@ Aktuelle Zeit: (`{{ current }}`/`{{ length }}`) `-{{ left }}`
 [MUSIC_SONGS_GENERIC_DESCRIPTION]
 Länge: {{ length }}
 
+[MUSIC_EMBED_FOOTER_ADDED]
+wurde hinzugefügt.
+
+[MUSIC_EMBED_FOOTER_PLAYING]
+wird gerade gespielt.
+
+[MUSIC_EMBED_FOOTER_SAVED]
+gesichert, nur für dich.
+
+[MUSIC_EMBED_FOOTER_NP]
+wird gerade gespielt.
