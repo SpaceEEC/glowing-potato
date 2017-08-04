@@ -43,8 +43,18 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		const { voiceChannel }: Queue = queue;
 
 		// the bug of the not cached guildmember of the bot
-		// probably duo being kicked while connected to voice
-		if (!voiceChannel) return;
+		// probably duo being kicked from the guild while connected to voice
+		// or from the voice channel by deleting it
+		if (!voiceChannel)
+		{
+			queue.clear();
+			queue.emtpyChannel(false);
+			if (queue.dispatcher) queue.dispatcher.end('stop');
+
+			this.delete(newMember.guild.id);
+
+			return;
+		}
 
 		// member didn't move
 		if (oldMember.voiceChannel === newMember.voiceChannel) return;
@@ -136,7 +146,13 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		if (!currentSong)
 		{
 			this.delete(guildID);
-			return queue.voiceChannel.leave();
+			// channel does not exists when kicked from it by deleting or the guild as whole
+			if (queue.voiceChannel)
+			{
+				queue.voiceChannel.leave();
+			}
+
+			return;
 		}
 
 		const embed: RichEmbed = currentSong.embed(SongEmbedType.PLAYING);
