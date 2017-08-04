@@ -89,7 +89,7 @@ export default class GuildInfo extends Command<Client>
 			.addField(res('CMD_GUILDINFO_EMBED_FULL_CHANNELS_TITLE'),
 			res('CMD_GUILDINFO_EMBED_FULL_CHANNELS_VALUE',
 				{
-					default: guild.defaultChannel.toString(),
+					default: guild.channels.has(guild.id) ? guild.channels.get(guild.id).toString() : '`N/A`',
 					text: channels.text.toLocaleString(),
 					voice: channels.voice.toLocaleString(),
 				},
