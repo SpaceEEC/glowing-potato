@@ -71,7 +71,7 @@ export default class InfoCommand extends Command<Client>
 	private async _formatCommits(): Promise<string>
 	{
 		const { stdout }: { stdout: string } = await Util.execAsync(
-			'git log --pretty=format:"%h,%an,%ad,%s" | head -n 5',
+			'git log --pretty=format:"%h,%an,%ad,%s" --date=iso8601 | head -n 5',
 			{ encoding: 'utf8' },
 		);
 
