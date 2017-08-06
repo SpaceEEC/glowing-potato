@@ -75,7 +75,16 @@ export class Client extends YAMDBFClient
 			provider: Providers.PostgresProvider(database),
 			token,
 			unknownCommandError: false,
-		});
+		},
+			{
+				disableEveryone: true,
+				disabledEvents: [
+					'CHANNEL_PINS_UPDATE',
+					'TYPING_START',
+				],
+				messageCacheMaxSize: 1,
+			},
+		);
 
 		Lang.loadCommandLocalizationsFrom(join(__dirname, '..', 'localization'));
 
