@@ -39,7 +39,7 @@
     "ytdl-core": "^0.14.4"
   },
   "devDependencies": {
-    "@types/node": "^8.0.18",
+    "@types/node": "^8.0.19",
     "@types/raven": "^1.2.4",
     "@types/sequelize": "^4.0.67",
     "@types/snekfetch": "^3.1.0",
