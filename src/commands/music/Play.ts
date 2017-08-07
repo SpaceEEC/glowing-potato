@@ -163,7 +163,7 @@ export default class PlayCommand extends Command<Client>
 						.setDescription(res('CMD_PLAY_VALIDATE_DESCRIPTION',
 							{
 								added: songs.length.toLocaleString(),
-								lenght: Util.timeString(fullLength),
+								length: Util.timeString(fullLength),
 								requested: input.length.toLocaleString(),
 							},
 						)),
