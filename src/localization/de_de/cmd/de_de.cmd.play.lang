@@ -1,5 +1,5 @@
 [CMD_PLAY_DIFFERENT_CHANNEL]
-Ich spiele im moment in `#{{ channel }}`, du machst wohl besser mit uns mit!
+Ich spiele im moment in `#{{ channel }}`, da machst du wohl besser mit uns mit!
 
 [CMD_PLAY_FETCHING_MESSAGE]
 Rufe ab...
@@ -11,10 +11,10 @@ Rufe ab...
 Nichts hat sich zum hinzufügen qualifiziert. Vielleicht sind alle Lieder zu lang oder bereits in der Queue?
 
 [CMD_PLAY_VALIDATE_FOOTER]
-Fügte Lieder hinzu.
+Lieder wurden hinzugefügt.
 
 [CMD_PLAY_VALIDATE_DESCRIPTION]
-Habe {{ added }} / {{ requested }} deiner Angefragten Lieder hinzugefügt.
+Habe {{ added }} / {{ requested }} deiner angefragten Lieder hinzugefügt.
 Insgesamte Wiedergabelänge: {{ length }}
 
 [CMD_PLAY_VALIDATE_ALREADY_QUEUED]
@@ -25,7 +25,7 @@ Insgesamte Wiedergabelänge: {{ length }}
 
 [CMD_PLAY_PICK_DESCRIPTION]
 Dauer: {{ length}}\n
-Antworte mit `y` um diese Lied auszuwühlen, mit `n` für das nächste Ergebnis, oder mit `cancel` um diesen Vorgang abzubrechen
+Antworte mit `y` um diese Lied auszuwählen, mit `n` für das nächste Ergebnis, oder mit `cancel` um diesen Vorgang abzubrechen
 
 [CMD_PLAY_PICK_FOOTER]
 Ergebnis {{ current }} von {{ total }}.

@@ -11,15 +11,15 @@ Da der Channel leer ist, werde ich in `30` Sekunden diesen Channel verlassen, so
 Nur mal so nebenbei: Du musst dich in einem voice Channel befinden 👀
 
 [MUSIC_NO_SPEAK]
-Dein Channel sieht toll aus.
-Aber ich darf in diesem leider nicht sprechen.
+Dein Channel sieht toll aus,
+aber ich darf in diesem leider nicht sprechen.
 
 [MUSIC_NO_CONNECT]
-Dein Channel sieht toll aus.
-Aber ich darf diesem leider nicht beitreten.
+Dein Channel sieht toll aus,
+aber ich darf diesem leider nicht beitreten.
 
 [MUSIC_NO_DISPATCHER]
-Es existiert kein Dispatcher, vielleicht ist das Lied noch nicht gestartete?
+Es existiert kein Dispatcher, vielleicht hat das Lied noch nicht gestartet?
 
 [MUSIC_JOIN_FAILED]
 Ein Fehler ist aufgetreten, bei dem Versuch deinen Channel zu betreten:
@@ -27,15 +27,15 @@ Ein Fehler ist aufgetreten, bei dem Versuch deinen Channel zu betreten:
 Dieser Fehler wurde gemeldet und wird ~~hoffentlich~~ bald behoben!
 
 [MUSIC_YOUTUBE_ERROR]
-❌ Ein Fehler ust während des Cachen vom YouTube Stream aufgetreten.
+❌ Ein Fehler ist während des Cachen vom YouTube Stream aufgetreten.
 `{{ message }}`\n
 Dieser Fehler wurde gemeldet und wird ~~hoffentlich~~ bald behoben!
 
 [MUSIC_PLAY_ERROR]
 ❌ Es ist ein Fehler beim Abspielen aufgetreten.
 `{{ message }}`\n
-Führe `<prefix>stop force` aus, falls die Musik sich widererwartend nicht fortsetzt.
 Dieser Fehler wurde gemeldet und wird ~~hoffentlich~~ bald behoben!
+##Führe `<prefix>stop force` aus, falls die Musik sich widererwartend nicht fortsetzt.
 
 [MUSIC_SONG_LOOP]
 **Schleife ist aktiv.**

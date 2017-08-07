@@ -5,4 +5,4 @@ Definition
 Example
 
 [CMD_URBAN_FOOTER]
-{{ content  }} | Definition {{ definition }} from {{ maxDefinition }} Definitions.
+{{ content }} | Definition {{ definition }} from {{ maxDefinition }} Definitions.
