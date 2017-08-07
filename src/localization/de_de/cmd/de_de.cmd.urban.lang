@@ -1,8 +1,8 @@
 [CMD_URBAN_DEFINITION]
-Definition
+❯ Definition
 
 [CMD_URBAN_EXAMPLE]
-Beispiel
+❯ Beispiel
 
 [CMD_URBAN_FOOTER]
-{{ content  }} | Definition {{ definition }} von {{ maxDefinition }}.
+{{ content }} | Definition {{ definition }} von {{ maxDefinition }}.

@@ -34,8 +34,8 @@ This issue has been reported and will ~~hopefully~~ be sorted out in no time!
 [MUSIC_PLAY_ERROR]
 ❌ There was an error while playing.
 `{{ message }}`\n
-Consider running `<prefix>stop force`, if the playback is not continuing.
 This issue has been reported and will ~~hopefully~~ be sorted out in no time!
+## Consider running `<prefix>stop force`, if the playback is not continuing.
 
 [MUSIC_SONG_LOOP]
 **Loop is enabled.**

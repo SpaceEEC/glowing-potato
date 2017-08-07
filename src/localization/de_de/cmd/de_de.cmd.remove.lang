@@ -1,5 +1,5 @@
 [CMD_REMOVE_NOT_FOUND]
-Konnte kein Lied mit diesem Index (Position) finden!
+Konnte kein Lied an der angegebenen Position finden!
 
 [CMD_REMOVE_SUCCESS]
 Habe `{{ removed }}` von Position {{ position }} entfernt.

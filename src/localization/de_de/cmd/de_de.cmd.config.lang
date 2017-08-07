@@ -1,29 +1,29 @@
 ## region get
 [CMD_CONFIGOWERVIEW_EXPLANATION]
-Konfigurationsüberblick:
+Konfigurationsübersicht:
 
 [CMD_CONFIG_KEY_NOT_SET_UP]
-Es ist kein(e) {{ key }} festgelegt.
+Es ist kein(e) `{{ key }}` festgelegt.
 
 [CMD_CONFIG_NOT_PRESENT]
-Die/die festgelegt(e) {{ key }} existiert nicht länger und wurde von der Konfiguration entfernt.
+Die/die festgelegt(e) `{{ key }}` existiert nicht länger und wurde von der Konfiguration entfernt.
 
 [CMD_CONFIG_CURRENT_VALUE]
-Der/die momentane {{ key }} ist {{ value }}.
+Der/die momentane `{{ key }}` ist {{ value }}.
 ## endregion
 
 ## region set
 [CMD_CONFIG_VALUE_MUST_BE_TEXTCHANNEL]
-Der {{ key }} muss ein Text Channel sein!
+Der `{{ key }}` muss ein Textchannel sein!
 
 ## also for create
 [CMD_CONFIG_VALUE_UPDATE]
-Der oder die `{{ key }}` ist jetzt {{ value }}
+Der oder die `{{ key }}` ist jetzt {{ value }}.
 
 [CMD_CONFIG_RESET_PROMPT]
 Bist du sicher, dass du den/die `{{ key }}` zurücksetzen möchtest?
 __y__es / __n__o\n
-Hinweis: Diese Abfrage wird un `30` Sekunden automatisch abgebrochen.
+Hinweis: Diese Abfrage wird in `30` Sekunden automatisch abgebrochen.
 
 [CMD_CONFIG_RESET_ABORT]
 Breche dann ab...

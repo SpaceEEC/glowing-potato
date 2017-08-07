@@ -3,22 +3,22 @@
 Overview of whether config options are set up:
 
 [CMD_CONFIG_KEY_NOT_SET_UP]
-There is no {{ key }} set up.
+There is no `{{ key }}` set up.
 
 [CMD_CONFIG_NOT_PRESENT]
-The set up {{ key }} is no longer present and has been removed from the config.
+The set up `{{ key }}` is no longer present and has been removed from the config.
 
 [CMD_CONFIG_CURRENT_VALUE]
-The current {{ key }} is {{ value }}.
+The current `{{ key }}` is {{ value }}.
 ## endregion
 
 ## region set
 [CMD_CONFIG_VALUE_MUST_BE_TEXTCHANNEL]
-The {{ key }} must be a text channel!
+The `{{ key }}` must be a text channel!
 
 ## also for create
 [CMD_CONFIG_VALUE_UPDATE]
-The {{ key }} is now {{ value }}.
+The `{{ key }}` is now {{ value }}.
 
 [CMD_CONFIG_RESET_PROMPT]
 Are you sure you want to reset the `{{ key }}`?
