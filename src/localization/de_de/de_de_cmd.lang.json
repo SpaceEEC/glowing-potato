@@ -1,4 +1,11 @@
 {
+	"whitelist": {
+		"de_de": {
+			"desc": "Entfernt einen Nutzer von der Blacklist, wodurch dieser wieder Befehle verwenden kann",
+			"usage": "<prefix>whitelist <nutzer> ['global']",
+			"info": "Obsolet! Wird mit einer zukünftigen Version entfernt."
+		}
+	},
 	"anchannel": {
 		"de_de": {
 			"desc": "Legt den \"announcements channel\" für diesen Server fest, zeigt diesen an oder entfernt diesen aus der Konfiguration.",

@@ -1,0 +1,4 @@
+[CMD_WHITELIST_DEPRECATED]
+The `whitelist` command is deprecated, please use `blacklist` instead.
+It accepts as a second parameter `add` or `remove` now.
+Example: `{{ prefix }}blacklist remove User#1234`

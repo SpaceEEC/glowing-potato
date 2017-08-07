@@ -1,0 +1,5 @@
+[CMD_WHITELIST_DEPRECATED]
+Der `whitelist` Befehl ist obsolet und wird in einer zukünftigen Version enfernt.
+Bitte nutze den `blacklist` Befehl stattdessen;
+Dieser akzeptiert jetzt als zweiter Parameter `add` oder `remove`.
+Beispiel: `{{ prefix }}blacklist remove Nutzer#1234`
