@@ -248,6 +248,10 @@ export class Client extends YAMDBFClient
 				);
 			},
 		);
+		(this as any).ws.connection.on('debug', (error: Error) =>
+		{
+			RavenUtil.error('discord.js | websocket', error);
+		});
 	}
 
 	/**
@@ -266,7 +270,7 @@ export class Client extends YAMDBFClient
 			return;
 		}
 
-		this.logger.debug('discord.js', message);
+		this.logger.log('discord.js', message);
 	}
 
 	/**
