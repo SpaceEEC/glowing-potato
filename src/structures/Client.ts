@@ -12,7 +12,6 @@ import {
 	Providers,
 } from 'yamdbf';
 import { AniList } from 'yamdbf-anilist-unofficial';
-import { commandUsage } from 'yamdbf-command-usage';
 import { League } from 'yamdbf-league';
 
 import { Config } from '../types/config';
@@ -61,7 +60,7 @@ export class Client extends YAMDBFClient
 			pause: true,
 			plugins: [
 				'lang-german',
-				commandUsage('334843191545036800'),
+				'command-usage',
 				AniList(anilist),
 				League(ritoToken, {
 					emojis: {
