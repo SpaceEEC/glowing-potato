@@ -24,7 +24,7 @@ currently {{! args.streaming ? 'streaming' : 'playing' !}}: {{ name }}
 ❯ Guild specific
 
 [CMD_USERINFO_MEMBER_VALUE]
-• Nickname: {{ nickname || '`none`'}}
+• Nickname: {{ nickname }}
 • Roles: {{ roles }}
 • {{! args.bot ? 'Invited to' : 'Joined' !}} this guild {{ joinedAgo }}
   ({{ joinedAt }})
