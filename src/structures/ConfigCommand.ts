@@ -1,6 +1,7 @@
 import { Collection, GuildChannel, Role, Snowflake, TextChannel, Util as DJSUtil } from 'discord.js';
 import { Message, ResourceLoader } from 'yamdbf';
 
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { GuildConfigType } from '../types/GuildConfigKeys';
 import { Util } from '../util/Util';
 import { Client } from './Client';
@@ -23,7 +24,7 @@ abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 		const value: string = await message.guild.storage.get(key);
 		if (!value)
 		{
-			return message.channel.send(res('CMD_CONFIG_KEY_NOT_SET_UP', { key: key.toLowerCase() }))
+			return message.channel.send(res(S.CMD_CONFIG_KEY_NOT_SET_UP, { key: key.toLowerCase() }))
 				.then(() => undefined);
 		}
 
@@ -34,13 +35,13 @@ abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 			{
 				await message.guild.storage.remove(key);
 				return message.channel
-					.send(res('CMD_CONFIG_NOT_PRESENT', { key: key.toLowerCase() }))
+					.send(res(S.CMD_CONFIG_NOT_PRESENT, { key: key.toLowerCase() }))
 					.then(() => undefined);
 			}
 
 			return message.channel.send(
 				res(
-					'CMD_CONFIG_CURRENT_VALUE',
+					S.CMD_CONFIG_CURRENT_VALUE,
 					{
 						key: key.toLowerCase(),
 						value: channel.toString(),
@@ -55,13 +56,13 @@ abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 			{
 				await message.guild.storage.remove(key);
 				return message.channel
-					.send(res('CMD_CONFIG_NOT_PRESENT', { key: key.toLowerCase() }))
+					.send(res(S.CMD_CONFIG_NOT_PRESENT, { key: key.toLowerCase() }))
 					.then(() => undefined);
 			}
 
 			return message.channel.send(
 				res(
-					'CMD_CONFIG_CURRENT_VALUE',
+					S.CMD_CONFIG_CURRENT_VALUE,
 					{
 						key: key.toLowerCase(),
 						value: `\`@${role.name}}\``,
@@ -73,7 +74,7 @@ abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 		{
 			return message.channel.send(
 				res(
-					'CMD_CONFIG_CURRENT_VALUE',
+					S.CMD_CONFIG_CURRENT_VALUE,
 					{
 						key: key.toLowerCase(),
 						value: `\`\`\`${DJSUtil.escapeMarkdown(value, true)}\`\`\``,
@@ -100,14 +101,14 @@ abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 		{
 			if (!(value instanceof TextChannel))
 			{
-				return message.channel.send(res('CMD_CONFIG_VALUE_MUST_BE_TEXTCHANNEL', { key: key.toLowerCase() }))
+				return message.channel.send(res(S.CMD_CONFIG_VALUE_MUST_BE_TEXTCHANNEL, { key: key.toLowerCase() }))
 					.then(() => undefined);
 			}
 			await message.guild.storage.set(key, value.id);
 
 			return message.channel.send(
 				res(
-					'CMD_CONFIG_VALUE_UPDATE',
+					S.CMD_CONFIG_VALUE_UPDATE,
 					{
 						key: key.toLowerCase(),
 						value: value.toString(),
@@ -125,7 +126,7 @@ abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 
 			return message.channel.send(
 				res(
-					'CMD_CONFIG_VALUE_UPDATE',
+					S.CMD_CONFIG_VALUE_UPDATE,
 					{
 						key: key.toLowerCase(),
 						value: `\`@${value.name}\``,
@@ -143,7 +144,7 @@ abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 
 			return message.channel.send(
 				res(
-					'CMD_CONFIG_VALUE_UPDATE',
+					S.CMD_CONFIG_VALUE_UPDATE,
 					{
 						key: key.toLowerCase(),
 						value: `\`\`\`${DJSUtil.escapeMarkdown(value, true)}\`\`\``,
@@ -165,7 +166,7 @@ abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 	 */
 	protected async reset(message: Message, res: ResourceLoader, key: string, _?: GuildConfigType, __?: any): Promise<void>
 	{
-		const prompt: Message = await message.channel.send(res('CMD_CONFIG_RESET_PROMPT')) as Message;
+		const prompt: Message = await message.channel.send(res(S.CMD_CONFIG_RESET_PROMPT)) as Message;
 		const response: Message = await message.channel.awaitMessages(
 			(m: Message) => m.author.id === message.author.id,
 			{
@@ -179,13 +180,13 @@ abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 
 		if (!response || !Util.resolveBoolean(response.content.split(' ')[0]))
 		{
-			return message.channel.send(res('CMD_CONFIG_RESET_ABORT'))
+			return message.channel.send(res(S.CMD_CONFIG_RESET_ABORT))
 				.then(() => undefined);
 		}
 
 		await message.guild.storage.remove(key);
 
-		return message.channel.send(res('CMD_CONFIG_RESET_SUCCESS', { key: key.toLowerCase() }))
+		return message.channel.send(res(S.CMD_CONFIG_RESET_SUCCESS, { key: key.toLowerCase() }))
 			.then(() => undefined);
 	}
 }

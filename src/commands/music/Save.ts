@@ -1,6 +1,7 @@
 import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -24,7 +25,7 @@ export default class SaveCommand extends Command<Client>
 
 		if (!queue)
 		{
-			return message.channel.send(res('MUSIC_QUEUE_NON_EXISTENT'))
+			return message.channel.send(res(S.MUSIC_QUEUE_NON_EXISTENT))
 				.then((m: Message) => m.delete(5e3))
 				.catch(() => null);
 		}
@@ -35,7 +36,7 @@ export default class SaveCommand extends Command<Client>
 		return message.author.send({ embed })
 			.then(() => undefined)
 			.catch(() =>
-				message.channel.send(res('CMD_SAVE_DM_FAILED')),
+				message.channel.send(res(S.CMD_SAVE_DM_FAILED)),
 		);
 	}
 }

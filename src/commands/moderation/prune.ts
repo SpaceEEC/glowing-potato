@@ -2,6 +2,7 @@ import { Collection, TextChannel, User } from 'discord.js';
 import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 
@@ -58,12 +59,13 @@ export default class PruneCommand extends Command<Client>
 		// for tslint and typescript
 		if (!(message.channel instanceof TextChannel))
 		{
+			// because you can not receive a message from a voice channel, and this command is guild only
 			throw new Error('This channel is not a text channel, this should never happen.');
 		}
 
 		if (count > 100 || count < 1)
 		{
-			return message.channel.send(res('CMD_PRUNE_INVALID_COUNT'))
+			return message.channel.send(res(S.CMD_PRUNE_INVALID_COUNT))
 				.then(() => undefined);
 		}
 

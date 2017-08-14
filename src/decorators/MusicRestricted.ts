@@ -1,6 +1,7 @@
 import { Role } from 'discord.js';
 import { Lang, Message, MiddlewareFunction, ResourceLoader } from 'yamdbf';
 
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { Client } from '../structures/Client';
 import { Command } from '../structures/Command';
 import { Queue } from '../structures/Queue';
@@ -33,7 +34,7 @@ export function musicRestricted(voiceChannel: boolean = false): MiddlewareFuncti
 			}
 			else if (!message.member.roles.has(musicRole))
 			{
-				throw new Error(res('DECORATORS_MUSIC_ROLE_MEMBERS', { role: `\`@${role.name}\`` }));
+				throw new Error(res(S.DECORATORS_MUSIC_ROLE_MEMBERS, { role: `\`@${role.name}\`` }));
 			}
 		}
 
@@ -45,7 +46,7 @@ export function musicRestricted(voiceChannel: boolean = false): MiddlewareFuncti
 			}
 			else if (message.channel.id !== musicChannel)
 			{
-				throw new Error(res('DECORATORS_MUSIC_TEXT_CHANNEL', { channel: `<#${musicChannel}>` }));
+				throw new Error(res(S.DECORATORS_MUSIC_TEXT_CHANNEL, { channel: `<#${musicChannel}>` }));
 			}
 		}
 
@@ -54,7 +55,7 @@ export function musicRestricted(voiceChannel: boolean = false): MiddlewareFuncti
 			const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 			if (queue && queue.voiceChannel !== message.member.voiceChannel)
 			{
-				throw new Error(res('DECORATORS_MUSIC_VOICE_CHANNEL', { channel: queue.voiceChannel.toString() }));
+				throw new Error(res(S.DECORATORS_MUSIC_VOICE_CHANNEL, { channel: queue.voiceChannel.toString() }));
 			}
 		}
 

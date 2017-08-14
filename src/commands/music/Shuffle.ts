@@ -2,6 +2,7 @@ import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -24,14 +25,14 @@ export default class ShuffleCommaand extends Command<Client>
 
 		if (!queue || queue.length < 3)
 		{
-			return message.channel.send(res('CMD_SHUFFLE_QUEUE_EMPTY_OR_TOO_SMALL'))
+			return message.channel.send(res(S.CMD_SHUFFLE_QUEUE_EMPTY_OR_TOO_SMALL))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		queue.shuffle();
 
-		return message.channel.send(res('CMD_SHUFFLE_SUCCESS'))
+		return message.channel.send(res(S.CMD_SHUFFLE_SUCCESS))
 			.then((m: Message) => m.delete(10e4))
 			.catch(() => null);
 	}

@@ -2,6 +2,7 @@ import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -24,21 +25,21 @@ export default class ResumeCommand extends Command<Client>
 
 		if (!queue)
 		{
-			return message.channel.send(res('MUSIC_QUEUE_NON_EXISTENT'))
+			return message.channel.send(res(S.MUSIC_QUEUE_NON_EXISTENT))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		if (!queue.dispatcher)
 		{
-			return message.channel.send(res('MUSIC_NO_DISPATCHER'))
+			return message.channel.send(res(S.MUSIC_NO_DISPATCHER))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		if (!queue.dispatcher.paused)
 		{
-			return message.channel.send(res('CMD_RESUME_ALREADY_RUNNING'))
+			return message.channel.send(res(S.CMD_RESUME_ALREADY_RUNNING))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
@@ -46,7 +47,7 @@ export default class ResumeCommand extends Command<Client>
 		queue.dispatcher.resume();
 
 		return message.channel
-			.send(res('CMD_RESUME_SUCCESS'))
+			.send(res(S.CMD_RESUME_SUCCESS))
 			.then((m: Message) => m.delete(1e4))
 			.catch(() => null);
 	}

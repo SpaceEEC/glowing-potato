@@ -2,6 +2,7 @@ import { GuildChannel, Role } from 'discord.js';
 import { CommandDecorators, Lang, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { ConfigCommand as ConfigCommandBase } from '../../structures/ConfigCommand';
 import { GuildConfigChannels, GuildConfigRoles, GuildConfigStrings } from '../../types/GuildConfigKeys';
@@ -35,7 +36,7 @@ export default class ConfigCommand extends ConfigCommandBase<Client>
 		if (!['get', 'set', 'reset'].includes(args[0]))
 		{
 			throw new Error(res(
-				'EXPECT_ERR_INVALID_OPTION',
+				S.EXPECT_ERR_INVALID_OPTION,
 				{
 					arg: args[0],
 					name: '<Option>',
@@ -48,7 +49,7 @@ export default class ConfigCommand extends ConfigCommandBase<Client>
 		if (!GuildConfigUtil.parseConfigKey(args[1]))
 		{
 			throw new Error(res(
-				'EXPECT_ERR_INVALID_OPTION',
+				S.EXPECT_ERR_INVALID_OPTION,
 				{
 					arg: args[0],
 					name: '<Option>',

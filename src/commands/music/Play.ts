@@ -3,6 +3,7 @@ import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -60,7 +61,7 @@ export default class PlayCommand extends Command<Client>
 			voiceChannel = message.member.voiceChannel;
 			if (!voiceChannel)
 			{
-				return message.channel.send(res('MUSIC_NOT_IN_VOICECHANNEL'))
+				return message.channel.send(res(S.MUSIC_NOT_IN_VOICECHANNEL))
 					.then((mes: Message) => void mes.delete(1e4))
 					.catch(() => undefined);
 			}
@@ -68,25 +69,25 @@ export default class PlayCommand extends Command<Client>
 			const permissions: Permissions = voiceChannel.permissionsFor(message.guild.me);
 			if (!permissions.has('CONNECT'))
 			{
-				return message.channel.send(res('MUSIC_NO_CONNECT'))
+				return message.channel.send(res(S.MUSIC_NO_CONNECT))
 					.then((mes: Message) => void mes.delete(1e4))
 					.catch(() => undefined);
 			}
 			if (!permissions.has('SPEAK'))
 			{
-				return message.channel.send(res('MUSIC_NO_SPEAK'))
+				return message.channel.send(res(S.MUSIC_NO_SPEAK))
 					.then((mes: Message) => void mes.delete(1e4))
 					.catch(() => undefined);
 			}
 		}
 		else if (!queue.voiceChannel.members.has(message.author.id))
 		{
-			return message.channel.send(res('CMD_PLAY_DIFFERENT_CHANNEL', { channel: queue.voiceChannel.name }))
+			return message.channel.send(res(S.CMD_PLAY_DIFFERENT_CHANNEL, { channel: queue.voiceChannel.name }))
 				.then((mes: Message) => void mes.delete(1e4))
 				.catch(() => undefined);
 		}
 
-		const fetchMessage: Message = await message.channel.send(res('CMD_PLAY_FETCHING_MESSAGE')) as Message;
+		const fetchMessage: Message = await message.channel.send(res(S.CMD_PLAY_FETCHING_MESSAGE)) as Message;
 
 		const video: Video = await YouTubeUtil.getVideo(query);
 		this.client.logger.debug('PlayCommand | video', video ? 'found' : 'not found');
@@ -109,12 +110,12 @@ export default class PlayCommand extends Command<Client>
 
 			if (toAdd) return this._validateAndAdd(res, fetchMessage, message, queue, toAdd);
 
-			return message.channel.send(res('CMD_ABORTING'))
+			return message.channel.send(res(S.CMD_ABORTING))
 				.then((mes: Message) => void mes.delete(1e4))
 				.catch(() => undefined);
 		}
 
-		return fetchMessage.edit(res('CMD_PLAY_NOTHING_FOUND'))
+		return fetchMessage.edit(res(S.CMD_PLAY_NOTHING_FOUND))
 			.then((mes: Message) => void mes.delete(1e4))
 			.catch(() => undefined);
 	}
@@ -143,7 +144,7 @@ export default class PlayCommand extends Command<Client>
 
 			if (!success)
 			{
-				return message.channel.send(res('CMD_PLAY_NOTHING_QUALIFIED'))
+				return message.channel.send(res(S.CMD_PLAY_NOTHING_QUALIFIED))
 					.then((m: Message) => void m.delete(1e4));
 			}
 
@@ -159,8 +160,8 @@ export default class PlayCommand extends Command<Client>
 					embed: new RichEmbed()
 						.setAuthor(lastSong.username, lastSong.avatarURL)
 						.setColor(0xFFFF00)
-						.setFooter(res('CMD_PLAY_VALIDATE_FOOTER'), this.client.user.avatarURL)
-						.setDescription(res('CMD_PLAY_VALIDATE_DESCRIPTION',
+						.setFooter(res(S.CMD_PLAY_VALIDATE_FOOTER), this.client.user.avatarURL)
+						.setDescription(res(S.CMD_PLAY_VALIDATE_DESCRIPTION,
 							{
 								added: songs.length.toLocaleString(),
 								length: Util.timeString(fullLength),
@@ -201,11 +202,11 @@ export default class PlayCommand extends Command<Client>
 	{
 		if (queue && queue.some((song: Song) => song.id === video.id))
 		{
-			return 'CMD_PLAY_VALIDATE_ALREADY_QUEUED';
+			return S.CMD_PLAY_VALIDATE_ALREADY_QUEUED;
 		}
 		if (video.durationSeconds > 36e2)
 		{
-			return 'CMD_PLAY_VALIDATE_TOO_LONG';
+			return S.CMD_PLAY_VALIDATE_TOO_LONG;
 		}
 
 		return null;
@@ -236,12 +237,12 @@ export default class PlayCommand extends Command<Client>
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x9370DB).setTitle(video.title)
 			.setImage(`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`)
-			.setDescription(res('CMD_PLAY_PICK_DESCRIPTION',
+			.setDescription(res(S.CMD_PLAY_PICK_DESCRIPTION,
 				{
-					length: video.durationSeconds ? Util.timeString(video.durationSeconds) : 'Livestream',
+					length: video.durationSeconds ? Util.timeString(video.durationSeconds) : S.MUSIC_LIVESTREAM,
 				},
 			))
-			.setFooter(res('CMD_PLAY_PICK_FOOTER',
+			.setFooter(res(S.CMD_PLAY_PICK_FOOTER,
 				{
 					current: (index + 1).toLocaleString(),
 					total: videos.length.toLocaleString(),

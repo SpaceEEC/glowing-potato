@@ -1,6 +1,7 @@
 import { GuildChannel, Role } from 'discord.js';
 import { ExpectArgType, Lang, Message, Middleware, ResolveArgType, ResourceLoader } from 'yamdbf';
 
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { Client } from '../structures/Client';
 import { ConfigCommand } from '../structures/ConfigCommand';
 import { GuildConfigType } from '../types/GuildConfigKeys';
@@ -22,7 +23,7 @@ export function expectConfigOption(type: GuildConfigType)
 		if (!['get', 'set', 'reset'].includes(args[0]))
 		{
 			throw new Error(res(
-				'EXPECT_ERR_INVALID_OPTION',
+				S.EXPECT_ERR_INVALID_OPTION,
 				{
 					arg: args[0],
 					name: '<Option>',

@@ -32,5 +32,5 @@ currently {{! args.streaming ? 'streaming' : 'playing' !}}: {{ name }}
 [CMD_USERINFO_N_A]
 `❌`
 
-[CMD_USER_INFO_AVATAR]
+[CMD_USERINFO_AVATAR]
 [Click me]({{ avatar }})

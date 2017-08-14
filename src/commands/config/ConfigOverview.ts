@@ -1,6 +1,7 @@
 import { CommandDecorators, GuildStorage, Message, ResourceLoader, Util } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { GuildConfigUtil } from '../../util/GuildConfigUtil';
@@ -25,7 +26,7 @@ export default class ConfigOverviewCommand extends Command<Client>
 		let length: number = 0;
 		for (const [key] of values) if (length < key.length) length = key.length;
 
-		let response: string = `${res('CMD_CONFIGOWERVIEW_EXPLANATION')}\n\`\`\`ldif\n`;
+		let response: string = `${res(S.CMD_CONFIGOVERVIEW_EXPLANATION)}\n\`\`\`ldif\n`;
 		for (const [key, set] of values)
 		{
 			response += `${Util.padRight(key, length + 1)}: ${set ? '✅' : '❌'}\n`;

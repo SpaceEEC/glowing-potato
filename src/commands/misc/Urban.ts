@@ -2,6 +2,7 @@ import { get, Result } from 'snekfetch';
 import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { RichEmbed } from '../../structures/RichEmbed';
@@ -50,9 +51,9 @@ export default class Urban extends Command<Client>
 						'http://www.urbandictionary.com/favicon.ico',
 						'http://www.urbandictionary.com/')
 						.setThumbnail('https://a.safe.moe/7BZzg.png')
-						.addField(res('CMD_NO_RESULTS_TITLE'), res('CMD_NO_RESULTS_VALUE'))
-						.addField(res('CMD_NO_RESULTS_SEARCH'),
-						`[${res('CMD_NO_RESULTS_URL')}](http://www.urbandictionary.com/define.php?term=${query})`)
+						.addField(res(S.CMD_NO_RESULTS_TITLE), res(S.CMD_NO_RESULTS_VALUE))
+						.addField(res(S.CMD_NO_RESULTS_SEARCH),
+						`[${res(S.CMD_NO_RESULTS_URL)}](http://www.urbandictionary.com/define.php?term=${query})`)
 						.setFooter(message.cleanContent, message.author.displayAvatarURL),
 				},
 			).then(() => undefined);
@@ -71,15 +72,15 @@ export default class Urban extends Command<Client>
 
 		const { example, definition }: UrbanDefinition = body.list[selectedNumber];
 
-		embed.splitToFields(res('CMD_URBAN_DEFINITION'), definition);
+		embed.splitToFields(res(S.CMD_URBAN_DEFINITION), definition);
 
 		if (example)
 		{
-			embed.splitToFields(res('CMD_URBAN_EXAMPLE'), example);
+			embed.splitToFields(res(S.CMD_URBAN_EXAMPLE), example);
 		}
 
 		embed.setFooter(
-			res('CMD_URBAN_FOOTER',
+			res(S.CMD_URBAN_FOOTER,
 				{
 					content: message.cleanContent,
 					definition: (selectedNumber + 1).toLocaleString(),

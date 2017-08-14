@@ -1,6 +1,7 @@
 import { DiscordAPIError, GuildChannel, GuildMember, TextChannel } from 'discord.js';
 import { GuildStorage, Lang, ListenerUtil, ResourceLoader } from 'yamdbf';
 
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { GuildConfigChannels, GuildConfigStrings } from '../types/GuildConfigKeys';
 import { RavenUtil } from '../util/RavenUtil';
 import { Client } from './Client';
@@ -196,7 +197,7 @@ export class EventHandlers
 					embed
 						.setColor(0xFF4500)
 						.setDescription(
-						res('EVENT_VOICELOG_DISCONNECT',
+						res(S.EVENT_VOICELOG_DISCONNECT,
 							{
 								channel: oldMember.voiceChannel.toString(),
 								member: newMember.toString(),
@@ -209,7 +210,7 @@ export class EventHandlers
 					embed
 						.setColor(0x7CFC00)
 						.setDescription(
-						res('EVENT_VOICELOG_CONNECT',
+						res(S.EVENT_VOICELOG_CONNECT,
 							{
 								channel: newMember.voiceChannel.toString(),
 								member: newMember.toString(),
@@ -222,7 +223,7 @@ export class EventHandlers
 					embed
 						.setColor(3447003)
 						.setDescription(
-						res('EVENT_VOICELOG_MOVE',
+						res(S.EVENT_VOICELOG_MOVE,
 							{
 								member: newMember.toString(),
 								newChannel: newMember.voiceChannel.toString(),

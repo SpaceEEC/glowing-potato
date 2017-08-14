@@ -1,6 +1,7 @@
 import { StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
 import { Message, ResourceLoader } from 'yamdbf';
 
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { PaginatedPage } from '../types/PaginatedPage';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { RavenUtil } from '../util/RavenUtil';
@@ -126,7 +127,7 @@ export class Queue
 		if (this.statusMessage) this.statusMessage.delete().catch(() => null);
 
 		this.statusMessage = await this.textChannel
-			.send(this.res('MUSIC_EMPTY_TIMEOUT'))
+			.send(this.res(S.MUSIC_EMPTY_TIMEOUT))
 			.catch(() => null);
 
 		this._timeout = this.textChannel.client.setTimeout(() =>

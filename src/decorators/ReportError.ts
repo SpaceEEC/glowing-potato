@@ -1,6 +1,7 @@
 import { TextChannel } from 'discord.js';
 import { Command, Lang, Message, ResourceLoader } from 'yamdbf';
 
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { Client } from '../structures/Client';
 import { RavenUtil } from '../util/RavenUtil';
 
@@ -32,7 +33,7 @@ export function ReportError(target: Command, key: string, descriptor: PropertyDe
 				: this.client.defaultLang;
 			const res: ResourceLoader = Lang.createResourceLoader(lang);
 
-			await message.channel.send(res('DECORATORS_REPORT_ERROR_TEXT', { message: error.message }));
+			await message.channel.send(res(S.DECORATORS_REPORT_ERROR_TEXT, { message: error.message }));
 		}
 	};
 
