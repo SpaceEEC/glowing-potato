@@ -1,6 +1,6 @@
 {
   "name": "glowing-potato",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Yet another Discord bot",
   "main": "bin/index",
   "scripts": {
@@ -30,7 +30,7 @@
     "node-opus": "^0.2.6",
     "pg": "^6.4.1",
     "raven": "^2.1.1",
-    "sequelize": "^4.4.2",
+    "sequelize": "^4.4.10",
     "yamdbf": "github:zajrik/yamdbf",
     "yamdbf-anilist-unofficial": "github:spaceeec/yamdbf-anilist-unofficial",
     "yamdbf-command-usage": "github:zajrik/yamdbf-command-usage",
