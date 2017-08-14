@@ -2,6 +2,7 @@ import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -25,7 +26,7 @@ export default class StopCommand extends Command<Client>
 		if (!queue)
 		{
 			return message.channel
-				.send(res('MUSIC_QUEUE_NON_EXISTENT'))
+				.send(res(S.MUSIC_QUEUE_NON_EXISTENT))
 				.then((m: Message) => m.delete(5e3))
 				.catch(() => null);
 		}
@@ -33,7 +34,7 @@ export default class StopCommand extends Command<Client>
 		if (!queue.dispatcher)
 		{
 			return message.channel
-				.send(res('CMD_STOP_NOT_YET_POSSIBLE'))
+				.send(res(S.CMD_STOP_NOT_YET_POSSIBLE))
 				.then((m: Message) => m.delete(5e3))
 				.catch(() => null);
 		}
@@ -44,7 +45,7 @@ export default class StopCommand extends Command<Client>
 
 		this.client.musicPlayer.delete(message.guild.id);
 
-		return message.channel.send(res('CMD_STOP_SUCCESS'))
+		return message.channel.send(res(S.CMD_STOP_SUCCESS))
 			.then((m: Message) => m.delete(5e3))
 			.catch(() => null);
 	}

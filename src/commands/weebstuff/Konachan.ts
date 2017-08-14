@@ -3,6 +3,7 @@ import { get, Result } from 'snekfetch';
 import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { PicturePost } from '../../types/PicturePost';
@@ -24,7 +25,7 @@ export default class KonachanCommand extends Command<Client>
 	// tslint:disable-next-line:no-shadowed-variable
 	@using((msg: Message, [res, ...tags]: any[]) =>
 	{
-		if (tags.length > 5) throw new Error(res('CMD_KONACHAN_TOO_MUCH_TAGS'));
+		if (tags.length > 5) throw new Error(res(S.CMD_KONACHAN_TOO_MUCH_TAGS));
 		return [msg, [res, encodeURIComponent(tags.join(' '))]];
 	})
 	@ReportError
@@ -38,9 +39,9 @@ export default class KonachanCommand extends Command<Client>
 			return message.channel.send({
 				embed: new RichEmbed().setColor(0xFFFF00)
 					.setAuthor('konachan.net', 'https://konachan.net/favicon.ico', 'https://konachan.net/')
-					.addField(res('CMD_NO_RESULTS_TITLE'), res('CMD_NO_RESULTS_VALUE'))
-					.addField(res('CMD_NO_RESULTS_SEARCH'),
-					`[${res('CMD_NO_RESULTS_URL')}](http://konachan.net/post?tags=${search})`),
+					.addField(res(S.CMD_NO_RESULTS_TITLE), res(S.CMD_NO_RESULTS_VALUE))
+					.addField(res(S.CMD_NO_RESULTS_SEARCH),
+					`[${res(S.CMD_NO_RESULTS_URL)}](http://konachan.net/post?tags=${search})`),
 			}).then(() => undefined);
 		}
 
@@ -50,7 +51,7 @@ export default class KonachanCommand extends Command<Client>
 			embed: new RichEmbed()
 				.setColor(message.member.displayColor)
 				.setImage(`https:${post.sample_url}`)
-				.setDescription(`[${res('CMD_RESULTS_SOURCE')}](http://konachan.net/post/show/${post.id})`),
+				.setDescription(`[${res(S.CMD_RESULTS_SOURCE)}](http://konachan.net/post/show/${post.id})`),
 		}).then(() => undefined);
 	}
 }

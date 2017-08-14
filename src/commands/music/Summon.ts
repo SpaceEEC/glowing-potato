@@ -3,6 +3,7 @@ import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -24,7 +25,7 @@ export default class SummonCommand extends Command<Client>
 	{
 		if (!message.member.voiceChannel)
 		{
-			return message.channel.send(res('MUSIC_NOT_IN_VOICECHANNEL'))
+			return message.channel.send(res(S.MUSIC_NOT_IN_VOICECHANNEL))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
@@ -32,13 +33,13 @@ export default class SummonCommand extends Command<Client>
 		const permissions: Permissions = message.member.voiceChannel.permissionsFor(message.guild.me);
 		if (!permissions.has('CONNECT'))
 		{
-			return message.channel.send(res('MUSIC_NO_CONNECT'))
+			return message.channel.send(res(S.MUSIC_NO_CONNECT))
 				.then((mes: Message) => void mes.delete(1e4))
 				.catch(() => undefined);
 		}
 		if (!permissions.has('SPEAK'))
 		{
-			return message.channel.send(res('MUSIC_NO_SPEAK'))
+			return message.channel.send(res(S.MUSIC_NO_SPEAK))
 				.then((mes: Message) => void mes.delete(1e4))
 				.catch(() => undefined);
 		}
@@ -48,23 +49,23 @@ export default class SummonCommand extends Command<Client>
 		if (!queue)
 		{
 			return message.channel
-				.send(res('MUSIC_QUEUE_NON_EXISTENT'))
+				.send(res(S.MUSIC_QUEUE_NON_EXISTENT))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
-		const joinMessage: Message = await message.channel.send(res('CMD_SUMMON_JOINING')) as Message;
+		const joinMessage: Message = await message.channel.send(res(S.CMD_SUMMON_JOINING)) as Message;
 		try
 		{
 			await message.member.voiceChannel.join();
-			return joinMessage.edit(res('CMD_SUMMON_JOINED'))
+			return joinMessage.edit(res(S.CMD_SUMMON_JOINED))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 		catch (error)
 		{
 			RavenUtil.error('MusicPlayer | Summon', error);
-			return joinMessage.edit(res('MUSIC_JOIN_FAILED', { message: error.message }))
+			return joinMessage.edit(res(S.MUSIC_JOIN_FAILED, { message: error.message }))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}

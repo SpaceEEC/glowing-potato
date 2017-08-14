@@ -2,6 +2,7 @@ import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -33,12 +34,12 @@ export default class VolumeCommand extends Command<Client>
 		{
 			if (volume > 10)
 			{
-				throw new Error(res('CMD_VOLUME_TOO_HIGH'));
+				throw new Error(res(S.CMD_VOLUME_TOO_HIGH));
 
 			}
 			if (volume < 1)
 			{
-				throw new Error(res('CMD_VOLUME_TOO_LOW'));
+				throw new Error(res(S.CMD_VOLUME_TOO_LOW));
 			}
 		}
 		return [message, [res, volume]];
@@ -76,7 +77,7 @@ export default class VolumeCommand extends Command<Client>
 
 		return message.channel.send(
 			res(
-				'CMD_VOLUME_SUCCESS',
+				S.CMD_VOLUME_SUCCESS,
 				{
 					update: String(update || ''),
 					volume: volume.toLocaleString(),

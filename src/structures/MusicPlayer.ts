@@ -2,6 +2,7 @@ import { GuildMember, Snowflake, TextChannel, VoiceConnection } from 'discord.js
 import { Message, ResourceLoader } from 'yamdbf';
 import * as ytdl from 'ytdl-core';
 
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { RavenUtil } from '../util/RavenUtil';
 import { Util } from '../util/Util';
@@ -104,7 +105,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		{
 			RavenUtil.error('MusicPlayer', error);
 			this.delete(guild.id);
-			channel.send(res('MUSIC_JOIN_FAILED', { message: error.message }))
+			channel.send(res(S.MUSIC_JOIN_FAILED, { message: error.message }))
 				.catch(() => null);
 		}
 
@@ -168,7 +169,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				RavenUtil.error('MusicPlayer | dispatcher', error);
 
 				queue.statusMessage = await queue.statusMessage.edit(
-					queue.res('MUSIC_PLAY_ERROR',
+					queue.res(S.MUSIC_PLAY_ERROR,
 						{
 							message: error.message,
 						},
@@ -209,7 +210,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				{
 					RavenUtil.error('MusicPlayer | _play', _playError);
 					queue.textChannel.send(
-						queue.res('MUSIC_PLAY_ERROR',
+						queue.res(S.MUSIC_PLAY_ERROR,
 							{
 								message: _playError.message,
 							},

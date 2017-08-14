@@ -2,6 +2,7 @@ import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -29,7 +30,7 @@ export default class LoopCommand extends Command<Client>
 			const state: boolean = Util.resolveBoolean(input);
 			if (state === null)
 			{
-				throw new Error(res('UTIL_RESOLVE_BOOLEAN', { input }));
+				throw new Error(res(S.UTIL_RESOLVE_BOOLEAN, { input }));
 			}
 			return [message, [res, state]];
 		}
@@ -44,28 +45,28 @@ export default class LoopCommand extends Command<Client>
 
 		if (!queue)
 		{
-			return message.channel.send(res('MUSIC_QUEUE_NON_EXISTENT'))
+			return message.channel.send(res(S.MUSIC_QUEUE_NON_EXISTENT))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		if (typeof state !== 'boolean')
 		{
-			return message.channel.send(res('CMD_LOOP_CURRENT_STATE', { state: String(queue.loop || '') }))
+			return message.channel.send(res(S.CMD_LOOP_CURRENT_STATE, { state: String(queue.loop || '') }))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		if (queue.loop === state)
 		{
-			return message.channel.send(res('CMD_LOOP_CURRENT_ALREADY', { state: String(state || '') }))
+			return message.channel.send(res(S.CMD_LOOP_CURRENT_ALREADY, { state: String(state || '') }))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		queue.loop = state;
 
-		return message.channel.send(res('CMD_LOOP_CURRENT_SET', { state: String(state || '') }))
+		return message.channel.send(res(S.CMD_LOOP_CURRENT_SET, { state: String(state || '') }))
 			.then((m: Message) => m.delete(1e4))
 			.catch(() => null);
 	}

@@ -4,6 +4,7 @@ import { Song } from '../../structures/Song';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 
@@ -29,7 +30,7 @@ export default class RemoveCommand extends Command<Client>
 		if (!queue)
 		{
 			return message.channel
-				.send(res('MUSIC_QUEUE_NON_EXISTENT'))
+				.send(res(S.MUSIC_QUEUE_NON_EXISTENT))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
@@ -38,17 +39,19 @@ export default class RemoveCommand extends Command<Client>
 
 		if (!queue.at(index))
 		{
-			return message.channel.send(res('CMD_REMOVE_NOT_FOUND'))
+			return message.channel.send(res(S.CMD_REMOVE_NOT_FOUND))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		const [removed]: Song[] = queue.removeAt(index);
 
-		return message.channel.send(res('CMD_REMOVE_SUCCESS', {
-			position: index.toLocaleString(),
-			removed: removed.toString(),
-		})).then((m: Message) => m.delete(1e4))
+		return message.channel.send(res(S.CMD_REMOVE_SUCCESS,
+			{
+				position: index.toLocaleString(),
+				removed: removed.toString(),
+			},
+		)).then((m: Message) => m.delete(1e4))
 			.catch(() => null);
 	}
 }

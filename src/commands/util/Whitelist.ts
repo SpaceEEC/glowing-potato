@@ -1,5 +1,6 @@
 import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 
@@ -19,7 +20,7 @@ export default class WhitelistCommand extends Command<Client>
 	@localizable
 	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
 	{
-		await message.channel.send(res('CMD_WHITELIST_DEPRECATED',
+		await message.channel.send(res(S.CMD_WHITELIST_DEPRECATED,
 			{
 				prefix: await message.guild.storage.settings.get('prefix'),
 			},

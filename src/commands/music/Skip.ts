@@ -2,6 +2,7 @@ import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -24,7 +25,7 @@ export default class SkipCommand extends Command<Client>
 
 		if (!queue)
 		{
-			return message.channel.send(res('MUSIC_QUEUE_NON_EXISTENT'))
+			return message.channel.send(res(S.MUSIC_QUEUE_NON_EXISTENT))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
@@ -32,7 +33,7 @@ export default class SkipCommand extends Command<Client>
 		if (!queue.dispatcher)
 		{
 			return message.channel
-				.send(res('CMD_SKIP_NOT_POSSIBLE_YET'))
+				.send(res(S.CMD_SKIP_NOT_POSSIBLE_YET))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
@@ -41,7 +42,7 @@ export default class SkipCommand extends Command<Client>
 
 		queue.dispatcher.end('skip');
 
-		return message.channel.send(res('CMD_SKIP_SUCCESS', { song: currentSong.toString() }))
+		return message.channel.send(res(S.CMD_SKIP_SUCCESS, { song: currentSong.toString() }))
 			.then((m: Message) => m.delete(1e4))
 			.catch(() => null);
 	}

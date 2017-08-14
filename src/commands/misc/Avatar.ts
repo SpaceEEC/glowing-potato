@@ -35,6 +35,7 @@ export default class AvatarCommand extends Command<Client>
 		return message.channel.send(
 			{
 				embed: new RichEmbed()
+					.setTitle(`${user.tag} (${user.id})`)
 					.setColor(message.member.displayColor)
 					.attachFile(fileOptions)
 					.setImage(`attachment://${filename}`),
