@@ -23,7 +23,7 @@ const { aliases, clientPermissions, desc, group, guildOnly, name, usage, localiz
 // tslint:disable-next-line:variable-name
 const { Endpoints }: { Endpoints: any } = require('discord.js').Constants;
 
-@aliases('guild')
+@aliases('guild', 'guild-info', 'server', 'server-info', 'serverinfo')
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
 @desc('Displays info for the current or specified guild.')
 @name('guildinfo')
