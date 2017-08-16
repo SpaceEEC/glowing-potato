@@ -81,7 +81,7 @@ export class Client extends YAMDBFClient
 					'CHANNEL_PINS_UPDATE',
 					'TYPING_START',
 				],
-				messageCacheMaxSize: 1,
+				messageCacheMaxSize: 10,
 			},
 		);
 
