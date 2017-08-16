@@ -62,29 +62,29 @@ export default class PlayCommand extends Command<Client>
 			if (!voiceChannel)
 			{
 				return message.channel.send(res(S.MUSIC_NOT_IN_VOICECHANNEL))
-					.then((mes: Message) => void mes.delete(1e4))
-					.catch(() => undefined);
+					.then((mes: Message) => mes.delete(1e4))
+					.catch(() => null);
 			}
 
 			const permissions: Permissions = voiceChannel.permissionsFor(message.guild.me);
 			if (!permissions.has('CONNECT'))
 			{
 				return message.channel.send(res(S.MUSIC_NO_CONNECT))
-					.then((mes: Message) => void mes.delete(1e4))
-					.catch(() => undefined);
+					.then((mes: Message) => mes.delete(1e4))
+					.catch(() => null);
 			}
 			if (!permissions.has('SPEAK'))
 			{
 				return message.channel.send(res(S.MUSIC_NO_SPEAK))
-					.then((mes: Message) => void mes.delete(1e4))
-					.catch(() => undefined);
+					.then((mes: Message) => mes.delete(1e4))
+					.catch(() => null);
 			}
 		}
 		else if (!queue.voiceChannel.members.has(message.author.id))
 		{
 			return message.channel.send(res(S.CMD_PLAY_DIFFERENT_CHANNEL, { channel: queue.voiceChannel.name }))
-				.then((mes: Message) => void mes.delete(1e4))
-				.catch(() => undefined);
+				.then((mes: Message) => mes.delete(1e4))
+				.catch(() => null);
 		}
 
 		const fetchMessage: Message = await message.channel.send(res(S.CMD_PLAY_FETCHING_MESSAGE)) as Message;
@@ -111,13 +111,13 @@ export default class PlayCommand extends Command<Client>
 			if (toAdd) return this._validateAndAdd(res, fetchMessage, message, queue, toAdd);
 
 			return message.channel.send(res(S.CMD_ABORTING))
-				.then((mes: Message) => void mes.delete(1e4))
-				.catch(() => undefined);
+				.then((mes: Message) => mes.delete(1e4))
+				.catch(() => null);
 		}
 
 		return fetchMessage.edit(res(S.CMD_PLAY_NOTHING_FOUND))
-			.then((mes: Message) => void mes.delete(1e4))
-			.catch(() => undefined);
+			.then((mes: Message) => mes.delete(1e4))
+			.catch(() => null);
 	}
 
 	private async _validateAndAdd(
@@ -145,7 +145,8 @@ export default class PlayCommand extends Command<Client>
 			if (!success)
 			{
 				return message.channel.send(res(S.CMD_PLAY_NOTHING_QUALIFIED))
-					.then((m: Message) => void m.delete(1e4));
+					.then((m: Message) => m.delete(1e4))
+					.catch(() => null);
 			}
 
 			const fullLength: number = +(queue && queue.reduce((val: number, cur: Song) => val += cur.length, 0))
@@ -168,7 +169,8 @@ export default class PlayCommand extends Command<Client>
 								requested: input.length.toLocaleString(),
 							},
 						)),
-				}).then((m: Message) => void m.delete(1e4));
+				}).then(() => fetchMessage.delete(1e4))
+					.catch(() => null);
 			}
 			return fetchMessage.delete()
 				.then(() => undefined)
@@ -189,12 +191,11 @@ export default class PlayCommand extends Command<Client>
 		if (!first)
 		{
 			return fetchMessage.edit('', { embed: song.embed(SongEmbedType.ADDED) })
-				.then((m: Message) => m.delete(1e4))
+				.then(() => fetchMessage.delete(1e4))
 				.catch(() => null);
 		}
 
 		return fetchMessage.delete()
-			.then((m: Message) => m.delete(1e4))
 			.catch(() => null);
 	}
 
@@ -227,8 +228,7 @@ export default class PlayCommand extends Command<Client>
 		{
 			if (message.deletable)
 			{
-				message.delete()
-					.catch(() => null);
+				message.delete().catch(() => null);
 			}
 
 			return null;
@@ -260,13 +260,14 @@ export default class PlayCommand extends Command<Client>
 		).then((collected: Collection<Snowflake, Message>) => collected.first());
 		if (response && response.deletable) response.delete().catch(() => null);
 
-		if (!response || !['y', 'n'].includes(response.content.split(' ')[0].toLowerCase()))
+		const answer: boolean = response ? Util.resolveBoolean(response.content.split(' ')[0]) : null;
+		if (answer === null)
 		{
 			statusMessage.delete().catch(() => null);
 			return null;
 		}
 
-		if (response.content.split(' ')[0].toLowerCase() === 'n')
+		if (!answer)
 		{
 			return this._pick(res, message, videos, statusMessage, ++index);
 		}
