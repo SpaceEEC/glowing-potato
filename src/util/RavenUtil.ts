@@ -23,7 +23,7 @@ export class RavenUtil
 	{
 		Logger.instance().addTransport({
 			level: LogLevel.WARN,
-			transport: ({ timestamp, type, tag, text }: LogData) =>
+			transport: ({ type, tag, text }: LogData) =>
 			{
 				// only sent to raven on non-dev
 				if (logLevel === LogLevel.DEBUG) return;
@@ -31,21 +31,17 @@ export class RavenUtil
 				// ignore raven log messages
 				if (tag === 'Raven') return;
 
-				// those colors
-				if (type.includes('WARN'))
-				{
-					RavenUtil._captureMessage(text, { level: 'warning', tags: { label: tag } })
-						.then((eventId: string) => Logger.instance().info('Raven', `Logged warn; eventId: ${eventId}`))
-						.catch((error: Error) =>
-						{
-							Logger.instance().error(
-								'Raven',
-								'An error occured while logging the error:',
-								inspect(error, true, Infinity, true),
-							);
-						},
-					);
-				}
+				RavenUtil._captureMessage(text, { level: type === 'WARN' ? 'warning' : 'error', tags: { label: tag } })
+					.then((eventId: string) => Logger.instance().info('Raven', `Logged warn; eventId: ${eventId}`))
+					.catch((error: Error) =>
+					{
+						Logger.instance().error(
+							'Raven',
+							'An error occured while logging the error:',
+							inspect(error, true, Infinity, true),
+						);
+					},
+				);
 			},
 		});
 	}
