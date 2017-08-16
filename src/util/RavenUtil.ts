@@ -28,6 +28,8 @@ export class RavenUtil
 				// only sent to raven on non-dev
 				if (logLevel === LogLevel.DEBUG) return;
 
+				if (!['WARN', 'ERROR'].includes(type)) return;
+
 				// ignore raven log messages
 				if (tag === 'Raven') return;
 
