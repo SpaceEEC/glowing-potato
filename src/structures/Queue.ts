@@ -134,7 +134,17 @@ export class Queue
 		{
 			if (this.statusMessage) this.statusMessage.delete().catch(() => null);
 			(this.textChannel.client as Client).musicPlayer.delete(this.textChannel.guild.id);
-			this.voiceChannel.leave();
+			if (!this.voiceChannel)
+			{
+				if (this.textChannel.guild.voiceConnection)
+				{
+					this.textChannel.guild.voiceConnection.disconnect();
+				}
+			}
+			else
+			{
+				this.voiceChannel.leave();
+			}
 		}, 3e4);
 	}
 
