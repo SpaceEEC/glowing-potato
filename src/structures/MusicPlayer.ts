@@ -90,7 +90,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		}
 		else
 		{
-			queue = new Queue(res, channel as TextChannel);
+			queue = new Queue(this._client, res, channel as TextChannel);
 			this.set(guild.id, queue);
 		}
 		if (input instanceof Array) queue.concat(input);

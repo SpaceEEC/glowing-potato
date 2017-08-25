@@ -42,6 +42,12 @@ export class Queue
 	public readonly textChannel: TextChannel;
 
 	/**
+	 * Reference to the client
+	 * @private
+	 * @readonly
+	 */
+	private readonly _client: Client;
+	/**
 	 * Whether the loop is enabled
 	 * @private
 	 */
@@ -64,10 +70,12 @@ export class Queue
 	private _timeout: NodeJS.Timer;
 
 	/**
-	 * Instantiates a new queue for this guild.
+	 * Instantiates a new queue for the guild the textchannel is in.
+	 * @param {Client} client
+	 * @param {ResourceLoader} res
 	 * @param {TextChannel} textChannel The text channel this queue should be bound to
 	 */
-	public constructor(res: ResourceLoader, textChannel: TextChannel)
+	public constructor(client: Client, res: ResourceLoader, textChannel: TextChannel)
 	{
 		this.connection = null;
 		this.statusMessage = null;
@@ -75,9 +83,10 @@ export class Queue
 		this.res = res;
 		this.textChannel = textChannel;
 
+		this._client = client;
 		this._loop = false;
 		this._songs = [];
-		(textChannel.client as Client).storage.guilds.get(textChannel.guild.id).get('volume')
+		client.storage.guilds.get(textChannel.guild.id).get('volume')
 			.then((volume: number) => this._volume = volume || 2);
 	}
 
@@ -88,7 +97,7 @@ export class Queue
 	 */
 	public async emtpyChannel(empty: boolean): Promise<void>
 	{
-		(this.textChannel.client as Client).logger.debug('Queue | emptyChannel', String(empty));
+		this._client.logger.debug('Queue | emptyChannel', String(empty));
 
 		if (!empty)
 		{
@@ -133,7 +142,7 @@ export class Queue
 		this._timeout = this.textChannel.client.setTimeout(() =>
 		{
 			if (this.statusMessage) this.statusMessage.delete().catch(() => null);
-			(this.textChannel.client as Client).musicPlayer.delete(this.textChannel.guild.id);
+			this._client.musicPlayer.delete(this.textChannel.guild.id);
 			if (!this.voiceChannel)
 			{
 				if (this.textChannel.guild.voiceConnection)
@@ -197,7 +206,7 @@ export class Queue
 	public set volume(volume: number)
 	{
 		this._volume = volume;
-		(this.textChannel.client as Client).storage.guilds.get(this.textChannel.guild.id).set('volume', volume)
+		this._client.storage.guilds.get(this.textChannel.guild.id).set('volume', volume)
 			.catch((error: Error) => RavenUtil.error('Queue', error, 'While saving the volume of the queue'));
 
 		if (this.dispatcher) this.dispatcher.setVolumeLogarithmic(volume / 5);
@@ -229,7 +238,7 @@ export class Queue
 	{
 		if (!this.textChannel.guild.me)
 		{
-			(this.textChannel.client as Client).logger.warn('Queue | voiceChannel', 'Own guild member is not cached!');
+			this._client.logger.warn('Queue | voiceChannel', 'Own guild member is not cached!');
 			return null;
 		}
 
