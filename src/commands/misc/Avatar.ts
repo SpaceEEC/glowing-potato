@@ -1,4 +1,4 @@
-import { FileOptions, RichEmbed, User } from 'discord.js';
+import { Attachment, RichEmbed, User } from 'discord.js';
 import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
@@ -27,19 +27,11 @@ export default class AvatarCommand extends Command<Client>
 			? 'avatar.gif'
 			: 'avatar.png';
 
-		const fileOptions: FileOptions = {
-			attachment: user.displayAvatarURL,
-			name: filename,
-		};
-
-		return message.channel.send(
-			{
-				embed: new RichEmbed()
-					.setTitle(`${user.tag} (${user.id})`)
-					.setColor(message.member.displayColor)
-					.attachFile(fileOptions)
-					.setImage(`attachment://${filename}`),
-			})
+		return message.channel.send(new RichEmbed()
+			.setTitle(`${user.tag} (${user.id})`)
+			.setColor(message.member.displayColor)
+			.attachFile(new Attachment(user.displayAvatarURL, filename))
+			.setImage(`attachment://${filename}`))
 			.then(() => message.channel.stopTyping())
 			.catch(() => message.channel.stopTyping());
 	}

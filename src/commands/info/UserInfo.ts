@@ -99,7 +99,7 @@ export default class UserInfoCommand extends Command<Client>
 			);
 		}
 
-		return message.channel.send({ embed }).then(() => undefined);
+		return message.channel.send(embed).then(() => undefined);
 
 	}
 }

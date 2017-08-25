@@ -33,7 +33,7 @@ export default class SaveCommand extends Command<Client>
 		const embed: RichEmbed = queue.currentSong.embed(SongEmbedType.SAVE);
 		embed.author = null;
 
-		return message.author.send({ embed })
+		return message.author.send(embed)
 			.then(() => undefined)
 			.catch(() =>
 				message.channel.send(res(S.CMD_SAVE_DM_FAILED)),

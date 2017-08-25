@@ -8,7 +8,6 @@ import { RavenUtil } from '../util/RavenUtil';
 import { Util } from '../util/Util';
 import { Client } from './Client';
 import { Queue } from './Queue';
-import { RichEmbed } from './RichEmbed';
 import { Song } from './Song';
 
 export class MusicPlayer extends Map<Snowflake, Queue>
@@ -156,10 +155,8 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 			return;
 		}
 
-		const embed: RichEmbed = currentSong.embed(SongEmbedType.PLAYING);
-
 		queue.statusMessage = await queue.textChannel
-			.send({ embed })
+			.send(currentSong.embed(SongEmbedType.PLAYING))
 			.catch(() => null);
 
 		queue.dispatcher = queue.connection.playStream(ytdl(currentSong.url), { passes: 2 })

@@ -64,7 +64,7 @@ export default class InfoCommand extends Command<Client>
 			.setThumbnail(this.client.user.displayAvatarURL)
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);
 
-		return message.channel.send({ embed })
+		return message.channel.send(embed)
 			.then(() => undefined);
 	}
 

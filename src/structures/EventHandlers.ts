@@ -233,7 +233,7 @@ export class EventHandlers
 					);
 				}
 
-				channel.send({ embed })
+				channel.send(embed)
 					.catch((error: DiscordAPIError) =>
 					{
 						RavenUtil.error('VLOG', error);

@@ -129,7 +129,7 @@ export default class GuildInfo extends Command<Client>
 			.setTimestamp()
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);
 
-		return message.channel.send({ embed })
+		return message.channel.send(embed)
 			.then(() => undefined);
 	}
 
@@ -179,7 +179,7 @@ export default class GuildInfo extends Command<Client>
 			.setTimestamp()
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);
 
-		return message.channel.send({ embed })
+		return message.channel.send(embed)
 			.then(() => undefined);
 	}
 

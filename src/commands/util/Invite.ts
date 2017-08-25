@@ -38,7 +38,7 @@ export default class InviteCommand extends Command<Client>
 			.setDescription(res(S.CMD_INVITE_EMBED_DESCRIPTION, { url: invite }))
 			.addField(res(S.CMD_INVITE_EMBED_FIELD_TITLE), res(S.CMD_INVITE_EMBED_FIELD_VALUE));
 
-		return message.channel.send({ embed })
+		return message.channel.send(embed)
 			.then(() => undefined);
 	}
 }

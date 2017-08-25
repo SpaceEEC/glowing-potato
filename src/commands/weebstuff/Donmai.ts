@@ -36,21 +36,21 @@ export default class DonmaiCommand extends Command<Client>
 
 		if (!posts.length)
 		{
-			return message.channel.send({
-				embed: new RichEmbed()
+			return message.channel.send(
+				new RichEmbed()
 					.setColor(0xFFFF00)
 					.setAuthor('safebooru.donmai.us', 'https://safebooru.donmai.us/favicon.ico', 'https://safebooru.donmai.us/')
 					.addField(res(S.CMD_NO_RESULTS_TITLE), res(S.CMD_NO_RESULTS_VALUE))
 					.addField(res(S.CMD_NO_RESULTS_SEARCH),
 					`[${res(S.CMD_NO_RESULTS_URL)}](http://safebooru.donmai.us/posts/?tags=${search})`),
-			}).then(() => undefined);
+			).then(() => undefined);
 		}
 
-		return message.channel.send({
-			embed: new RichEmbed()
+		return message.channel.send(
+			new RichEmbed()
 				.setColor(message.member.displayColor)
 				.setImage(`http://safebooru.donmai.us/${posts[0].file_url}`)
 				.setDescription(`[${res(S.CMD_RESULTS_SOURCE)}](http://safebooru.donmai.us/posts/${posts[0].id}/)`),
-		}).then(() => undefined);
+		).then(() => undefined);
 	}
 }
