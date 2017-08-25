@@ -36,22 +36,22 @@ export default class KonachanCommand extends Command<Client>
 
 		if (!posts.length)
 		{
-			return message.channel.send({
-				embed: new RichEmbed().setColor(0xFFFF00)
+			return message.channel.send(
+				new RichEmbed().setColor(0xFFFF00)
 					.setAuthor('konachan.net', 'https://konachan.net/favicon.ico', 'https://konachan.net/')
 					.addField(res(S.CMD_NO_RESULTS_TITLE), res(S.CMD_NO_RESULTS_VALUE))
 					.addField(res(S.CMD_NO_RESULTS_SEARCH),
 					`[${res(S.CMD_NO_RESULTS_URL)}](http://konachan.net/post?tags=${search})`),
-			}).then(() => undefined);
+			).then(() => undefined);
 		}
 
 		const post: PicturePost = posts[Math.floor(Math.random() * posts.length)];
 
-		return message.channel.send({
-			embed: new RichEmbed()
+		return message.channel.send(
+			new RichEmbed()
 				.setColor(message.member.displayColor)
 				.setImage(`https:${post.sample_url}`)
 				.setDescription(`[${res(S.CMD_RESULTS_SOURCE)}](http://konachan.net/post/show/${post.id})`),
-		}).then(() => undefined);
+		).then(() => undefined);
 	}
 }

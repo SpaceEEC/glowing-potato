@@ -6,7 +6,6 @@ import { LocalizationStrings as S } from '../../localization/LocalizationStrings
 import { Client } from '../../structures/Client';
 import { Command } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
-import { RichEmbed } from '../../structures/RichEmbed';
 
 const { aliases, desc, group, guildOnly, name, usage, localizable } = CommandDecorators;
 
@@ -31,9 +30,7 @@ export default class NowPlayingCommand extends Command<Client>
 				.catch(() => null);
 		}
 
-		const embed: RichEmbed = queue.currentSong.embed(SongEmbedType.NP);
-
-		return message.channel.send({ embed })
+		return message.channel.send(queue.currentSong.embed(SongEmbedType.NP))
 			.then((m: Message) => m.delete(1e4))
 			.catch(() => null);
 	}

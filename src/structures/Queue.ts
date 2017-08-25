@@ -113,13 +113,13 @@ export class Queue
 					if (this.statusMessage)
 					{
 						this.statusMessage = await this.statusMessage
-							.edit('', { embed })
+							.edit('', embed)
 							.catch(() => null);
 					}
 					else
 					{
 						this.statusMessage = await this.textChannel
-							.send({ embed })
+							.send(embed)
 							.catch(() => null);
 					}
 				}
@@ -224,7 +224,7 @@ export class Queue
 		{
 			const embed: RichEmbed = this._songs[0].embed(SongEmbedType.PLAYING);
 
-			this.statusMessage.edit('', { embed })
+			this.statusMessage.edit('', embed)
 				.then((m: Message) => this.statusMessage = m)
 				.catch(() => null);
 		}

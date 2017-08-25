@@ -168,7 +168,7 @@ export class Client extends YAMDBFClient
 			.setFooter(channel.type.toUpperCase(), this.user.displayAvatarURL)
 			.setTimestamp();
 
-		logChannel.send({ embed }).catch(() => null);
+		logChannel.send(embed).catch(() => null);
 	}
 
 	/**
@@ -208,7 +208,7 @@ export class Client extends YAMDBFClient
 			.setFooter(`Current guild count: ${this.guilds.size}`)
 			.setTimestamp();
 
-		return channel.send({ embed })
+		return channel.send(embed)
 			.then(() => undefined)
 			.catch((error: DiscordAPIError) =>
 			{

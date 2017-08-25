@@ -43,19 +43,16 @@ export default class Urban extends Command<Client>
 		if (!body.list.length)
 		{
 			return message.channel.send(
-				{
-					embed:
-					new RichEmbed()
-						.setColor(0x1d2439)
-						.setAuthor('Urbandictionary',
-						'http://www.urbandictionary.com/favicon.ico',
-						'http://www.urbandictionary.com/')
-						.setThumbnail('https://a.safe.moe/7BZzg.png')
-						.addField(res(S.CMD_NO_RESULTS_TITLE), res(S.CMD_NO_RESULTS_VALUE))
-						.addField(res(S.CMD_NO_RESULTS_SEARCH),
-						`[${res(S.CMD_NO_RESULTS_URL)}](http://www.urbandictionary.com/define.php?term=${query})`)
-						.setFooter(message.cleanContent, message.author.displayAvatarURL),
-				},
+				new RichEmbed()
+					.setColor(0x1d2439)
+					.setAuthor('Urbandictionary',
+					'http://www.urbandictionary.com/favicon.ico',
+					'http://www.urbandictionary.com/')
+					.setThumbnail('https://a.safe.moe/7BZzg.png')
+					.addField(res(S.CMD_NO_RESULTS_TITLE), res(S.CMD_NO_RESULTS_VALUE))
+					.addField(res(S.CMD_NO_RESULTS_SEARCH),
+					`[${res(S.CMD_NO_RESULTS_URL)}](http://www.urbandictionary.com/define.php?term=${query})`)
+					.setFooter(message.cleanContent, message.author.displayAvatarURL),
 			).then(() => undefined);
 		}
 
@@ -90,7 +87,7 @@ export default class Urban extends Command<Client>
 			message.author.displayAvatarURL,
 		);
 
-		return message.channel.send({ embed })
+		return message.channel.send(embed)
 			.then(() => undefined);
 	}
 

@@ -157,8 +157,8 @@ export default class PlayCommand extends Command<Client>
 
 			if (!first)
 			{
-				return fetchMessage.edit('', {
-					embed: new RichEmbed()
+				return fetchMessage.edit('',
+					new RichEmbed()
 						.setAuthor(lastSong.username, lastSong.avatarURL)
 						.setColor(0xFFFF00)
 						.setFooter(res(S.CMD_PLAY_VALIDATE_FOOTER), this.client.user.avatarURL)
@@ -169,7 +169,7 @@ export default class PlayCommand extends Command<Client>
 								requested: input.length.toLocaleString(),
 							},
 						)),
-				}).then(() => fetchMessage.delete(1e4))
+				).then(() => fetchMessage.delete(1e4))
 					.catch(() => null);
 			}
 			return fetchMessage.delete()
@@ -190,7 +190,7 @@ export default class PlayCommand extends Command<Client>
 
 		if (!first)
 		{
-			return fetchMessage.edit('', { embed: song.embed(SongEmbedType.ADDED) })
+			return fetchMessage.edit('', song.embed(SongEmbedType.ADDED))
 				.then(() => fetchMessage.delete(1e4))
 				.catch(() => null);
 		}
@@ -251,8 +251,8 @@ export default class PlayCommand extends Command<Client>
 			message.author.displayAvatarURL);
 
 		statusMessage = statusMessage
-			? await statusMessage.edit(message.author.toString(), { embed }).catch(() => null)
-			: await message.channel.send(message.author.toString(), { embed }).catch(() => null);
+			? await statusMessage.edit(message.author.toString(), embed).catch(() => null)
+			: await message.channel.send(message.author.toString(), embed).catch(() => null);
 
 		const response: Message = await message.channel.awaitMessages(
 			(m: Message) => m.author.id === message.author.id,

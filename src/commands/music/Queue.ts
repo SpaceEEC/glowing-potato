@@ -106,7 +106,7 @@ export default class QueueCommand extends Command<Client>
 
 		embed.setDescription(currentPage);
 
-		return message.channel.send({ embed })
+		return message.channel.send(embed)
 			.then((m: Message) => m.delete(3e4))
 			.catch(() => null);
 	}
