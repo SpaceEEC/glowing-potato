@@ -5,7 +5,7 @@
 
 import { GuildMember, Util as DJSUtil } from 'discord.js';
 
-import {LocalizationStrings as S } from '../localization/LocalizationStrings';
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { SongEmbedOptions, songEmbedOptions } from '../types/SongEmbedOptions';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { Video } from '../types/Video';
@@ -37,12 +37,21 @@ export class Song
 	public member: GuildMember;
 
 	/**
+	 * The client that instantiated this Song
+	 * @private
+	 * @readonly
+	 */
+	private readonly _client: Client;
+
+	/**
 	 * Creates a new song from a video.
+	 * @param {Client} client The client that instantiates this Song
 	 * @param {Video} video The video
 	 * @param {GuildMember} member The requesting member
 	 */
-	public constructor(video: Video, member: GuildMember)
+	public constructor(client: Client, video: Video, member: GuildMember)
 	{
+		this._client = client;
 		this.name = DJSUtil.escapeMarkdown(video.title);
 		this.id = video.id;
 		this.length = video.durationSeconds;
@@ -174,6 +183,6 @@ export class Song
 	 */
 	private get _queue(): Queue
 	{
-		return (this.member.client as Client).musicPlayer.get(this.member.guild.id);
+		return this._client.musicPlayer.get(this.member.guild.id);
 	}
 }
