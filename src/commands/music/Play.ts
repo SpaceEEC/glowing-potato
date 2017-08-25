@@ -137,7 +137,7 @@ export default class PlayCommand extends Command<Client>
 			{
 				if (!this._validate(video, queue))
 				{
-					songs.push(new Song(video, message.member));
+					songs.push(new Song(this.client, video, message.member));
 					++success;
 				}
 			}
@@ -185,7 +185,7 @@ export default class PlayCommand extends Command<Client>
 				.catch(() => null);
 		}
 
-		const song: Song = new Song(input, message.member);
+		const song: Song = new Song(this.client, input, message.member);
 		const first: boolean = await this.client.musicPlayer.add(res, message, song);
 
 		if (!first)
