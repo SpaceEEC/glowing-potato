@@ -21,20 +21,24 @@ export class Song
 {
 	/**
 	 * The name of this song
+	 * @readonly
 	 */
-	public name: string;
+	public readonly name: string;
 	/**
 	 * The ID of this song
+	 * @readonly
 	 */
-	public id: string;
+	public readonly id: string;
 	/**
 	 * The length of this song in seconds
+	 * @readonly
 	 */
-	public length: number;
+	public readonly length: number;
 	/**
 	 * The member that requested this song
+	 * @readonly
 	 */
-	public member: GuildMember;
+	public readonly member: GuildMember;
 
 	/**
 	 * The client that instantiated this Song
