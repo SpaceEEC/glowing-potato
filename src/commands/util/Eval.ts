@@ -1,0 +1,100 @@
+import * as Discord from 'discord.js';
+import { inspect } from 'util';
+import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
+
+import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { Client } from '../../structures/Client';
+import { Command } from '../../structures/Command';
+
+const { desc, group, name, ownerOnly, overloads, usage, localizable } = CommandDecorators;
+
+@desc('Evaluates provided JavaScript code.')
+@name('eval')
+@group('base')
+@overloads('eval')
+@ownerOnly
+@usage('<prefix>eval <...code>')
+export default class EvalCommand extends Command<Client>
+{
+	@ReportError
+	@localizable
+	public async action(message: Message, [res, ...args]: [ResourceLoader, string[]]): Promise<Message | Message[]>
+	{
+		const client: Client = this.client;
+		const msg: Message = message;
+
+		if (!args.length) return this.respond(msg, res(S.CMD_EVAL_ERR_NOCODE));
+
+		const code: string = args.join(' ');
+
+		const startTime: [number, number] = process.hrtime();
+
+		try
+		{
+			// tslint:disable-next-line:no-eval
+			let result: any = await eval(
+				code.includes('await')
+					? `(async()=>{${code}})()`
+					: code,
+			);
+
+			const diff: [number, number] = process.hrtime(startTime);
+			const diffString: string = diff[0] > 0 ? `\`${diff[0]}\`s` : `\`${diff[1] / 1e6}\`ms`;
+
+			const typeofEvaled: string = result === null
+				? 'null'
+				: result
+					&& result.constructor
+					? result.constructor.name
+					: typeof result;
+
+			if (typeof result !== 'string')
+			{
+				result = inspect(result, { depth: 1 });
+			}
+
+			if (result.includes(client.token))
+			{
+				result = result.replace(/[\w\d]{24}\.[\w\d]{6}\.[\w\d-_]{27}/g, '[REDACTED]');
+			}
+
+			result = result.substr(0, 1900);
+
+			await message.channel.send(
+				[
+					'**Result**',
+					'```js',
+					Discord.Util.escapeMarkdown(result, true),
+					'```',
+					`Type: \`${typeofEvaled}\` | Took: ${diffString}`,
+				],
+			);
+		}
+		catch (error)
+		{
+			const diff: [number, number] = process.hrtime(startTime);
+			const diffString: string = diff[0] > 0 ? `\`${diff[0]}\`s` : `\`${diff[1] / 1e6}\`ms`;
+
+			const typeofError: string = error === null
+				? 'null'
+				: error
+					&& error.constructor
+					? error.constructor.name
+					: typeof error;
+
+			error = error instanceof Error ? error.message || String(error) : inspect(error, { depth: 1 });
+
+			message.channel.send(
+				[
+					'**Error**',
+					'```js',
+					Discord.Util.escapeMarkdown(error, true),
+					'```',
+					`Type: \`${typeofError}\` | Took: ${diffString}`,
+				],
+			);
+		}
+
+	}
+}
