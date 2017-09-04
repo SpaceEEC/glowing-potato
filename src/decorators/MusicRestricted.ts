@@ -17,6 +17,8 @@ export function musicRestricted(voiceChannel: boolean = false): MiddlewareFuncti
 	// tslint:disable-next-line:only-arrow-functions
 	return async function(this: Command<Client>, message: Message, args: string[]): Promise<[Message, any[]]>
 	{
+		if (this.client.isOwner(message.author)) return [message, args];
+
 		const [lang, musicRole, musicChannel]: string[] = await Promise.all<string>([
 			message.guild.storage.settings.get('lang'),
 			message.guild.storage.get(GuildConfigRoles.MUSICROLE),
