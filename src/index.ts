@@ -14,5 +14,6 @@ client.start();
 process.on('uncaughtException', (error: Error) =>
 {
 	RavenUtil.error('Uncaught Exception', error)
-		.then(() => process.exit(1));
+		.then(() => process.exit(1))
+		.catch(() => process.exit(1));
 });
