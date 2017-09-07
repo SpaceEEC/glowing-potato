@@ -23,7 +23,7 @@
   "author": "SpaceEEC",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^11.2.1",
+    "discord.js": "github:hydrabolt/discord.js#stable",
     "ffmpeg-binaries": "^3.2.2-3",
     "moment": "^2.18.1",
     "moment-duration-format": "^1.3.0",
