@@ -3,9 +3,6 @@ import { CaptureOptions, Client as Raven } from 'raven';
 import { inspect, promisify } from 'util';
 import { LogData, Logger, LogLevel } from 'yamdbf';
 
-import { Config } from '../types/config';
-
-const { logLevel, dsn }: Config = require('../../config.json');
 const { version }: { version: string } = require('../../package.json');
 
 /**
@@ -26,7 +23,7 @@ export class RavenUtil
 			transport: ({ type, tag, text }: LogData) =>
 			{
 				// only sent to raven on non-dev
-				if (logLevel === LogLevel.DEBUG) return;
+				if (Number(process.env.LOGLEVEL) === LogLevel.DEBUG) return;
 
 				if (!['WARN', 'ERROR'].includes(type)) return;
 
@@ -63,7 +60,7 @@ export class RavenUtil
 		Logger.instance().error(label, inspect(error, true, Infinity, true));
 
 		// only sent to raven on non-dev
-		if (logLevel === LogLevel.DEBUG) return;
+		if (Number(process.env.LOGLEVEL) === LogLevel.DEBUG) return;
 
 		const message: Message = rest[0];
 		if (message instanceof Message)
@@ -110,7 +107,7 @@ export class RavenUtil
 	 * @static
 	 * @readonly
 	 */
-	private static readonly _raven: Raven = new Raven(dsn,
+	private static readonly _raven: Raven = new Raven(process.env.DSN,
 		{
 			captureUnhandledRejections: true,
 			release: version,

@@ -14,15 +14,12 @@ import {
 import { AniList } from 'yamdbf-anilist-unofficial';
 import { League } from 'yamdbf-league';
 
-import { Config } from '../types/config';
 import { RavenUtil } from '../util/RavenUtil';
 import { EventHandlers } from './EventHandlers';
 import { MusicPlayer } from './MusicPlayer';
 import { RichEmbed } from './RichEmbed';
 
 const { on, once } = ListenerUtil;
-
-const { anilist, database, logLevel, token, ownerID, ritoToken }: Config = require('../../config.json');
 
 /**
  * The central client for this bot
@@ -53,28 +50,35 @@ export class Client extends YAMDBFClient
 	 */
 	public constructor()
 	{
-		super({
-			commandsDir: join(__dirname, '..', 'commands'),
-			localeDir: join(__dirname, '..', 'localization'),
-			owner: [ownerID],
-			pause: true,
-			plugins: [
-				'lang-german',
-				'command-usage',
-				AniList(anilist),
-				League(ritoToken, {
-					emojis: {
-						level4: '<:level4:335427521078231051>',
-						level5: '<:level5:335427521900445696>',
-						level6: '<:level6:335427522332459008>',
-						level7: '<:level7:335427524429348866>',
-					},
-				}),
-			],
-			provider: Providers.PostgresProvider(database),
-			token,
-			unknownCommandError: false,
-		},
+		super(
+			{
+				commandsDir: join(__dirname, '..', 'commands'),
+				localeDir: join(__dirname, '..', 'localization'),
+				owner: [process.env.OWNER_ID],
+				pause: true,
+				plugins:
+				[
+					'lang-german',
+					'command-usage',
+					AniList(
+						{
+							clientId: process.env.ANILIST_ID,
+							clientSecret: process.env.ANILIST_SECRET,
+						}),
+					League(process.env.RITO_TOKEN,
+						{
+							emojis: {
+								level4: '<:level4:335427521078231051>',
+								level5: '<:level5:335427521900445696>',
+								level6: '<:level6:335427522332459008>',
+								level7: '<:level7:335427524429348866>',
+							},
+						}),
+				],
+				provider: Providers.PostgresProvider(process.env.DATABASE),
+				token: process.env.TOKEN,
+				unknownCommandError: false,
+			},
 			{
 				disableEveryone: true,
 				disabledEvents: [
@@ -147,7 +151,7 @@ export class Client extends YAMDBFClient
 	public _onCommand(name: string, args: any[], execTime: number, message: Message): void
 	{
 		// ingore dev environment and owner(s)
-		if (logLevel === LogLevel.DEBUG
+		if (Number(process.env.LOGLEVEL) === LogLevel.DEBUG
 			|| this.isOwner(message.author)) return;
 
 		const logChannel: TextChannel = this.channels.get('334843191545036800') as TextChannel;
