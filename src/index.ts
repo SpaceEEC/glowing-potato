@@ -1,12 +1,9 @@
 import { Logger } from 'yamdbf';
 
 import { Client } from './structures/Client';
-import { Config } from './types/Config';
 import { RavenUtil } from './util/RavenUtil';
 
-const { logLevel }: Config = require('../config.json');
-
-Logger.instance().setLogLevel(logLevel);
+Logger.instance().setLogLevel(Number(process.env.LOGLEVEL));
 
 const client: Client = new Client();
 client.start();
