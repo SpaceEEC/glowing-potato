@@ -64,7 +64,8 @@ export class Client extends YAMDBFClient
 						{
 							clientId: process.env.ANILIST_ID,
 							clientSecret: process.env.ANILIST_SECRET,
-						}),
+						},
+					),
 					League(process.env.RITO_TOKEN,
 						{
 							emojis: {
@@ -73,7 +74,8 @@ export class Client extends YAMDBFClient
 								level6: '<:level6:335427522332459008>',
 								level7: '<:level7:335427524429348866>',
 							},
-						}),
+						},
+					),
 				],
 				provider: Providers.PostgresProvider(process.env.DATABASE),
 				token: process.env.TOKEN,
