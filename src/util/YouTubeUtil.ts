@@ -7,13 +7,9 @@ import { get } from 'snekfetch';
 import { parse } from 'url';
 import { Logger } from 'yamdbf';
 
-import { Config } from '../types/Config';
 import { Video } from '../types/Video';
 
-const { googleToken }: Config = require('../../config.json');
-
 // very consistent api responses
-
 // v3/videos
 type VideoResponse =
 	{
@@ -141,7 +137,7 @@ export class YouTubeUtil
 			+ `&q=${encodeURIComponent(input)}`
 			+ '&type=video'
 			+ '&fields=items%2Fid'
-			+ `&key=${googleToken}`,
+			+ `&key=${process.env.GOOGLE_TOKEN}`,
 		).catch((response: any) =>
 		{
 			if (!response.status && response instanceof Error) throw response;
@@ -202,7 +198,7 @@ export class YouTubeUtil
 			+ `&playlistId=${encodeURIComponent(id)}`
 			+ (pagetoken ? `&pageToken=${pagetoken}` : '')
 			+ `&fields=items%2Fsnippet%2FresourceId%2FvideoId`
-			+ `&key=${googleToken}`,
+			+ `&key=${process.env.GOOGLE_TOKEN}`,
 		).catch((response: any) =>
 		{
 			if (!response.status && response instanceof Error) throw response;
@@ -247,7 +243,7 @@ export class YouTubeUtil
 			+ '?part=snippet%2CcontentDetails'
 			+ `&id=${encodeURIComponent(ids)}`
 			+ '&fields=items(contentDetails%2Fduration%2Cid%2Csnippet%2Ftitle)'
-			+ `&key=${googleToken}`,
+			+ `&key=${process.env.GOOGLE_TOKEN}`,
 		).catch((response: any) =>
 		{
 			if (!response.status && response instanceof Error) throw response;
