@@ -200,18 +200,14 @@ export default class GuildInfo extends Command<Client>
 
 	private _mapIterator<T = any>(iterator: IterableIterator<T>, random: boolean = false): string
 	{
-		const valueArray: string[] = [];
-		for (const value of iterator)
-		{
-			valueArray.push(value.toString());
-		}
+		const valueArray: T[] = Array.from(iterator);
 
 		if (random)
 		{
 			for (let i: number = valueArray.length - 1; i > 0; --i)
 			{
 				const r: number = Math.floor(Math.random() * (i + 1));
-				const t: string = valueArray[i];
+				const t: T = valueArray[i];
 				valueArray[i] = valueArray[r];
 				valueArray[r] = t;
 			}
@@ -220,12 +216,13 @@ export default class GuildInfo extends Command<Client>
 		let mappedValues: string = '';
 		for (const value of valueArray)
 		{
-			if (mappedValues.length + value.length > 1021)
+			const stringValue: string = String(value);
+			if (mappedValues.length + stringValue.length >= 1021)
 			{
 				mappedValues += '...';
 				break;
 			}
-			mappedValues += ` ${value}`;
+			mappedValues += ` ${stringValue}`;
 		}
 
 		return mappedValues;
