@@ -57,7 +57,7 @@ export class Util
 		const chunks: T[][] = [];
 		const length: number = Math.ceil(input.length / chunkSize);
 
-		for (let i: number = 0; i < length; ++i)
+		for (let i: number = 0; i < length; null)
 		{
 			chunks.push(input.slice(i * chunkSize, ++i * chunkSize));
 		}
