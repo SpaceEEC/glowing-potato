@@ -25,7 +25,7 @@ export default class EmojiCommand extends Command<Client>
 		this: EmojiCommand,
 		message: Message,
 		[res, inputEmoji, inputMessage]: [ResourceLoader, string, string],
-	): Promise<[Message, [ResourceLoader, Emoji, Message]]>
+	): Promise<[Message, [Emoji, Message]]>
 	{
 		const emoji: Emoji = this.client.emojis.get(inputEmoji)
 			|| this.client.emojis.find('name', inputEmoji)
@@ -55,11 +55,11 @@ export default class EmojiCommand extends Command<Client>
 			}
 		}
 
-		return [message, [res, emoji, fetched]];
+		return [message, [emoji, fetched]];
 	})
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable
-	public async action(message: Message, [res, emoji, target]: [ResourceLoader, Emoji, Message]): Promise<void>
+	public async action(message: Message, [emoji, target]: [Emoji, Message]): Promise<void>
 	{
 		if (message.deletable) message.delete().catch(() => null);
 
