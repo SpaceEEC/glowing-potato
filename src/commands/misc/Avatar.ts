@@ -27,12 +27,18 @@ export default class AvatarCommand extends Command<Client>
 			? 'avatar.gif'
 			: 'avatar.png';
 
-		return message.channel.send(new RichEmbed()
-			.setTitle(`${user.tag} (${user.id})`)
-			.setColor(message.member.displayColor)
-			.attachFile(new Attachment(user.displayAvatarURL, filename))
-			.setImage(`attachment://${filename}`))
-			.then(() => message.channel.stopTyping())
-			.catch(() => message.channel.stopTyping());
+		try
+		{
+			await message.channel.send(new RichEmbed()
+				.setTitle(`${user.tag} (${user.id})`)
+				.setColor(message.member.displayColor)
+				.attachFile(new Attachment(user.displayAvatarURL, filename))
+				.setImage(`attachment://${filename}`));
+		}
+		finally
+		{
+			message.channel.stopTyping();
+		}
+
 	}
 }
