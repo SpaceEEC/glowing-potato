@@ -62,43 +62,46 @@ export class RavenUtil
 		// only sent to raven on non-dev
 		if (Number(process.env.LOGLEVEL) === LogLevel.DEBUG) return;
 
-		const message: Message = rest[0];
-		if (message instanceof Message)
+		await this._raven.context(async () =>
 		{
-			rest = rest.slice(1);
+			const message: Message = rest[0];
+			if (message instanceof Message)
+			{
+				rest = rest.slice(1);
 
-			this._raven.captureBreadcrumb({
-				category: 'Message',
-				data:
-				{
-					author: `${message.author.tag} (${message.author.id})`,
-					channel: `${message.channel instanceof GuildChannel ? message.channel.name : 'DM'} (${message.channel.id})`,
-					content: message.content,
-					guild: message.guild ? `${message.guild.name} (${message.guild.id})` : '',
-				},
-				message: 'Info about the sent message',
-			});
-		}
+				this._raven.captureBreadcrumb({
+					category: 'Message',
+					data:
+					{
+						author: `${message.author.tag} (${message.author.id})`,
+						channel: `${message.channel instanceof GuildChannel ? message.channel.name : 'DM'} (${message.channel.id})`,
+						content: message.content,
+						guild: message.guild ? `${message.guild.name} (${message.guild.id})` : '',
+					},
+					message: 'Info about the sent message',
+				});
+			}
 
-		try
-		{
-			const eventId: string = await RavenUtil._captureException(
-				error,
-				{
-					extra: { rest: rest.join(' ') },
-					tags: { label },
-				},
-			);
-			Logger.instance().info('Raven', 'Logged error; eventId:', eventId);
-		}
-		catch (ravenError)
-		{
-			Logger.instance().error(
-				'Raven',
-				'An error occured while logging the error:',
-				inspect(ravenError, true, Infinity, true),
-			);
-		}
+			try
+			{
+				const eventId: string = await RavenUtil._captureException(
+					error,
+					{
+						extra: { rest: rest.join(' ') },
+						tags: { label },
+					},
+				);
+				Logger.instance().info('Raven', 'Logged error; eventId:', eventId);
+			}
+			catch (ravenError)
+			{
+				Logger.instance().error(
+					'Raven',
+					'An error occured while logging the error:',
+					inspect(ravenError, true, Infinity, true),
+				);
+			}
+		});
 	}
 
 	/**
