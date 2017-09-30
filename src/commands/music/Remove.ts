@@ -2,6 +2,7 @@ import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 import { Queue } from '../../structures/Queue';
 import { Song } from '../../structures/Song';
 
+import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
@@ -22,6 +23,7 @@ export default class RemoveCommand extends Command<Client>
 	@using(resolve({ '<Index>': 'Number' }))
 	@using(expect({ '<Index>': 'Number' }))
 	@localizable
+	@LogCommandRun
 	@ReportError
 	public async action(message: Message, [res, index]: [ResourceLoader, number]): Promise<void>
 	{

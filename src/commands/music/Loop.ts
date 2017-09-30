@@ -1,5 +1,6 @@
 import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
+import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
@@ -37,6 +38,7 @@ export default class LoopCommand extends Command<Client>
 
 		return [message, [res, null]];
 	})
+	@LogCommandRun
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable
 	public async action(message: Message, [res, state]: [ResourceLoader, boolean]): Promise<void>

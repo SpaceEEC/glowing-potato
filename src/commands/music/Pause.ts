@@ -1,5 +1,6 @@
 import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
+import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
@@ -18,6 +19,7 @@ export default class PauseCommand extends Command<Client>
 {
 	@using(musicRestricted(true))
 	@localizable
+	@LogCommandRun
 	@ReportError
 	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
 	{

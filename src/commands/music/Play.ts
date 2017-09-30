@@ -1,6 +1,7 @@
 import { Collection, Permissions, Snowflake, VoiceChannel } from 'discord.js';
 import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
+import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
@@ -49,6 +50,7 @@ export default class PlayCommand extends Command<Client>
 		'<...Query>': 'String',
 	}))
 	@localizable
+	@LogCommandRun
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable object-literal-sort-keys
 	public async action(message: Message, [res, limit, query]: [ResourceLoader, number, string]): Promise<void>
