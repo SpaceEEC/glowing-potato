@@ -1,6 +1,7 @@
 import { Permissions } from 'discord.js';
 import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
+import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
@@ -20,6 +21,7 @@ export default class SummonCommand extends Command<Client>
 {
 	@using(musicRestricted())
 	@localizable
+	@LogCommandRun
 	@ReportError
 	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
 	{

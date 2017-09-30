@@ -1,5 +1,5 @@
 import { StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
-import { Message, ResourceLoader } from 'yamdbf';
+import { Logger, logger, Message, ResourceLoader } from 'yamdbf';
 
 import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { PaginatedPage } from '../types/PaginatedPage';
@@ -48,6 +48,13 @@ export class Queue
 	 */
 	private readonly _client: Client;
 	/**
+	 * Proxied reference to the logger
+	 * @private
+	 * @readonly
+	 */
+	@logger('QUEUE')
+	private readonly _logger: Logger;
+	/**
 	 * Whether the loop is enabled
 	 * @private
 	 */
@@ -77,6 +84,8 @@ export class Queue
 	 */
 	public constructor(client: Client, res: ResourceLoader, textChannel: TextChannel)
 	{
+		this._logger.debug(`(${textChannel.guild.id}) Instantiating queue`);
+
 		this.connection = null;
 		this.statusMessage = null;
 
@@ -97,7 +106,7 @@ export class Queue
 	 */
 	public async emtpyChannel(empty: boolean): Promise<void>
 	{
-		this._client.logger.debug('Queue | emptyChannel', String(empty));
+		this._logger.debug('EMPTYCHANNEL', `(${this.textChannel.guild.id})`, String(empty));
 
 		if (!empty)
 		{
@@ -238,7 +247,13 @@ export class Queue
 	{
 		if (!this.textChannel.guild.me)
 		{
-			this._client.logger.warn('Queue | voiceChannel', 'Own guild member is not cached!');
+			this._logger.warn(
+				'voiceChannel',
+				'Own guild member is not cached!\n',
+				`guild.member.size: ${this.textChannel.guild.members.size}\n`,
+				`guild.members.keyArray(): ${this.textChannel.guild.members.keyArray()}`,
+			);
+
 			return null;
 		}
 

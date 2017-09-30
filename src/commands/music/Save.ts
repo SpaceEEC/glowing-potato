@@ -1,5 +1,6 @@
 import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
+import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
@@ -18,6 +19,7 @@ const { desc, group, guildOnly, name, usage, localizable } = CommandDecorators;
 export default class SaveCommand extends Command<Client>
 {
 	@localizable
+	@LogCommandRun
 	@ReportError
 	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
 	{

@@ -1,6 +1,7 @@
 import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 import { SongEmbedType } from '../../types/SongEmbedType';
 
+import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
@@ -18,6 +19,7 @@ const { aliases, desc, group, guildOnly, name, usage, localizable } = CommandDec
 export default class NowPlayingCommand extends Command<Client>
 {
 	@localizable
+	@LogCommandRun
 	@ReportError
 	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
 	{

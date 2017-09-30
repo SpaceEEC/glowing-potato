@@ -1,5 +1,6 @@
 import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 
+import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
@@ -28,6 +29,7 @@ export default class QueueCommand extends Command<Client>
 		return [message, [1]];
 	})
 	@localizable
+	@LogCommandRun
 	@ReportError
 	public async action(message: Message, [res, page]: [ResourceLoader, number]): Promise<void>
 	{
