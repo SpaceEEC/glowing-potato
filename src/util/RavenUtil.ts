@@ -28,7 +28,7 @@ export class RavenUtil
 				if (!['WARN', 'ERROR'].includes(type)) return;
 
 				// ignore raven log messages
-				if (tag === 'Raven') return;
+				if (['Raven', 'PromiseRejection'].includes(tag)) return;
 
 				RavenUtil._captureMessage(text, { level: type === 'WARN' ? 'warning' : 'error', tags: { label: tag } })
 					.then((eventId: string) => Logger.instance().info('Raven', `Logged warn; eventId: ${eventId}`))
