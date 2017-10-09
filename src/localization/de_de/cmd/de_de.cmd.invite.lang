@@ -3,8 +3,9 @@ Invite / Einladung
 
 [CMD_INVITE_EMBED_DESCRIPTION]
 Um mich auf deine Gilde/Server einzuladen klicke auf diesen Link [hier]({{ url }}).
-**Hinweis**: Du brauchst **Manage Guild**, um mich zu einer Gilde hinzuzufügen 
-\u200b
+**Hinweis**: Du brauchst **Server Verwalten**, um mich zu einer Gilde hinzuzufügen.
+​
+#^zws
 
 [CMD_INVITE_EMBED_FIELD_TITLE]
 Weitere Informationen über die beigelegten Rechte:
