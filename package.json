@@ -30,7 +30,7 @@
     "node-opus": "^0.2.7",
     "pg": "^6.4.2",
     "raven": "^2.2.1",
-    "sequelize": "^4.13.5",
+    "sequelize": "^4.13.6",
     "yamdbf": "github:zajrik/yamdbf",
     "yamdbf-anilist-unofficial": "github:spaceeec/yamdbf-anilist-unofficial",
     "yamdbf-command-usage": "github:zajrik/yamdbf-command-usage",
@@ -39,9 +39,9 @@
     "ytdl-core": "^0.17.1"
   },
   "devDependencies": {
-    "@types/node": "^8.0.32",
+    "@types/node": "^8.0.33",
     "@types/raven": "^2.1.2",
-    "@types/sequelize": "^4.0.75",
+    "@types/sequelize": "^4.0.76",
     "@types/snekfetch": "^3.1.0",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
