@@ -6,7 +6,7 @@ import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
 import { RichEmbed } from '../../structures/RichEmbed';
 import { Song } from '../../structures/Song';
@@ -53,7 +53,7 @@ export default class PlayCommand extends Command<Client>
 	@LogCommandRun
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable object-literal-sort-keys
-	public async action(message: Message, [res, limit, query]: [ResourceLoader, number, string]): Promise<void>
+	public async action(message: Message, [res, limit, query]: [ResourceLoader, number, string]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 		let voiceChannel: VoiceChannel;

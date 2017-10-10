@@ -16,7 +16,7 @@ export function ReportError(target: Command, key: string, descriptor: PropertyDe
 
 	const original: (message: Message, args: any[]) => Promise<void> = descriptor.value;
 
-	descriptor.value = async function execute(this: Command<Client>, message: Message, args: any[]): Promise<void>
+	descriptor.value = async function execute(this: Command<Client>, message: Message, args: any[]): Promise<string>
 	{
 		try
 		{
@@ -33,7 +33,7 @@ export function ReportError(target: Command, key: string, descriptor: PropertyDe
 				: this.client.defaultLang;
 			const res: ResourceLoader = Lang.createResourceLoader(lang);
 
-			await message.channel.send(res(S.DECORATORS_REPORT_ERROR_TEXT, { message: error.message }));
+			return res(S.DECORATORS_REPORT_ERROR_TEXT, { message: error.message });
 		}
 	};
 

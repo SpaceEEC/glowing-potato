@@ -5,7 +5,7 @@ import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
 
 const { desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
@@ -48,7 +48,7 @@ export default class VolumeCommand extends Command<Client>
 	@LogCommandRun
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable
-	public async action(message: Message, [res, volume]: [ResourceLoader, number]): Promise<void>
+	public async action(message: Message, [res, volume]: [ResourceLoader, number]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 		const update: boolean = Boolean(volume);

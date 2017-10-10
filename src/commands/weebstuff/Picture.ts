@@ -2,7 +2,7 @@ import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 
 const { expect } = Middleware;
 const { clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
@@ -17,7 +17,7 @@ export default class PictureCommand extends Command<Client>
 {
 	@using(expect({ '<...Tags>': 'String' }))
 	@ReportError
-	public action(message: Message, tags: string[]): void
+	public action(message: Message, tags: string[]): Promise<CommandResult>
 	{
 
 		const command: string = tags.length > 2

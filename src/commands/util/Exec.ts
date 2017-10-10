@@ -3,7 +3,7 @@ import { CommandDecorators, Message, Time } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { Util } from '../../util/Util';
 
 const { desc, group, name, ownerOnly, usage } = CommandDecorators;
@@ -16,7 +16,7 @@ const { desc, group, name, ownerOnly, usage } = CommandDecorators;
 export default class ExecCommand extends Command<Client>
 {
 	@ReportError
-	public async action(message: Message, code: string[]): Promise<Attachment>
+	public async action(message: Message, code: string[]): Promise<CommandResult>
 	{
 		const statusMessage: Message = await message.channel.send('Executing...') as Message;
 

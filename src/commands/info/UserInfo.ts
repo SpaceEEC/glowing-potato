@@ -5,7 +5,7 @@ import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 
 const { aliases, clientPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 const { expect, resolve } = Middleware;
@@ -23,7 +23,7 @@ export default class UserInfoCommand extends Command<Client>
 	@using(expect({ '<User>': 'User' }))
 	@localizable
 	@ReportError
-	public async action(message: Message, [res, user]: [ResourceLoader, User]): Promise<void>
+	public async action(message: Message, [res, user]: [ResourceLoader, User]): Promise<CommandResult>
 	{
 		const member: GuildMember = await message.guild.fetchMember(user).catch(() => undefined);
 
@@ -99,7 +99,6 @@ export default class UserInfoCommand extends Command<Client>
 			);
 		}
 
-		return message.channel.send(embed).then(() => undefined);
-
+		return embed;
 	}
 }

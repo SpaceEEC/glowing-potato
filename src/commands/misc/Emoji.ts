@@ -4,7 +4,7 @@ import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 
 const { aliases, clientPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 const { expect } = Middleware;
@@ -59,7 +59,7 @@ export default class EmojiCommand extends Command<Client>
 	})
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable
-	public async action(message: Message, [emoji, target]: [Emoji, Message]): Promise<void>
+	public action(message: Message, [emoji, target]: [Emoji, Message]): CommandResult | Promise<CommandResult>
 	{
 		if (message.deletable) message.delete().catch(() => null);
 
@@ -68,7 +68,7 @@ export default class EmojiCommand extends Command<Client>
 			return target.react(emoji)
 				.then(() => undefined);
 		}
-		return message.channel.send(emoji.toString())
-			.then(() => undefined);
+
+		return emoji.toString();
 	}
 }

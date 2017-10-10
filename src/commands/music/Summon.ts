@@ -6,7 +6,7 @@ import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
 import { RavenUtil } from '../../util/RavenUtil';
 
@@ -23,7 +23,7 @@ export default class SummonCommand extends Command<Client>
 	@localizable
 	@LogCommandRun
 	@ReportError
-	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
+	public async action(message: Message, [res]: [ResourceLoader]): Promise<CommandResult>
 	{
 		if (!message.member.voiceChannel)
 		{

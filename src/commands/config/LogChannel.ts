@@ -4,7 +4,7 @@ import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 import { expectConfigOption, resolveConfigOption } from '../../decorators/configOptions';
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
-import { ConfigCommand } from '../../structures/ConfigCommand';
+import { CommandResult, ConfigCommand } from '../../structures/ConfigCommand';
 import { GuildConfigChannels, GuildConfigType } from '../../types/GuildConfigKeys';
 
 const { callerPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
@@ -24,7 +24,7 @@ export default class LogChannelCommand extends ConfigCommand<Client>
 	@localizable
 	@ReportError
 	public async action(message: Message, [res, option, value]
-		: [ResourceLoader, 'get' | 'set' | 'reset', GuildChannel | undefined]): Promise<void>
+		: [ResourceLoader, 'get' | 'set' | 'reset', GuildChannel | undefined]): Promise<CommandResult>
 	{
 		return this[option](message, res, GuildConfigChannels.LOGCHANNEL, GuildConfigType.CHANNEL, value);
 	}

@@ -3,7 +3,7 @@ import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { RichEmbed } from '../../structures/RichEmbed';
 
 const { desc, group, name, usage, localizable } = CommandDecorators;
@@ -16,7 +16,7 @@ export default class InviteCommand extends Command<Client>
 {
 	@localizable
 	@ReportError
-	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
+	public async action(message: Message, [res]: [ResourceLoader]): Promise<CommandResult>
 	{
 		const invite: string = await this.client.generateInvite([
 			'READ_MESSAGES',
@@ -38,7 +38,6 @@ export default class InviteCommand extends Command<Client>
 			.setDescription(res(S.CMD_INVITE_EMBED_DESCRIPTION, { url: invite }))
 			.addField(res(S.CMD_INVITE_EMBED_FIELD_TITLE), res(S.CMD_INVITE_EMBED_FIELD_VALUE));
 
-		return message.channel.send(embed)
-			.then(() => undefined);
+		return embed;
 	}
 }

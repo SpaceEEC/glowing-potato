@@ -4,7 +4,7 @@ import { CommandDecorators, Lang, Message, Middleware, ResourceLoader } from 'ya
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { ConfigCommand as ConfigCommandBase } from '../../structures/ConfigCommand';
+import { CommandResult, ConfigCommand as ConfigCommandBase } from '../../structures/ConfigCommand';
 import { GuildConfigChannels, GuildConfigRoles, GuildConfigStrings } from '../../types/GuildConfigKeys';
 import { GuildConfigUtil } from '../../util/GuildConfigUtil';
 
@@ -108,7 +108,7 @@ export default class ConfigCommand extends ConfigCommandBase<Client>
 	@ReportError
 	// tslint:enable:no-shadowed-variable object-literal-sort-keys
 	public async action(message: Message, [res, option, key, value]
-		: [ResourceLoader, 'get' | 'set' | 'reset', string, GuildChannel | Role | string | undefined]): Promise<void>
+		: [ResourceLoader, 'get' | 'set' | 'reset', string, GuildChannel | Role | string | undefined]): Promise<CommandResult>
 	{
 		return this[option](message,
 			res,

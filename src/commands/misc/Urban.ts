@@ -4,7 +4,7 @@ import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { RichEmbed } from '../../structures/RichEmbed';
 import { ProbablyNotABuffer } from '../../types/ProbablyNotABuffer';
 import { UrbanDefinition } from '../../types/UrbanDefinition';
@@ -33,7 +33,8 @@ export default class Urban extends Command<Client>
 	})
 	@localizable
 	@ReportError
-	public async action(message: Message, [res, selectedNumber, search]: [ResourceLoader, number, string[]]): Promise<void>
+	public async action(message: Message, [res, selectedNumber, search]: [ResourceLoader, number, string[]])
+	: Promise<CommandResult>
 	{
 		const query: string = encodeURIComponent(search.join('+')).replace(/%2B/g, '+');
 
@@ -42,8 +43,7 @@ export default class Urban extends Command<Client>
 
 		if (!body.list.length)
 		{
-			return message.channel.send(
-				new RichEmbed()
+			return new RichEmbed()
 					.setColor(0x1d2439)
 					.setAuthor('Urbandictionary',
 					'http://www.urbandictionary.com/favicon.ico',
@@ -52,8 +52,7 @@ export default class Urban extends Command<Client>
 					.addField(res(S.CMD_NO_RESULTS_TITLE), res(S.CMD_NO_RESULTS_VALUE))
 					.addField(res(S.CMD_NO_RESULTS_SEARCH),
 					`[${res(S.CMD_NO_RESULTS_URL)}](http://www.urbandictionary.com/define.php?term=${query})`)
-					.setFooter(message.cleanContent, message.author.displayAvatarURL),
-			).then(() => undefined);
+					.setFooter(message.cleanContent, message.author.displayAvatarURL);
 		}
 
 		if (body.list.length < selectedNumber + 1) selectedNumber = body.list.length - 1;
@@ -87,8 +86,7 @@ export default class Urban extends Command<Client>
 			message.author.displayAvatarURL,
 		);
 
-		return message.channel.send(embed)
-			.then(() => undefined);
+		return embed;
 	}
 
 }

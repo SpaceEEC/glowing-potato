@@ -17,7 +17,7 @@ import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 
 const { aliases, clientPermissions, desc, group, guildOnly, name, usage, localizable } = CommandDecorators;
 // tslint:disable-next-line:variable-name
@@ -34,7 +34,7 @@ export default class GuildInfo extends Command<Client>
 {
 	@localizable
 	@ReportError
-	public async action(message: Message, [res, input]: [ResourceLoader, string]): Promise<void>
+	public async action(message: Message, [res, input]: [ResourceLoader, string]): Promise<CommandResult>
 	{
 		try
 		{
@@ -47,15 +47,14 @@ export default class GuildInfo extends Command<Client>
 		{
 			if (error instanceof DiscordAPIError && error.code === 10006)
 			{
-				return message.channel.send(res('CMD_GUILDINFO_RESOLVE_FAILED'))
-					.then(() => undefined);
+				return res('CMD_GUILDINFO_RESOLVE_FAILED');
 			}
 
 			throw error;
 		}
 	}
 
-	private _sendFullGuild(message: Message, res: ResourceLoader, guild: Guild): Promise<void>
+	private _sendFullGuild(message: Message, res: ResourceLoader, guild: Guild): RichEmbed
 	{
 		const channels: {
 			// just for typescript
@@ -129,8 +128,7 @@ export default class GuildInfo extends Command<Client>
 			.setTimestamp()
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);
 
-		return message.channel.send(embed)
-			.then(() => undefined);
+		return embed;
 	}
 
 	private _sendPartialGuild(message: Message, res: ResourceLoader, { channel, guild, memberCount, presenceCount }:
@@ -139,7 +137,7 @@ export default class GuildInfo extends Command<Client>
 			guild: PartialGuild,
 			memberCount: number,
 			presenceCount: number,
-		}): Promise<void>
+		}): RichEmbed
 	{
 		const iconURL: string = guild.icon
 			? Endpoints.Guild(guild).Icon(this.client.options.http.cdn, guild.icon)
@@ -179,8 +177,7 @@ export default class GuildInfo extends Command<Client>
 			.setTimestamp()
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);
 
-		return message.channel.send(embed)
-			.then(() => undefined);
+		return embed;
 	}
 
 	private async _resolveInput(message: Message, input: string): Promise<Guild | Invite>
