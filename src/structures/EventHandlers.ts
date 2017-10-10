@@ -14,7 +14,12 @@ const { on, registerListeners } = ListenerUtil;
  */
 export class EventHandlers
 {
-	private _client: Client;
+	/**
+	 * Reference to the instantiating client
+	 * @private
+	 * @readonly
+	 */
+	private readonly _client: Client;
 
 	/**
 	 * Instantiates the EventHandlers class
@@ -62,7 +67,7 @@ export class EventHandlers
 			{
 				await guildStorage.remove(GuildConfigChannels.LOGCHANNEL);
 			}
-			else if (channel.permissionsFor(guildMe).has('SEND_MESSAGES'))
+			else if (channel.permissionsFor(guildMe).has(['VIEW_CHANNEL', 'SEND_MESSAGES']))
 			{
 				channel.send(message)
 					.catch((error: DiscordAPIError) =>
@@ -79,7 +84,7 @@ export class EventHandlers
 			{
 				await guildStorage.remove(GuildConfigChannels.ANCHANNEL);
 			}
-			else if (channel.permissionsFor(guildMe).has('SEND_MESSAGES'))
+			else if (channel.permissionsFor(guildMe).has(['VIEW_CHANNEL', 'SEND_MESSAGES']))
 			{
 				channel.send(message)
 					.catch((error: DiscordAPIError) =>
@@ -125,7 +130,7 @@ export class EventHandlers
 			{
 				await guildStorage.remove(GuildConfigChannels.LOGCHANNEL);
 			}
-			else if (channel.permissionsFor(guildMe).has('SEND_MESSAGES'))
+			else if (channel.permissionsFor(guildMe).has(['VIEW_CHANNEL', 'SEND_MESSAGES']))
 			{
 				channel.send(message)
 					.catch((error: DiscordAPIError) =>
@@ -142,7 +147,7 @@ export class EventHandlers
 			{
 				await guildStorage.remove(GuildConfigChannels.ANCHANNEL);
 			}
-			else if (channel.permissionsFor(guildMe).has('SEND_MESSAGES'))
+			else if (channel.permissionsFor(guildMe).has(['VIEW_CHANNEL', 'SEND_MESSAGES']))
 			{
 				channel.send(message)
 					.catch((error: DiscordAPIError) =>
@@ -180,7 +185,7 @@ export class EventHandlers
 		{
 			await guildStorage.remove(GuildConfigChannels.VLOGCHANNEL);
 		}
-		else if (channel.permissionsFor(guildMe).has(['SEND_MESSAGES', 'EMBED_LINKS']))
+		else if (channel.permissionsFor(guildMe).has(['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))
 		{
 			const res: ResourceLoader = Lang.createResourceLoader(
 				await this._client.storage.guilds.get(newMember.guild.id).settings.get('lang')
