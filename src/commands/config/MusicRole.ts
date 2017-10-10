@@ -4,7 +4,7 @@ import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
 import { expectConfigOption, resolveConfigOption } from '../../decorators/configOptions';
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
-import { ConfigCommand } from '../../structures/ConfigCommand';
+import { CommandResult, ConfigCommand } from '../../structures/ConfigCommand';
 import { GuildConfigRoles, GuildConfigType } from '../../types/GuildConfigKeys';
 
 const { aliases, callerPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
@@ -26,7 +26,7 @@ export default class MusicRoleCommand extends ConfigCommand<Client>
 	@localizable
 	@ReportError
 	public async action(message: Message, [res, option, value]
-		: [ResourceLoader, 'get' | 'set' | 'reset', Role | undefined]): Promise<void>
+		: [ResourceLoader, 'get' | 'set' | 'reset', Role | undefined]): Promise<CommandResult>
 	{
 		return this[option](message, res, GuildConfigRoles.MUSICROLE, GuildConfigType.ROLE, value);
 	}

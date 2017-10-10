@@ -3,7 +3,7 @@ import { CommandDecorators, GuildStorage, Message, ResourceLoader, Util } from '
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { GuildConfigUtil } from '../../util/GuildConfigUtil';
 
 const { aliases, callerPermissions, desc, group, guildOnly, name, usage, localizable } = CommandDecorators;
@@ -19,7 +19,7 @@ export default class ConfigOverviewCommand extends Command<Client>
 {
 	@localizable
 	@ReportError
-	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
+	public async action(message: Message, [res]: [ResourceLoader]): Promise<CommandResult>
 	{
 		const values: [string, boolean][] = await this._fetchAllValues(message.guild.storage);
 
@@ -33,8 +33,7 @@ export default class ConfigOverviewCommand extends Command<Client>
 		}
 		response += '\n```';
 
-		return message.channel.send(response)
-			.then(() => undefined);
+		return response;
 	}
 
 	private _fetchAllValues(storage: GuildStorage): Promise<[string, boolean][]>

@@ -7,7 +7,7 @@ import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 
 const { desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 const { expect, resolve } = Middleware;
@@ -25,7 +25,7 @@ export default class RemoveCommand extends Command<Client>
 	@localizable
 	@LogCommandRun
 	@ReportError
-	public async action(message: Message, [res, index]: [ResourceLoader, number]): Promise<void>
+	public async action(message: Message, [res, index]: [ResourceLoader, number]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 

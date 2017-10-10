@@ -3,7 +3,7 @@ import { CommandDecorators, Message, Time } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { ExecError } from '../../types/ExecError';
 import { Util } from '../../util/Util';
 
@@ -23,7 +23,7 @@ type ExecResult = {
 export default class UpdateCommand extends Command<Client>
 {
 	@ReportError
-	public async action(message: Message, [reinstall]: string[]): Promise<void>
+	public async action(message: Message, [reinstall]: string[]): Promise<CommandResult>
 	{
 		const startTime: number = Date.now();
 		let statusMessage: Message = await message.channel.send('**Pulling new files...**') as Message;

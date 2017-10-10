@@ -5,7 +5,7 @@ import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 
 const { desc, group, name, ownerOnly, overloads, usage, localizable } = CommandDecorators;
 
@@ -19,12 +19,12 @@ export default class EvalCommand extends Command<Client>
 {
 	@ReportError
 	@localizable
-	public async action(message: Message, [res, ...args]: [ResourceLoader, string[]]): Promise<Message | Message[]>
+	public async action(message: Message, [res, ...args]: [ResourceLoader, string[]]): Promise<CommandResult>
 	{
 		const client: Client = this.client;
 		const msg: Message = message;
 
-		if (!args.length) return this.respond(msg, res(S.CMD_EVAL_ERR_NOCODE));
+		if (!args.length) return res(S.CMD_EVAL_ERR_NOCODE);
 
 		const code: string = args.join(' ');
 
@@ -59,17 +59,21 @@ export default class EvalCommand extends Command<Client>
 				result = result.replace(/[\w\d]{24}\.[\w\d]{6}\.[\w\d-_]{27}/g, '[REDACTED]');
 			}
 
-			result = result.substr(0, 1900);
+			result = [
+				'**Result**',
+				'```js',
+				Discord.Util.escapeMarkdown(result, true),
+				'```',
+				`Type: \`${typeofEvaled}\` | Took: ${diffString}`,
+			].join('\n');
 
-			await message.channel.send(
-				[
-					'**Result**',
-					'```js',
-					Discord.Util.escapeMarkdown(result, true),
-					'```',
-					`Type: \`${typeofEvaled}\` | Took: ${diffString}`,
-				],
-			);
+			if (result.length <= 2000)
+			{
+				return result;
+			}
+
+			await msg.channel.send('Output is too long, will be sent as file instead.');
+			return new Discord.Attachment(Buffer.from(result), 'output.txt');
 		}
 		catch (error)
 		{
@@ -85,15 +89,21 @@ export default class EvalCommand extends Command<Client>
 
 			error = error instanceof Error ? error.message || String(error) : inspect(error, { depth: 1 });
 
-			message.channel.send(
-				[
+			const result: string = [
 					'**Error**',
 					'```js',
 					Discord.Util.escapeMarkdown(error, true),
 					'```',
 					`Type: \`${typeofError}\` | Took: ${diffString}`,
-				],
-			);
+				].join('\n');
+
+			if (result.length <= 2000)
+			{
+				return result;
+			}
+
+			await msg.channel.send('Error is too long, will be sent as file instead.');
+			return new Discord.Attachment(Buffer.from(result), 'error.txt');
 		}
 
 	}

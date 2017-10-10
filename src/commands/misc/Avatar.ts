@@ -3,7 +3,7 @@ import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 
 const { clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
 const { expect, resolve } = Middleware;
@@ -19,7 +19,7 @@ export default class AvatarCommand extends Command<Client>
 	@using(resolve({ '<User>': 'User' }))
 	@using(expect({ '<User>': 'User' }))
 	@ReportError
-	public async action(message: Message, [user]: [User]): Promise<void>
+	public async action(message: Message, [user]: [User]): Promise<CommandResult>
 	{
 		message.channel.startTyping();
 

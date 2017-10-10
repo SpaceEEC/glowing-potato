@@ -5,7 +5,7 @@ import { CommandDecorators, Message, ResourceLoader, version as YAMDBFVersion } 
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { Util } from '../../util/Util';
 
 const { aliases, clientPermissions, desc, group, guildOnly, name, usage, localizable } = CommandDecorators;
@@ -23,7 +23,7 @@ export default class InfoCommand extends Command<Client>
 {
 	@localizable
 	@ReportError
-	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
+	public async action(message: Message, [res]: [ResourceLoader]): Promise<CommandResult>
 	{
 		const owners: string = this.client.owner.map((owner: string) => `\`${this.client.users.get(owner).tag}\``).join(', ');
 		const uptime: string = (moment.duration(this.client.uptime) as any).format(res('CMD_INFO_UPTIME_FORMAT_STRING'));
@@ -64,12 +64,12 @@ export default class InfoCommand extends Command<Client>
 			.setThumbnail(this.client.user.displayAvatarURL)
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);
 
-		return message.channel.send(embed)
-			.then(() => undefined);
+		return embed;
 	}
 
 	private async _formatCommits(): Promise<string>
 	{
+		// TODO: Get moment to stop complaining
 		const { stdout }: { stdout: string } = await Util.execAsync(
 			'git log --pretty=format:"%h,%an,%ad,%s" --date=iso8601 | head -n 5',
 			{ encoding: 'utf8' },

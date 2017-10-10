@@ -4,7 +4,7 @@ import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
 import { RichEmbed } from '../../structures/RichEmbed';
 import { Song } from '../../structures/Song';
@@ -31,7 +31,7 @@ export default class QueueCommand extends Command<Client>
 	@localizable
 	@LogCommandRun
 	@ReportError
-	public async action(message: Message, [res, page]: [ResourceLoader, number]): Promise<void>
+	public async action(message: Message, [res, page]: [ResourceLoader, number]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 
