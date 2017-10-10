@@ -1,3 +1,4 @@
+import { Attachment } from 'discord.js';
 import { CommandDecorators, Message, Time } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
@@ -18,27 +19,27 @@ type ExecResult = {
 @name('update')
 @group('util')
 @ownerOnly
-@usage('<prefix>update')
+@usage('<prefix>update [\'reinstall\']')
 export default class UpdateCommand extends Command<Client>
 {
 	@ReportError
-	public async action(message: Message, args: string[]): Promise<void>
+	public async action(message: Message, [reinstall]: string[]): Promise<void>
 	{
 		const startTime: number = Date.now();
-		const statusMessage: Message = await message.channel.send('**Pulling new files...**') as Message;
+		let statusMessage: Message = await message.channel.send('**Pulling new files...**') as Message;
 
 		if (!await this._pull(statusMessage)) return;
 
 		await Util.wait(2000);
 
-		await statusMessage.edit('**Installing new files...**');
+		statusMessage = await message.channel.send('**Installing new files...**') as Message;
 
-		if (!await this._install(statusMessage)) return;
+		if (!await this._install(statusMessage, reinstall === 'reinstall')) return;
 
 		await Util.wait(2000);
 
 		const diff: string = Time.difference(Date.now(), startTime).toSimplifiedString() || '0s';
-		return statusMessage.edit(
+		return message.channel.send(
 			[
 				`Successfully updated; Took: \`${diff}\`.`,
 				'You may want to restart or reload commands manually if necessary.',
@@ -73,19 +74,37 @@ export default class UpdateCommand extends Command<Client>
 		}
 		response += `\`\`\`xl\n${stdout}\n\n${stderr}\`\`\``;
 
-		await statusMessage.edit(response);
+		if (response.length <= 2000)
+		{
+			await statusMessage.edit(response);
+		}
+		else
+		{
+			await Promise.all(
+				[
+					statusMessage.edit('Output too long, will be sent as file instead.'),
+					statusMessage.channel.send(new Attachment(Buffer.from(response), 'install.txt')),
+				],
+			);
+		}
 
 		if (stdout.startsWith('Already up-to-date.')) return false;
 
 		return true;
 	}
 
-	private async _install(statusMessage: Message): Promise<boolean>
+	private async _install(statusMessage: Message, reinstall: boolean): Promise<boolean>
 	{
 		const startTime: number = Date.now();
 
+		if (reinstall) await Util.execAsync('rm -rf ./node_modules');
+
 		const { error, stdout, stderr }: ExecResult = await Util.execAsync('npm run install')
-			.catch((err: ExecError) => ({ error: err, stdout: err.stdout, stderr: err.stderr }));
+			.catch((err: ExecError) => ({
+				error: err,
+				stderr: err.stderr,
+				stdout: err.stdout,
+			}));
 
 		const diff: string = Time.difference(Date.now(), startTime).toSimplifiedString() || '0s';
 		let response: string = `\`Install\` Took: \`${diff}\`\n`;
@@ -102,7 +121,19 @@ export default class UpdateCommand extends Command<Client>
 		}
 		response += `\`\`\`xl\n${stdout}\n\n${stderr}\`\`\``;
 
-		await statusMessage.edit(response);
+		if (response.length <= 2000)
+		{
+			await statusMessage.edit(response);
+		}
+		else
+		{
+			await Promise.all(
+				[
+					statusMessage.edit('Output too long, will be sent as file instead.'),
+					statusMessage.channel.send(new Attachment(Buffer.from(response), 'install.txt')),
+				],
+			);
+		}
 
 		return true;
 	}
