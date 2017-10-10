@@ -1,3 +1,4 @@
+import { Attachment } from 'discord.js';
 import { CommandDecorators, Message, Time } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
@@ -15,7 +16,7 @@ const { desc, group, name, ownerOnly, usage } = CommandDecorators;
 export default class ExecCommand extends Command<Client>
 {
 	@ReportError
-	public async action(message: Message, code: string[]): Promise<void>
+	public async action(message: Message, code: string[]): Promise<Attachment>
 	{
 		const statusMessage: Message = await message.channel.send('Executing...') as Message;
 
@@ -24,17 +25,20 @@ export default class ExecCommand extends Command<Client>
 			.execAsync(code.join(' ')).catch((err: any) => ({ error: err, stdout: err.stdout, stderr: err.stderr }));
 		const diff: string = Time.difference(Date.now(), startTime).toSimplifiedString() || '0s';
 
-		let response: string = `\`EXEC\` \`Took: ${diff}\`\n\n`
+		const response: string = `\`EXEC\` \`Took: ${diff}\`\n\n`
 			+ (error && error.code ? `\`Error Code: ${error.code}\`\n\n` : '')
 			+ (stdout ? `\`STDOUT\`\n\`\`\`xl\n${stdout}\`\`\`\n\n` : '')
 			+ (stderr ? `\`STDERR\`\n\`\`\`xl\n${stderr}\`\`\`\n\n` : '');
 
-		// might be replaced with a hastebin or something similar in the future
-		if (response.length > 2000)
+		if (response.length <= 2000)
 		{
-			response = `${response.slice(0, 1994)}\`\`\`...`;
+			return statusMessage.edit(response)
+				.then(() => undefined);
 		}
 
-		return statusMessage.edit(response).then(() => undefined);
+		statusMessage.edit('Executed. Output is too long, will be sent as file instead.')
+			.catch(() => null);
+
+		return new Attachment(Buffer.from(response), 'output.txt');
 	}
 }
