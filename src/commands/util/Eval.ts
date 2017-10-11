@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { inspect } from 'util';
+import { inspect, InspectOptions } from 'util';
 import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
@@ -17,6 +17,12 @@ const { desc, group, name, ownerOnly, overloads, usage, localizable } = CommandD
 @usage('<prefix>eval <...code>')
 export default class EvalCommand extends Command<Client>
 {
+	/**
+	 * Inspect options used when inspecting outputs and errors
+	 * @private
+	 */
+	private _inspect: InspectOptions = { depth: 1 };
+
 	@ReportError
 	@localizable
 	public async action(message: Message, [res, ...args]: [ResourceLoader, string[]]): Promise<CommandResult>
@@ -51,7 +57,7 @@ export default class EvalCommand extends Command<Client>
 
 			if (typeof result !== 'string')
 			{
-				result = inspect(result, { depth: 1 });
+				result = inspect(result, this._inspect);
 			}
 
 			if (result.includes(client.token))
@@ -87,15 +93,17 @@ export default class EvalCommand extends Command<Client>
 					? error.constructor.name
 					: typeof error;
 
-			error = error instanceof Error ? error.message || String(error) : inspect(error, { depth: 1 });
+			error = error instanceof Error
+				? error.message || String(error)
+				: inspect(error, this._inspect);
 
 			const result: string = [
-					'**Error**',
-					'```js',
-					Discord.Util.escapeMarkdown(error, true),
-					'```',
-					`Type: \`${typeofError}\` | Took: ${diffString}`,
-				].join('\n');
+				'**Error**',
+				'```js',
+				Discord.Util.escapeMarkdown(error, true),
+				'```',
+				`Type: \`${typeofError}\` | Took: ${diffString}`,
+			].join('\n');
 
 			if (result.length <= 2000)
 			{
@@ -105,6 +113,14 @@ export default class EvalCommand extends Command<Client>
 			await msg.channel.send('Error is too long, will be sent as file instead.');
 			return new Discord.Attachment(Buffer.from(result), 'error.txt');
 		}
+	}
 
+	private get depth(): number
+	{
+		return this._inspect.depth;
+	}
+	private set depth(value: number)
+	{
+		this._inspect.depth = value;
 	}
 }
