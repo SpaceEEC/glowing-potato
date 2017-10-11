@@ -1,4 +1,4 @@
-import { StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
+import { Guild, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
 import { Logger, logger, Message, ResourceLoader } from 'yamdbf';
 
 import { LocalizationStrings as S } from '../localization/LocalizationStrings';
@@ -247,11 +247,20 @@ export class Queue
 	{
 		if (!this.textChannel.guild.me)
 		{
-			this._logger.warn(
-				'voiceChannel',
-				'Own guild member is not cached!\n',
-				`guild.member.size: ${this.textChannel.guild.members.size}\n`,
-				`guild.members.keyArray(): ${this.textChannel.guild.members.keyArray()}`,
+			const guild: Guild = this.textChannel.guild;
+
+			RavenUtil.captureMessage(
+				'Queue#voiceChannel',
+				'Own guild member is not cached!',
+				{
+					extra:
+					{
+						cachedMembersSize: guild.members.size,
+						isOwnMemberCached: !!guild.members.get(guild.client.user.id),
+						memberCount: guild.memberCount,
+						memberIDs: guild.members.keyArray(),
+					},
+				},
 			);
 
 			return null;

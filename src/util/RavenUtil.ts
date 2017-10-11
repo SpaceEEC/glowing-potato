@@ -37,7 +37,7 @@ export class RavenUtil
 						Logger.instance().error(
 							'Raven',
 							'An error occured while logging the error:',
-							inspect(error, true, Infinity, true),
+							inspect(error),
 						);
 					},
 				);
@@ -57,12 +57,12 @@ export class RavenUtil
 	public static async error(label: string, error: Error, ...rest: string[]): Promise<void>;
 	public static async error(label: string, error: Error, ...rest: any[]): Promise<void>
 	{
-		Logger.instance().error(label, inspect(error, true, Infinity, true));
+		Logger.instance().error(label, inspect(error));
 
 		// only sent to raven on non-dev
 		if (Number(process.env.LOGLEVEL) === LogLevel.DEBUG) return;
 
-		await this._raven.context(async () =>
+		return this._raven.context(async () =>
 		{
 			const message: Message = rest[0];
 			if (message instanceof Message)
@@ -91,17 +91,51 @@ export class RavenUtil
 						tags: { label },
 					},
 				);
-				Logger.instance().info('Raven', 'Logged error; eventId:', eventId);
+				Logger.instance().info('Raven', `Logged error; eventId: ${eventId}`);
 			}
 			catch (ravenError)
 			{
 				Logger.instance().error(
 					'Raven',
 					'An error occured while logging the error:',
-					inspect(ravenError, true, Infinity, true),
+					inspect(ravenError),
 				);
 			}
 		});
+	}
+
+	/**
+	 * Sends a message to sentry, allows utilizing of CaptureOptions
+	 * @param {string | undefined} label Relevant label, can be part of options object
+	 * @param {string} text Text to log
+	 * @param {CaptureOptions} [options={}] Capture options to provide more details
+	 */
+	public static async captureMessage(
+		label: string | undefined,
+		text: string,
+		options: CaptureOptions = {})
+		: Promise<void>
+	{
+		if (label !== undefined)
+		{
+			(options.tags || (options.tags = {})).label = label;
+		}
+
+		try
+		{
+			await RavenUtil._captureMessage(
+				text,
+				options,
+			);
+		}
+		catch (ravenError)
+		{
+			Logger.instance().error(
+				'Raven',
+				'An error occured while logging the error:',
+				inspect(ravenError),
+			);
+		}
 	}
 
 	/**

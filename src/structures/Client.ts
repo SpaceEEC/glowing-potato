@@ -228,10 +228,22 @@ export class Client extends YAMDBFClient
 	 * @returns {Promise<void>} never resolves though
 	 * @private
 	 */
-	@once('disconnect')
-	public async _onDisconnect(event: any): Promise<void>
+	@once('disconnect', true)
+	public async _onDisconnect({ code, reason }: any, fatal: any): Promise<void>
 	{
-		await this.logger.warn('Disconnect', 'Fatal disconnect:', event.code, event.reason);
+		await RavenUtil.captureMessage(
+			'disconnect',
+			`WebSocket connection closed!`,
+			{
+				tags:
+				{
+					code,
+					fatal,
+					reason,
+				},
+			},
+		);
+
 		process.exit();
 	}
 
@@ -243,21 +255,9 @@ export class Client extends YAMDBFClient
 	@once('ready')
 	public _onceReady(): void
 	{
-		(this as any).ws.connection.on('close',
-			(event: any) =>
-			{
-				this.logger.warn('discord.js | disconnect',
-					'Code:',
-					event.code,
-					'; Reason :',
-					event.reason || 'No reason',
-				);
-			},
-		);
-		(this as any).ws.connection.on('debug', (error: Error) =>
-		{
-			RavenUtil.error('discord.js | websocket', error);
-		});
+		(this as any).ws.connection
+			.on('close', (event: any) => this._onDisconnect(event, false))
+			.on('debug', RavenUtil.error.bind(RavenUtil, 'discord.js | WebSocket'));
 	}
 
 	/**
