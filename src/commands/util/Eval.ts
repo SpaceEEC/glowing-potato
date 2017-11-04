@@ -78,8 +78,8 @@ export default class EvalCommand extends Command<Client>
 				return result;
 			}
 
-			await msg.channel.send('Output is too long, will be sent as file instead.');
-			return new Discord.Attachment(Buffer.from(result), 'output.txt');
+			return msg.channel.send('Output is too long, will be sent as file instead.',
+				new Discord.Attachment(Buffer.from(result), 'output.txt'));
 		}
 		catch (error)
 		{
@@ -110,8 +110,8 @@ export default class EvalCommand extends Command<Client>
 				return result;
 			}
 
-			await msg.channel.send('Error is too long, will be sent as file instead.');
-			return new Discord.Attachment(Buffer.from(result), 'error.txt');
+			return msg.channel.send('Error is too long, will be sent as file instead.',
+				new Discord.Attachment(Buffer.from(result), 'error.txt'));
 		}
 	}
 
