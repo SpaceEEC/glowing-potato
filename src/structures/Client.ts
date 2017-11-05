@@ -12,7 +12,6 @@ import {
 	Providers,
 } from 'yamdbf';
 import { AniList } from 'yamdbf-anilist-unofficial';
-import { League } from 'yamdbf-league';
 
 import { RavenUtil } from '../util/RavenUtil';
 import { EventHandlers } from './EventHandlers';
@@ -64,16 +63,6 @@ export class Client extends YAMDBFClient
 						{
 							clientId: process.env.ANILIST_ID,
 							clientSecret: process.env.ANILIST_SECRET,
-						},
-					),
-					League(process.env.RITO_TOKEN,
-						{
-							emojis: {
-								level4: '<:level4:335427521078231051>',
-								level5: '<:level5:335427521900445696>',
-								level6: '<:level6:335427522332459008>',
-								level7: '<:level7:335427524429348866>',
-							},
 						},
 					),
 				],
