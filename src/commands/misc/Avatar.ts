@@ -29,11 +29,16 @@ export default class AvatarCommand extends Command<Client>
 
 		try
 		{
-			await message.channel.send(new RichEmbed()
-				.setTitle(`${user.tag} (${user.id})`)
-				.setColor(message.member.displayColor)
-				.attachFile(new Attachment(user.displayAvatarURL, filename))
-				.setImage(`attachment://${filename}`));
+			await message.channel.send(
+				{
+					embed:
+						new RichEmbed()
+							.setTitle(`${user.tag} (${user.id})`)
+							.setColor(message.member.displayColor)
+							.setImage(`attachment://${filename}`),
+					files: [new Attachment(user.displayAvatarURL, filename)],
+				},
+			);
 		}
 		finally
 		{
