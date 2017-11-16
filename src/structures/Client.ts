@@ -233,7 +233,7 @@ export class Client extends YAMDBFClient
 			},
 		);
 
-		process.exit();
+		if (fatal) process.exit();
 	}
 
 	/**
