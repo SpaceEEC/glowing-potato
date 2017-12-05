@@ -82,7 +82,7 @@ export default class InfoCommand extends Command<Client>
 			commits.push(
 				[
 					`• [${hash}](https://github.com/SpaceEEC/glowing-potato/commit/${hash})`,
-					` - ${author}, ${moment(date).fromNow()}:\n`,
+					` - ${moment(date).fromNow()}:\n`,
 					`\`${DJSUtil.escapeMarkdown(message.join(','), undefined, true)}\``,
 				].join(''),
 			);
