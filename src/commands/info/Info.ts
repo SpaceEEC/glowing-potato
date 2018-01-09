@@ -78,7 +78,7 @@ export default class InfoCommand extends Command<Client>
 		const commits: string[] = [];
 		for (const commit of stdout.split('\n').slice(0, -1))
 		{
-			const [hash, author, date, ...message] = commit.split(',');
+			const [hash, , date, ...message] = commit.split(',');
 			commits.push(
 				[
 					`• [${hash}](https://github.com/SpaceEEC/glowing-potato/commit/${hash})`,
