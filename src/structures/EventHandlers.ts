@@ -42,6 +42,8 @@ export class EventHandlers
 	public async _onGuildMemberAdd(member: GuildMember): Promise<void>
 	{
 		const guildStorage: GuildStorage = await this._client.storage.guilds.get(member.guild.id);
+		// Drop everything before the yamdbf client is fully ready
+		if (!guildStorage) return;
 
 		const [
 			joinMessage,
@@ -105,6 +107,8 @@ export class EventHandlers
 	public async _onGuildMemberRemove(member: GuildMember): Promise<void>
 	{
 		const guildStorage: GuildStorage = await this._client.storage.guilds.get(member.guild.id);
+		// Drop everything before the yamdbf client is fully ready
+		if (!guildStorage) return;
 
 		const [
 			leaveMessage,
@@ -173,6 +177,8 @@ export class EventHandlers
 
 		if (newMember.user.bot) return;
 		const guildStorage: GuildStorage = await this._client.storage.guilds.get(newMember.guild.id);
+		// Drop everything before the yamdbf client is fully ready
+		if (!guildStorage) return;
 
 		const vlogChannel: string = await guildStorage.get(GuildConfigChannels.VLOGCHANNEL);
 
