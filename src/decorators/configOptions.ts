@@ -1,5 +1,5 @@
 import { GuildChannel, Role } from 'discord.js';
-import { ExpectArgType, Lang, Message, Middleware, ResolveArgType, ResourceLoader } from 'yamdbf';
+import { Lang, Message, Middleware, ResourceLoader } from 'yamdbf';
 
 import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { Client } from '../structures/Client';
@@ -11,7 +11,7 @@ const { expect, resolve } = Middleware;
 export function expectConfigOption(type: GuildConfigType)
 	: (message: Message, args: string[]) => Promise<[Message, [string, GuildChannel | Role | string | undefined]]>
 {
-	const [name, argType] = resolveArgType(type) as [string, ExpectArgType];
+	const [name, argType] = resolveArgType(type) as [string, string];
 	return async function(this: ConfigCommand<Client>, message: Message, args: string[]):
 		Promise<[Message, [string, GuildChannel | Role | string | undefined]]>
 	{
@@ -43,7 +43,7 @@ export function expectConfigOption(type: GuildConfigType)
 export function resolveConfigOption(type: GuildConfigType)
 	: (message: Message, args: string[]) => [Message, [string, GuildChannel | Role | string | undefined]]
 {
-	const [name, argType] = resolveArgType(type) as [string, ResolveArgType];
+	const [name, argType] = resolveArgType(type) as [string, string];
 	return function(message: Message, args: string[]): [Message, [string, GuildChannel | Role | string | undefined]]
 	{
 		if (args[0] === 'set')
@@ -54,7 +54,7 @@ export function resolveConfigOption(type: GuildConfigType)
 	};
 }
 
-function resolveArgType(type: GuildConfigType): [string, ExpectArgType | ResolveArgType]
+function resolveArgType(type: GuildConfigType): [string, string]
 {
 	switch (type)
 	{

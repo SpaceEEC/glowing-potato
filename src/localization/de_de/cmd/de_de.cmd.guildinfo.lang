@@ -24,6 +24,7 @@ Informationen über {{ name }}
 
 [CMD_GUILDINFO_EMBED_FULL_CHANNELS_VALUE]
 • Standard: `{{ default }}`
+• Kategorie: `{{ category }}`
 • Text: `{{ text }}`
 • Sprach: `{{ voice }}`
 
