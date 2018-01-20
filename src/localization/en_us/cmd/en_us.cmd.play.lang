@@ -21,7 +21,7 @@ Full queue length: {{ length }}
 ⚠ That song is already in the queue.
 
 [CMD_PLAY_VALIDATE_TOO_LONG]
-ℹ That song is too long, max length is one hour.
+ℹ That song is too long, max length is two hours.
 
 [CMD_PLAY_PICK_DESCRIPTION]
 Length: {{ length}}\n
