@@ -39,7 +39,7 @@ export class EventHandlers
 	 * @private
 	 */
 	@on('guildMemberAdd')
-	public async _onGuildMemberAdd(member: GuildMember): Promise<void>
+	protected async _onGuildMemberAdd(member: GuildMember): Promise<void>
 	{
 		const guildStorage: GuildStorage = await this._client.storage.guilds.get(member.guild.id);
 		// Drop everything before the yamdbf client is fully ready
@@ -104,7 +104,7 @@ export class EventHandlers
 	 * @private
 	 */
 	@on('guildMemberRemove')
-	public async _onGuildMemberRemove(member: GuildMember): Promise<void>
+	protected async _onGuildMemberRemove(member: GuildMember): Promise<void>
 	{
 		const guildStorage: GuildStorage = await this._client.storage.guilds.get(member.guild.id);
 		// Drop everything before the yamdbf client is fully ready
@@ -171,7 +171,7 @@ export class EventHandlers
 	 * @private
 	 */
 	@on('voiceStateUpdate')
-	public async _onVoiceStateUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void>
+	protected async _onVoiceStateUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void>
 	{
 		this._client.musicPlayer.handleVoiceStateUpdate(oldMember, newMember);
 
