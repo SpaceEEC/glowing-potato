@@ -21,7 +21,7 @@ Insgesamte Wiedergabelänge: {{ length }}
 ⚠ Dieses Lied ist bereits in der Queue.
 
 [CMD_PLAY_VALIDATE_TOO_LONG]
-ℹ Dieses Lied ist zu lang, die maximal erlaubte Länge beträgt eine Stunde.
+ℹ Dieses Lied ist zu lang, die maximal erlaubte Länge beträgt zwei Stunden.
 
 [CMD_PLAY_PICK_DESCRIPTION]
 Dauer: {{ length}}\n

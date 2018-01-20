@@ -207,7 +207,7 @@ export default class PlayCommand extends Command<Client>
 		{
 			return S.CMD_PLAY_VALIDATE_ALREADY_QUEUED;
 		}
-		if (video.durationSeconds > 36e2)
+		if (video.durationSeconds > 72e2)
 		{
 			return S.CMD_PLAY_VALIDATE_TOO_LONG;
 		}
