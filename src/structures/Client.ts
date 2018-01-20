@@ -41,7 +41,7 @@ export class Client extends YAMDBFClient
 	 * @readonly
 	 * @private
 	 */
-	private readonly _eventHandlers: EventHandlers;
+	protected readonly _eventHandlers: EventHandlers;
 
 	/**
 	 * Instantiates the client
