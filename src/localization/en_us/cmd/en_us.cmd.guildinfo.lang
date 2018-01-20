@@ -24,13 +24,14 @@ Information about {{ name }}
 
 [CMD_GUILDINFO_EMBED_FULL_CHANNELS_VALUE]
 • Default: `{{ default }}`
+• Category: `{{ category }}`
 • Text: `{{ text }}`
 • Voice: `{{ voice }}`
 
 [CMD_GUILDINFO_EMBED_FULL_MEMBERS_VALUE]
 • Owner: {{ owner }}
 • Total: `{{ total }}`
-• Online: `{{ online }}` (Note: This value may vary dou caching.)
+• Online: `{{ online }}` (Note: This value may vary duo caching.)
 
 [CMD_GUILDINFO_EMBED_FULL_REGION_TITLE]
 ❯ Region:
