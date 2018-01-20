@@ -4,7 +4,7 @@
  */
 
 import { get } from 'snekfetch';
-import { parse } from 'url';
+import { URL } from 'url';
 import { Logger } from 'yamdbf';
 
 import { Video } from '../types/Video';
@@ -82,7 +82,7 @@ export class YouTubeUtil
 			query?: {
 				v: string,
 			},
-		} = parse(input, true);
+		} = new URL(input);
 		if (!pathname) return null;
 
 		const id: string = (!v || hostname === 'youtu.be') ? pathname.split('/').pop() : v;
@@ -106,7 +106,7 @@ export class YouTubeUtil
 			query?: {
 				list: string,
 			},
-		} = parse(input, true);
+		} = new URL(input);
 		if (!pathname) return null;
 
 		const id: string = list || pathname.split('/').pop();
