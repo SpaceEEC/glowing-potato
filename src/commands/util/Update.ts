@@ -99,7 +99,7 @@ export default class UpdateCommand extends Command<Client>
 
 		if (reinstall) await Util.execAsync('rm -rf ./node_modules');
 
-		const { error, stdout, stderr }: ExecResult = await Util.execAsync('npm run install')
+		const { error, stdout, stderr }: ExecResult = await Util.execAsync(reinstall ? 'npm install' : 'npm run install')
 			.catch((err: ExecError) => ({
 				error: err,
 				stderr: err.stderr,
