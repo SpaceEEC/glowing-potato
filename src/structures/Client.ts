@@ -81,6 +81,7 @@ export class Client extends YAMDBFClient
 		);
 
 		Lang.loadCommandLocalizationsFrom(join(__dirname, '..', 'localization'));
+		Lang.loadGroupLocalizationsFrom(join(__dirname, '..', 'localization'));
 
 		RavenUtil.init();
 
