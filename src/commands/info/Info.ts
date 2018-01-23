@@ -4,6 +4,7 @@ import 'moment-duration-format';
 import { CommandDecorators, Message, ResourceLoader, version as YAMDBFVersion } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 import { Util } from '../../util/Util';
@@ -26,15 +27,15 @@ export default class InfoCommand extends Command<Client>
 	public async action(message: Message, [res]: [ResourceLoader]): Promise<CommandResult>
 	{
 		const owners: string = this.client.owner.map((owner: string) => `\`${this.client.users.get(owner).tag}\``).join(', ');
-		const uptime: string = (moment.duration(this.client.uptime) as any).format(res('CMD_INFO_UPTIME_FORMAT_STRING'));
+		const uptime: string = (moment.duration(this.client.uptime) as any).format(res(S.CMD_INFO_UPTIME_FORMAT_STRING));
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0xffa500)
-			.setTitle(res('CMD_INFO_TITLE'))
-			.addField(res('CMD_INFO_UPTIME_TITLE'),
+			.setTitle(res(S.CMD_INFO_TITLE))
+			.addField(res(S.CMD_INFO_UPTIME_TITLE),
 			`• ${uptime}`,
 			false)
-			.addField(res('CMD_INFO_VERSIONS'),
+			.addField(res(S.CMD_INFO_VERSIONS),
 			[
 				'• __**[discord.js](https://github.com/hydrabolt/discord.js)**__',
 				`  Version: v${DJSVersion}`,
@@ -49,17 +50,17 @@ export default class InfoCommand extends Command<Client>
 				` Version: v${version}`,
 			],
 			true)
-			.addField(res('CMD_INFO_UPTIME_MEMORY_USAGE_TITLE'),
+			.addField(res(S.CMD_INFO_UPTIME_MEMORY_USAGE_TITLE),
 			`• ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
-			.addField(res('CMD_INFO_OWNER_TITLE'),
+			.addField(res(S.CMD_INFO_OWNER_TITLE),
 			`• ${owners}`, true);
 
 		if (this.client.voiceConnections.size)
 		{
-			embed.addField(res('CMD_INFO_VOICE_CONNECTIONS_TITLE'), this.client.voiceConnections.size, false);
+			embed.addField(res(S.CMD_INFO_VOICE_CONNECTIONS_TITLE), this.client.voiceConnections.size, false);
 		}
 
-		embed.addField(res('CMD_INFO_RECENT_CHANGES'), await this._formatCommits())
+		embed.addField(res(S.CMD_INFO_RECENT_CHANGES), await this._formatCommits())
 			.setTimestamp()
 			.setThumbnail(this.client.user.displayAvatarURL)
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);

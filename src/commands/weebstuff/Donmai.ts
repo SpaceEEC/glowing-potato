@@ -25,7 +25,7 @@ export default class DonmaiCommand extends Command<Client>
 	// tslint:disable-next-line:no-shadowed-variable
 	@using((msg: Message, [res, ...tags]: any[]) =>
 	{
-		if (tags.length > 2) throw new Error(res('CMD_DONMAI_TOO_MUCH_TAGS'));
+		if (tags.length > 2) throw new Error(res(S.CMD_DONMAI_TOO_MUCH_TAGS));
 		return [msg, [res, encodeURIComponent(tags.join(' '))]];
 	})
 	@ReportError
