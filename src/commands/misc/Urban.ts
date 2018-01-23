@@ -16,7 +16,7 @@ const { clientPermissions, desc, group, guildOnly, name, usage, using, localizab
 @clientPermissions('SEND_MESSAGES', 'EMBED_LINKS')
 @desc('Displays a definition from the urbandictionary.')
 @name('urban')
-@group('misg')
+@group('misc')
 @guildOnly
 @usage('<prefix>urban [-n] <...Search>')
 export default class Urban extends Command<Client>
