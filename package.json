@@ -28,8 +28,8 @@
     "moment-duration-format": "^2.2.1",
     "node-opus": "^0.2.7",
     "pg": "^6.4.2",
-    "raven": "^2.3.0",
-    "sequelize": "^4.32.1",
+    "raven": "^2.4.0",
+    "sequelize": "^4.32.2",
     "snekfetch": "^3.6.1",
     "yamdbf": "github:zajrik/yamdbf",
     "yamdbf-anilist-unofficial": "github:spaceeec/yamdbf-anilist-unofficial",
@@ -38,7 +38,7 @@
     "ytdl-core": "^0.19.0"
   },
   "devDependencies": {
-    "@types/node": "^9.3.0",
+    "@types/node": "^9.4.0",
     "@types/raven": "^2.1.4",
     "@types/sequelize": "^4.27.4",
     "@types/snekfetch": "^3.1.0",
@@ -46,7 +46,7 @@
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-tslint": "^8.1.2",
-    "gulp-typescript": "^3.2.3",
+    "gulp-typescript": "^3.2.4",
     "tslint": "^5.9.1",
     "tslint-eslint-rules": "^4.1.1",
     "typescript": "^2.6.2"
