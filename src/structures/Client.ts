@@ -56,16 +56,16 @@ export class Client extends YAMDBFClient
 				owner: [process.env.OWNER_ID],
 				pause: true,
 				plugins:
-				[
-					'lang-german',
-					'command-usage',
-					AniList(
-						{
-							clientId: process.env.ANILIST_ID,
-							clientSecret: process.env.ANILIST_SECRET,
-						},
-					),
-				],
+					[
+						'lang-german',
+						'command-usage',
+						AniList(
+							{
+								clientId: process.env.ANILIST_ID,
+								clientSecret: process.env.ANILIST_SECRET,
+							},
+						),
+					],
 				provider: Providers.PostgresProvider(process.env.DATABASE),
 				token: process.env.TOKEN,
 				unknownCommandError: false,
@@ -99,17 +99,16 @@ export class Client extends YAMDBFClient
 	public async _onPause(): Promise<void>
 	{
 		// ensure that own guild member is cached
-		const promises: Promise<GuildMember | this>[] = [];
+		const promises: Promise<GuildMember>[] = [];
 		for (const guild of this.guilds.values())
 		{
 			if (guild.me) continue;
 			promises.push(guild.fetchMember(this.user));
 		}
 
-		promises.push(
-			this.setDefaultSetting('prefix', '$'),
-			this.setDefaultSetting('volume', 2),
-		);
+		await this.setDefaultSetting('prefix', '$');
+		await this.setDefaultSetting('volume', 2);
+
 		await Promise.all(promises);
 		this.emit('continue');
 	}
@@ -226,11 +225,11 @@ export class Client extends YAMDBFClient
 			`WebSocket connection closed!`,
 			{
 				tags:
-				{
-					code,
-					fatal,
-					reason,
-				},
+					{
+						code,
+						fatal,
+						reason,
+					},
 			},
 		);
 
