@@ -7,12 +7,11 @@ import { LocalizationStrings as S } from '../../localization/LocalizationStrings
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 
-const { desc, group, name, ownerOnly, overloads, usage, localizable } = CommandDecorators;
+const { desc, group, name, ownerOnly, usage, localizable } = CommandDecorators;
 
 @desc('Evaluates provided JavaScript code.')
 @name('eval')
 @group('base')
-@overloads('eval')
 @ownerOnly
 @usage('<prefix>eval <...code>')
 export default class EvalCommand extends Command<Client>
@@ -115,11 +114,11 @@ export default class EvalCommand extends Command<Client>
 		}
 	}
 
-	private get depth(): number
+	protected get depth(): number
 	{
 		return this._inspect.depth;
 	}
-	private set depth(value: number)
+	protected set depth(value: number)
 	{
 		this._inspect.depth = value;
 	}
