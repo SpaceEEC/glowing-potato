@@ -20,7 +20,7 @@ const {
 } = CommandDecorators;
 const { expect, resolve } = Middleware;
 
-@aliases('purge', 'clean', 'clear')
+@aliases('purge', 'clean')
 @clientPermissions('SEND_MESSAGES', 'MANAGE_MESSAGES')
 @callerPermissions('MANAGE_MESSAGES')
 @desc('Deletes the specified number of messages in a channel, optional with target filtering.')
