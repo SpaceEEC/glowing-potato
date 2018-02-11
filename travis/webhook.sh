@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ $TRAVIS_PULL_REQUEST != false ]; then
+	echo "PR - exiting early"
+	exit 0
+fi
+
 AUTHOR_NAME=$(git log -1 $TRAVIS_COMMIT --pretty=%aN)
 GRAVATAR_HASH=$(git log -1 $TRAVIS_COMMIT --pretty=%ae | tr -d '\n' | tr '[:upper:]' '[:lower'] | md5sum | cut -d ' ' -f 1)
 
