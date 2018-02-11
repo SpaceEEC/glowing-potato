@@ -1,0 +1,25 @@
+version: '3'
+services:
+  bot:
+    build: .
+    restart: always
+    env_file:
+      - env_vars.env
+    depends_on:
+      - postgres
+
+  postgres:
+    image: "postgres:10-alpine"
+    # External access to db for debugging purposes
+    ports:
+      - "5431:5432"
+    environment:
+      - POSTGRES_USER=yamdbf
+      - POSTGRES_PASSWORD=yamdbf
+      - POSTGRES_DB=yamdbf
+    volumes:
+      - local-postgresql:/var/lib/postgresql
+
+volumes:
+  local-postgresql:
+    external: true
