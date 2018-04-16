@@ -1,4 +1,4 @@
-import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, ResourceProxy } from 'yamdbf';
 
 import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
@@ -22,8 +22,8 @@ export default class LoopCommand extends Command<Client>
 {
 	// tslint:disable:only-arrow-functions no-shadowed-variable
 	@localizable
-	@using(async function(message: Message, [res, input]: [ResourceLoader, string])
-		: Promise<[Message, [ResourceLoader, boolean]]>
+	@using(async function(message: Message, [res, input]: [ResourceProxy<S>, string])
+		: Promise<[Message, [ResourceProxy<S>, boolean]]>
 	{
 		if (input && input[0])
 		{
@@ -31,7 +31,7 @@ export default class LoopCommand extends Command<Client>
 			const state: boolean = Util.resolveBoolean(input);
 			if (state === null)
 			{
-				throw new Error(res(S.UTIL_RESOLVE_BOOLEAN, { input }));
+				throw new Error(res.UTIL_RESOLVE_BOOLEAN({ input }));
 			}
 			return [message, [res, state]];
 		}
@@ -41,34 +41,34 @@ export default class LoopCommand extends Command<Client>
 	@LogCommandRun
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable
-	public async action(message: Message, [res, state]: [ResourceLoader, boolean]): Promise<CommandResult>
+	public async action(message: Message, [res, state]: [ResourceProxy, boolean]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 
 		if (!queue)
 		{
-			return message.channel.send(res(S.MUSIC_QUEUE_NON_EXISTENT))
+			return message.channel.send(res.MUSIC_QUEUE_NON_EXISTENT())
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		if (typeof state !== 'boolean')
 		{
-			return message.channel.send(res(S.CMD_LOOP_CURRENT_STATE, { state: String(queue.loop || '') }))
+			return message.channel.send(res.CMD_LOOP_CURRENT_STATE({ state: String(queue.loop || '') }))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		if (queue.loop === state)
 		{
-			return message.channel.send(res(S.CMD_LOOP_CURRENT_ALREADY, { state: String(state || '') }))
+			return message.channel.send(res.CMD_LOOP_CURRENT_ALREADY({ state: String(state || '') }))
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		queue.loop = state;
 
-		return message.channel.send(res(S.CMD_LOOP_CURRENT_SET, { state: String(state || '') }))
+		return message.channel.send(res.CMD_LOOP_CURRENT_SET({ state: String(state || '') }))
 			.then((m: Message) => m.delete(1e4))
 			.catch(() => null);
 	}

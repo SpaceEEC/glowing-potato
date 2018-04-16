@@ -1,6 +1,6 @@
 import { GuildMember, RichEmbed, User } from 'discord.js';
 import * as moment from 'moment';
-import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
@@ -23,22 +23,22 @@ export default class UserInfoCommand extends Command<Client>
 	@using(expect({ '<User>': 'User' }))
 	@localizable
 	@ReportError
-	public async action(message: Message, [res, user]: [ResourceLoader, User]): Promise<CommandResult>
+	public async action(message: Message, [res, user]: [ResourceProxy<S>, User]): Promise<CommandResult>
 	{
 		const member: GuildMember = await message.guild.fetchMember(user).catch(() => undefined);
 
-		const createdAt: string = moment(user.createdTimestamp).utc().format(res(S.CMD_USERINFO_MOMENT_FORMAT));
+		const createdAt: string = moment(user.createdTimestamp).utc().format(res.CMD_USERINFO_MOMENT_FORMAT());
 		const createdAgo: string = (moment.duration(message.createdTimestamp - user.createdTimestamp, 'milliseconds') as any)
-			.format(res(S.CMD_USERINFO_CREATE_OR_JOIN_FORMAT));
+			.format(res.CMD_USERINFO_CREATE_OR_JOIN_FORMAT());
 
 		const game: string = user.presence.game
-			? res(S.CMD_USERINFO_GAMESTATUS,
+			? res.CMD_USERINFO_GAMESTATUS(
 				{
 					name: user.presence.game.name,
 					// super hacky
 					streaming: String(user.presence.game.streaming || ''),
 				})
-			: res(S.CMD_USERINFO_N_A);
+			: res.CMD_USERINFO_N_A();
 
 		let sharedGuilds: number = 0;
 		for (const guild of this.client.guilds.values())
@@ -52,12 +52,12 @@ export default class UserInfoCommand extends Command<Client>
 			.setTimestamp()
 			.setFooter(message.cleanContent, message.author.displayAvatarURL)
 			.addField(
-			res(S.CMD_USERINFO_GLOBAL_TITLE),
-			res(S.CMD_USERINFO_GLOBAL_VALUE,
+			res.CMD_USERINFO_GLOBAL_TITLE(),
+			res.CMD_USERINFO_GLOBAL_VALUE(
 				{
 					avatarURL: user.avatarURL
-						? res(S.CMD_USERINFO_AVATAR, { avatar: user.avatarURL })
-						: res(S.CMD_USERINFO_N_A),
+						? res.CMD_USERINFO_AVATAR({ avatar: user.avatarURL })
+						: res.CMD_USERINFO_N_A(),
 					bot: String(user.bot || ''),
 					createdAgo,
 					createdAt,
@@ -72,9 +72,9 @@ export default class UserInfoCommand extends Command<Client>
 
 		if (member)
 		{
-			const joinedAt: string = moment(member.joinedTimestamp).utc().format(res(S.CMD_USERINFO_MOMENT_FORMAT));
+			const joinedAt: string = moment(member.joinedTimestamp).utc().format(res.CMD_USERINFO_MOMENT_FORMAT());
 			const joinedAgo: string = (moment.duration(message.createdTimestamp - member.joinedTimestamp, 'milliseconds') as any)
-				.format(res(S.CMD_USERINFO_CREATE_OR_JOIN_FORMAT));
+				.format(res.CMD_USERINFO_CREATE_OR_JOIN_FORMAT());
 
 			const roles: string[] = [];
 			for (const role of member.roles.values())
@@ -85,14 +85,14 @@ export default class UserInfoCommand extends Command<Client>
 			}
 
 			embed.addField(
-				res(S.CMD_USERINFO_MEMBER_TITLE),
-				res(S.CMD_USERINFO_MEMBER_VALUE,
+				res.CMD_USERINFO_MEMBER_TITLE(),
+				res.CMD_USERINFO_MEMBER_VALUE(
 					{
 						bot: String(user.bot || ''),
 						joinedAgo,
 						joinedAt,
-						nickname: member.nickname || res(S.CMD_USERINFO_N_A),
-						roles: roles.join(', ') || res(S.CMD_USERINFO_N_A),
+						nickname: member.nickname || res.CMD_USERINFO_N_A(),
+						roles: roles.join(', ') || res.CMD_USERINFO_N_A(),
 					},
 				),
 				true,

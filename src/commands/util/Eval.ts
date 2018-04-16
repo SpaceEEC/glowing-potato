@@ -1,6 +1,6 @@
 import * as Discord from 'discord.js';
 import { inspect, InspectOptions } from 'util';
-import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, ResourceProxy } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
@@ -24,12 +24,12 @@ export default class EvalCommand extends Command<Client>
 
 	@ReportError
 	@localizable
-	public async action(message: Message, [res, ...args]: [ResourceLoader, string[]]): Promise<CommandResult>
+	public async action(message: Message, [res, ...args]: [ResourceProxy<S>, string[]]): Promise<CommandResult>
 	{
 		const client: Client = this.client;
 		const msg: Message = message;
 
-		if (!args.length) return res(S.CMD_EVAL_ERR_NOCODE);
+		if (!args.length) return res.CMD_EVAL_ERR_NOCODE();
 
 		const code: string = args.join(' ');
 

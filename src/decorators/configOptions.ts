@@ -1,5 +1,5 @@
 import { GuildChannel, Role } from 'discord.js';
-import { Lang, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { Lang, Message, Middleware, ResourceProxy } from 'yamdbf';
 
 import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { Client } from '../structures/Client';
@@ -15,16 +15,14 @@ export function expectConfigOption(type: GuildConfigType)
 	return async function(this: ConfigCommand<Client>, message: Message, args: string[]):
 		Promise<[Message, [string, GuildChannel | Role | string | undefined]]>
 	{
-		const res: ResourceLoader = Lang.createResourceLoader(
+		const res: ResourceProxy<S> = Lang.createResourceProxy<S>(
 			await message.guild.storage.settings.get('lang')
 			|| this.client.defaultLang,
 		);
 		args[0] = args[0].toLowerCase();
 		if (!['get', 'set', 'reset'].includes(args[0]))
 		{
-			throw new Error(res(
-				S.EXPECT_ERR_INVALID_OPTION,
-				{
+			throw new Error(res.EXPECT_ERR_INVALID_OPTION({
 					arg: args[0],
 					name: '<Option>',
 					type: '`get`, `set`, `reset`',

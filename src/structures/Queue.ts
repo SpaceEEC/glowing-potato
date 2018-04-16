@@ -1,5 +1,5 @@
 import { Guild, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
-import { Logger, logger, Message, ResourceLoader } from 'yamdbf';
+import { Logger, logger, Message, ResourceProxy } from 'yamdbf';
 
 import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { PaginatedPage } from '../types/PaginatedPage';
@@ -33,7 +33,7 @@ export class Queue
 	 * Resource loader for this queue
 	 * @readonly
 	 */
-	public readonly res: ResourceLoader;
+	public readonly res: ResourceProxy<S>;
 
 	/**
 	 * The text channel this queue has been started
@@ -79,10 +79,10 @@ export class Queue
 	/**
 	 * Instantiates a new queue for the guild the textchannel is in.
 	 * @param {Client} client
-	 * @param {ResourceLoader} res
+	 * @param {ResourceProxy} res
 	 * @param {TextChannel} textChannel The text channel this queue should be bound to
 	 */
-	public constructor(client: Client, res: ResourceLoader, textChannel: TextChannel)
+	public constructor(client: Client, res: ResourceProxy<S>, textChannel: TextChannel)
 	{
 		this._logger.debug(`(${textChannel.guild.id}) Instantiating queue`);
 
@@ -145,7 +145,7 @@ export class Queue
 		if (this.statusMessage) this.statusMessage.delete().catch(() => null);
 
 		this.statusMessage = await this.textChannel
-			.send(this.res(S.MUSIC_EMPTY_TIMEOUT))
+			.send(this.res.MUSIC_EMPTY_TIMEOUT())
 			.catch(() => null);
 
 		this._timeout = this.textChannel.client.setTimeout(() =>

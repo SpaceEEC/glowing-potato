@@ -1,5 +1,5 @@
 import { DiscordAPIError, GuildChannel, GuildMember, TextChannel } from 'discord.js';
-import { GuildStorage, Lang, ListenerUtil, ResourceLoader } from 'yamdbf';
+import { GuildStorage, Lang, ListenerUtil, ResourceProxy } from 'yamdbf';
 
 import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { GuildConfigChannels, GuildConfigStrings } from '../types/GuildConfigKeys';
@@ -193,7 +193,7 @@ export class EventHandlers
 		}
 		else if (channel.permissionsFor(guildMe).has(['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))
 		{
-			const res: ResourceLoader = Lang.createResourceLoader(
+			const res: ResourceProxy<S> = Lang.createResourceProxy<S>(
 				await this._client.storage.guilds.get(newMember.guild.id).settings.get('lang')
 				|| this._client.defaultLang);
 
@@ -208,7 +208,7 @@ export class EventHandlers
 					embed
 						.setColor(0xFF4500)
 						.setDescription(
-						res(S.EVENT_VOICELOG_DISCONNECT,
+						res.EVENT_VOICELOG_DISCONNECT(
 							{
 								channel: oldMember.voiceChannel.toString(),
 								member: newMember.toString(),
@@ -221,7 +221,7 @@ export class EventHandlers
 					embed
 						.setColor(0x7CFC00)
 						.setDescription(
-						res(S.EVENT_VOICELOG_CONNECT,
+						res.EVENT_VOICELOG_CONNECT(
 							{
 								channel: newMember.voiceChannel.toString(),
 								member: newMember.toString(),
@@ -234,7 +234,7 @@ export class EventHandlers
 					embed
 						.setColor(3447003)
 						.setDescription(
-						res(S.EVENT_VOICELOG_MOVE,
+						res.EVENT_VOICELOG_MOVE(
 							{
 								member: newMember.toString(),
 								newChannel: newMember.voiceChannel.toString(),

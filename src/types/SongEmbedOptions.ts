@@ -32,5 +32,5 @@ export type SongEmbedOptions =
 	{
 		color: number,
 		descriptionPrefix: string,
-		footer: string,
+		footer: S,
 	};

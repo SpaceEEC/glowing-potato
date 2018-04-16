@@ -85,7 +85,7 @@ export class Song
 
 		if ([SongEmbedType.PLAYING, SongEmbedType.NP].includes(type) && this._queue.loop)
 		{
-			description.push(this._queue.res(S.MUSIC_SONG_LOOP));
+			description.push(this._queue.res.MUSIC_SONG_LOOP());
 		}
 
 		description.push(`**${descriptionPrefix}** [${this.name}](${this.url})`);
@@ -97,7 +97,7 @@ export class Song
 			const left: string = this.timeLeft(currentTime);
 			const current: string = Util.timeString(currentTime);
 			description.push(
-				this._queue.res(this.length ? S.MUSIC_SONG_NP_DESCRIPTION : S.MUSIC_LIVESTREAM,
+				this._queue.res[this.length ? S.MUSIC_SONG_NP_DESCRIPTION : S.MUSIC_LIVESTREAM](
 					{
 						current,
 						left,
@@ -109,7 +109,7 @@ export class Song
 		else
 		{
 			description.push(
-				this._queue.res(this.length ? S.MUSIC_SONGS_GENERIC_DESCRIPTION : S.MUSIC_LIVESTREAM,
+				this._queue.res[this.length ? S.MUSIC_SONGS_GENERIC_DESCRIPTION : S.MUSIC_LIVESTREAM](
 					{
 						length: this.lengthString,
 					},
@@ -123,7 +123,7 @@ export class Song
 			.setTimestamp()
 			.setImage(this.thumbnailURL)
 			.setColor(color)
-			.setFooter(this._queue.res(footer), this.member.client.user.displayAvatarURL);
+			.setFooter(this._queue.res[footer], this.member.client.user.displayAvatarURL);
 	}
 
 	/**

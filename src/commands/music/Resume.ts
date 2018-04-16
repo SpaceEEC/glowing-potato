@@ -1,4 +1,4 @@
-import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, ResourceProxy } from 'yamdbf';
 
 import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
@@ -21,27 +21,27 @@ export default class ResumeCommand extends Command<Client>
 	@localizable
 	@LogCommandRun
 	@ReportError
-	public async action(message: Message, [res]: [ResourceLoader]): Promise<CommandResult>
+	public async action(message: Message, [res]: [ResourceProxy<S>]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 
 		if (!queue)
 		{
-			return message.channel.send(res(S.MUSIC_QUEUE_NON_EXISTENT))
+			return message.channel.send(res.MUSIC_QUEUE_NON_EXISTENT())
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		if (!queue.dispatcher)
 		{
-			return message.channel.send(res(S.MUSIC_NO_DISPATCHER))
+			return message.channel.send(res.MUSIC_NO_DISPATCHER())
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
 		if (!queue.dispatcher.paused)
 		{
-			return message.channel.send(res(S.CMD_RESUME_ALREADY_RUNNING))
+			return message.channel.send(res.CMD_RESUME_ALREADY_RUNNING())
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
@@ -49,7 +49,7 @@ export default class ResumeCommand extends Command<Client>
 		queue.dispatcher.resume();
 
 		return message.channel
-			.send(res(S.CMD_RESUME_SUCCESS))
+			.send(res.CMD_RESUME_SUCCESS())
 			.then((m: Message) => m.delete(1e4))
 			.catch(() => null);
 	}
