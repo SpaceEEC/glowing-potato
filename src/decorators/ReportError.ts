@@ -1,5 +1,5 @@
 import { TextChannel } from 'discord.js';
-import { Command, Lang, Message, ResourceLoader } from 'yamdbf';
+import { Command, Lang, Message, ResourceProxy } from 'yamdbf';
 
 import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { Client } from '../structures/Client';
@@ -31,9 +31,9 @@ export function ReportError(target: Command, key: string, descriptor: PropertyDe
 			const lang: string = message.channel instanceof TextChannel
 				? await message.guild.storage.settings.get('lang') || this.client.defaultLang
 				: this.client.defaultLang;
-			const res: ResourceLoader = Lang.createResourceLoader(lang);
+			const res: ResourceProxy<S> = Lang.createResourceProxy<S>(lang);
 
-			return res(S.DECORATORS_REPORT_ERROR_TEXT, { message: error.message });
+			return res.DECORATORS_REPORT_ERROR_TEXT({ message: error.message });
 		}
 	};
 

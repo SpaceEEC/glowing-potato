@@ -1,4 +1,4 @@
-import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, ResourceProxy } from 'yamdbf';
 
 import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
@@ -21,13 +21,13 @@ export default class SkipCommand extends Command<Client>
 	@localizable
 	@LogCommandRun
 	@ReportError
-	public async action(message: Message, [res]: [ResourceLoader]): Promise<CommandResult>
+	public async action(message: Message, [res]: [ResourceProxy<S>]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 
 		if (!queue)
 		{
-			return message.channel.send(res(S.MUSIC_QUEUE_NON_EXISTENT))
+			return message.channel.send(res.MUSIC_QUEUE_NON_EXISTENT())
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
@@ -35,7 +35,7 @@ export default class SkipCommand extends Command<Client>
 		if (!queue.dispatcher)
 		{
 			return message.channel
-				.send(res(S.CMD_SKIP_NOT_POSSIBLE_YET))
+				.send(res.CMD_SKIP_NOT_POSSIBLE_YET())
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
@@ -44,7 +44,7 @@ export default class SkipCommand extends Command<Client>
 
 		queue.dispatcher.end('skip');
 
-		return message.channel.send(res(S.CMD_SKIP_SUCCESS, { song: currentSong.toString() }))
+		return message.channel.send(res.CMD_SKIP_SUCCESS({ song: currentSong.toString() }))
 			.then((m: Message) => m.delete(1e4))
 			.catch(() => null);
 	}

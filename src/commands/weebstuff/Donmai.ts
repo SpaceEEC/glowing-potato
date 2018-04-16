@@ -1,6 +1,6 @@
 import { RichEmbed } from 'discord.js';
 import { get, Result } from 'snekfetch';
-import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
@@ -25,11 +25,11 @@ export default class DonmaiCommand extends Command<Client>
 	// tslint:disable-next-line:no-shadowed-variable
 	@using((msg: Message, [res, ...tags]: any[]) =>
 	{
-		if (tags.length > 2) throw new Error(res(S.CMD_DONMAI_TOO_MUCH_TAGS));
+		if (tags.length > 2) throw new Error(res.CMD_DONMAI_TOO_MUCH_TAGS());
 		return [msg, [res, encodeURIComponent(tags.join(' '))]];
 	})
 	@ReportError
-	public async action(message: Message, [res, search]: [ResourceLoader, string]): Promise<CommandResult>
+	public async action(message: Message, [res, search]: [ResourceProxy<S>, string]): Promise<CommandResult>
 	{
 		const posts: PicturePost[] = await get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${search}`)
 			.then<ProbablyNotABuffer>((result: Result) => result.body);
@@ -39,14 +39,14 @@ export default class DonmaiCommand extends Command<Client>
 			return new RichEmbed()
 					.setColor(0xFFFF00)
 					.setAuthor('safebooru.donmai.us', 'https://safebooru.donmai.us/favicon.ico', 'https://safebooru.donmai.us/')
-					.addField(res(S.CMD_NO_RESULTS_TITLE), res(S.CMD_NO_RESULTS_VALUE))
-					.addField(res(S.CMD_NO_RESULTS_SEARCH),
-					`[${res(S.CMD_NO_RESULTS_URL)}](http://safebooru.donmai.us/posts/?tags=${search})`);
+					.addField(res.CMD_NO_RESULTS_TITLE(), res.CMD_NO_RESULTS_VALUE())
+					.addField(res.CMD_NO_RESULTS_SEARCH(),
+					`[${res.CMD_NO_RESULTS_URL()}](http://safebooru.donmai.us/posts/?tags=${search})`);
 		}
 
 		return new RichEmbed()
 				.setColor(message.member.displayColor)
 				.setImage(`http://safebooru.donmai.us/${posts[0].file_url}`)
-				.setDescription(`[${res(S.CMD_RESULTS_SOURCE)}](http://safebooru.donmai.us/posts/${posts[0].id}/)`);
+				.setDescription(`[${res.CMD_RESULTS_SOURCE()}](http://safebooru.donmai.us/posts/${posts[0].id}/)`);
 	}
 }

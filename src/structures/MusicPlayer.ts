@@ -1,5 +1,5 @@
 import { GuildMember, Snowflake, TextChannel, VoiceConnection } from 'discord.js';
-import { Logger, logger, Message, ResourceLoader } from 'yamdbf';
+import { Logger, logger, Message, ResourceProxy } from 'yamdbf';
 import * as ytdl from 'ytdl-core';
 
 import { LocalizationStrings as S } from '../localization/LocalizationStrings';
@@ -82,12 +82,12 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 	/**
 	 * Adds a Song or an array of Songs to the current playback, or starts it if there is none.
-	 * @param {ResourceLoader} res
+	 * @param {ResourceProxy} res
 	 * @param {Message} message
 	 * @param {Song|Song[]} input Song(s) to add
 	 * @returns {Promise<boolean>}
 	 */
-	public async add(res: ResourceLoader, { guild, channel, member }: Message, input: Song | Song[]): Promise<boolean>
+	public async add(res: ResourceProxy<S>, { guild, channel, member }: Message, input: Song | Song[]): Promise<boolean>
 	{
 		let queue: Queue = this.get(guild.id);
 		if (queue)
@@ -113,7 +113,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		{
 			RavenUtil.error('MusicPlayer', error);
 			this.delete(guild.id);
-			channel.send(res(S.MUSIC_JOIN_FAILED, { message: error.message }))
+			channel.send(res.MUSIC_JOIN_FAILED({ message: error.message }))
 				.catch(() => null);
 		}
 
@@ -175,7 +175,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				RavenUtil.error('MusicPlayer | dispatcher', error);
 
 				queue.statusMessage = await queue.statusMessage.edit(
-					queue.res(S.MUSIC_PLAY_ERROR,
+					queue.res.MUSIC_PLAY_ERROR(
 						{
 							message: error.message,
 						},
@@ -215,7 +215,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				{
 					RavenUtil.error('MusicPlayer | _play', _playError);
 					queue.textChannel.send(
-						queue.res(S.MUSIC_PLAY_ERROR,
+						queue.res.MUSIC_PLAY_ERROR(
 							{
 								message: _playError.message,
 							},

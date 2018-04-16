@@ -1,4 +1,4 @@
-import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
 
 import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
@@ -29,18 +29,18 @@ export default class VolumeCommand extends Command<Client>
 	})
 	@using(resolve({ '<Volume>': 'Number' }))
 	@localizable
-	@using(function(message: Message, [res, volume]: [ResourceLoader, number]): [Message, [ResourceLoader, number]]
+	@using(function(message: Message, [res, volume]: [ResourceProxy<S>, number]): [Message, [ResourceProxy<S>, number]]
 	{
 		if (typeof volume === 'number')
 		{
 			if (volume > 10)
 			{
-				throw new Error(res(S.CMD_VOLUME_TOO_HIGH));
+				throw new Error(res.CMD_VOLUME_TOO_HIGH());
 
 			}
 			if (volume < 1)
 			{
-				throw new Error(res(S.CMD_VOLUME_TOO_LOW));
+				throw new Error(res.CMD_VOLUME_TOO_LOW());
 			}
 		}
 		return [message, [res, volume]];
@@ -48,7 +48,7 @@ export default class VolumeCommand extends Command<Client>
 	@LogCommandRun
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable
-	public async action(message: Message, [res, volume]: [ResourceLoader, number]): Promise<CommandResult>
+	public async action(message: Message, [res, volume]: [ResourceProxy<S>, number]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 		const update: boolean = Boolean(volume);
@@ -78,9 +78,7 @@ export default class VolumeCommand extends Command<Client>
 		}
 
 		return message.channel.send(
-			res(
-				S.CMD_VOLUME_SUCCESS,
-				{
+			res.CMD_VOLUME_SUCCESS({
 					update: String(update || ''),
 					volume: volume.toLocaleString(),
 				},

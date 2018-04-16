@@ -1,5 +1,5 @@
 import { GuildChannel, Role } from 'discord.js';
-import { CommandDecorators, Lang, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Lang, Message, Middleware, ResourceProxy } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
@@ -27,7 +27,7 @@ export default class ConfigCommand extends ConfigCommandBase<Client>
 	@using(async function(message: Message, args: [string, string, string | undefined])
 		: Promise<[Message, [string, string, string | undefined]]>
 	{
-		const res: ResourceLoader = Lang.createResourceLoader(
+		const res: ResourceProxy<S> = Lang.createResourceProxy<S>(
 			await message.guild.storage.settings.get('lang')
 			|| this.client.defaultLang,
 		);
@@ -35,8 +35,7 @@ export default class ConfigCommand extends ConfigCommandBase<Client>
 		args[0] = args[0].toLowerCase();
 		if (!['get', 'set', 'reset'].includes(args[0]))
 		{
-			throw new Error(res(
-				S.EXPECT_ERR_INVALID_OPTION,
+			throw new Error(res.EXPECT_ERR_INVALID_OPTION(
 				{
 					arg: args[0],
 					name: '<Option>',
@@ -48,8 +47,7 @@ export default class ConfigCommand extends ConfigCommandBase<Client>
 
 		if (!GuildConfigUtil.parseConfigKey(args[1]))
 		{
-			throw new Error(res(
-				S.EXPECT_ERR_INVALID_OPTION,
+			throw new Error(res.EXPECT_ERR_INVALID_OPTION(
 				{
 					arg: args[0],
 					name: '<Option>',
@@ -108,7 +106,8 @@ export default class ConfigCommand extends ConfigCommandBase<Client>
 	@ReportError
 	// tslint:enable:no-shadowed-variable object-literal-sort-keys
 	public async action(message: Message, [res, option, key, value]
-		: [ResourceLoader, 'get' | 'set' | 'reset', string, GuildChannel | Role | string | undefined]): Promise<CommandResult>
+		: [ResourceProxy<S>, 'get' | 'set' | 'reset', string, GuildChannel | Role | string | undefined],
+	): Promise<CommandResult>
 	{
 		return this[option](message,
 			res,

@@ -1,6 +1,6 @@
 import { RichEmbed } from 'discord.js';
 import { get, Result } from 'snekfetch';
-import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
@@ -25,11 +25,11 @@ export default class KonachanCommand extends Command<Client>
 	// tslint:disable-next-line:no-shadowed-variable
 	@using((msg: Message, [res, ...tags]: any[]) =>
 	{
-		if (tags.length > 5) throw new Error(res(S.CMD_KONACHAN_TOO_MUCH_TAGS));
+		if (tags.length > 5) throw new Error(res.CMD_KONACHAN_TOO_MUCH_TAGS());
 		return [msg, [res, encodeURIComponent(tags.join(' '))]];
 	})
 	@ReportError
-	public async action(message: Message, [res, search]: [ResourceLoader, string]): Promise<CommandResult>
+	public async action(message: Message, [res, search]: [ResourceProxy<S>, string]): Promise<CommandResult>
 	{
 		const posts: PicturePost[] = await get(`http://konachan.com/post.json?tags=${search}+rating:s&limit=100`)
 			.then<ProbablyNotABuffer>((result: Result) => result.body);
@@ -38,9 +38,9 @@ export default class KonachanCommand extends Command<Client>
 		{
 			return new RichEmbed().setColor(0xFFFF00)
 					.setAuthor('konachan.net', 'https://konachan.net/favicon.ico', 'https://konachan.net/')
-					.addField(res(S.CMD_NO_RESULTS_TITLE), res(S.CMD_NO_RESULTS_VALUE))
-					.addField(res(S.CMD_NO_RESULTS_SEARCH),
-					`[${res(S.CMD_NO_RESULTS_URL)}](http://konachan.net/post?tags=${search})`);
+					.addField(res.CMD_NO_RESULTS_TITLE(), res.CMD_NO_RESULTS_VALUE())
+					.addField(res.CMD_NO_RESULTS_SEARCH(),
+					`[${res.CMD_NO_RESULTS_URL()}](http://konachan.net/post?tags=${search})`);
 		}
 
 		const post: PicturePost = posts[Math.floor(Math.random() * posts.length)];
@@ -48,6 +48,6 @@ export default class KonachanCommand extends Command<Client>
 		return new RichEmbed()
 				.setColor(message.member.displayColor)
 				.setImage(`https:${post.sample_url}`)
-				.setDescription(`[${res(S.CMD_RESULTS_SOURCE)}](http://konachan.net/post/show/${post.id})`);
+				.setDescription(`[${res.CMD_RESULTS_SOURCE()}](http://konachan.net/post/show/${post.id})`);
 	}
 }

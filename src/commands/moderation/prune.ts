@@ -1,5 +1,5 @@
 import { Collection, TextChannel, User } from 'discord.js';
-import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
@@ -54,7 +54,7 @@ export default class PruneCommand extends Command<Client>
 	})
 	@localizable
 	@ReportError
-	public async action(message: Message, [res, count, user]: [ResourceLoader, number, User]): Promise<CommandResult>
+	public async action(message: Message, [res, count, user]: [ResourceProxy<S>, number, User]): Promise<CommandResult>
 	{
 		// for tslint and typescript
 		if (!(message.channel instanceof TextChannel))
@@ -65,7 +65,7 @@ export default class PruneCommand extends Command<Client>
 
 		if (count > 100 || count < 1)
 		{
-			return res(S.CMD_PRUNE_INVALID_COUNT);
+			return res.CMD_PRUNE_INVALID_COUNT();
 		}
 
 		let messages: Collection<string, Message> = await message.channel.fetchMessages({ limit: count });
