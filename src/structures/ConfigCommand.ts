@@ -1,7 +1,7 @@
 import { Collection, GuildChannel, Role, Snowflake, TextChannel, Util as DJSUtil } from 'discord.js';
-import { Message, ResourceProxy } from 'yamdbf';
+import { Message } from 'yamdbf';
 
-import { LocalizationStrings as S } from '../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../localization/LocalizationStrings';
 import { GuildConfigType } from '../types/GuildConfigKeys';
 import { Util } from '../util/Util';
 import { Client } from './Client';
@@ -21,7 +21,7 @@ abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 	 * @returns {Promise<CommandResult>}
 	 * @protected
 	 */
-	protected async get(message: Message, res: ResourceProxy<S>, key: string, type: GuildConfigType, _?: any)
+	protected async get(message: Message, res: BetterResourceProxy, key: string, type: GuildConfigType, _?: any)
 		: Promise<CommandResult>
 	{
 		const value: string = await message.guild.storage.get(key);
@@ -83,7 +83,7 @@ abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 	 * @returns {Promise<CommandResult>}
 	 * @protected
 	 */
-	protected async set(message: Message, res: ResourceProxy<S>, key: string, type: GuildConfigType, value: any)
+	protected async set(message: Message, res: BetterResourceProxy, key: string, type: GuildConfigType, value: any)
 		: Promise<CommandResult>
 	{
 		if (type === GuildConfigType.CHANNEL)
@@ -143,7 +143,7 @@ abstract class Command<T extends Client = Client> extends AbstractCommand<T>
 	 * @returns {Promise<CommandResult>}
 	 * @protected
 	 */
-	protected async reset(message: Message, res: ResourceProxy<S>, key: string, _?: GuildConfigType, __?: any)
+	protected async reset(message: Message, res: BetterResourceProxy, key: string, _?: GuildConfigType, __?: any)
 		: Promise<CommandResult>
 	{
 		const prompt: Message = await message.channel.send(res.CMD_CONFIG_RESET_PROMPT()) as Message;

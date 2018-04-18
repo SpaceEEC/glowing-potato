@@ -1,7 +1,7 @@
 import { Role } from 'discord.js';
-import { Lang, Message, MiddlewareFunction, ResourceProxy } from 'yamdbf';
+import { Lang, Message, MiddlewareFunction } from 'yamdbf';
 
-import { LocalizationStrings as S } from '../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../localization/LocalizationStrings';
 import { Client } from '../structures/Client';
 import { Command } from '../structures/Command';
 import { Queue } from '../structures/Queue';
@@ -25,7 +25,7 @@ export function musicRestricted(voiceChannel: boolean = false): MiddlewareFuncti
 			message.guild.storage.get(GuildConfigChannels.MUSICCHANNEL),
 		]);
 
-		const res: ResourceProxy<S> = Lang.createResourceProxy<S>(lang || this.client.defaultLang);
+		const res: BetterResourceProxy = Lang.createResourceProxy(lang || this.client.defaultLang) as BetterResourceProxy;
 
 		if (musicRole)
 		{

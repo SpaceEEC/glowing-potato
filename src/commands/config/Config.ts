@@ -1,8 +1,8 @@
 import { GuildChannel, Role } from 'discord.js';
-import { CommandDecorators, Lang, Message, Middleware, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Lang, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { CommandResult, ConfigCommand as ConfigCommandBase } from '../../structures/ConfigCommand';
 import { GuildConfigChannels, GuildConfigRoles, GuildConfigStrings } from '../../types/GuildConfigKeys';
@@ -27,10 +27,10 @@ export default class ConfigCommand extends ConfigCommandBase<Client>
 	@using(async function(message: Message, args: [string, string, string | undefined])
 		: Promise<[Message, [string, string, string | undefined]]>
 	{
-		const res: ResourceProxy<S> = Lang.createResourceProxy<S>(
+		const res: BetterResourceProxy = Lang.createResourceProxy(
 			await message.guild.storage.settings.get('lang')
 			|| this.client.defaultLang,
-		);
+		) as BetterResourceProxy;
 
 		args[0] = args[0].toLowerCase();
 		if (!['get', 'set', 'reset'].includes(args[0]))
@@ -106,7 +106,7 @@ export default class ConfigCommand extends ConfigCommandBase<Client>
 	@ReportError
 	// tslint:enable:no-shadowed-variable object-literal-sort-keys
 	public async action(message: Message, [res, option, key, value]
-		: [ResourceProxy<S>, 'get' | 'set' | 'reset', string, GuildChannel | Role | string | undefined],
+		: [BetterResourceProxy, 'get' | 'set' | 'reset', string, GuildChannel | Role | string | undefined],
 	): Promise<CommandResult>
 	{
 		return this[option](message,

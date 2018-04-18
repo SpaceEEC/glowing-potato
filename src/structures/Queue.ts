@@ -1,7 +1,7 @@
 import { Guild, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
-import { Logger, logger, Message, ResourceProxy } from 'yamdbf';
+import { Logger, logger, Message } from 'yamdbf';
 
-import { LocalizationStrings as S } from '../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../localization/LocalizationStrings';
 import { PaginatedPage } from '../types/PaginatedPage';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { RavenUtil } from '../util/RavenUtil';
@@ -33,7 +33,7 @@ export class Queue
 	 * Resource loader for this queue
 	 * @readonly
 	 */
-	public readonly res: ResourceProxy<S>;
+	public readonly res: BetterResourceProxy;
 
 	/**
 	 * The text channel this queue has been started
@@ -82,7 +82,7 @@ export class Queue
 	 * @param {ResourceProxy} res
 	 * @param {TextChannel} textChannel The text channel this queue should be bound to
 	 */
-	public constructor(client: Client, res: ResourceProxy<S>, textChannel: TextChannel)
+	public constructor(client: Client, res: BetterResourceProxy, textChannel: TextChannel)
 	{
 		this._logger.debug(`(${textChannel.guild.id}) Instantiating queue`);
 

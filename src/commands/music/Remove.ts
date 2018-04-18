@@ -1,11 +1,11 @@
-import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 import { Queue } from '../../structures/Queue';
 import { Song } from '../../structures/Song';
 
 import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 
@@ -25,7 +25,7 @@ export default class RemoveCommand extends Command<Client>
 	@localizable
 	@LogCommandRun
 	@ReportError
-	public async action(message: Message, [res, index]: [ResourceProxy<S>, number]): Promise<CommandResult>
+	public async action(message: Message, [res, index]: [BetterResourceProxy, number]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 

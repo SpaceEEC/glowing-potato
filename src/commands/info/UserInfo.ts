@@ -1,9 +1,9 @@
 import { GuildMember, RichEmbed, User } from 'discord.js';
 import * as moment from 'moment';
-import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 
@@ -23,7 +23,7 @@ export default class UserInfoCommand extends Command<Client>
 	@using(expect({ '<User>': 'User' }))
 	@localizable
 	@ReportError
-	public async action(message: Message, [res, user]: [ResourceProxy<S>, User]): Promise<CommandResult>
+	public async action(message: Message, [res, user]: [BetterResourceProxy, User]): Promise<CommandResult>
 	{
 		const member: GuildMember = await message.guild.fetchMember(user).catch(() => undefined);
 

@@ -1,10 +1,10 @@
 import { Permissions } from 'discord.js';
-import { CommandDecorators, Message, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message } from 'yamdbf';
 
 import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -23,7 +23,7 @@ export default class SummonCommand extends Command<Client>
 	@localizable
 	@LogCommandRun
 	@ReportError
-	public async action(message: Message, [res]: [ResourceProxy<S>]): Promise<CommandResult>
+	public async action(message: Message, [res]: [BetterResourceProxy]): Promise<CommandResult>
 	{
 		if (!message.member.voiceChannel)
 		{

@@ -1,7 +1,7 @@
 import { GuildChannel, Role } from 'discord.js';
-import { Lang, Message, Middleware, ResourceProxy } from 'yamdbf';
+import { Lang, Message, Middleware } from 'yamdbf';
 
-import { LocalizationStrings as S } from '../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../localization/LocalizationStrings';
 import { Client } from '../structures/Client';
 import { ConfigCommand } from '../structures/ConfigCommand';
 import { GuildConfigType } from '../types/GuildConfigKeys';
@@ -15,10 +15,10 @@ export function expectConfigOption(type: GuildConfigType)
 	return async function(this: ConfigCommand<Client>, message: Message, args: string[]):
 		Promise<[Message, [string, GuildChannel | Role | string | undefined]]>
 	{
-		const res: ResourceProxy<S> = Lang.createResourceProxy<S>(
+		const res: BetterResourceProxy = Lang.createResourceProxy(
 			await message.guild.storage.settings.get('lang')
 			|| this.client.defaultLang,
-		);
+		) as BetterResourceProxy;
 		args[0] = args[0].toLowerCase();
 		if (!['get', 'set', 'reset'].includes(args[0]))
 		{

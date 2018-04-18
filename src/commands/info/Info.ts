@@ -1,10 +1,10 @@
 import { RichEmbed, Util as DJSUtil, version as DJSVersion } from 'discord.js';
 import * as moment from 'moment';
 import 'moment-duration-format';
-import { CommandDecorators, Message, ResourceProxy, version as YAMDBFVersion } from 'yamdbf';
+import { CommandDecorators, Message, version as YAMDBFVersion } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 import { Util } from '../../util/Util';
@@ -24,7 +24,7 @@ export default class InfoCommand extends Command<Client>
 {
 	@localizable
 	@ReportError
-	public async action(message: Message, [res]: [ResourceProxy<S>]): Promise<CommandResult>
+	public async action(message: Message, [res]: [BetterResourceProxy]): Promise<CommandResult>
 	{
 		const owners: string = this.client.owner.map((owner: string) => `\`${this.client.users.get(owner).tag}\``).join(', ');
 		const uptime: string = (moment.duration(this.client.uptime) as any).format(res.CMD_INFO_UPTIME_FORMAT_STRING());

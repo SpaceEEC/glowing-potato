@@ -1,8 +1,8 @@
 import { GuildMember, Snowflake, TextChannel, VoiceConnection } from 'discord.js';
-import { Logger, logger, Message, ResourceProxy } from 'yamdbf';
+import { Logger, logger, Message } from 'yamdbf';
 import * as ytdl from 'ytdl-core';
 
-import { LocalizationStrings as S } from '../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../localization/LocalizationStrings';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { RavenUtil } from '../util/RavenUtil';
 import { Util } from '../util/Util';
@@ -87,7 +87,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 	 * @param {Song|Song[]} input Song(s) to add
 	 * @returns {Promise<boolean>}
 	 */
-	public async add(res: ResourceProxy<S>, { guild, channel, member }: Message, input: Song | Song[]): Promise<boolean>
+	public async add(res: BetterResourceProxy, { guild, channel, member }: Message, input: Song | Song[]): Promise<boolean>
 	{
 		let queue: Queue = this.get(guild.id);
 		if (queue)
