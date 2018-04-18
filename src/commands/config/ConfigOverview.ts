@@ -1,7 +1,7 @@
-import { CommandDecorators, GuildStorage, Message, ResourceProxy, Util } from 'yamdbf';
+import { CommandDecorators, GuildStorage, Message, Util } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 import { GuildConfigUtil } from '../../util/GuildConfigUtil';
@@ -19,7 +19,7 @@ export default class ConfigOverviewCommand extends Command<Client>
 {
 	@localizable
 	@ReportError
-	public async action(message: Message, [res]: [ResourceProxy<S>]): Promise<CommandResult>
+	public async action(message: Message, [res]: [BetterResourceProxy]): Promise<CommandResult>
 	{
 		const values: [string, boolean][] = await this._fetchAllValues(message.guild.storage);
 

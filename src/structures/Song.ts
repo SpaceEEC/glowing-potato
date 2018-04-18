@@ -123,7 +123,7 @@ export class Song
 			.setTimestamp()
 			.setImage(this.thumbnailURL)
 			.setColor(color)
-			.setFooter(this._queue.res[footer], this.member.client.user.displayAvatarURL);
+			.setFooter(this._queue.res[footer](), this.member.client.user.displayAvatarURL);
 	}
 
 	/**

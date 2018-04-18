@@ -1,9 +1,9 @@
-import { CommandDecorators, Message, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message } from 'yamdbf';
 
 import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -22,8 +22,8 @@ export default class LoopCommand extends Command<Client>
 {
 	// tslint:disable:only-arrow-functions no-shadowed-variable
 	@localizable
-	@using(async function(message: Message, [res, input]: [ResourceProxy<S>, string])
-		: Promise<[Message, [ResourceProxy<S>, boolean]]>
+	@using(async function(message: Message, [res, input]: [BetterResourceProxy, string])
+		: Promise<[Message, [BetterResourceProxy, boolean]]>
 	{
 		if (input && input[0])
 		{
@@ -41,7 +41,7 @@ export default class LoopCommand extends Command<Client>
 	@LogCommandRun
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable
-	public async action(message: Message, [res, state]: [ResourceProxy, boolean]): Promise<CommandResult>
+	public async action(message: Message, [res, state]: [BetterResourceProxy, boolean]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 

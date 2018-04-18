@@ -1,7 +1,7 @@
-import { CommandDecorators, Message, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 import { RichEmbed } from '../../structures/RichEmbed';
@@ -16,7 +16,7 @@ export default class InviteCommand extends Command<Client>
 {
 	@localizable
 	@ReportError
-	public async action(message: Message, [res]: [ResourceProxy<S>]): Promise<CommandResult>
+	public async action(message: Message, [res]: [BetterResourceProxy]): Promise<CommandResult>
 	{
 		const invite: string = await this.client.generateInvite([
 			'READ_MESSAGES',

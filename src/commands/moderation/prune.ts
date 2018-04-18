@@ -1,8 +1,8 @@
 import { Collection, TextChannel, User } from 'discord.js';
-import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 
@@ -54,7 +54,7 @@ export default class PruneCommand extends Command<Client>
 	})
 	@localizable
 	@ReportError
-	public async action(message: Message, [res, count, user]: [ResourceProxy<S>, number, User]): Promise<CommandResult>
+	public async action(message: Message, [res, count, user]: [BetterResourceProxy, number, User]): Promise<CommandResult>
 	{
 		// for tslint and typescript
 		if (!(message.channel instanceof TextChannel))

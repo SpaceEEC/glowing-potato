@@ -1,7 +1,7 @@
 import { DiscordAPIError, GuildChannel, GuildMember, TextChannel } from 'discord.js';
-import { GuildStorage, Lang, ListenerUtil, ResourceProxy } from 'yamdbf';
+import { GuildStorage, Lang, ListenerUtil } from 'yamdbf';
 
-import { LocalizationStrings as S } from '../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../localization/LocalizationStrings';
 import { GuildConfigChannels, GuildConfigStrings } from '../types/GuildConfigKeys';
 import { RavenUtil } from '../util/RavenUtil';
 import { Client } from './Client';
@@ -193,9 +193,10 @@ export class EventHandlers
 		}
 		else if (channel.permissionsFor(guildMe).has(['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))
 		{
-			const res: ResourceProxy<S> = Lang.createResourceProxy<S>(
+			const res: BetterResourceProxy = Lang.createResourceProxy(
 				await this._client.storage.guilds.get(newMember.guild.id).settings.get('lang')
-				|| this._client.defaultLang);
+				|| this._client.defaultLang,
+			) as BetterResourceProxy;
 
 			if (oldMember.voiceChannel !== newMember.voiceChannel)
 			{

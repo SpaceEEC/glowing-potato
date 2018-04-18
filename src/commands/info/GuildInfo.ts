@@ -13,10 +13,10 @@ import {
 	SnowflakeUtil,
 } from 'discord.js';
 import * as moment from 'moment';
-import { CommandDecorators, Message, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 
@@ -35,7 +35,7 @@ export default class GuildInfo extends Command<Client>
 {
 	@localizable
 	@ReportError
-	public async action(message: Message, [res, input]: [ResourceProxy<S>, string]): Promise<CommandResult>
+	public async action(message: Message, [res, input]: [BetterResourceProxy, string]): Promise<CommandResult>
 	{
 		try
 		{
@@ -55,7 +55,7 @@ export default class GuildInfo extends Command<Client>
 		}
 	}
 
-	private _sendFullGuild(message: Message, res: ResourceProxy<S>, guild: Guild): RichEmbed
+	private _sendFullGuild(message: Message, res: BetterResourceProxy, guild: Guild): RichEmbed
 	{
 		const channels: {
 			// just for typescript
@@ -134,7 +134,7 @@ export default class GuildInfo extends Command<Client>
 		return embed;
 	}
 
-	private _sendPartialGuild(message: Message, res: ResourceProxy<S>, { channel, guild, memberCount, presenceCount }:
+	private _sendPartialGuild(message: Message, res: BetterResourceProxy, { channel, guild, memberCount, presenceCount }:
 		{
 			channel: PartialGuildChannel,
 			guild: PartialGuild,
