@@ -1,9 +1,10 @@
-import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
 
 import { expectConfigOption, resolveConfigOption } from '../../decorators/configOptions';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { ConfigCommand } from '../../structures/ConfigCommand';
+import { CommandResult, ConfigCommand } from '../../structures/ConfigCommand';
 import { GuildConfigStrings, GuildConfigType } from '../../types/GuildConfigKeys';
 
 const { callerPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
@@ -25,7 +26,7 @@ export default class LeaveMessageCommand extends ConfigCommand<Client>
 	@localizable
 	@ReportError
 	public async action(message: Message, [res, option, value]
-		: [ResourceLoader, 'get' | 'set' | 'reset', string | undefined]): Promise<void>
+		: [ResourceProxy<S>, 'get' | 'set' | 'reset', string | undefined]): Promise<CommandResult>
 	{
 		return this[option](message, res, GuildConfigStrings.LEAVEMESSAGE, GuildConfigType.STRING, value);
 	}

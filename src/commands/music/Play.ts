@@ -1,10 +1,12 @@
 import { Collection, Permissions, Snowflake, VoiceChannel } from 'discord.js';
-import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
 
+import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
 import { RichEmbed } from '../../structures/RichEmbed';
 import { Song } from '../../structures/Song';
@@ -48,9 +50,10 @@ export default class PlayCommand extends Command<Client>
 		'<...Query>': 'String',
 	}))
 	@localizable
+	@LogCommandRun
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable object-literal-sort-keys
-	public async action(message: Message, [res, limit, query]: [ResourceLoader, number, string]): Promise<void>
+	public async action(message: Message, [res, limit, query]: [ResourceProxy<S>, number, string]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 		let voiceChannel: VoiceChannel;
@@ -60,33 +63,33 @@ export default class PlayCommand extends Command<Client>
 			voiceChannel = message.member.voiceChannel;
 			if (!voiceChannel)
 			{
-				return message.channel.send(res('MUSIC_NOT_IN_VOICECHANNEL'))
-					.then((mes: Message) => void mes.delete(1e4))
-					.catch(() => undefined);
+				return message.channel.send(res.MUSIC_NOT_IN_VOICECHANNEL())
+					.then((mes: Message) => mes.delete(1e4))
+					.catch(() => null);
 			}
 
 			const permissions: Permissions = voiceChannel.permissionsFor(message.guild.me);
 			if (!permissions.has('CONNECT'))
 			{
-				return message.channel.send(res('MUSIC_NO_CONNECT'))
-					.then((mes: Message) => void mes.delete(1e4))
-					.catch(() => undefined);
+				return message.channel.send(res.MUSIC_NO_CONNECT())
+					.then((mes: Message) => mes.delete(1e4))
+					.catch(() => null);
 			}
 			if (!permissions.has('SPEAK'))
 			{
-				return message.channel.send(res('MUSIC_NO_SPEAK'))
-					.then((mes: Message) => void mes.delete(1e4))
-					.catch(() => undefined);
+				return message.channel.send(res.MUSIC_NO_SPEAK())
+					.then((mes: Message) => mes.delete(1e4))
+					.catch(() => null);
 			}
 		}
 		else if (!queue.voiceChannel.members.has(message.author.id))
 		{
-			return message.channel.send(res('CMD_PLAY_DIFFERENT_CHANNEL', { channel: queue.voiceChannel.name }))
-				.then((mes: Message) => void mes.delete(1e4))
-				.catch(() => undefined);
+			return message.channel.send(res.CMD_PLAY_DIFFERENT_CHANNEL({ channel: queue.voiceChannel.name }))
+				.then((mes: Message) => mes.delete(1e4))
+				.catch(() => null);
 		}
 
-		const fetchMessage: Message = await message.channel.send(res('CMD_PLAY_FETCHING_MESSAGE')) as Message;
+		const fetchMessage: Message = await message.channel.send(res.CMD_PLAY_FETCHING_MESSAGE()) as Message;
 
 		const video: Video = await YouTubeUtil.getVideo(query);
 		this.client.logger.debug('PlayCommand | video', video ? 'found' : 'not found');
@@ -109,18 +112,18 @@ export default class PlayCommand extends Command<Client>
 
 			if (toAdd) return this._validateAndAdd(res, fetchMessage, message, queue, toAdd);
 
-			return message.channel.send(res('CMD_ABORTING'))
-				.then((mes: Message) => void mes.delete(1e4))
-				.catch(() => undefined);
+			return message.channel.send(res.CMD_ABORTING())
+				.then((mes: Message) => mes.delete(1e4))
+				.catch(() => null);
 		}
 
-		return fetchMessage.edit(res('CMD_PLAY_NOTHING_FOUND'))
-			.then((mes: Message) => void mes.delete(1e4))
-			.catch(() => undefined);
+		return fetchMessage.edit(res.CMD_PLAY_NOTHING_FOUND())
+			.then((mes: Message) => mes.delete(1e4))
+			.catch(() => null);
 	}
 
 	private async _validateAndAdd(
-		res: ResourceLoader,
+		res: ResourceProxy<S>,
 		fetchMessage: Message,
 		message: Message,
 		queue: Queue,
@@ -136,15 +139,16 @@ export default class PlayCommand extends Command<Client>
 			{
 				if (!this._validate(video, queue))
 				{
-					songs.push(new Song(video, message.member));
+					songs.push(new Song(this.client, video, message.member));
 					++success;
 				}
 			}
 
 			if (!success)
 			{
-				return message.channel.send(res('CMD_PLAY_NOTHING_QUALIFIED'))
-					.then((m: Message) => void m.delete(1e4));
+				return message.channel.send(res.CMD_PLAY_NOTHING_QUALIFIED())
+					.then((m: Message) => m.delete(1e4))
+					.catch(() => null);
 			}
 
 			const fullLength: number = +(queue && queue.reduce((val: number, cur: Song) => val += cur.length, 0))
@@ -155,64 +159,64 @@ export default class PlayCommand extends Command<Client>
 
 			if (!first)
 			{
-				return fetchMessage.edit('', {
-					embed: new RichEmbed()
+				return fetchMessage.edit('',
+					new RichEmbed()
 						.setAuthor(lastSong.username, lastSong.avatarURL)
 						.setColor(0xFFFF00)
-						.setFooter(res('CMD_PLAY_VALIDATE_FOOTER'), this.client.user.avatarURL)
-						.setDescription(res('CMD_PLAY_VALIDATE_DESCRIPTION',
+						.setFooter(res.CMD_PLAY_VALIDATE_FOOTER(), this.client.user.avatarURL)
+						.setDescription(res.CMD_PLAY_VALIDATE_DESCRIPTION(
 							{
 								added: songs.length.toLocaleString(),
 								length: Util.timeString(fullLength),
 								requested: input.length.toLocaleString(),
 							},
 						)),
-				}).then((m: Message) => void m.delete(1e4));
+				).then(() => fetchMessage.delete(1e4))
+					.catch(() => null);
 			}
 			return fetchMessage.delete()
 				.then(() => undefined)
 				.catch(() => null);
 		}
 
-		const failed: string = this._validate(input, queue);
+		const failed: S = this._validate(input, queue);
 		if (failed)
 		{
-			return fetchMessage.edit(res(failed), { embed: null })
+			return fetchMessage.edit(res[failed], { embed: null })
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
 
-		const song: Song = new Song(input, message.member);
+		const song: Song = new Song(this.client, input, message.member);
 		const first: boolean = await this.client.musicPlayer.add(res, message, song);
 
 		if (!first)
 		{
-			return fetchMessage.edit('', { embed: song.embed(SongEmbedType.ADDED) })
-				.then((m: Message) => m.delete(1e4))
+			return fetchMessage.edit('', song.embed(SongEmbedType.ADDED))
+				.then(() => fetchMessage.delete(1e4))
 				.catch(() => null);
 		}
 
 		return fetchMessage.delete()
-			.then((m: Message) => m.delete(1e4))
 			.catch(() => null);
 	}
 
-	private _validate(video: Video, queue: Queue): string
+	private _validate(video: Video, queue: Queue): S
 	{
 		if (queue && queue.some((song: Song) => song.id === video.id))
 		{
-			return 'CMD_PLAY_VALIDATE_ALREADY_QUEUED';
+			return S.CMD_PLAY_VALIDATE_ALREADY_QUEUED;
 		}
-		if (video.durationSeconds > 36e2)
+		if (video.durationSeconds > 72e2)
 		{
-			return 'CMD_PLAY_VALIDATE_TOO_LONG';
+			return S.CMD_PLAY_VALIDATE_TOO_LONG;
 		}
 
 		return null;
 	}
 
 	private async _pick(
-		res: ResourceLoader,
+		res: ResourceProxy<S>,
 		message: Message,
 		videos: Video[],
 		statusMessage: Message,
@@ -226,8 +230,7 @@ export default class PlayCommand extends Command<Client>
 		{
 			if (message.deletable)
 			{
-				message.delete()
-					.catch(() => null);
+				message.delete().catch(() => null);
 			}
 
 			return null;
@@ -236,12 +239,12 @@ export default class PlayCommand extends Command<Client>
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x9370DB).setTitle(video.title)
 			.setImage(`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`)
-			.setDescription(res('CMD_PLAY_PICK_DESCRIPTION',
+			.setDescription(res.CMD_PLAY_PICK_DESCRIPTION(
 				{
-					length: video.durationSeconds ? Util.timeString(video.durationSeconds) : 'Livestream',
+					length: video.durationSeconds ? Util.timeString(video.durationSeconds) : S.MUSIC_LIVESTREAM,
 				},
 			))
-			.setFooter(res('CMD_PLAY_PICK_FOOTER',
+			.setFooter(res.CMD_PLAY_PICK_FOOTER(
 				{
 					current: (index + 1).toLocaleString(),
 					total: videos.length.toLocaleString(),
@@ -250,8 +253,8 @@ export default class PlayCommand extends Command<Client>
 			message.author.displayAvatarURL);
 
 		statusMessage = statusMessage
-			? await statusMessage.edit(message.author.toString(), { embed }).catch(() => null)
-			: await message.channel.send(message.author.toString(), { embed }).catch(() => null);
+			? await statusMessage.edit(message.author.toString(), embed).catch(() => null)
+			: await message.channel.send(message.author.toString(), embed).catch(() => null);
 
 		const response: Message = await message.channel.awaitMessages(
 			(m: Message) => m.author.id === message.author.id,
@@ -259,13 +262,14 @@ export default class PlayCommand extends Command<Client>
 		).then((collected: Collection<Snowflake, Message>) => collected.first());
 		if (response && response.deletable) response.delete().catch(() => null);
 
-		if (!response || !['y', 'n'].includes(response.content.split(' ')[0].toLowerCase()))
+		const answer: boolean = response ? Util.resolveBoolean(response.content.split(' ')[0]) : null;
+		if (answer === null)
 		{
 			statusMessage.delete().catch(() => null);
 			return null;
 		}
 
-		if (response.content.split(' ')[0].toLowerCase() === 'n')
+		if (!answer)
 		{
 			return this._pick(res, message, videos, statusMessage, ++index);
 		}

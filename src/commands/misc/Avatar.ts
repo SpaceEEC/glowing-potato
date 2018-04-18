@@ -1,9 +1,9 @@
-import { FileOptions, RichEmbed, User } from 'discord.js';
+import { Attachment, RichEmbed, User } from 'discord.js';
 import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 
 const { clientPermissions, desc, group, guildOnly, name, usage, using } = CommandDecorators;
 const { expect, resolve } = Middleware;
@@ -19,7 +19,7 @@ export default class AvatarCommand extends Command<Client>
 	@using(resolve({ '<User>': 'User' }))
 	@using(expect({ '<User>': 'User' }))
 	@ReportError
-	public async action(message: Message, [user]: [User]): Promise<void>
+	public async action(message: Message, [user]: [User]): Promise<CommandResult>
 	{
 		message.channel.startTyping();
 
@@ -27,19 +27,23 @@ export default class AvatarCommand extends Command<Client>
 			? 'avatar.gif'
 			: 'avatar.png';
 
-		const fileOptions: FileOptions = {
-			attachment: user.displayAvatarURL,
-			name: filename,
-		};
+		try
+		{
+			await message.channel.send(
+				{
+					embed:
+						new RichEmbed()
+							.setTitle(`${user.tag} (${user.id})`)
+							.setColor(message.member.displayColor)
+							.setImage(`attachment://${filename}`),
+					files: [new Attachment(user.displayAvatarURL, filename)],
+				},
+			);
+		}
+		finally
+		{
+			message.channel.stopTyping();
+		}
 
-		return message.channel.send(
-			{
-				embed: new RichEmbed()
-					.setColor(message.member.displayColor)
-					.attachFile(fileOptions)
-					.setImage(`attachment://${filename}`),
-			})
-			.then(() => message.channel.stopTyping())
-			.catch(() => message.channel.stopTyping());
 	}
 }

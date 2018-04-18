@@ -1,8 +1,10 @@
-import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
 
+import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
 import { RichEmbed } from '../../structures/RichEmbed';
 import { Song } from '../../structures/Song';
@@ -27,15 +29,16 @@ export default class QueueCommand extends Command<Client>
 		return [message, [1]];
 	})
 	@localizable
+	@LogCommandRun
 	@ReportError
-	public async action(message: Message, [res, page]: [ResourceLoader, number]): Promise<void>
+	public async action(message: Message, [res, page]: [ResourceProxy<S>, number]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 
 		if (!queue || !queue.length)
 		{
 			return message.channel
-				.send(res('MUSIC_QUEUE_NON_EXISTENT'))
+				.send(res.MUSIC_QUEUE_NON_EXISTENT())
 				.then((m: Message) => m.delete(1e4))
 				.catch(() => null);
 		}
@@ -55,14 +58,14 @@ export default class QueueCommand extends Command<Client>
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0x0800ff)
 			.setTitle(
-			res('CMD_QUEUE_EMBED_TITLE',
+			res.CMD_QUEUE_EMBED_TITLE(
 				{
 					queueLength,
 					songs: queue.length.toLocaleString(),
 				},
 			))
 			.setFooter(
-			res('CMD_QUEUE_EMBED_FOOTER',
+			res.CMD_QUEUE_EMBED_FOOTER(
 				{
 					maxPage: maxPage.toLocaleString(),
 					page: page.toLocaleString(),
@@ -76,10 +79,10 @@ export default class QueueCommand extends Command<Client>
 
 			// ugly string builder start
 			let pageOne: string = '';
-			if (loop) pageOne += res('CMD_QUEUE_LOOP_ENABLED');
-			if (playing) pageOne += res('CMD_QUEUE_CUURENTLY_PLAYING');
-			else pageOne += res('CMD_QUEUE_CURRENTLY_PAUSED');
-			pageOne += res('CMD_QUEUE_CURRENT_TIME',
+			if (loop) pageOne += res.CMD_QUEUE_LOOP_ENABLED();
+			if (playing) pageOne += res.CMD_QUEUE_CUURENTLY_PLAYING();
+			else pageOne += res.CMD_QUEUE_CURRENTLY_PAUSED();
+			pageOne += res.CMD_QUEUE_CURRENT_TIME(
 				{
 					current: Util.timeString(currentTime),
 					left: currentSong.timeLeft(currentTime),
@@ -91,7 +94,7 @@ export default class QueueCommand extends Command<Client>
 			if (currentPage.length !== 1)
 			{
 				pageOne += '\u200b\n\n';
-				pageOne += res('CMD_QUEUE_QUEUE');
+				pageOne += res.CMD_QUEUE_QUEUE();
 			}
 			// ugly string builder end
 
@@ -100,12 +103,12 @@ export default class QueueCommand extends Command<Client>
 		}
 		else if (queue.loop)
 		{
-			currentPage[0] = res('CMD_QUEUE_LOOP_ENABLED', { page: currentPage[0] });
+			currentPage[0] = res.CMD_QUEUE_LOOP_ENABLED({ page: currentPage[0] });
 		}
 
 		embed.setDescription(currentPage);
 
-		return message.channel.send({ embed })
+		return message.channel.send(embed)
 			.then((m: Message) => m.delete(3e4))
 			.catch(() => null);
 	}

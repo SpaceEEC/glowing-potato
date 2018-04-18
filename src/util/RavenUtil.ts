@@ -3,9 +3,6 @@ import { CaptureOptions, Client as Raven } from 'raven';
 import { inspect, promisify } from 'util';
 import { LogData, Logger, LogLevel } from 'yamdbf';
 
-import { Config } from '../types/config';
-
-const { logLevel, dsn }: Config = require('../../config.json');
 const { version }: { version: string } = require('../../package.json');
 
 /**
@@ -23,29 +20,27 @@ export class RavenUtil
 	{
 		Logger.instance().addTransport({
 			level: LogLevel.WARN,
-			transport: ({ timestamp, type, tag, text }: LogData) =>
+			transport: ({ type, tag, text }: LogData) =>
 			{
 				// only sent to raven on non-dev
-				if (logLevel === LogLevel.DEBUG) return;
+				if (Number(process.env.LOGLEVEL) === LogLevel.DEBUG) return;
+
+				if (!['WARN', 'ERROR'].includes(type)) return;
 
 				// ignore raven log messages
-				if (tag === 'Raven') return;
+				if (['Raven', 'PromiseRejection'].includes(tag)) return;
 
-				// those colors
-				if (type.includes('WARN'))
-				{
-					RavenUtil._captureMessage(text, { level: 'warning', tags: { label: tag } })
-						.then((eventId: string) => Logger.instance().info('Raven', `Logged warn; eventId: ${eventId}`))
-						.catch((error: Error) =>
-						{
-							Logger.instance().error(
-								'Raven',
-								'An error occured while logging the error:',
-								inspect(error, true, Infinity, true),
-							);
-						},
-					);
-				}
+				RavenUtil._captureMessage(text, { level: type === 'WARN' ? 'warning' : 'error', tags: { label: tag } })
+					.then((eventId: string) => Logger.instance().info('Raven', `Logged warn; eventId: ${eventId}`))
+					.catch((error: Error) =>
+					{
+						Logger.instance().error(
+							'Raven',
+							'An error occured while logging the error:',
+							inspect(error),
+						);
+					},
+				);
 			},
 		});
 	}
@@ -62,46 +57,83 @@ export class RavenUtil
 	public static async error(label: string, error: Error, ...rest: string[]): Promise<void>;
 	public static async error(label: string, error: Error, ...rest: any[]): Promise<void>
 	{
-		Logger.instance().error(label, inspect(error, true, Infinity, true));
+		Logger.instance().error(label, inspect(error));
 
 		// only sent to raven on non-dev
-		if (logLevel === LogLevel.DEBUG) return;
+		if (Number(process.env.LOGLEVEL) === LogLevel.DEBUG) return;
 
-		const message: Message = rest[0];
-		if (message instanceof Message)
+		return this._raven.context(async () =>
 		{
-			rest = rest.slice(1);
+			const message: Message = rest[0];
+			if (message instanceof Message)
+			{
+				rest = rest.slice(1);
 
-			this._raven.captureBreadcrumb({
-				category: 'Message',
-				data:
-				{
-					author: `${message.author.tag} (${message.author.id})`,
-					channel: `${message.channel instanceof GuildChannel ? message.channel.name : 'DM'} (${message.channel.id})`,
-					content: message.content,
-					guild: message.guild ? `${message.guild.name} (${message.guild.id})` : '',
-				},
-				message: 'Info about the sent message',
-			});
+				this._raven.captureBreadcrumb({
+					category: 'Message',
+					data:
+					{
+						author: `${message.author.tag} (${message.author.id})`,
+						channel: `${message.channel instanceof GuildChannel ? message.channel.name : 'DM'} (${message.channel.id})`,
+						content: message.content,
+						guild: message.guild ? `${message.guild.name} (${message.guild.id})` : '',
+					},
+					message: 'Info about the sent message',
+				});
+			}
+
+			try
+			{
+				const eventId: string = await RavenUtil._captureException(
+					error,
+					{
+						extra: { rest: rest.join(' ') },
+						tags: { label },
+					},
+				);
+				Logger.instance().info('Raven', `Logged error; eventId: ${eventId}`);
+			}
+			catch (ravenError)
+			{
+				Logger.instance().error(
+					'Raven',
+					'An error occured while logging the error:',
+					inspect(ravenError),
+				);
+			}
+		});
+	}
+
+	/**
+	 * Sends a message to sentry, allows utilizing of CaptureOptions
+	 * @param {string | undefined} label Relevant label, can be part of options object
+	 * @param {string} text Text to log
+	 * @param {CaptureOptions} [options={}] Capture options to provide more details
+	 */
+	public static async captureMessage(
+		label: string | undefined,
+		text: string,
+		options: CaptureOptions = {})
+		: Promise<void>
+	{
+		if (label !== undefined)
+		{
+			(options.tags || (options.tags = {})).label = label;
 		}
 
 		try
 		{
-			const eventId: string = await RavenUtil._captureException(
-				error,
-				{
-					extra: { rest: rest.join(' ') },
-					tags: { label },
-				},
+			await RavenUtil._captureMessage(
+				text,
+				options,
 			);
-			Logger.instance().info('Raven', 'Logged error; eventId:', eventId);
 		}
 		catch (ravenError)
 		{
 			Logger.instance().error(
 				'Raven',
 				'An error occured while logging the error:',
-				inspect(ravenError, true, Infinity, true),
+				inspect(ravenError),
 			);
 		}
 	}
@@ -112,7 +144,7 @@ export class RavenUtil
 	 * @static
 	 * @readonly
 	 */
-	private static readonly _raven: Raven = new Raven(dsn,
+	private static readonly _raven: Raven = new Raven(process.env.DSN,
 		{
 			captureUnhandledRejections: true,
 			release: version,

@@ -1,7 +1,8 @@
-import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
 
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 
 const { aliases, desc, name, usage, group, callerPermissions, localizable, using } = CommandDecorators;
 const { expect, resolve } = Middleware;
@@ -17,9 +18,9 @@ export default class WhitelistCommand extends Command<Client>
 	@using(resolve({ '<user>': 'User' }))
 	@using(expect({ '<user>': 'User' }))
 	@localizable
-	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
+	public async action(message: Message, [res]: [ResourceProxy<S>]): Promise<CommandResult>
 	{
-		await message.channel.send(res('CMD_WHITELIST_DEPRECATED',
+		await message.channel.send(res.CMD_WHITELIST_DEPRECATED(
 			{
 				prefix: await message.guild.storage.settings.get('prefix'),
 			},

@@ -5,4 +5,4 @@ Dieser Befehl kann nur von Membern der music role (`{{ role }}`) verwendet werde
 Dieser Befehl kann nur im music channel verwendet werden: {{ channel}}!
 
 [DECORATORS_MUSIC_VOICE_CHANNEL]
-This Befehl kann nur von Membern in meinem voice channel verwendet werden: {{ channel }}!
+Dieser Befehl kann nur von Membern in meinem voice channel verwendet werden: {{ channel }}!

@@ -1,15 +1,15 @@
 {
   "name": "glowing-potato",
-  "version": "0.8.2",
+  "version": "0.8.4",
   "description": "Yet another Discord bot",
   "main": "bin/index",
   "scripts": {
-    "prebuild": "npm run lint",
-    "lint": "npm run lint:gulp",
+    "prebuild": "yarn lint",
+    "lint": "yarn lint:gulp",
     "lint:gulp": "gulp lint",
-    "build": "npm run build:gulp",
+    "build": "yarn build:gulp",
     "build:gulp": "gulp build",
-    "install": "npm run build:gulp"
+    "install": "yarn build:gulp"
   },
   "repository": {
     "type": "git",
@@ -23,34 +23,33 @@
   "author": "SpaceEEC",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "github:hydrabolt/discord.js#11.1-dev",
-    "ffmpeg-binaries": "^3.2.2-3",
-    "moment": "^2.18.1",
-    "moment-duration-format": "^1.3.0",
-    "node-opus": "^0.2.6",
-    "pg": "^6.4.1",
-    "raven": "^2.1.1",
-    "sequelize": "^4.4.2",
-    "yamdbf": "github:zajrik/yamdbf",
+    "discord.js": "*",
+    "moment": "^2.22.1",
+    "moment-duration-format": "^2.2.2",
+    "node-opus": "^0.2.7",
+    "pg": "^6.4.2",
+    "raven": "^2.5.0",
+    "sequelize": "*",
+    "snekfetch": "^3.6.4",
+    "yamdbf": "zajrik/yamdbf#indev",
     "yamdbf-anilist-unofficial": "github:spaceeec/yamdbf-anilist-unofficial",
     "yamdbf-command-usage": "github:zajrik/yamdbf-command-usage",
     "yamdbf-lang-german": "github:spaceeec/yamdbf-lang-german",
-    "yamdbf-league": "github:spaceeec/yamdbf-league",
-    "ytdl-core": "^0.14.4"
+    "ytdl-core": "^0.20.2"
   },
   "devDependencies": {
-    "@types/node": "^8.0.19",
-    "@types/raven": "^1.2.4",
-    "@types/sequelize": "^4.0.67",
+    "@types/node": "^9.6.5",
+    "@types/raven": "^2.1.5",
+    "@types/sequelize": "*",
     "@types/snekfetch": "^3.1.0",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
-    "gulp-sourcemaps": "^2.6.0",
-    "gulp-tslint": "^8.1.1",
-    "gulp-typescript": "^3.2.1",
-    "tslint": "^5.5.0",
-    "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.4.2"
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-tslint": "^8.1.3",
+    "gulp-typescript": "^4.0.2",
+    "tslint": "^5.9.1",
+    "tslint-eslint-rules": "^5.1.0",
+    "typescript": "^2.8.1"
   },
   "engines": {
     "node": ">=8.0.0"

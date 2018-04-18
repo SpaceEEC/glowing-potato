@@ -1,11 +1,12 @@
 import { RichEmbed, Util as DJSUtil, version as DJSVersion } from 'discord.js';
 import * as moment from 'moment';
 import 'moment-duration-format';
-import { CommandDecorators, Message, ResourceLoader, version as YAMDBFVersion } from 'yamdbf';
+import { CommandDecorators, Message, ResourceProxy, version as YAMDBFVersion } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { Util } from '../../util/Util';
 
 const { aliases, clientPermissions, desc, group, guildOnly, name, usage, localizable } = CommandDecorators;
@@ -23,18 +24,18 @@ export default class InfoCommand extends Command<Client>
 {
 	@localizable
 	@ReportError
-	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
+	public async action(message: Message, [res]: [ResourceProxy<S>]): Promise<CommandResult>
 	{
 		const owners: string = this.client.owner.map((owner: string) => `\`${this.client.users.get(owner).tag}\``).join(', ');
-		const uptime: string = (moment.duration(this.client.uptime) as any).format(res('CMD_INFO_UPTIME_FORMAT_STRING'));
+		const uptime: string = (moment.duration(this.client.uptime) as any).format(res.CMD_INFO_UPTIME_FORMAT_STRING());
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(0xffa500)
-			.setTitle(res('CMD_INFO_TITLE'))
-			.addField(res('CMD_INFO_UPTIME_TITLE'),
+			.setTitle(res.CMD_INFO_TITLE())
+			.addField(res.CMD_INFO_UPTIME_TITLE(),
 			`• ${uptime}`,
 			false)
-			.addField(res('CMD_INFO_VERSIONS'),
+			.addField(res.CMD_INFO_VERSIONS(),
 			[
 				'• __**[discord.js](https://github.com/hydrabolt/discord.js)**__',
 				`  Version: v${DJSVersion}`,
@@ -49,27 +50,27 @@ export default class InfoCommand extends Command<Client>
 				` Version: v${version}`,
 			],
 			true)
-			.addField(res('CMD_INFO_UPTIME_MEMORY_USAGE_TITLE'),
+			.addField(res.CMD_INFO_UPTIME_MEMORY_USAGE_TITLE(),
 			`• ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`, true)
-			.addField(res('CMD_INFO_OWNER_TITLE'),
+			.addField(res.CMD_INFO_OWNER_TITLE(),
 			`• ${owners}`, true);
 
 		if (this.client.voiceConnections.size)
 		{
-			embed.addField(res('CMD_INFO_VOICE_CONNECTIONS_TITLE'), this.client.voiceConnections.size, false);
+			embed.addField(res.CMD_INFO_VOICE_CONNECTIONS_TITLE(), this.client.voiceConnections.size, false);
 		}
 
-		embed.addField(res('CMD_INFO_RECENT_CHANGES'), await this._formatCommits())
+		embed.addField(res.CMD_INFO_RECENT_CHANGES(), await this._formatCommits())
 			.setTimestamp()
 			.setThumbnail(this.client.user.displayAvatarURL)
 			.setFooter(message.cleanContent, message.author.displayAvatarURL);
 
-		return message.channel.send({ embed })
-			.then(() => undefined);
+		return embed;
 	}
 
 	private async _formatCommits(): Promise<string>
 	{
+		// TODO: Get moment to stop complaining
 		const { stdout }: { stdout: string } = await Util.execAsync(
 			'git log --pretty=format:"%h,%an,%ad,%s" --date=iso8601 | head -n 5',
 			{ encoding: 'utf8' },
@@ -78,11 +79,11 @@ export default class InfoCommand extends Command<Client>
 		const commits: string[] = [];
 		for (const commit of stdout.split('\n').slice(0, -1))
 		{
-			const [hash, author, date, ...message] = commit.split(',');
+			const [hash, , date, ...message] = commit.split(',');
 			commits.push(
 				[
 					`• [${hash}](https://github.com/SpaceEEC/glowing-potato/commit/${hash})`,
-					` - ${author}, ${moment(date).fromNow()}:\n`,
+					` - ${moment(date).fromNow()}:\n`,
 					`\`${DJSUtil.escapeMarkdown(message.join(','), undefined, true)}\``,
 				].join(''),
 			);

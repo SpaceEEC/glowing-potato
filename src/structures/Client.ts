@@ -12,17 +12,13 @@ import {
 	Providers,
 } from 'yamdbf';
 import { AniList } from 'yamdbf-anilist-unofficial';
-import { League } from 'yamdbf-league';
 
-import { Config } from '../types/config';
 import { RavenUtil } from '../util/RavenUtil';
 import { EventHandlers } from './EventHandlers';
 import { MusicPlayer } from './MusicPlayer';
 import { RichEmbed } from './RichEmbed';
 
 const { on, once } = ListenerUtil;
-
-const { anilist, database, logLevel, token, ownerID, ritoToken }: Config = require('../../config.json');
 
 /**
  * The central client for this bot
@@ -45,7 +41,7 @@ export class Client extends YAMDBFClient
 	 * @readonly
 	 * @private
 	 */
-	private readonly _eventHandlers: EventHandlers;
+	protected readonly _eventHandlers: EventHandlers;
 
 	/**
 	 * Instantiates the client
@@ -53,39 +49,39 @@ export class Client extends YAMDBFClient
 	 */
 	public constructor()
 	{
-		super({
-			commandsDir: join(__dirname, '..', 'commands'),
-			localeDir: join(__dirname, '..', 'localization'),
-			owner: [ownerID],
-			pause: true,
-			plugins: [
-				'lang-german',
-				'command-usage',
-				AniList(anilist),
-				League(ritoToken, {
-					emojis: {
-						level4: '<:level4:335427521078231051> ',
-						level5: '<:level5:335427521900445696> ',
-						level6: '<:level6:335427522332459008> ',
-						level7: '<:level7:335427524429348866> ',
-					},
-				}),
-			],
-			provider: Providers.PostgresProvider(database),
-			token,
-			unknownCommandError: false,
-		},
+		super(
+			{
+				commandsDir: join(__dirname, '..', 'commands'),
+				localeDir: join(__dirname, '..', 'localization'),
+				owner: [process.env.OWNER_ID],
+				pause: true,
+				plugins:
+					[
+						'lang-german',
+						'command-usage',
+						AniList(
+							{
+								clientId: process.env.ANILIST_ID,
+								clientSecret: process.env.ANILIST_SECRET,
+							},
+						),
+					],
+				provider: Providers.PostgresProvider(process.env.DATABASE),
+				token: process.env.TOKEN,
+				unknownCommandError: false,
+			},
 			{
 				disableEveryone: true,
 				disabledEvents: [
 					'CHANNEL_PINS_UPDATE',
 					'TYPING_START',
 				],
-				messageCacheMaxSize: 1,
+				messageCacheMaxSize: 10,
 			},
 		);
 
 		Lang.loadCommandLocalizationsFrom(join(__dirname, '..', 'localization'));
+		Lang.loadGroupLocalizationsFrom(join(__dirname, '..', 'localization'));
 
 		RavenUtil.init();
 
@@ -103,17 +99,16 @@ export class Client extends YAMDBFClient
 	public async _onPause(): Promise<void>
 	{
 		// ensure that own guild member is cached
-		const promises: Promise<GuildMember | this>[] = [];
+		const promises: Promise<GuildMember>[] = [];
 		for (const guild of this.guilds.values())
 		{
 			if (guild.me) continue;
 			promises.push(guild.fetchMember(this.user));
 		}
 
-		promises.push(
-			this.setDefaultSetting('prefix', '$'),
-			this.setDefaultSetting('volume', 2),
-		);
+		await this.setDefaultSetting('prefix', '$');
+		await this.setDefaultSetting('volume', 2);
+
 		await Promise.all(promises);
 		this.emit('continue');
 	}
@@ -147,7 +142,7 @@ export class Client extends YAMDBFClient
 	public _onCommand(name: string, args: any[], execTime: number, message: Message): void
 	{
 		// ingore dev environment and owner(s)
-		if (logLevel === LogLevel.DEBUG
+		if (Number(process.env.LOGLEVEL) === LogLevel.DEBUG
 			|| this.isOwner(message.author)) return;
 
 		const logChannel: TextChannel = this.channels.get('334843191545036800') as TextChannel;
@@ -168,7 +163,7 @@ export class Client extends YAMDBFClient
 			.setFooter(channel.type.toUpperCase(), this.user.displayAvatarURL)
 			.setTimestamp();
 
-		logChannel.send({ embed }).catch(() => null);
+		logChannel.send(embed).catch(() => null);
 	}
 
 	/**
@@ -208,7 +203,7 @@ export class Client extends YAMDBFClient
 			.setFooter(`Current guild count: ${this.guilds.size}`)
 			.setTimestamp();
 
-		return channel.send({ embed })
+		return channel.send(embed)
 			.then(() => undefined)
 			.catch((error: DiscordAPIError) =>
 			{
@@ -222,11 +217,23 @@ export class Client extends YAMDBFClient
 	 * @returns {Promise<void>} never resolves though
 	 * @private
 	 */
-	@once('disconnect')
-	public async _onDisconnect(event: any): Promise<void>
+	@once('disconnect', true)
+	public async _onDisconnect({ code, reason }: any, fatal: any): Promise<void>
 	{
-		await this.logger.warn('Disconnect', 'Fatal disconnect:', event.code, event.reason);
-		process.exit();
+		await RavenUtil.captureMessage(
+			'disconnect',
+			`WebSocket connection closed!`,
+			{
+				tags:
+					{
+						code,
+						fatal,
+						reason,
+					},
+			},
+		);
+
+		if (fatal) process.exit();
 	}
 
 	/**
@@ -237,21 +244,9 @@ export class Client extends YAMDBFClient
 	@once('ready')
 	public _onceReady(): void
 	{
-		(this as any).ws.connection.on('close',
-			(event: any) =>
-			{
-				this.logger.warn('discord.js | disconnect',
-					'Code:',
-					event.code,
-					'; Reason :',
-					event.reason || 'No reason',
-				);
-			},
-		);
-		(this as any).ws.connection.on('debug', (error: Error) =>
-		{
-			RavenUtil.error('discord.js | websocket', error);
-		});
+		(this as any).ws.connection
+			.on('close', (event: any) => this._onDisconnect(event, false))
+			.on('debug', RavenUtil.error.bind(RavenUtil, 'discord.js | WebSocket'));
 	}
 
 	/**

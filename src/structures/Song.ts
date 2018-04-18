@@ -5,6 +5,7 @@
 
 import { GuildMember, Util as DJSUtil } from 'discord.js';
 
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { SongEmbedOptions, songEmbedOptions } from '../types/SongEmbedOptions';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { Video } from '../types/Video';
@@ -20,28 +21,41 @@ export class Song
 {
 	/**
 	 * The name of this song
+	 * @readonly
 	 */
-	public name: string;
+	public readonly name: string;
 	/**
 	 * The ID of this song
+	 * @readonly
 	 */
-	public id: string;
+	public readonly id: string;
 	/**
 	 * The length of this song in seconds
+	 * @readonly
 	 */
-	public length: number;
+	public readonly length: number;
 	/**
 	 * The member that requested this song
+	 * @readonly
 	 */
-	public member: GuildMember;
+	public readonly member: GuildMember;
+
+	/**
+	 * The client that instantiated this Song
+	 * @private
+	 * @readonly
+	 */
+	private readonly _client: Client;
 
 	/**
 	 * Creates a new song from a video.
+	 * @param {Client} client The client that instantiates this Song
 	 * @param {Video} video The video
 	 * @param {GuildMember} member The requesting member
 	 */
-	public constructor(video: Video, member: GuildMember)
+	public constructor(client: Client, video: Video, member: GuildMember)
 	{
+		this._client = client;
 		this.name = DJSUtil.escapeMarkdown(video.title);
 		this.id = video.id;
 		this.length = video.durationSeconds;
@@ -71,7 +85,7 @@ export class Song
 
 		if ([SongEmbedType.PLAYING, SongEmbedType.NP].includes(type) && this._queue.loop)
 		{
-			description.push(this._queue.res('MUSIC_SONG_LOOP'));
+			description.push(this._queue.res.MUSIC_SONG_LOOP());
 		}
 
 		description.push(`**${descriptionPrefix}** [${this.name}](${this.url})`);
@@ -83,7 +97,7 @@ export class Song
 			const left: string = this.timeLeft(currentTime);
 			const current: string = Util.timeString(currentTime);
 			description.push(
-				this._queue.res(this.length ? 'MUSIC_SONG_NP_DESCRIPTION' : 'MUSIC_LIVESTREAM',
+				this._queue.res[this.length ? S.MUSIC_SONG_NP_DESCRIPTION : S.MUSIC_LIVESTREAM](
 					{
 						current,
 						left,
@@ -95,7 +109,7 @@ export class Song
 		else
 		{
 			description.push(
-				this._queue.res(this.length ? 'MUSIC_SONGS_GENERIC_DESCRIPTION' : 'MUSIC_LIVESTREAM',
+				this._queue.res[this.length ? S.MUSIC_SONGS_GENERIC_DESCRIPTION : S.MUSIC_LIVESTREAM](
 					{
 						length: this.lengthString,
 					},
@@ -109,7 +123,7 @@ export class Song
 			.setTimestamp()
 			.setImage(this.thumbnailURL)
 			.setColor(color)
-			.setFooter(this._queue.res(footer), this.member.client.user.displayAvatarURL);
+			.setFooter(this._queue.res[footer], this.member.client.user.displayAvatarURL);
 	}
 
 	/**
@@ -173,6 +187,6 @@ export class Song
 	 */
 	private get _queue(): Queue
 	{
-		return (this.member.client as Client).musicPlayer.get(this.member.guild.id);
+		return this._client.musicPlayer.get(this.member.guild.id);
 	}
 }

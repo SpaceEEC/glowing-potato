@@ -9,7 +9,7 @@ bin/
 old/
 
 #config and logs
-config.json
+pm2.json
 disconnects.log
 settings.sqlite
 

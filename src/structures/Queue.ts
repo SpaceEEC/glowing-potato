@@ -1,6 +1,7 @@
-import { StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
-import { Message, ResourceLoader } from 'yamdbf';
+import { Guild, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
+import { Logger, logger, Message, ResourceProxy } from 'yamdbf';
 
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { PaginatedPage } from '../types/PaginatedPage';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { RavenUtil } from '../util/RavenUtil';
@@ -32,7 +33,7 @@ export class Queue
 	 * Resource loader for this queue
 	 * @readonly
 	 */
-	public readonly res: ResourceLoader;
+	public readonly res: ResourceProxy<S>;
 
 	/**
 	 * The text channel this queue has been started
@@ -40,6 +41,19 @@ export class Queue
 	 */
 	public readonly textChannel: TextChannel;
 
+	/**
+	 * Reference to the client
+	 * @private
+	 * @readonly
+	 */
+	private readonly _client: Client;
+	/**
+	 * Proxied reference to the logger
+	 * @private
+	 * @readonly
+	 */
+	@logger('QUEUE')
+	private readonly _logger: Logger;
 	/**
 	 * Whether the loop is enabled
 	 * @private
@@ -63,20 +77,25 @@ export class Queue
 	private _timeout: NodeJS.Timer;
 
 	/**
-	 * Instantiates a new queue for this guild.
+	 * Instantiates a new queue for the guild the textchannel is in.
+	 * @param {Client} client
+	 * @param {ResourceProxy} res
 	 * @param {TextChannel} textChannel The text channel this queue should be bound to
 	 */
-	public constructor(res: ResourceLoader, textChannel: TextChannel)
+	public constructor(client: Client, res: ResourceProxy<S>, textChannel: TextChannel)
 	{
+		this._logger.debug(`(${textChannel.guild.id}) Instantiating queue`);
+
 		this.connection = null;
 		this.statusMessage = null;
 
 		this.res = res;
 		this.textChannel = textChannel;
 
+		this._client = client;
 		this._loop = false;
 		this._songs = [];
-		(textChannel.client as Client).storage.guilds.get(textChannel.guild.id).get('volume')
+		client.storage.guilds.get(textChannel.guild.id).get('volume')
 			.then((volume: number) => this._volume = volume || 2);
 	}
 
@@ -87,7 +106,7 @@ export class Queue
 	 */
 	public async emtpyChannel(empty: boolean): Promise<void>
 	{
-		(this.textChannel.client as Client).logger.debug('Queue | emptyChannel', String(empty));
+		this._logger.debug('EMPTYCHANNEL', `(${this.textChannel.guild.id})`, String(empty));
 
 		if (!empty)
 		{
@@ -103,13 +122,13 @@ export class Queue
 					if (this.statusMessage)
 					{
 						this.statusMessage = await this.statusMessage
-							.edit('', { embed })
+							.edit('', embed)
 							.catch(() => null);
 					}
 					else
 					{
 						this.statusMessage = await this.textChannel
-							.send({ embed })
+							.send(embed)
 							.catch(() => null);
 					}
 				}
@@ -126,14 +145,24 @@ export class Queue
 		if (this.statusMessage) this.statusMessage.delete().catch(() => null);
 
 		this.statusMessage = await this.textChannel
-			.send(this.res('MUSIC_EMPTY_TIMEOUT'))
+			.send(this.res.MUSIC_EMPTY_TIMEOUT())
 			.catch(() => null);
 
 		this._timeout = this.textChannel.client.setTimeout(() =>
 		{
 			if (this.statusMessage) this.statusMessage.delete().catch(() => null);
-			(this.textChannel.client as Client).musicPlayer.delete(this.textChannel.guild.id);
-			this.voiceChannel.leave();
+			this._client.musicPlayer.delete(this.textChannel.guild.id);
+			if (!this.voiceChannel)
+			{
+				if (this.textChannel.guild.voiceConnection)
+				{
+					this.textChannel.guild.voiceConnection.disconnect();
+				}
+			}
+			else
+			{
+				this.voiceChannel.leave();
+			}
 		}, 3e4);
 	}
 
@@ -186,7 +215,7 @@ export class Queue
 	public set volume(volume: number)
 	{
 		this._volume = volume;
-		(this.textChannel.client as Client).storage.guilds.get(this.textChannel.guild.id).set('volume', volume)
+		this._client.storage.guilds.get(this.textChannel.guild.id).set('volume', volume)
 			.catch((error: Error) => RavenUtil.error('Queue', error, 'While saving the volume of the queue'));
 
 		if (this.dispatcher) this.dispatcher.setVolumeLogarithmic(volume / 5);
@@ -204,7 +233,7 @@ export class Queue
 		{
 			const embed: RichEmbed = this._songs[0].embed(SongEmbedType.PLAYING);
 
-			this.statusMessage.edit('', { embed })
+			this.statusMessage.edit('', embed)
 				.then((m: Message) => this.statusMessage = m)
 				.catch(() => null);
 		}
@@ -218,7 +247,22 @@ export class Queue
 	{
 		if (!this.textChannel.guild.me)
 		{
-			(this.textChannel.client as Client).logger.warn('Queue | voiceChannel', 'Own guild member is not cached!');
+			const guild: Guild = this.textChannel.guild;
+
+			RavenUtil.captureMessage(
+				'Queue#voiceChannel',
+				'Own guild member is not cached!',
+				{
+					extra:
+					{
+						cachedMembersSize: guild.members.size,
+						isOwnMemberCached: !!guild.members.get(guild.client.user.id),
+						memberCount: guild.memberCount,
+						memberIDs: guild.members.keyArray(),
+					},
+				},
+			);
+
 			return null;
 		}
 

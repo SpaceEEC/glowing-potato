@@ -57,7 +57,7 @@ export class Util
 		const chunks: T[][] = [];
 		const length: number = Math.ceil(input.length / chunkSize);
 
-		for (let i: number = 0; i < length; ++i)
+		for (let i: number = 0; i < length; null)
 		{
 			chunks.push(input.slice(i * chunkSize, ++i * chunkSize));
 		}
@@ -84,6 +84,8 @@ export class Util
 		].join('');
 	}
 
+	// copy from
+	// https://github.com/Gawdl3y/discord.js-commando/blob/master/src/util.js#L6-L17
 	/**
 	 * Paginates the passed array.
 	 * @param {T[]} items The original items

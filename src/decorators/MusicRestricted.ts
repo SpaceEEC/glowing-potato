@@ -1,6 +1,7 @@
 import { Role } from 'discord.js';
-import { Lang, Message, MiddlewareFunction, ResourceLoader } from 'yamdbf';
+import { Lang, Message, MiddlewareFunction, ResourceProxy } from 'yamdbf';
 
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { Client } from '../structures/Client';
 import { Command } from '../structures/Command';
 import { Queue } from '../structures/Queue';
@@ -16,13 +17,15 @@ export function musicRestricted(voiceChannel: boolean = false): MiddlewareFuncti
 	// tslint:disable-next-line:only-arrow-functions
 	return async function(this: Command<Client>, message: Message, args: string[]): Promise<[Message, any[]]>
 	{
+		if (this.client.isOwner(message.author)) return [message, args];
+
 		const [lang, musicRole, musicChannel]: string[] = await Promise.all<string>([
 			message.guild.storage.settings.get('lang'),
 			message.guild.storage.get(GuildConfigRoles.MUSICROLE),
 			message.guild.storage.get(GuildConfigChannels.MUSICCHANNEL),
 		]);
 
-		const res: ResourceLoader = Lang.createResourceLoader(lang || this.client.defaultLang);
+		const res: ResourceProxy<S> = Lang.createResourceProxy<S>(lang || this.client.defaultLang);
 
 		if (musicRole)
 		{
@@ -33,7 +36,7 @@ export function musicRestricted(voiceChannel: boolean = false): MiddlewareFuncti
 			}
 			else if (!message.member.roles.has(musicRole))
 			{
-				throw new Error(res('DECORATORS_MUSIC_ROLE_MEMBERS', { role: `\`@${role.name}\`` }));
+				throw new Error(res.DECORATORS_MUSIC_ROLE_MEMBERS({ role: `\`@${role.name}\`` }));
 			}
 		}
 
@@ -45,7 +48,7 @@ export function musicRestricted(voiceChannel: boolean = false): MiddlewareFuncti
 			}
 			else if (message.channel.id !== musicChannel)
 			{
-				throw new Error(res('DECORATORS_MUSIC_TEXT_CHANNEL', { channel: `<#${musicChannel}>` }));
+				throw new Error(res.DECORATORS_MUSIC_TEXT_CHANNEL({ channel: `<#${musicChannel}>` }));
 			}
 		}
 
@@ -54,7 +57,7 @@ export function musicRestricted(voiceChannel: boolean = false): MiddlewareFuncti
 			const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 			if (queue && queue.voiceChannel !== message.member.voiceChannel)
 			{
-				throw new Error(res('DECORATORS_MUSIC_VOICE_CHANNEL', { channel: queue.voiceChannel.toString() }));
+				throw new Error(res.DECORATORS_MUSIC_VOICE_CHANNEL({ channel: queue.voiceChannel.toString() }));
 			}
 		}
 

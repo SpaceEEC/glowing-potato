@@ -1,6 +1,7 @@
 import { DiscordAPIError, GuildChannel, GuildMember, TextChannel } from 'discord.js';
-import { GuildStorage, Lang, ListenerUtil, ResourceLoader } from 'yamdbf';
+import { GuildStorage, Lang, ListenerUtil, ResourceProxy } from 'yamdbf';
 
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { GuildConfigChannels, GuildConfigStrings } from '../types/GuildConfigKeys';
 import { RavenUtil } from '../util/RavenUtil';
 import { Client } from './Client';
@@ -13,7 +14,12 @@ const { on, registerListeners } = ListenerUtil;
  */
 export class EventHandlers
 {
-	private _client: Client;
+	/**
+	 * Reference to the instantiating client
+	 * @private
+	 * @readonly
+	 */
+	private readonly _client: Client;
 
 	/**
 	 * Instantiates the EventHandlers class
@@ -33,9 +39,11 @@ export class EventHandlers
 	 * @private
 	 */
 	@on('guildMemberAdd')
-	public async _onGuildMemberAdd(member: GuildMember): Promise<void>
+	protected async _onGuildMemberAdd(member: GuildMember): Promise<void>
 	{
 		const guildStorage: GuildStorage = await this._client.storage.guilds.get(member.guild.id);
+		// Drop everything before the yamdbf client is fully ready
+		if (!guildStorage) return;
 
 		const [
 			joinMessage,
@@ -61,7 +69,7 @@ export class EventHandlers
 			{
 				await guildStorage.remove(GuildConfigChannels.LOGCHANNEL);
 			}
-			else if (channel.permissionsFor(guildMe).has('SEND_MESSAGES'))
+			else if (channel.permissionsFor(guildMe).has(['VIEW_CHANNEL', 'SEND_MESSAGES']))
 			{
 				channel.send(message)
 					.catch((error: DiscordAPIError) =>
@@ -78,7 +86,7 @@ export class EventHandlers
 			{
 				await guildStorage.remove(GuildConfigChannels.ANCHANNEL);
 			}
-			else if (channel.permissionsFor(guildMe).has('SEND_MESSAGES'))
+			else if (channel.permissionsFor(guildMe).has(['VIEW_CHANNEL', 'SEND_MESSAGES']))
 			{
 				channel.send(message)
 					.catch((error: DiscordAPIError) =>
@@ -96,9 +104,11 @@ export class EventHandlers
 	 * @private
 	 */
 	@on('guildMemberRemove')
-	public async _onGuildMemberRemove(member: GuildMember): Promise<void>
+	protected async _onGuildMemberRemove(member: GuildMember): Promise<void>
 	{
 		const guildStorage: GuildStorage = await this._client.storage.guilds.get(member.guild.id);
+		// Drop everything before the yamdbf client is fully ready
+		if (!guildStorage) return;
 
 		const [
 			leaveMessage,
@@ -124,7 +134,7 @@ export class EventHandlers
 			{
 				await guildStorage.remove(GuildConfigChannels.LOGCHANNEL);
 			}
-			else if (channel.permissionsFor(guildMe).has('SEND_MESSAGES'))
+			else if (channel.permissionsFor(guildMe).has(['VIEW_CHANNEL', 'SEND_MESSAGES']))
 			{
 				channel.send(message)
 					.catch((error: DiscordAPIError) =>
@@ -141,7 +151,7 @@ export class EventHandlers
 			{
 				await guildStorage.remove(GuildConfigChannels.ANCHANNEL);
 			}
-			else if (channel.permissionsFor(guildMe).has('SEND_MESSAGES'))
+			else if (channel.permissionsFor(guildMe).has(['VIEW_CHANNEL', 'SEND_MESSAGES']))
 			{
 				channel.send(message)
 					.catch((error: DiscordAPIError) =>
@@ -161,12 +171,14 @@ export class EventHandlers
 	 * @private
 	 */
 	@on('voiceStateUpdate')
-	public async _onVoiceStateUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void>
+	protected async _onVoiceStateUpdate(oldMember: GuildMember, newMember: GuildMember): Promise<void>
 	{
 		this._client.musicPlayer.handleVoiceStateUpdate(oldMember, newMember);
 
 		if (newMember.user.bot) return;
 		const guildStorage: GuildStorage = await this._client.storage.guilds.get(newMember.guild.id);
+		// Drop everything before the yamdbf client is fully ready
+		if (!guildStorage) return;
 
 		const vlogChannel: string = await guildStorage.get(GuildConfigChannels.VLOGCHANNEL);
 
@@ -179,9 +191,9 @@ export class EventHandlers
 		{
 			await guildStorage.remove(GuildConfigChannels.VLOGCHANNEL);
 		}
-		else if (channel.permissionsFor(guildMe).has(['SEND_MESSAGES', 'EMBED_LINKS']))
+		else if (channel.permissionsFor(guildMe).has(['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS']))
 		{
-			const res: ResourceLoader = Lang.createResourceLoader(
+			const res: ResourceProxy<S> = Lang.createResourceProxy<S>(
 				await this._client.storage.guilds.get(newMember.guild.id).settings.get('lang')
 				|| this._client.defaultLang);
 
@@ -196,7 +208,7 @@ export class EventHandlers
 					embed
 						.setColor(0xFF4500)
 						.setDescription(
-						res('EVENT_VOICELOG_DISCONNECT',
+						res.EVENT_VOICELOG_DISCONNECT(
 							{
 								channel: oldMember.voiceChannel.toString(),
 								member: newMember.toString(),
@@ -209,7 +221,7 @@ export class EventHandlers
 					embed
 						.setColor(0x7CFC00)
 						.setDescription(
-						res('EVENT_VOICELOG_CONNECT',
+						res.EVENT_VOICELOG_CONNECT(
 							{
 								channel: newMember.voiceChannel.toString(),
 								member: newMember.toString(),
@@ -222,7 +234,7 @@ export class EventHandlers
 					embed
 						.setColor(3447003)
 						.setDescription(
-						res('EVENT_VOICELOG_MOVE',
+						res.EVENT_VOICELOG_MOVE(
 							{
 								member: newMember.toString(),
 								newChannel: newMember.voiceChannel.toString(),
@@ -232,7 +244,7 @@ export class EventHandlers
 					);
 				}
 
-				channel.send({ embed })
+				channel.send(embed)
 					.catch((error: DiscordAPIError) =>
 					{
 						RavenUtil.error('VLOG', error);

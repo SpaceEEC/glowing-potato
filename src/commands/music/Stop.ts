@@ -1,9 +1,11 @@
-import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, ResourceProxy } from 'yamdbf';
 
+import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
 
 const { desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
@@ -17,15 +19,16 @@ export default class StopCommand extends Command<Client>
 {
 	@using(musicRestricted(true))
 	@localizable
+	@LogCommandRun
 	@ReportError
-	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
+	public async action(message: Message, [res]: [ResourceProxy<S>]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 
 		if (!queue)
 		{
 			return message.channel
-				.send(res('MUSIC_QUEUE_NON_EXISTENT'))
+				.send(res.MUSIC_QUEUE_NON_EXISTENT())
 				.then((m: Message) => m.delete(5e3))
 				.catch(() => null);
 		}
@@ -33,7 +36,7 @@ export default class StopCommand extends Command<Client>
 		if (!queue.dispatcher)
 		{
 			return message.channel
-				.send(res('CMD_STOP_NOT_YET_POSSIBLE'))
+				.send(res.CMD_STOP_NOT_YET_POSSIBLE())
 				.then((m: Message) => m.delete(5e3))
 				.catch(() => null);
 		}
@@ -44,7 +47,7 @@ export default class StopCommand extends Command<Client>
 
 		this.client.musicPlayer.delete(message.guild.id);
 
-		return message.channel.send(res('CMD_STOP_SUCCESS'))
+		return message.channel.send(res.CMD_STOP_SUCCESS())
 			.then((m: Message) => m.delete(5e3))
 			.catch(() => null);
 	}

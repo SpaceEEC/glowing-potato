@@ -1,9 +1,10 @@
 import { Emoji } from 'discord.js';
-import { CommandDecorators, Message, Middleware, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 
 const { aliases, clientPermissions, desc, group, guildOnly, name, usage, using, localizable } = CommandDecorators;
 const { expect } = Middleware;
@@ -23,20 +24,20 @@ export default class EmojiCommand extends Command<Client>
 	@using(async function(
 		this: EmojiCommand,
 		message: Message,
-		[res, inputEmoji, inputMessage]: [ResourceLoader, string, string],
-	): Promise<[Message, [ResourceLoader, Emoji, Message]]>
+		[res, inputEmoji, inputMessage]: [ResourceProxy<S>, string, string],
+	): Promise<[Message, [Emoji, Message]]>
 	{
 		const emoji: Emoji = this.client.emojis.get(inputEmoji)
 			|| this.client.emojis.find('name', inputEmoji)
 			|| this.client.emojis.find((e: Emoji) => e.name.toUpperCase() === inputEmoji.toUpperCase());
-		if (!emoji) throw new Error(res('CMD_EMOJI_COULD_NOT_RESOLVE_EMOJI', { input: inputEmoji }));
+		if (!emoji) throw new Error(res.CMD_EMOJI_COULD_NOT_RESOLVE_EMOJI({ input: inputEmoji }));
 
 		let fetched: Message = null;
 		if (inputMessage)
 		{
 			if (isNaN(Number(inputMessage)))
 			{
-				throw new Error(res('CMD_EMOJI_COULD_NOT_RESOLVE_MESSAGE'));
+				throw new Error(res.CMD_EMOJI_COULD_NOT_RESOLVE_MESSAGE());
 			}
 
 			try
@@ -47,18 +48,18 @@ export default class EmojiCommand extends Command<Client>
 			{
 				if (error.code === 10008)
 				{
-					throw new Error(res('CMD_EMOJI_COULD_NOT_RESOLVE_MESSAGE'));
+					throw new Error(res.CMD_EMOJI_COULD_NOT_RESOLVE_MESSAGE());
 				}
 
 				throw error;
 			}
 		}
 
-		return [message, [res, emoji, fetched]];
+		return [message, [emoji, fetched]];
 	})
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable
-	public async action(message: Message, [res, emoji, target]: [ResourceLoader, Emoji, Message]): Promise<void>
+	public action(message: Message, [emoji, target]: [Emoji, Message]): CommandResult | Promise<CommandResult>
 	{
 		if (message.deletable) message.delete().catch(() => null);
 
@@ -67,7 +68,7 @@ export default class EmojiCommand extends Command<Client>
 			return target.react(emoji)
 				.then(() => undefined);
 		}
-		return message.channel.send(emoji.toString())
-			.then(() => undefined);
+
+		return emoji.toString();
 	}
 }

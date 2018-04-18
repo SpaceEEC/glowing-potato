@@ -1,0 +1,30 @@
+{
+	"config": {
+		"de_de": "Ermöglichen das Konfigurieren von verschiedenartigen Channeln und Rollen.",
+		"en_us": "Allows the configurating of different channels and roles."
+	},
+	"info": {
+		"de_de": "Alle Arten von Infobefehlen",
+		"en_us": "All kind of info commands"
+	},
+	"misc": {
+		"de_de": "Nicht weiter kategorisierte Befehle",
+		"en_us": "All kind of miscellaneous commands"
+	},
+	"moderation": {
+		"de_de": "Moderative Befehle",
+		"en_us": "Moderative commands"
+	},
+	"music": {
+		"de_de": "Ermöglichen das Spielen von Musik.",
+		"en_us": "Allows playing of music."
+	},
+	"weebstuff": {
+		"de_de": "Weeb'sche Befehle",
+		"en_us": "Weeb commands"
+	},
+	"util": {
+		"de_de": "Nützliche Befehle",
+		"en_us": "Utility commands"
+	}
+}

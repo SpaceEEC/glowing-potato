@@ -1,8 +1,9 @@
-import { CommandDecorators, Message, ResourceLoader } from 'yamdbf';
+import { CommandDecorators, Message, ResourceProxy } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
+import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
-import { Command } from '../../structures/Command';
+import { Command, CommandResult } from '../../structures/Command';
 import { RichEmbed } from '../../structures/RichEmbed';
 
 const { desc, group, name, usage, localizable } = CommandDecorators;
@@ -15,7 +16,7 @@ export default class InviteCommand extends Command<Client>
 {
 	@localizable
 	@ReportError
-	public async action(message: Message, [res]: [ResourceLoader]): Promise<void>
+	public async action(message: Message, [res]: [ResourceProxy<S>]): Promise<CommandResult>
 	{
 		const invite: string = await this.client.generateInvite([
 			'READ_MESSAGES',
@@ -32,12 +33,11 @@ export default class InviteCommand extends Command<Client>
 
 		const embed: RichEmbed = new RichEmbed()
 			.setColor(7019884)
-			.setAuthor(res('CMD_INIVTE_EMBED_AUTHOR'), null, invite)
+			.setAuthor(res.CMD_INIVTE_EMBED_AUTHOR(), null, invite)
 			.setThumbnail(this.client.user.displayAvatarURL)
-			.setDescription(res('CMD_INVITE_EMBED_DESCRIPTION', { url: invite }))
-			.addField(res('CMD_INVITE_EMBED_FIELD_TITLE'), res('CMD_INVITE_EMBED_FIELD_VALUE'));
+			.setDescription(res.CMD_INVITE_EMBED_DESCRIPTION({ url: invite }))
+			.addField(res.CMD_INVITE_EMBED_FIELD_TITLE(), res.CMD_INVITE_EMBED_FIELD_VALUE());
 
-		return message.channel.send({ embed })
-			.then(() => undefined);
+		return embed;
 	}
 }

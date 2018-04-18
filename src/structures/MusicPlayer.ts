@@ -1,13 +1,13 @@
 import { GuildMember, Snowflake, TextChannel, VoiceConnection } from 'discord.js';
-import { Message, ResourceLoader } from 'yamdbf';
+import { Logger, logger, Message, ResourceProxy } from 'yamdbf';
 import * as ytdl from 'ytdl-core';
 
+import { LocalizationStrings as S } from '../localization/LocalizationStrings';
 import { SongEmbedType } from '../types/SongEmbedType';
 import { RavenUtil } from '../util/RavenUtil';
 import { Util } from '../util/Util';
 import { Client } from './Client';
 import { Queue } from './Queue';
-import { RichEmbed } from './RichEmbed';
 import { Song } from './Song';
 
 export class MusicPlayer extends Map<Snowflake, Queue>
@@ -15,8 +15,17 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 	/**
 	 * Associated client
 	 * @private
+	 * @readonly
 	 */
-	private _client: Client;
+	private readonly _client: Client;
+
+	/**
+	 * Proxied reference to the logger
+	 * @private
+	 * @readonly
+	 */
+	@logger('MUSICPLAYER')
+	private readonly _logger: Logger;
 
 	/**
 	 * Instantiates the MusicPlayer
@@ -73,12 +82,12 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 	/**
 	 * Adds a Song or an array of Songs to the current playback, or starts it if there is none.
-	 * @param {ResourceLoader} res
+	 * @param {ResourceProxy} res
 	 * @param {Message} message
 	 * @param {Song|Song[]} input Song(s) to add
 	 * @returns {Promise<boolean>}
 	 */
-	public async add(res: ResourceLoader, { guild, channel, member }: Message, input: Song | Song[]): Promise<boolean>
+	public async add(res: ResourceProxy<S>, { guild, channel, member }: Message, input: Song | Song[]): Promise<boolean>
 	{
 		let queue: Queue = this.get(guild.id);
 		if (queue)
@@ -89,7 +98,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		}
 		else
 		{
-			queue = new Queue(res, channel as TextChannel);
+			queue = new Queue(this._client, res, channel as TextChannel);
 			this.set(guild.id, queue);
 		}
 		if (input instanceof Array) queue.concat(input);
@@ -98,13 +107,13 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 		try
 		{
 			queue.connection = await member.voiceChannel.join();
-			await this._play(guild.id, false);
+			await this._play(guild.id);
 		}
 		catch (error)
 		{
 			RavenUtil.error('MusicPlayer', error);
 			this.delete(guild.id);
-			channel.send(res('MUSIC_JOIN_FAILED', { message: error.message }))
+			channel.send(res.MUSIC_JOIN_FAILED({ message: error.message }))
 				.catch(() => null);
 		}
 
@@ -114,18 +123,17 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 	/**
 	 * Starts a new Song in the provided guild.
 	 * @param {string} guildID
-	 * @param {boolean} stopped
 	 * @returns {Promise<void>}
 	 * @private
 	 */
-	private async _play(guildID: string, stopped: boolean): Promise<void>
+	private async _play(guildID: string): Promise<void>
 	{
-		this._client.logger.debug('MusicPlayer', '_play');
+		this._logger.debug(`_play: (${guildID}) Entered method`);
 
 		const queue: Queue = this.get(guildID);
 		if (!queue)
 		{
-			this._client.logger.debug('MusicPlayer', 'queue is falsy');
+			this._logger.debug(`_play (${guildID}) Queue is falsy`);
 			const connection: VoiceConnection = this._client.voiceConnections.get(guildID);
 			if (connection)
 			{
@@ -145,6 +153,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 
 		if (!currentSong)
 		{
+			this._logger.debug(`_play: (${guildID}) No more songs, disconnecting...`);
 			this.delete(guildID);
 			// channel does not exists when kicked from it by deleting or the guild as whole
 			if (queue.voiceChannel)
@@ -155,10 +164,8 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 			return;
 		}
 
-		const embed: RichEmbed = currentSong.embed(SongEmbedType.PLAYING);
-
 		queue.statusMessage = await queue.textChannel
-			.send({ embed })
+			.send(currentSong.embed(SongEmbedType.PLAYING))
 			.catch(() => null);
 
 		queue.dispatcher = queue.connection.playStream(ytdl(currentSong.url), { passes: 2 })
@@ -168,7 +175,7 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 				RavenUtil.error('MusicPlayer | dispatcher', error);
 
 				queue.statusMessage = await queue.statusMessage.edit(
-					queue.res('MUSIC_PLAY_ERROR',
+					queue.res.MUSIC_PLAY_ERROR(
 						{
 							message: error.message,
 						},
@@ -179,15 +186,14 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 					.catch(() => null);
 			})
 
-			.once('start', () => this._client.logger.log('MusicPlayer | dispatcher', 'start'))
+			.once('start', () => this._logger.log(`DISPATCHER: (${guildID}) start`))
 
 			.once('end', (reason: string) =>
 			{
-
 				const playedTime: string = Util.timeString(Math.floor(queue.dispatcher.time / 1000));
 
-				this._client.logger.log(
-					'MusicPlayer | dispatcher',
+				this._logger.log(
+					`DISPATCHER: (${guildID})`,
 					`Song finished after ${playedTime} / ${queue.currentSong ? queue.currentSong.lengthString : 'No current song'};`,
 					reason || 'No reason',
 				);
@@ -205,11 +211,11 @@ export class MusicPlayer extends Map<Snowflake, Queue>
 					queue.shift();
 				}
 
-				this._play(guildID, reason === 'stop').catch((_playError: Error) =>
+				this._play(guildID).catch((_playError: Error) =>
 				{
 					RavenUtil.error('MusicPlayer | _play', _playError);
 					queue.textChannel.send(
-						queue.res('MUSIC_PLAY_ERROR',
+						queue.res.MUSIC_PLAY_ERROR(
 							{
 								message: _playError.message,
 							},
