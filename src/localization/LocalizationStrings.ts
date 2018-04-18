@@ -164,3 +164,7 @@ export enum LocalizationStrings
 	CMD_EVAL_ERR_NOCODE = 'CMD_EVAL_ERR_NOCODE',
 	EXPECT_ERR_INVALID_OPTION = 'EXPECT_ERR_INVALID_OPTION',
 }
+
+import { ResourceProxy } from 'yamdbf';
+
+export type BetterResourceProxy = ResourceProxy<{ [S in LocalizationStrings]: S }>;

@@ -1,8 +1,8 @@
 import { get, Result } from 'snekfetch';
-import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 import { RichEmbed } from '../../structures/RichEmbed';
@@ -33,7 +33,7 @@ export default class Urban extends Command<Client>
 	})
 	@localizable
 	@ReportError
-	public async action(message: Message, [res, selectedNumber, search]: [ResourceProxy<S>, number, string[]])
+	public async action(message: Message, [res, selectedNumber, search]: [BetterResourceProxy, number, string[]])
 	: Promise<CommandResult>
 	{
 		const query: string = encodeURIComponent(search.join('+')).replace(/%2B/g, '+');

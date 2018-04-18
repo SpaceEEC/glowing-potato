@@ -1,9 +1,9 @@
 import { RichEmbed } from 'discord.js';
 import { get, Result } from 'snekfetch';
-import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 import { PicturePost } from '../../types/PicturePost';
@@ -29,7 +29,7 @@ export default class KonachanCommand extends Command<Client>
 		return [msg, [res, encodeURIComponent(tags.join(' '))]];
 	})
 	@ReportError
-	public async action(message: Message, [res, search]: [ResourceProxy<S>, string]): Promise<CommandResult>
+	public async action(message: Message, [res, search]: [BetterResourceProxy, string]): Promise<CommandResult>
 	{
 		const posts: PicturePost[] = await get(`http://konachan.com/post.json?tags=${search}+rating:s&limit=100`)
 			.then<ProbablyNotABuffer>((result: Result) => result.body);

@@ -1,6 +1,6 @@
-import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 
@@ -18,7 +18,7 @@ export default class WhitelistCommand extends Command<Client>
 	@using(resolve({ '<user>': 'User' }))
 	@using(expect({ '<user>': 'User' }))
 	@localizable
-	public async action(message: Message, [res]: [ResourceProxy<S>]): Promise<CommandResult>
+	public async action(message: Message, [res]: [BetterResourceProxy]): Promise<CommandResult>
 	{
 		await message.channel.send(res.CMD_WHITELIST_DEPRECATED(
 			{

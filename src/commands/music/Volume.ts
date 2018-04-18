@@ -1,9 +1,9 @@
-import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -29,7 +29,10 @@ export default class VolumeCommand extends Command<Client>
 	})
 	@using(resolve({ '<Volume>': 'Number' }))
 	@localizable
-	@using(function(message: Message, [res, volume]: [ResourceProxy<S>, number]): [Message, [ResourceProxy<S>, number]]
+	@using(function(
+		message: Message,
+		[res, volume]: [BetterResourceProxy, number],
+	): [Message, [BetterResourceProxy, number]]
 	{
 		if (typeof volume === 'number')
 		{
@@ -48,7 +51,7 @@ export default class VolumeCommand extends Command<Client>
 	@LogCommandRun
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable
-	public async action(message: Message, [res, volume]: [ResourceProxy<S>, number]): Promise<CommandResult>
+	public async action(message: Message, [res, volume]: [BetterResourceProxy, number]): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 		const update: boolean = Boolean(volume);
@@ -79,9 +82,9 @@ export default class VolumeCommand extends Command<Client>
 
 		return message.channel.send(
 			res.CMD_VOLUME_SUCCESS({
-					update: String(update || ''),
-					volume: volume.toLocaleString(),
-				},
+				update: String(update || ''),
+				volume: volume.toLocaleString(),
+			},
 			))
 			.then((m: Message) => m.delete(1e4))
 			.catch(() => null);

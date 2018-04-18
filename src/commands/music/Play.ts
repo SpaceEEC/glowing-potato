@@ -1,10 +1,10 @@
 import { Collection, Permissions, Snowflake, VoiceChannel } from 'discord.js';
-import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { LogCommandRun } from '../../decorators/LogCommandRun';
 import { musicRestricted } from '../../decorators/MusicRestricted';
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy, LocalizationStrings as S } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 import { Queue } from '../../structures/Queue';
@@ -53,7 +53,10 @@ export default class PlayCommand extends Command<Client>
 	@LogCommandRun
 	@ReportError
 	// tslint:enable:only-arrow-functions no-shadowed-variable object-literal-sort-keys
-	public async action(message: Message, [res, limit, query]: [ResourceProxy<S>, number, string]): Promise<CommandResult>
+	public async action(
+		message: Message,
+		[res, limit, query]: [BetterResourceProxy, number, string],
+	): Promise<CommandResult>
 	{
 		const queue: Queue = this.client.musicPlayer.get(message.guild.id);
 		let voiceChannel: VoiceChannel;
@@ -123,7 +126,7 @@ export default class PlayCommand extends Command<Client>
 	}
 
 	private async _validateAndAdd(
-		res: ResourceProxy<S>,
+		res: BetterResourceProxy,
 		fetchMessage: Message,
 		message: Message,
 		queue: Queue,
@@ -216,7 +219,7 @@ export default class PlayCommand extends Command<Client>
 	}
 
 	private async _pick(
-		res: ResourceProxy<S>,
+		res: BetterResourceProxy,
 		message: Message,
 		videos: Video[],
 		statusMessage: Message,

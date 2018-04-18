@@ -1,8 +1,8 @@
 import { Emoji } from 'discord.js';
-import { CommandDecorators, Message, Middleware, ResourceProxy } from 'yamdbf';
+import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
-import { LocalizationStrings as S } from '../../localization/LocalizationStrings';
+import { BetterResourceProxy } from '../../localization/LocalizationStrings';
 import { Client } from '../../structures/Client';
 import { Command, CommandResult } from '../../structures/Command';
 
@@ -24,7 +24,7 @@ export default class EmojiCommand extends Command<Client>
 	@using(async function(
 		this: EmojiCommand,
 		message: Message,
-		[res, inputEmoji, inputMessage]: [ResourceProxy<S>, string, string],
+		[res, inputEmoji, inputMessage]: [BetterResourceProxy, string, string],
 	): Promise<[Message, [Emoji, Message]]>
 	{
 		const emoji: Emoji = this.client.emojis.get(inputEmoji)
