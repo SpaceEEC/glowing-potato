@@ -31,10 +31,10 @@ export default class DonmaiCommand extends Command<Client>
 	@ReportError
 	public async action(message: Message, [res, search]: [BetterResourceProxy, string]): Promise<CommandResult>
 	{
-		const posts: PicturePost[] = await get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${search}`)
+		const [post]: [PicturePost] = await get(`http://safebooru.donmai.us/posts.json?limit=1&random=true&tags=${search}`)
 			.then<ProbablyNotABuffer>((result: Result) => result.body);
 
-		if (!posts.length)
+		if (!post)
 		{
 			return new RichEmbed()
 					.setColor(0xFFFF00)
@@ -46,7 +46,7 @@ export default class DonmaiCommand extends Command<Client>
 
 		return new RichEmbed()
 				.setColor(message.member.displayColor)
-				.setImage(posts[0].file_url)
-				.setDescription(`[${res.CMD_RESULTS_SOURCE()}](http://safebooru.donmai.us/posts/${posts[0].id}/)`);
+				.setImage(post.file_url)
+				.setDescription(`[${res.CMD_RESULTS_SOURCE()}](http://safebooru.donmai.us/posts/${post.id}/)`);
 	}
 }
