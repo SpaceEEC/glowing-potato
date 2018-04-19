@@ -2617,7 +2617,7 @@ ws@^4.0.0:
 
 "yamdbf-anilist-unofficial@github:spaceeec/yamdbf-anilist-unofficial":
   version "1.1.0"
-  resolved "https://codeload.github.com/spaceeec/yamdbf-anilist-unofficial/tar.gz/f0d97f134f548add7720ef9bb3921cbcd8880e12"
+  resolved "https://codeload.github.com/spaceeec/yamdbf-anilist-unofficial/tar.gz/a4379ace3f5ac382da80eb3151a7eaf7b109e1e9"
   dependencies:
     postinstall-build "^5.0.1"
 
