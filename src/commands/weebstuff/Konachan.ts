@@ -47,7 +47,7 @@ export default class KonachanCommand extends Command<Client>
 
 		return new RichEmbed()
 				.setColor(message.member.displayColor)
-				.setImage(`${post.sample_url}`)
+				.setImage(post.sample_url)
 				.setDescription(`[${res.CMD_RESULTS_SOURCE()}](http://konachan.net/post/show/${post.id})`);
 	}
 }
