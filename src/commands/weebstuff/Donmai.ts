@@ -46,7 +46,7 @@ export default class DonmaiCommand extends Command<Client>
 
 		return new RichEmbed()
 				.setColor(message.member.displayColor)
-				.setImage(`http://safebooru.donmai.us/${posts[0].file_url}`)
+				.setImage(`${posts[0].file_url}`)
 				.setDescription(`[${res.CMD_RESULTS_SOURCE()}](http://safebooru.donmai.us/posts/${posts[0].id}/)`);
 	}
 }
