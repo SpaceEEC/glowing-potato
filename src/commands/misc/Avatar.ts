@@ -1,4 +1,5 @@
 import { Attachment, RichEmbed, User } from 'discord.js';
+import { head } from 'snekfetch';
 import { CommandDecorators, Message, Middleware } from 'yamdbf';
 
 import { ReportError } from '../../decorators/ReportError';
@@ -21,14 +22,27 @@ export default class AvatarCommand extends Command<Client>
 	@ReportError
 	public async action(message: Message, [user]: [User]): Promise<CommandResult>
 	{
-		message.channel.startTyping();
+		try
+		{
+			message.channel.startTyping();
 
-		const filename: string = (user.avatar && user.avatar.startsWith('a_'))
+			try
+			{
+				await head(user.displayAvatarURL);
+			} catch (e) {
+				// In case the user does not share any guilds with the bot and changed their avatar.
+				if (e.status === 404) {
+					this.client.users.delete(user.id);
+					user = await this.client.fetchUser(user.id);
+				} else {
+					throw e;
+				}
+			}
+
+			const filename: string = (user.avatar && user.avatar.startsWith('a_'))
 			? 'avatar.gif'
 			: 'avatar.png';
 
-		try
-		{
 			await message.channel.send(
 				{
 					embed:
