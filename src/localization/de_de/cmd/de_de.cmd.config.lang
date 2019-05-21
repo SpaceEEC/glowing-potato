@@ -9,7 +9,7 @@ Es ist kein(e) `{{ key }}` festgelegt.
 Die/die festgelegt(e) `{{ key }}` existiert nicht länger und wurde von der Konfiguration entfernt.
 
 [CMD_CONFIG_CURRENT_VALUE]
-Der/die momentane `{{ key }}` ist {{ value }}.
+Der/die momentane `{{ key }}` ist {{ value }}
 ## endregion
 
 ## region set
@@ -18,7 +18,7 @@ Der `{{ key }}` muss ein Textchannel sein!
 
 ## also for create
 [CMD_CONFIG_VALUE_UPDATE]
-Der oder die `{{ key }}` ist jetzt {{ value }}.
+Der oder die `{{ key }}` ist jetzt {{ value }}
 
 [CMD_CONFIG_RESET_PROMPT]
 Bist du sicher, dass du den/die `{{ key }}` zurücksetzen möchtest?
