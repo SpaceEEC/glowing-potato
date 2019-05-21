@@ -4,8 +4,6 @@ Invite
 [CMD_INVITE_EMBED_DESCRIPTION]
 To invite me to your server click this link [here]({{ url }}).
 **Note**: You need **Manage Guild** permission to add me there.
-​
-#^zws
 
 [CMD_INVITE_EMBED_FIELD_TITLE]
 Additional informations regarding the attached permissions:
