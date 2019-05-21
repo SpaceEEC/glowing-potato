@@ -30,14 +30,14 @@
 		"de_de": {
 			"desc": "Legt die Willkommensnachricht für diesen Server fest, zeigt diese an, oder löscht diese.",
 			"usage": "<prefix>joinmessage <Option> [...Nachricht]",
-			"info": "Es kann `:member:` und `:guild:` als Platzhalter verwendet werden.\nDiese werden dann mit dem Member und dem Namen der Gilde/Server ausgewechselt."
+			"info": "Es kann `:member:`, `:mention`, und `:guild:` als Platzhalter verwendet werden.\nDiese werden dann mit dem Namen oder Erwähnung des Members und dem Namen der Gilde/Server ausgewechselt."
 		}
 	},
 	"leavemessage": {
 		"de_de": {
 			"desc": "Legt die Abschiedsnachricht für diesen Server fest, zeigt diese an, oder löscht diese.",
 			"usage": "<prefix>leavemessage <Option> [...Nachricht]",
-			"info": "Es kann `:member:` und `:guild:` als Platzhalter verwendet werden.\nDiese werden dann mit dem Member und dem Namen der Gilde/Server ausgewechselt."
+			"info": "Es kann `:member:`, `:mention`, und `:guild:` als Platzhalter verwendet werden.\nDiese werden dann mit dem Namen oder Erwähnung des Members und dem Namen der Gilde/Server ausgewechselt."
 		}
 	},
 	"logchannel": {
