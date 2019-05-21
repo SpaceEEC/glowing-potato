@@ -60,6 +60,7 @@ export class EventHandlers
 		const guildMe: GuildMember = member.guild.me || await member.guild.fetchMember(this._client.user.id);
 		const message: string = joinMessage
 			.replace(/:member:/g, `\`@${member.user.tag}\``)
+			.replace(/:mention:/g, member.toString())
 			.replace(/:guild:/g, member.guild.name);
 
 		if (logChannel)
@@ -125,6 +126,7 @@ export class EventHandlers
 		const guildMe: GuildMember = member.guild.me || await member.guild.fetchMember(this._client.user.id);
 		const message: string = leaveMessage
 			.replace(/:member:/g, `\`@${member.user.tag}\``)
+			.replace(/:mention:/g, member.toString())
 			.replace(/:guild:/g, member.guild.name);
 
 		if (logChannel)
