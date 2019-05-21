@@ -12,8 +12,9 @@ const { expect } = Middleware;
 
 @callerPermissions('MANAGE_GUILD')
 @desc('Sets, gets or resets the join message, that will be send to the log and announcement channels, if set up.'
-	+ 'You can use `:member:`, `:mention`, and `:guild:` as a placeholder for the new member, their mention, and the guild name.'
-	+ 'Note that `member` won\'t mention the member and just display `@name#discrim`. To get an actual mention use `:mention:`.')
+	+ 'You can use `:member:`, `:mention`, and `:guild:` as a placeholder for the new member, their mention, and the '
+	+ 'guild name. Note that `member` won\'t mention the member and just display `@name#discrim`. To get an actual '
+	+ 'mention use `:mention:`.')
 @name('joinmessage')
 @group('config')
 @guildOnly
